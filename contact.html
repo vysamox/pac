@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact | PAC Management System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* 🌈 Global Page Style */
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #eef2f3 0%, #dfe9f3 100%);
+      color: #333;
+    }
+
+    header {
+      background: #007bff;
+      color: #fff;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 24px;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    nav {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    nav a {
+      color: #333;
+      text-decoration: none;
+      padding: 10px 20px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #007bff;
+    }
+
+    .contact-container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .contact-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .contact-header h2 {
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .info-box {
+      flex: 1;
+      min-width: 260px;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .info-box:hover {
+      transform: translateY(-5px);
+      background: #e9f2ff;
+    }
+
+    .info-box i {
+      font-size: 30px;
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input, textarea {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .map {
+      margin-top: 30px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+      background: #007bff;
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .contact-info {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header><i class="fa-solid fa-address-book"></i> Contact Us</header>
+
+  <nav>
+    <a href="index.html"><i class="fa fa-home"></i> Home</a>
+    <a href="newadd.html"><i class="fa fa-plus-circle"></i> Add PAC</a>
+    <a href="newshow.html"><i class="fa fa-list"></i> Show PAC</a>
+    <a href="usedpac.html"><i class="fa fa-box"></i> Used PAC</a>
+    <a href="contact.html" style="color:#007bff;"><i class="fa fa-envelope"></i> Contact</a>
+  </nav>
+
+  <div class="contact-container">
+    <div class="contact-header">
+      <h2>Get in Touch</h2>
+      <p>We’d love to hear from you. Please fill out the form below or contact us directly.</p>
+    </div>
+
+    <div class="contact-info">
+      <div class="info-box">
+        <i class="fa fa-map-marker-alt"></i>
+        <h3>Address</h3>
+        <p>123 PAC Office Street, Delhi, India</p>
+      </div>
+
+      <div class="info-box">
+        <i class="fa fa-phone"></i>
+        <h3>Phone</h3>
+        <p>+91 98765 43210</p>
+      </div>
+
+      <div class="info-box">
+        <i class="fa fa-envelope"></i>
+        <h3>Email</h3>
+        <p>support@pacmanagement.in</p>
+      </div>
+    </div>
+
+    <form id="contactForm">
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <input type="text" placeholder="Subject">
+      <textarea rows="5" placeholder="Your Message" required></textarea>
+      <button type="submit"><i class="fa fa-paper-plane"></i> Send Message</button>
+    </form>
+
+    <div class="map">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d224345.83925842483!2d77.06889808406382!3d28.52758200500221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce2d6c9b3fef1%3A0xa43975e2a678f85a!2sDelhi!5e0!3m2!1sen!2sin!4v1701600939850!5m2!1sen!2sin" 
+        width="100%" height="300" style="border:0;" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 PAC Management System | All Rights Reserved
+  </footer>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      alert('✅ Thank you! Your message has been submitted successfully.');
+      this.reset();
+    });
+  </script>
+
+</body>
+</html>
