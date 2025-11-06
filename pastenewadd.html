@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PAC Entry Form</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      background: linear-gradient(135deg, #f3f8ff 0%, #dbe9ff 100%);
+      margin:0; padding:0;
+    }
+
+    header {
+      background: rgba(0, 123, 255, 0.9);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 18px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    header h1 { margin: 0; font-size: 22px; }
+    nav a { color: white; text-decoration: none; margin-left: 18px; font-weight: bold; }
+    nav a:hover { text-decoration: underline; }
+
+    .form-container {
+  max-width: 720px;
+  margin: 60px auto;
+  padding: 40px 30px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.form-container::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  background: radial-gradient(circle at 30% 30%, rgba(0, 123, 255, 0.1), transparent 60%);
+  z-index: 0;
+}
+
+label {
+  display: block;
+  margin-top: 18px;
+  font-weight: 700;
+  color: #004aad;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+label::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  transition: width 0.4s ease;
+}
+
+input:focus + label::after,
+textarea:focus + label::after {
+  width: 100%;
+}
+
+input[type="text"],
+input[type="file"],
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #cfd8e3;
+  border-radius: 12px;
+  font-size: 15px;
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #222;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+input:hover,
+textarea:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.2);
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #0056b3;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+  transform: scale(1.01);
+}
+
+button {
+  margin-top: 25px;
+  width: 100%;
+  padding: 13px 0;
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.25);
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  z-index: 1;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #0056b3, #007bff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+}
+
+button:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.owner-box {
+  margin-top: 25px;
+  padding: 18px;
+  background: linear-gradient(135deg, #e3f2ff, #d1e8ff);
+  border-radius: 16px;
+  border: 2px solid #007bff;
+  font-weight: 700;
+  color: #004aad;
+  text-align: center;
+  box-shadow: 0 3px 12px rgba(0, 123, 255, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.owner-box::before {
+  content: "Authorized UCL";
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: #007bff;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.owner-box:hover {
+  background: linear-gradient(135deg, #d6ecff, #c7e0ff);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.25);
+}
+
+/* Smooth fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background: #007bff;
+      color: #fff;
+    }
+
+    footer {
+      background: #007bff;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    @media(max-width:600px) {
+      .form-container { width:90%; padding:20px; }
+      header h1 { font-size:18px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1><i class="fa-solid fa-database"></i> PAC Management System</h1>
+  <nav>
+    <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="/newshow.html"><i class="fa-solid fa-table-list"></i> Show PAC</a>
+    <a href="/usedpac.html"><i class="fa-solid fa-clipboard-check"></i> Used PAC</a>
+    <a href="/contact"><i class="fa-solid fa-envelope"></i> Contact Admin</a>
+  </nav>
+</header>
+
+<div class="form-container">
+  <h2>PAC Entry Form</h2>
+
+  <div class="owner-box">
+    🏢 <strong>UCL ID:</strong> UCSC_WB_NO050665 <br>
+    👤 <strong>Owner:</strong> Chowdhury Saddam Hossain <br>
+    🌐 <strong>IP:</strong> <span id="owner-ip">Fetching...</span>
+  </div>
+
+  <!-- Paste Details -->
+  <h3>Paste All Details</h3>
+  <textarea id="pasteData" rows="8" placeholder="Paste multiple CSC REF details here..."></textarea>
+  <button onclick="processPastedData()">Extract Details</button>
+
+  <div id="progressContainer" style="display:none; margin-top:15px;">
+  <div id="progressBar" style="
+      width: 0%;
+      height: 10px;
+      background: linear-gradient(90deg, #007bff, #00c6ff);
+      border-radius: 10px;
+      transition: width 0.3s ease;">
+  </div>
+  <p id="progressText" style="text-align:center; font-weight:600; color:#004aad; margin-top:8px;">Checking... 0%</p>
+</div>
+
+
+  <!-- Data Table -->
+  <table id="dataTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>UCL ID</th>
+        <th>CSC REF</th>
+        <th>PAC Number</th>
+        <th>ORDERED ON</th>
+        <th>Total Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button id="saveAllBtn" style="display:none;" onclick="saveAllToFirebase()">💾 Save All to Firebase</button>
+</div>
+
+<footer>
+  &copy; Sk Samrat. All rights reserved. | 
+  <span id="live-time"></span> | 
+  <span id="user-ip"></span>
+</footer>
+
+<!-- Firebase + IP + Paste System -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+const firebaseConfig = { 
+  apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain: "mrsamrat08.firebaseapp.com",
+  projectId: "mrsamrat08",
+  storageBucket: "mrsamrat08.appspot.com",
+  messagingSenderId: "525481767881",
+  appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let pastedRefs = new Set();
+
+// ----------- PROCESS PASTED DATA + FIREBASE STATUS CHECK + PROGRESS -----------
+window.processPastedData = async function() {
+  const text = document.getElementById("pasteData").value.trim();
+  if (!text) { alert("Please paste your details first!"); return; }
+
+  const refRegex = /CSC REF\s*(\d+)/g;
+  const orderRegex = /ORDERED ON\s*([^\n]+)/g;
+  const amountRegex = /Total Amount\s*₹\s*([\d\.]+)/g;
+
+  const refs = [...text.matchAll(refRegex)].map(m => m[1]);
+  const dates = [...text.matchAll(orderRegex)].map(m => m[1].trim());
+  const amounts = [...text.matchAll(amountRegex)].map(m => m[1]);
+
+  if (refs.length === 0) {
+    alert("❌ No CSC REF found in your pasted text!");
+    return;
+  }
+
+  const tbody = document.querySelector("#dataTable tbody");
+  const existingRows = Array.from(tbody.querySelectorAll("tr")).map(r => r.children[1].innerText.trim());
+
+  // --- Progress Bar Setup ---
+  const progressContainer = document.getElementById("progressContainer");
+  const progressBar = document.getElementById("progressBar");
+  const progressText = document.getElementById("progressText");
+  progressContainer.style.display = "block";
+  progressBar.style.width = "0%";
+  progressText.innerHTML = `<span id="progressSpinner"></span> Checking... 0%`;
+
+  for (let i = 0; i < refs.length; i++) {
+    const ref = refs[i];
+    const pacNo = ref.slice(-8);
+    const orderDate = dates[i] || "";
+    const amount = amounts[i] || "";
+
+    let statusHTML = "";
+    let bgColor = "";
+
+    // --- 1️⃣ Check for "already pasted" in same session or visible table ---
+    if (pastedRefs.has(ref) || existingRows.includes(ref)) {
+      statusHTML = `<span style="color:#ff6a00;font-weight:600;">⚠️ Already Pasted (Same Session)</span>`;
+      bgColor = "#fff4e6";
+    } else {
+      // --- 2️⃣ Check Firebase ---
+      const docRef = doc(db, "pac_entries", pacNo);
+      const docSnap = await getDoc(docRef);
+      const exists = docSnap.exists();
+
+      if (exists) {
+        statusHTML = `<span style="color:#d10000;font-weight:600;">⚠️ Already Exists (Firebase)</span>`;
+        bgColor = "#ffe6e6";
+      } else {
+        statusHTML = `<span style="color:#009900;font-weight:600;">✅ New Entry</span>`;
+        bgColor = "#e9ffef";
+      }
+    }
+
+    const row = document.createElement("tr");
+    row.style.background = bgColor;
+    row.innerHTML = `
+      <td>UCSC_WB_NO050665</td>
+      <td>${ref}</td>
+      <td>${pacNo}</td>
+      <td>${orderDate}</td>
+      <td>₹${amount}</td>
+      <td>${statusHTML}</td>
+    `;
+    tbody.appendChild(row);
+    pastedRefs.add(ref);
+
+    // --- Update Progress ---
+    const percent = Math.round(((i + 1) / refs.length) * 100);
+    progressBar.style.width = percent + "%";
+    progressText.innerHTML = `<span id="progressSpinner"></span> Checking... ${percent}%`;
+
+    await new Promise(resolve => setTimeout(resolve, 50)); // smoother animation
+  }
+
+  // --- Complete ---
+  progressText.innerHTML = "✅ Check Complete!";
+  const spinner = document.getElementById("progressSpinner");
+  if (spinner) spinner.style.display = "none";
+  setTimeout(() => { progressContainer.style.display = "none"; }, 1200);
+
+  if (refs.length > 0) {
+    document.getElementById("dataTable").style.display = "table";
+    document.getElementById("saveAllBtn").style.display = "block";
+  }
+};
+
+// ----------- SAVE ALL TO FIREBASE -----------
+window.saveAllToFirebase = async function() {
+  const rows = document.querySelectorAll("#dataTable tbody tr");
+  if (rows.length === 0) { alert("No data found!"); return; }
+
+  let saved = 0, duplicate = 0;
+  for (const row of rows) {
+    const cells = row.children;
+    const uclNo = cells[0].innerText.trim();
+    const cscRef = cells[1].innerText.trim();
+    const pacNo = cells[2].innerText.trim();
+    const orderDate = cells[3].innerText.trim();
+    const amount = cells[4].innerText.replace("₹","").trim();
+    const statusCell = cells[5];
+
+    if (statusCell.textContent.includes("Already Exists") || statusCell.textContent.includes("Already Pasted")) {
+      duplicate++;
+      continue;
+    }
+
+    const docRef = doc(db, "pac_entries", pacNo);
+    const now = new Date();
+    const ipAddress = window.userIP && window.userIP !== "Unavailable" ? window.userIP : "Fetching...";
+
+    await setDoc(docRef, {
+      pacNo,
+      cscRef,
+      uclNo,
+      uclOwnerName: "Chowdhury Saddam Hossain",
+      ipAddress,
+      orderDate,
+      amount,
+      entryDate: now.toISOString().split("T")[0],
+      entryTime: now.toLocaleTimeString(),
+      uploadType: "Pasted"
+    });
+
+    statusCell.innerHTML = `<span style="color:#007bff;font-weight:600;">✅ Saved Successfully</span>`;
+    row.style.background = "#e0f7ff";
+    saved++;
+  }
+
+  alert(`✅ Saved: ${saved}\n⛔ Already Existed or Pasted: ${duplicate}`);
+};
+
+// ----------- LIVE TIME DISPLAY -----------
+function updateTime() {
+  document.getElementById("live-time").textContent =
+    "🕒 " + new Date().toLocaleString('en-IN', { hour12: false });
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// ----------- SMART IP FETCH (WITH FALLBACK) -----------
+async function fetchIPv4() {
+  try {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const data = await res.json();
+    if (data.ip) {
+      window.userIP = data.ip;
+      document.getElementById("owner-ip").textContent = data.ip;
+      document.getElementById("user-ip").textContent = "🌐 IP: " + data.ip;
+      return;
+    }
+    throw new Error("No IP");
+  } catch {
+    try {
+      const cf = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
+      const txt = await cf.text();
+      const ip = txt.match(/ip=(.*)/)?.[1]?.trim();
+      window.userIP = ip || "Unavailable";
+      document.getElementById("owner-ip").textContent = window.userIP;
+      document.getElementById("user-ip").textContent = "🌐 IP: " + window.userIP;
+    } catch {
+      window.userIP = "Unavailable";
+      document.getElementById("owner-ip").textContent = "Unavailable";
+      document.getElementById("user-ip").textContent = "🌐 IP: Unavailable";
+    }
+  }
+}
+fetchIPv4();
+</script>
+
+
+
+
+</body>
+</html>

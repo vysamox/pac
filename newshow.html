@@ -218,7 +218,7 @@ header {
   <h1><i class="fa-solid fa-database"></i> PAC Management System</h1>
   <nav>
     <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="/newadd.html"><i class="fa-solid fa-plus-circle"></i> Add PAC</a>
+    <a href="/pastenewadd.html"><i class="fa-solid fa-plus-circle"></i> Add PAC</a>
     <a href="/usedpac.html"><i class="fa-solid fa-archive"></i> Used PACs</a>
     <a href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a>
   </nav>
@@ -250,8 +250,12 @@ header {
   <thead>
     <tr>
       <th>UCL No</th>
+      <th>CSC Ref</th>
       <th>PAC Code</th>
+      <th>Pac Order Date</th>
+      <th>Amount</th>
       <th>Entry Date</th>
+      <th>Entry IP</th>
       <th>Copy Date</th>
       <th>Copy Time</th>
       <th>IP Address</th>
@@ -351,7 +355,7 @@ header {
     });
 
     if (filtered.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='7'>No PACs found.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='11'>No PACs found.</td></tr>";
       return;
     }
 
@@ -381,8 +385,12 @@ header {
 
       tr.innerHTML = `
         <td>${e.uclNo || ""}</td>
+        <td>${e.cscRef || ""}</td>
         <td>${e.id}</td>
+        <td>${e.orderDate}</td>
+        <td>${e.amount}</td>
         <td>${e.entryDate || ""}</td>
+        <td>${e.ipAddress || ""}</td>
         <td>${e.copyDate || "-"}</td>
         <td>${e.copyTime || "-"}</td>
         <td>${e.copyIP || "-"}</td>
