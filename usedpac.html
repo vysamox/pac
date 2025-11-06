@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Used PAC Entries</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f4f9; margin:0; padding:0; }
+
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 { margin: 0; font-size: 24px; }
+    nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; }
+    nav a:hover { text-decoration: underline; }
+
+    h2 { text-align:center; color:#333; margin:20px 0; }
+
+    table { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+    th, td { padding:12px; border:1px solid #ddd; text-align:center; }
+    th { background:#007bff; color:#fff; cursor:pointer; }
+
+    button {
+      padding:6px 10px; border:none; border-radius:5px; cursor:pointer;
+      font-size:14px; margin:2px;
+    }
+
+    .delete-btn { background:#dc3545; color:#fff; }
+    .restore-btn { background:#28a745; color:#fff; }
+    .export-btn { background:#17a2b8; color:#fff; }
+
+    .used-row td {
+      background:linear-gradient(90deg, #ff6666, #cc0000);
+      color:#fff; font-weight:bold;
+    }
+
+    #toast {
+      visibility:hidden;
+      min-width:200px;
+      background:#007bff;
+      color:#fff;
+      text-align:center;
+      border-radius:8px;
+      padding:12px;
+      position:fixed;
+      z-index:1000;
+      left:50%;
+      bottom:30px;
+      transform:translateX(-50%);
+      font-size:16px;
+      box-shadow:0 3px 6px rgba(0,0,0,0.2);
+    }
+
+    #pagination {
+      text-align:center; margin-top:20px;
+    }
+    #pagination button {
+      background:#007bff; color:#fff; padding:8px 15px;
+      border:none; border-radius:5px; margin:5px;
+    }
+
+    .top-actions {
+      text-align:center;
+      margin:20px 0;
+    }
+
+    .top-actions button {
+      background:#007bff;
+      color:#fff;
+      padding:10px 20px;
+      border:none;
+      border-radius:5px;
+      cursor:pointer;
+      font-size:16px;
+    }
+
+    .filter-box {
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:15px;
+      background:#fff;
+      padding:15px;
+      margin:0 auto 20px;
+      border:1px solid #ddd;
+      border-radius:10px;
+      box-shadow:0 3px 6px rgba(0,0,0,0.1);
+      max-width:800px;
+    }
+
+    .filter-box input {
+      padding:8px 12px;
+      border:1px solid #ccc;
+      border-radius:5px;
+      font-size:15px;
+    }
+
+    .count-badge {
+      background:#28a745;
+      color:white;
+      padding:6px 12px;
+      border-radius:20px;
+      font-weight:bold;
+    }
+
+    .top-actions button:hover { opacity:0.9; }
+
+    @media (max-width:600px){
+      th, td { font-size:13px; padding:8px; }
+      .filter-box { flex-direction:column; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1><i class="fa-solid fa-archive"></i> Used PAC Records</h1>
+  <nav>
+    <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="/newshow.html"><i class="fa-solid fa-database"></i> Live PACs</a>
+  </nav>
+</header>
+
+<h2>Archived / Used PAC Entries <span id="countBadge" class="count-badge">0</span></h2>
+
+<div class="filter-box">
+  <input type="text" id="searchBox" placeholder="🔍 Search PAC Code / UCL / IP..." oninput="filterTable()">
+  <input type="date" id="filterDate" onchange="filterTable()">
+  <button class="export-btn" onclick="exportCSV()"><i class="fa-solid fa-file-export"></i> Export CSV</button>
+</div>
+
+<div class="top-actions">
+  <button onclick="window.location.href='newshow.html'"><i class="fa-solid fa-arrow-left"></i> Back to Live PACs</button>
+</div>
+
+<table id="usedPacTable">
+  <thead>
+    <tr>
+      <th>UCL No</th>
+      <th>PAC Code</th>
+      <th>Entry Date</th>
+      <th>Copy Date</th>
+      <th>Copy Time</th>
+      <th>Copy IP</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="usedTableBody"></tbody>
+</table>
+
+<div id="pagination"></div>
+<div id="toast"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+    authDomain: "mrsamrat08.firebaseapp.com",
+    projectId: "mrsamrat08",
+    storageBucket: "mrsamrat08.firebasestorage.app",
+    messagingSenderId: "525481767881",
+    appId: "1:525481767881:web:6fd53162b242709890ae18"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  let usedEntries = [];
+  let currentPage = 1;
+  const rowsPerPage = 20;
+
+  function showToast(message, color="#007bff") {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.background = color;
+    toast.style.visibility = "visible";
+    setTimeout(() => toast.style.visibility = "hidden", 2000);
+  }
+
+  async function loadUsedPACs() {
+    const tbody = document.getElementById("usedTableBody");
+    tbody.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
+
+    try {
+      const snapshot = await db.collection("used_pac").orderBy("copyDate", "desc").get();
+      usedEntries = [];
+      snapshot.forEach(doc => usedEntries.push({ id: doc.id, ...doc.data() }));
+      document.getElementById("countBadge").textContent = usedEntries.length;
+      renderTable();
+    } catch (err) {
+      console.error(err);
+      showToast("Error loading data!", "#dc3545");
+    }
+  }
+
+  function renderTable(filteredData = usedEntries) {
+    const tbody = document.getElementById("usedTableBody");
+    tbody.innerHTML = "";
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const paginatedData = filteredData.slice(start, start + rowsPerPage);
+
+    if (paginatedData.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='7'>No used PACs found.</td></tr>";
+      return;
+    }
+
+    paginatedData.forEach(data => {
+      const tr = document.createElement("tr");
+      tr.classList.add("used-row");
+      tr.innerHTML = `
+        <td>${data.uclNo || ""}</td>
+        <td>${data.id}</td>
+        <td>${data.entryDate || ""}</td>
+        <td>${data.copyDate || ""}</td>
+        <td>${data.copyTime || ""}</td>
+        <td>${data.copyIP || ""}</td>
+        <td>
+          <button class="restore-btn" onclick="restorePAC('${data.id}')"><i class="fa-solid fa-rotate-left"></i></button>
+          <button class="delete-btn" onclick="deleteUsedPAC('${data.id}')"><i class="fa-solid fa-trash"></i></button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+
+    renderPagination(filteredData);
+  }
+
+  function renderPagination(data = usedEntries) {
+    const totalPages = Math.ceil(data.length / rowsPerPage);
+    const paginationDiv = document.getElementById("pagination");
+    paginationDiv.innerHTML = "";
+
+    if (totalPages <= 1) return;
+    if (currentPage > 1)
+      paginationDiv.innerHTML += `<button onclick="changePage(${currentPage - 1})">Prev</button>`;
+    if (currentPage < totalPages)
+      paginationDiv.innerHTML += `<button onclick="changePage(${currentPage + 1})">Next</button>`;
+  }
+
+  function changePage(page) {
+    currentPage = page;
+    filterTable();
+  }
+
+  // 🔍 Search and Filter
+  function filterTable() {
+    const searchValue = document.getElementById("searchBox").value.toLowerCase();
+    const dateValue = document.getElementById("filterDate").value;
+
+    const filtered = usedEntries.filter(data => {
+      const matchesSearch = data.id.toLowerCase().includes(searchValue) ||
+                            (data.uclNo || "").toLowerCase().includes(searchValue) ||
+                            (data.copyIP || "").toLowerCase().includes(searchValue);
+      const matchesDate = !dateValue || data.copyDate === dateValue;
+      return matchesSearch && matchesDate;
+    });
+
+    renderTable(filtered);
+  }
+
+  async function deleteUsedPAC(pacNo) {
+    if (!confirm("⚠️ Are you sure you want to delete this record permanently?")) return;
+    try {
+      await db.collection("used_pac").doc(pacNo).delete();
+      showToast("Used PAC deleted successfully!", "#dc3545");
+      loadUsedPACs();
+    } catch (err) {
+      console.error(err);
+      showToast("Delete failed!", "#dc3545");
+    }
+  }
+
+  async function restorePAC(pacNo) {
+    try {
+      const docRef = await db.collection("used_pac").doc(pacNo).get();
+      if (docRef.exists) {
+        await db.collection("pac_entries").doc(pacNo).set(docRef.data());
+        await db.collection("used_pac").doc(pacNo).delete();
+        showToast("PAC restored to live list!", "#28a745");
+        loadUsedPACs();
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Restore failed!", "#dc3545");
+    }
+  }
+
+  // Export CSV
+  function exportCSV() {
+    if (usedEntries.length === 0) return showToast("No data to export!", "#ffc107");
+
+    const headers = ["UCL No", "PAC Code", "Entry Date", "Copy Date", "Copy Time", "Copy IP"];
+    const rows = usedEntries.map(e => [
+      e.uclNo || "",
+      e.id,
+      e.entryDate || "",
+      e.copyDate || "",
+      e.copyTime || "",
+      e.copyIP || ""
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "used_pac_records.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+
+    showToast("CSV exported successfully!", "#17a2b8");
+  }
+
+  // Auto-refresh every 1 minute
+  setInterval(loadUsedPACs, 60000);
+
+  loadUsedPACs();
+</script>
+</body>
+</html>

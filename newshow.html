@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PAC Management Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* 🌈 Global Styling */
+    body {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+header {
+      background: #007bff;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header h1 { margin: 0; font-size: 24px; }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+    }
+    nav a:hover { text-decoration: underline; }
+
+    /* 💠 Dashboard Summary */
+    .status-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px auto;
+      max-width: 900px;
+    }
+
+    .status-bar span {
+      background: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .status-bar span:hover {
+      transform: translateY(-2px);
+    }
+
+    .live-count { border-left: 6px solid #28a745; }
+    .copied-count { border-left: 6px solid #ffc107; }
+    .sync-status { border-left: 6px solid #17a2b8; }
+
+    /* 🔍 Filter Box */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(8px);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 900px;
+      margin: 0 auto 20px;
+    }
+
+    .filter-bar input, .filter-bar select {
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .filter-bar input:focus, .filter-bar select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0,123,255,0.3);
+    }
+
+    .filter-bar button {
+      background: linear-gradient(90deg, #007bff, #0056b3);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-weight: bold;
+    }
+
+    .filter-bar button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* 📊 Data Table */
+    table {
+      width: 95%;
+      margin: 0 auto 30px;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    thead {
+      background: #007bff;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:hover td {
+      background-color: #e3f2fd;
+    }
+
+    .copied-row td {
+      background: linear-gradient(90deg, #ff6b6b, #b30000);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* 🎨 Buttons */
+    .copy-btn { background: #007bff; color: white; }
+    .notused-btn { background: #ffc107; color: black; }
+    .delete-btn { background: #dc3545; color: white; }
+    .today-count { border-left: 6px solid #6f42c1; } /* Purple color badge for today’s count */
+
+
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+    .status-bar span:hover {
+  box-shadow: 0 4px 10px rgba(0,123,255,0.2);
+  transform: translateY(-2px);
+}
+
+
+    /* 🔔 Toast */
+    #toast {
+      visibility: hidden;
+      opacity: 0;
+      min-width: 250px;
+      background: #007bff;
+      color: #fff;
+      text-align: center;
+      border-radius: 10px;
+      padding: 15px;
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-size: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @keyframes fadein {
+      from { bottom: 0; opacity: 0; }
+      to { bottom: 30px; opacity: 1; }
+    }
+
+    @keyframes fadeout {
+      from { bottom: 30px; opacity: 1; }
+      to { bottom: 0; opacity: 0; }
+    }
+
+    /* 📱 Responsive */
+    @media (max-width: 700px) {
+      th, td { font-size: 13px; padding: 8px; }
+      .filter-bar { flex-direction: column; }
+      .status-bar { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1><i class="fa-solid fa-database"></i> PAC Management System</h1>
+  <nav>
+    <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="/newadd.html"><i class="fa-solid fa-plus-circle"></i> Add PAC</a>
+    <a href="/used_pac.html"><i class="fa-solid fa-archive"></i> Used PACs</a>
+    <a href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a>
+  </nav>
+</header>
+
+<!-- 🔢 Dashboard Counters -->
+<div class="status-bar">
+  <span class="live-count"><i class="fa-solid fa-database"></i> Live PACs: <strong id="totalCount">0</strong></span>
+  <span class="copied-count"><i class="fa-solid fa-copy"></i> Total Copied: <strong id="copiedCount">0</strong></span>
+  <span class="today-count"><i class="fa-solid fa-calendar-day"></i> Today Copied: <strong id="todayCopiedCount">0</strong></span>
+  <span class="sync-status"><i class="fa-solid fa-sync-alt"></i> <span id="syncStatus">Synced</span></span>
+</div>
+
+
+<!-- 🔍 Filters -->
+<div class="filter-bar">
+  <input type="text" id="searchBox" placeholder="🔍 Search PAC / UCL / IP" oninput="filterTable()">
+  <input type="date" id="filterDate" onchange="filterTable()">
+  <select id="filterStatus" onchange="filterTable()">
+    <option value="">All Status</option>
+    <option value="copied">Copied</option>
+    <option value="unused">Not Used</option>
+  </select>
+  <button onclick="exportCSV()"><i class="fa-solid fa-file-export"></i> Export CSV</button>
+</div>
+
+<!-- 📋 PAC Data Table -->
+<table id="pacTable">
+  <thead>
+    <tr>
+      <th>UCL No</th>
+      <th>PAC Code</th>
+      <th>Entry Date</th>
+      <th>Copy Date</th>
+      <th>Copy Time</th>
+      <th>IP Address</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<!-- 🔔 Toast -->
+<div id="toast"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<!-- 📜 Script Logic -->
+<script>
+  // 🔹 Firebase Setup
+  const firebaseConfig = {
+    apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+    authDomain: "mrsamrat08.firebaseapp.com",
+    projectId: "mrsamrat08",
+    storageBucket: "mrsamrat08.firebasestorage.app",
+    messagingSenderId: "525481767881",
+    appId: "1:525481767881:web:6fd53162b242709890ae18"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // 🔹 Global Variables
+  let allEntries = [];
+  let lastCopiedId = localStorage.getItem("lastCopiedId") || null;
+  let todayCount = 0;
+
+  // 🔹 Real-time Listener for PAC Entries
+  db.collection("pac_entries").onSnapshot(snapshot => {
+    allEntries = [];
+    snapshot.forEach(doc => allEntries.push({ id: doc.id, ...doc.data() }));
+    updateCounters();
+    filterTable();
+    document.getElementById("syncStatus").innerText = "Synced";
+  });
+
+  // 🔹 Real-time Listener for Today’s Used PACs
+  db.collection("today_used_pac").onSnapshot(snapshot => {
+    const now = new Date();
+    const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+    const todayDate = istNow.toISOString().split("T")[0];
+    todayCount = 0;
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.copyDate === todayDate) todayCount++;
+    });
+    document.getElementById("todayCopiedCount").innerText = todayCount;
+  });
+
+  // 🔹 Toast Notification
+  function showToast(msg, color = "#007bff") {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.style.background = color;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2500);
+  }
+
+  // 🔹 Update Dashboard Counters
+  function updateCounters() {
+    const total = allEntries.length;
+    const copied = allEntries.filter(e => e.copied).length;
+
+    document.getElementById("totalCount").innerText = total;
+    document.getElementById("copiedCount").innerText = copied;
+
+    const todayEl = document.getElementById("todayCopiedCount").parentElement;
+    todayEl.style.borderLeft = todayCount > 0 ? "6px solid #6f42c1" : "6px solid #ccc";
+  }
+
+  // 🔹 Filter & Render Table
+  function filterTable() {
+    const search = document.getElementById("searchBox").value.toLowerCase();
+    const date = document.getElementById("filterDate").value;
+    const status = document.getElementById("filterStatus").value;
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+
+    const filtered = allEntries.filter(e => {
+      const matchSearch =
+        e.id.toLowerCase().includes(search) ||
+        (e.uclNo || "").toLowerCase().includes(search) ||
+        (e.copyIP || "").toLowerCase().includes(search);
+      const matchDate = !date || e.entryDate === date;
+      const matchStatus =
+        status === "copied" ? e.copied :
+        status === "unused" ? !e.copied : true;
+      return matchSearch && matchDate && matchStatus;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='7'>No PACs found.</td></tr>";
+      return;
+    }
+
+    filtered.forEach(e => {
+      const tr = document.createElement("tr");
+      if (e.copied) tr.classList.add("copied-row");
+
+      // 🧠 Dynamic Buttons: show based on copied status
+      let buttons = "";
+      if (e.copied) {
+        buttons = `
+          <button class="notused-btn" onclick="resetCopy('${e.id}')">
+            <i class="fa-solid fa-undo"></i>
+          </button>
+          <button class="delete-btn" onclick="deletePAC('${e.id}')">
+            <i class="fa-solid fa-trash"></i>
+          </button>`;
+      } else {
+        buttons = `
+          <button class="copy-btn" onclick="copyCode('${e.id}')">
+            <i class="fa-solid fa-copy"></i>
+          </button>
+          <button class="delete-btn" onclick="deletePAC('${e.id}')">
+            <i class="fa-solid fa-trash"></i>
+          </button>`;
+      }
+
+      tr.innerHTML = `
+        <td>${e.uclNo || ""}</td>
+        <td>${e.id}</td>
+        <td>${e.entryDate || ""}</td>
+        <td>${e.copyDate || "-"}</td>
+        <td>${e.copyTime || "-"}</td>
+        <td>${e.copyIP || "-"}</td>
+        <td>${buttons}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // 🔹 Copy PAC and save in today_used_pac + used_pac
+async function copyCode(id) {
+  const doc = await db.collection("pac_entries").doc(id).get();
+  if (!doc.exists) return showToast("PAC not found!", "#dc3545");
+
+  await navigator.clipboard.writeText(id);
+
+  const now = new Date();
+  const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+  const date = istNow.toISOString().split("T")[0];
+  const time = istNow.toLocaleTimeString();
+  const ip = await fetch("https://api.ipify.org?format=json")
+    .then(r => r.json())
+    .then(d => d.ip);
+
+  // 🧠 FIXED: Move only if the last PAC still has copied = true
+  if (lastCopiedId && lastCopiedId !== id) {
+    const prevDoc = await db.collection("pac_entries").doc(lastCopiedId).get();
+    if (prevDoc.exists && prevDoc.data().copied === true) {
+      await db.collection("used_pac").doc(lastCopiedId).set(prevDoc.data());
+      await db.collection("pac_entries").doc(lastCopiedId).delete();
+    }
+  }
+
+  // Mark current PAC as copied
+  await db.collection("pac_entries").doc(id).update({
+    copied: true,
+    copyDate: date,
+    copyTime: time,
+    copyIP: ip
+  });
+
+  // Add to today_used_pac
+  await db.collection("today_used_pac").add({
+    pacId: id,
+    copyDate: date,
+    copyTime: time,
+    copyIP: ip
+  });
+
+  lastCopiedId = id;
+  localStorage.setItem("lastCopiedId", id);
+  showToast("✅ PAC Copied Successfully!", "#28a745");
+}
+
+
+  // 🔹 Reset PAC Copy
+async function resetCopy(id) {
+  try {
+    // Step 1: Reset the PAC fields in main collection
+    await db.collection("pac_entries").doc(id).update({
+      copied: false,
+      copyDate: "",
+      copyTime: "",
+      copyIP: ""
+    });
+
+    // Step 2: If this was last copied PAC, clear memory reference
+    if (lastCopiedId === id) {
+      lastCopiedId = null;
+      localStorage.removeItem("lastCopiedId");
+    }
+
+    // Step 3: Remove this PAC from today's used list
+    const now = new Date();
+    const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+    const todayDate = istNow.toISOString().split("T")[0];
+
+    const snapshot = await db.collection("today_used_pac")
+      .where("pacId", "==", id)
+      .where("copyDate", "==", todayDate)
+      .get();
+
+    // Delete all matches for today’s date
+    const batch = db.batch();
+    snapshot.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+
+    showToast("♻️ PAC Reset & Removed from Today’s Used List!", "#17a2b8");
+  } catch (error) {
+    console.error("Reset Error:", error);
+    showToast("Error resetting PAC!", "#dc3545");
+  }
+}
+
+
+
+  // 🔹 Delete PAC
+  async function deletePAC(id) {
+    if (!confirm("Delete this PAC permanently?")) return;
+    await db.collection("pac_entries").doc(id).delete();
+    showToast("PAC Deleted!", "#dc3545");
+  }
+
+  // 🔹 Export CSV
+  function exportCSV() {
+    if (!allEntries.length) return showToast("No Data to Export!", "#ffc107");
+    const headers = ["UCL No", "PAC Code", "Entry Date", "Copy Date", "Copy Time", "IP"];
+    const rows = allEntries.map(e => [
+      e.uclNo || "",
+      e.id,
+      e.entryDate || "",
+      e.copyDate || "",
+      e.copyTime || "",
+      e.copyIP || ""
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "pac_entries.csv";
+    link.click();
+    showToast("CSV Exported!", "#17a2b8");
+  }
+</script>
+
+</body>
+</html>
