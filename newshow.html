@@ -62,6 +62,41 @@ header {
     .copied-count { border-left: 6px solid #ffc107; }
     .sync-status { border-left: 6px solid #17a2b8; }
     .today-count { border-left: 6px solid #6f42c1; } /* Purple color badge for today’s count */
+    /* DB Size – Blue-Green */
+.db-size {
+  border-left: 6px solid #198754; /* green */
+}
+
+/* Unused PACs – Blue-Grey */
+.unused-count {
+  border-left: 6px solid #6c757d; /* grey */
+}/* Usage Percentage – Sky Blue */
+.percent-used {
+  border-left: 6px solid #0dcaf0; /* cyan */
+}
+
+        /* 🔄 Sync Icon Rotate Animation */
+@keyframes syncSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.sync-status i {
+  display: inline-block;
+  animation: syncSpin 2s linear infinite;
+}
+
+/* 🌟 Smooth Glow Pulse for the whole Sync Box */
+@keyframes syncGlow {
+  0% { box-shadow: 0 0 6px rgba(23,162,184,0.3); }
+  50% { box-shadow: 0 0 14px rgba(23,162,184,0.7); }
+  100% { box-shadow: 0 0 6px rgba(23,162,184,0.3); }
+}
+
+.sync-status {
+  animation: syncGlow 2.4s ease-in-out infinite;
+}
+
 
     /* 🔍 Filter Box */
     .filter-bar {
@@ -314,6 +349,8 @@ tbody tr:last-child td {
       .filter-bar { flex-direction: column; }
       .status-bar { flex-direction: column; }
     }
+
+
   </style>
 </head>
 
@@ -334,6 +371,9 @@ tbody tr:last-child td {
   <span class="copied-count"><i class="fa-solid fa-copy"></i> Total Copied: <strong id="copiedCount">0</strong></span>
   <span class="today-count"><i class="fa-solid fa-calendar-day"></i> Today Copied: <strong id="todayCopiedCount">0</strong></span>
   <span class="sync-status"><i class="fa-solid fa-sync-alt"></i> <span id="syncStatus">Synced</span></span>
+  <span class="unused-count"><i class="fa-solid fa-box-open"></i> Unused PACs: <strong id="unusedCount">0</strong></span>
+  <span class="percent-used"><i class="fa-solid fa-chart-pie"></i> Usage: <strong id="pacPercent">0%</strong></span>
+<span class="db-size"><i class="fa-solid fa-database"></i> DB Size:<strong id="dbSize">--</strong></span>
 </div>
 
 
@@ -401,6 +441,7 @@ tbody tr:last-child td {
     snapshot.forEach(doc => allEntries.push({ id: doc.id, ...doc.data() }));
     updateCounters();
     filterTable();
+     calculateDBSize();   // ← Add this line
     document.getElementById("syncStatus").innerText = "Synced";
   });
 
@@ -617,6 +658,48 @@ async function resetCopy(id) {
     link.click();
     showToast("CSV Exported!", "#17a2b8");
   }
+
+ function updateCounters() {
+  const total = allEntries.length;
+  const copied = allEntries.filter(e => Boolean(e.copied)).length;
+  const unused = total - copied;
+
+  // Update DOM
+  document.getElementById("totalCount").innerText = total;
+  document.getElementById("copiedCount").innerText = copied;
+  document.getElementById("unusedCount").innerText = unused;
+
+  // PAC Percent FIXED
+  const percent = total ? Math.round((copied / total) * 100) : 0;
+  document.getElementById("pacPercent").innerText = percent + "%";
+}
+
+
+function calculateDBSize() {
+  let totalBytes = 0;
+
+  allEntries.forEach(doc => {
+    // Convert each doc into JSON string to calculate weighted size
+    const json = JSON.stringify(doc);
+    totalBytes += new Blob([json]).size;
+  });
+
+  // Also include approx Firestore overhead per doc (500 bytes)
+  totalBytes += allEntries.length * 500;
+
+  // Convert size to KB/MB
+  let sizeText = "";
+  if (totalBytes < 1024) {
+    sizeText = totalBytes + " B";
+  } else if (totalBytes < 1024 * 1024) {
+    sizeText = (totalBytes / 1024).toFixed(1) + " KB";
+  } else {
+    sizeText = (totalBytes / (1024 * 1024)).toFixed(2) + " MB";
+  }
+
+  document.getElementById("dbSize").innerText = sizeText;
+}
+
 </script>
 
 </body>
