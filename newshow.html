@@ -62,6 +62,11 @@ header {
     .copied-count { border-left: 6px solid #ffc107; }
     .sync-status { border-left: 6px solid #17a2b8; }
     .today-count { border-left: 6px solid #6f42c1; } /* Purple color badge for today’s count */
+    .income-total{border-left: 6px solid #00c853; /* green */}
+.income-total i {
+  color: #00c853;
+}
+
     /* DB Size – Blue-Green */
 .db-size {
   border-left: 6px solid #198754; /* green */
@@ -373,7 +378,8 @@ tbody tr:last-child td {
   <span class="sync-status"><i class="fa-solid fa-sync-alt"></i> <span id="syncStatus">Synced</span></span>
   <span class="unused-count"><i class="fa-solid fa-box-open"></i> Unused PACs: <strong id="unusedCount">0</strong></span>
   <span class="percent-used"><i class="fa-solid fa-chart-pie"></i> Usage: <strong id="pacPercent">0%</strong></span>
-<span class="db-size"><i class="fa-solid fa-database"></i> DB Size:<strong id="dbSize">--</strong></span>
+  <span class="db-size"><i class="fa-solid fa-database"></i> DB Size:<strong id="dbSize">--</strong></span>
+  <span class="income-total"><i class="fa-solid fa-money-bill-wave"></i> Income (Unused): ₹<strong id="incomeTotal">0</strong></span>
 </div>
 
 
@@ -418,165 +424,229 @@ tbody tr:last-child td {
 
 <!-- 📜 Script Logic -->
 <script>
-  // 🔹 Firebase Setup
-  const firebaseConfig = {
-    apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
-    authDomain: "mrsamrat08.firebaseapp.com",
-    projectId: "mrsamrat08",
-    storageBucket: "mrsamrat08.firebasestorage.app",
-    messagingSenderId: "525481767881",
-    appId: "1:525481767881:web:6fd53162b242709890ae18"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+// ---------------------- FIREBASE CONFIG ----------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain: "mrsamrat08.firebaseapp.com",
+  projectId: "mrsamrat08",
+  storageBucket: "mrsamrat08.firebasestorage.app",
+  messagingSenderId: "525481767881",
+  appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  // 🔹 Global Variables
-  let allEntries = [];
-  let lastCopiedId = localStorage.getItem("lastCopiedId") || null;
-  let todayCount = 0;
+// Global
+let allEntries = [];
+let lastCopiedId = localStorage.getItem("lastCopiedId") || null;
+let todayCount = 0;
+let copyLock = false;
 
-  // 🔹 Real-time Listener for PAC Entries
-  db.collection("pac_entries").onSnapshot(snapshot => {
-    allEntries = [];
-    snapshot.forEach(doc => allEntries.push({ id: doc.id, ...doc.data() }));
-    updateCounters();
-    filterTable();
-     calculateDBSize();   // ← Add this line
-    document.getElementById("syncStatus").innerText = "Synced";
+// ---------------------- REAL-TIME LISTENER FOR PAC ----------------------
+db.collection("pac_entries").onSnapshot(snapshot => {
+  allEntries = [];
+  snapshot.forEach(doc => allEntries.push({ id: doc.id, ...doc.data() }));
+
+  updateCounters();
+  filterTable();
+  calculateDBSize();
+
+  document.getElementById("syncStatus").innerText = "Synced";
+});
+
+
+function getLocalISTDate() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = ("0" + (d.getMonth() + 1)).slice(-2);
+  const day = ("0" + d.getDate()).slice(-2);
+  return `${year}-${month}-${day}`;
+}
+
+
+// ---------------------- TODAY USED COUNT ----------------------
+db.collection("today_used_pac").onSnapshot(snapshot => {
+
+  const todayDate = getLocalISTDate(); // 🔥 correct IST date
+
+  todayCount = 0;
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+
+    if (data.copyDate === todayDate) {
+      todayCount++;
+    }
   });
 
-  // 🔹 Real-time Listener for Today’s Used PACs
-  db.collection("today_used_pac").onSnapshot(snapshot => {
-    const now = new Date();
-    const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
-    const todayDate = istNow.toISOString().split("T")[0];
-    todayCount = 0;
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (data.copyDate === todayDate) todayCount++;
-    });
-    document.getElementById("todayCopiedCount").innerText = todayCount;
+  document.getElementById("todayCopiedCount").innerText = todayCount;
+});
+
+
+// ---------------------- TOAST ----------------------
+function showToast(msg, color = "#007bff") {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.style.background = color;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+// ---------------------- FINAL MERGED updateCounters() ----------------------
+function updateCounters() {
+  const total = allEntries.length;
+  const copied = allEntries.filter(e => Boolean(e.copied)).length;
+  const unused = total - copied;
+  const percent = total ? Math.round((copied / total) * 100) : 0;
+
+  document.getElementById("totalCount").innerText = total;
+  document.getElementById("copiedCount").innerText = copied;
+  document.getElementById("unusedCount").innerText = unused;
+  document.getElementById("pacPercent").innerText = percent + "%";
+
+  // 🔥 NEW → Income Total for UNUSED PACs
+  let income = 0;
+  allEntries.forEach(e => {
+    if (!e.copied) {
+      let amt = parseFloat(e.amount);
+      if (!isNaN(amt)) income += amt;
+    }
+  });
+  document.getElementById("incomeTotal").innerText = income.toLocaleString("en-IN");
+
+  const todayEl = document.getElementById("todayCopiedCount").parentElement;
+  todayEl.style.borderLeft = todayCount > 0 ? "6px solid #6f42c1" : "6px solid #ccc";
+}
+
+
+// ---------------------- FILTER TABLE ----------------------
+function filterTable() {
+  const search = document.getElementById("searchBox").value.toLowerCase();
+  const date = document.getElementById("filterDate").value;
+  const status = document.getElementById("filterStatus").value;
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  const filtered = allEntries.filter(e => {
+    const matchSearch =
+      e.id.toLowerCase().includes(search) ||
+      (e.uclNo || "").toLowerCase().includes(search) ||
+      (e.copyIP || "").toLowerCase().includes(search);
+
+    const matchDate = !date || e.entryDate === date;
+    const matchStatus =
+      status === "copied" ? e.copied :
+      status === "unused" ? !e.copied : true;
+
+    return matchSearch && matchDate && matchStatus;
   });
 
-  // 🔹 Toast Notification
-  function showToast(msg, color = "#007bff") {
-    const toast = document.getElementById("toast");
-    toast.textContent = msg;
-    toast.style.background = color;
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2500);
+  if (filtered.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='11'>No PACs found.</td></tr>";
+    return;
   }
 
-  // 🔹 Update Dashboard Counters
-  function updateCounters() {
-    const total = allEntries.length;
-    const copied = allEntries.filter(e => e.copied).length;
+  filtered.forEach(e => {
+    const tr = document.createElement("tr");
+    if (e.copied) tr.classList.add("copied-row");
 
-    document.getElementById("totalCount").innerText = total;
-    document.getElementById("copiedCount").innerText = copied;
-
-    const todayEl = document.getElementById("todayCopiedCount").parentElement;
-    todayEl.style.borderLeft = todayCount > 0 ? "6px solid #6f42c1" : "6px solid #ccc";
-  }
-
-  // 🔹 Filter & Render Table
-  function filterTable() {
-    const search = document.getElementById("searchBox").value.toLowerCase();
-    const date = document.getElementById("filterDate").value;
-    const status = document.getElementById("filterStatus").value;
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = "";
-
-    const filtered = allEntries.filter(e => {
-      const matchSearch =
-        e.id.toLowerCase().includes(search) ||
-        (e.uclNo || "").toLowerCase().includes(search) ||
-        (e.copyIP || "").toLowerCase().includes(search);
-      const matchDate = !date || e.entryDate === date;
-      const matchStatus =
-        status === "copied" ? e.copied :
-        status === "unused" ? !e.copied : true;
-      return matchSearch && matchDate && matchStatus;
-    });
-
-    if (filtered.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='11'>No PACs found.</td></tr>";
-      return;
+    let buttons = "";
+    if (e.copied) {
+      buttons = `
+        <button class="notused-btn" onclick="resetCopy('${e.id}')"><i class="fa-solid fa-undo"></i></button>
+        <button class="delete-btn" onclick="deletePAC('${e.id}')"><i class="fa-solid fa-trash"></i></button>`;
+    } else {
+      buttons = `
+        <button class="copy-btn" onclick="copyCode('${e.id}')"><i class="fa-solid fa-copy"></i></button>
+        <button class="delete-btn" onclick="deletePAC('${e.id}')"><i class="fa-solid fa-trash"></i></button>`;
     }
 
-    filtered.forEach(e => {
-      const tr = document.createElement("tr");
-      if (e.copied) tr.classList.add("copied-row");
+    tr.innerHTML = `
+      <td>${e.uclNo || ""}</td>
+      <td>${e.cscRef || ""}</td>
+      <td>${e.id}</td>
+      <td>${e.orderDate}</td>
+      <td>${e.amount}</td>
+      <td>${e.entryDate || ""}</td>
+      <td>${e.ipAddress || ""}</td>
+      <td>${e.copyDate || "-"}</td>
+      <td>${e.copyTime || "-"}</td>
+      <td>${e.copyIP || "-"}</td>
+      <td>${buttons}</td>`;
 
-      // 🧠 Dynamic Buttons: show based on copied status
-      let buttons = "";
-      if (e.copied) {
-        buttons = `
-          <button class="notused-btn" onclick="resetCopy('${e.id}')">
-            <i class="fa-solid fa-undo"></i>
-          </button>
-          <button class="delete-btn" onclick="deletePAC('${e.id}')">
-            <i class="fa-solid fa-trash"></i>
-          </button>`;
-      } else {
-        buttons = `
-          <button class="copy-btn" onclick="copyCode('${e.id}')">
-            <i class="fa-solid fa-copy"></i>
-          </button>
-          <button class="delete-btn" onclick="deletePAC('${e.id}')">
-            <i class="fa-solid fa-trash"></i>
-          </button>`;
-      }
+    tbody.appendChild(tr);
+  });
+}
 
-      tr.innerHTML = `
-        <td>${e.uclNo || ""}</td>
-        <td>${e.cscRef || ""}</td>
-        <td>${e.id}</td>
-        <td>${e.orderDate}</td>
-        <td>${e.amount}</td>
-        <td>${e.entryDate || ""}</td>
-        <td>${e.ipAddress || ""}</td>
-        <td>${e.copyDate || "-"}</td>
-        <td>${e.copyTime || "-"}</td>
-        <td>${e.copyIP || "-"}</td>
-        <td>${buttons}</td>`;
-      tbody.appendChild(tr);
-    });
+
+function getIST() {
+  const d = new Date();
+
+  // Correct IST Date (YYYY-MM-DD)
+  const date =
+    d.getFullYear() + "-" +
+    ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
+    ("0" + d.getDate()).slice(-2);
+
+  // Correct 12-hour time with AM/PM
+  const time = d.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  return { date, time };
+}
+
+// ---------------------- COPY PAC ----------------------
+async function copyCode(id) {
+  if (copyLock) {
+    showToast("⏳ Please wait 2 seconds!", "#ff9800");
+    return;
   }
 
-  // 🔹 Copy PAC and save in today_used_pac + used_pac
-async function copyCode(id) {
+  copyLock = true;
+  setTimeout(() => copyLock = false, 2000);
+
+  // Read current PAC
   const doc = await db.collection("pac_entries").doc(id).get();
   if (!doc.exists) return showToast("PAC not found!", "#dc3545");
 
   await navigator.clipboard.writeText(id);
 
-  const now = new Date();
-  const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
-  const date = istNow.toISOString().split("T")[0];
-  const time = istNow.toLocaleTimeString();
+  // ✅ Get Correct IST Date & Time (NO +5.5 hours)
+  const { date, time } = getIST();
+
+  // Get IP
   const ip = await fetch("https://api.ipify.org?format=json")
     .then(r => r.json())
-    .then(d => d.ip);
+    .then(r => r.ip);
 
-  // 🧠 FIXED: Move only if the last PAC still has copied = true
+  // 🔥 ALWAYS MOVE PREVIOUS PAC AFTER NEW COPY
   if (lastCopiedId && lastCopiedId !== id) {
-    const prevDoc = await db.collection("pac_entries").doc(lastCopiedId).get();
-    if (prevDoc.exists && prevDoc.data().copied === true) {
-      await db.collection("used_pac").doc(lastCopiedId).set(prevDoc.data());
+    const prev = await db.collection("pac_entries").doc(lastCopiedId).get();
+
+    if (prev.exists) {
+      const prevData = prev.data();
+
+      // Move old PAC to used_pac
+      await db.collection("used_pac").doc(lastCopiedId).set(prevData);
+
+      // Delete from pac_entries
       await db.collection("pac_entries").doc(lastCopiedId).delete();
     }
   }
 
-  // Mark current PAC as copied
+  // Update current PAC
   await db.collection("pac_entries").doc(id).update({
     copied: true,
-    copyDate: date,
-    copyTime: time,
+    copyDate: date,   // ✅ Correct IST date
+    copyTime: time,   // ✅ Correct 12-hour IST time
     copyIP: ip
   });
 
-  // Add to today_used_pac
+  // Add today record
   await db.collection("today_used_pac").add({
     pacId: id,
     copyDate: date,
@@ -586,14 +656,15 @@ async function copyCode(id) {
 
   lastCopiedId = id;
   localStorage.setItem("lastCopiedId", id);
-  showToast("✅ PAC Copied Successfully!", "#28a745");
+
+  showToast("✅ PAC Copied!", "#28a745");
 }
 
 
-  // 🔹 Reset PAC Copy
+
+// ---------------------- RESET PAC ----------------------
 async function resetCopy(id) {
   try {
-    // Step 1: Reset the PAC fields in main collection
     await db.collection("pac_entries").doc(id).update({
       copied: false,
       copyDate: "",
@@ -601,15 +672,13 @@ async function resetCopy(id) {
       copyIP: ""
     });
 
-    // Step 2: If this was last copied PAC, clear memory reference
     if (lastCopiedId === id) {
       lastCopiedId = null;
       localStorage.removeItem("lastCopiedId");
     }
 
-    // Step 3: Remove this PAC from today's used list
     const now = new Date();
-    const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+    const istNow = new Date(now.getTime() + 5.5 * 3600 * 1000);
     const todayDate = istNow.toISOString().split("T")[0];
 
     const snapshot = await db.collection("today_used_pac")
@@ -617,90 +686,68 @@ async function resetCopy(id) {
       .where("copyDate", "==", todayDate)
       .get();
 
-    // Delete all matches for today’s date
     const batch = db.batch();
-    snapshot.forEach(doc => batch.delete(doc.ref));
+    snapshot.forEach(d => batch.delete(d.ref));
     await batch.commit();
 
-    showToast("♻️ PAC Reset & Removed from Today’s Used List!", "#17a2b8");
-  } catch (error) {
-    console.error("Reset Error:", error);
-    showToast("Error resetting PAC!", "#dc3545");
+    showToast("♻️ PAC Reset!", "#17a2b8");
+  } catch (err) {
+    showToast("Error resetting!", "#dc3545");
   }
 }
 
-
-
-  // 🔹 Delete PAC
-  async function deletePAC(id) {
-    if (!confirm("Delete this PAC permanently?")) return;
-    await db.collection("pac_entries").doc(id).delete();
-    showToast("PAC Deleted!", "#dc3545");
-  }
-
-  // 🔹 Export CSV
-  function exportCSV() {
-    if (!allEntries.length) return showToast("No Data to Export!", "#ffc107");
-    const headers = ["UCL No", "PAC Code", "Entry Date", "Copy Date", "Copy Time", "IP"];
-    const rows = allEntries.map(e => [
-      e.uclNo || "",
-      e.id,
-      e.entryDate || "",
-      e.copyDate || "",
-      e.copyTime || "",
-      e.copyIP || ""
-    ]);
-    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "pac_entries.csv";
-    link.click();
-    showToast("CSV Exported!", "#17a2b8");
-  }
-
- function updateCounters() {
-  const total = allEntries.length;
-  const copied = allEntries.filter(e => Boolean(e.copied)).length;
-  const unused = total - copied;
-
-  // Update DOM
-  document.getElementById("totalCount").innerText = total;
-  document.getElementById("copiedCount").innerText = copied;
-  document.getElementById("unusedCount").innerText = unused;
-
-  // PAC Percent FIXED
-  const percent = total ? Math.round((copied / total) * 100) : 0;
-  document.getElementById("pacPercent").innerText = percent + "%";
+// ---------------------- DELETE ----------------------
+async function deletePAC(id) {
+  if (!confirm("Delete this PAC permanently?")) return;
+  await db.collection("pac_entries").doc(id).delete();
+  showToast("🗑️ PAC Deleted!", "#dc3545");
 }
 
+// ---------------------- CSV EXPORT ----------------------
+function exportCSV() {
+  if (!allEntries.length) return showToast("No Data!", "#ffc107");
 
+  const headers = ["UCL No", "PAC Code", "Entry Date", "Copy Date", "Copy Time", "IP"];
+  const rows = allEntries.map(e => [
+    e.uclNo || "",
+    e.id,
+    e.entryDate || "",
+    e.copyDate || "",
+    e.copyTime || "",
+    e.copyIP || ""
+  ]);
+
+  const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "pac_entries.csv";
+  link.click();
+
+  showToast("📁 CSV Exported!", "#17a2b8");
+}
+
+// ---------------------- DB SIZE CALCULATOR ----------------------
 function calculateDBSize() {
   let totalBytes = 0;
 
   allEntries.forEach(doc => {
-    // Convert each doc into JSON string to calculate weighted size
     const json = JSON.stringify(doc);
     totalBytes += new Blob([json]).size;
   });
 
-  // Also include approx Firestore overhead per doc (500 bytes)
   totalBytes += allEntries.length * 500;
 
-  // Convert size to KB/MB
   let sizeText = "";
-  if (totalBytes < 1024) {
-    sizeText = totalBytes + " B";
-  } else if (totalBytes < 1024 * 1024) {
-    sizeText = (totalBytes / 1024).toFixed(1) + " KB";
-  } else {
-    sizeText = (totalBytes / (1024 * 1024)).toFixed(2) + " MB";
-  }
+  if (totalBytes < 1024) sizeText = totalBytes + " B";
+  else if (totalBytes < 1024 * 1024) sizeText = (totalBytes / 1024).toFixed(1) + " KB";
+  else sizeText = (totalBytes / (1024 * 1024)).toFixed(2) + " MB";
 
   document.getElementById("dbSize").innerText = sizeText;
 }
-
 </script>
+
 
 </body>
 </html>
