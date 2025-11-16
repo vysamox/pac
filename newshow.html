@@ -856,25 +856,39 @@ async function deletePAC(id) {
 function exportCSV() {
   if (!allEntries.length) return showToast("No Data!", "#ffc107");
 
-  const headers = ["UCL No", "PAC Code", "Entry Date", "Copy Date", "Copy Time", "IP"];
-  const rows = allEntries.map(e => [
-    e.uclNo || "",
-    e.id,
-    e.entryDate || "",
-    e.copyDate || "",
-    e.copyTime || "",
-    e.copyIP || ""
-  ]);
+  // Generate date + time in your format: DD-YY-MM MM-HH-SS
+  const now = new Date();
 
-  const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const yy = String(now.getFullYear()).slice(2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+
+  const HH = String(now.getHours()).padStart(2, "0");
+  const MM = String(now.getMinutes()).padStart(2, "0");
+  const SS = String(now.getSeconds()).padStart(2, "0");
+
+  const fileName = `PAC ${dd}-${yy}-${mm} ${MM}-${HH}-${SS}.csv`;
+
+  // Extract all unique keys
+  const keys = Array.from(
+    new Set(allEntries.flatMap(entry => Object.keys(entry)))
+  );
+
+  const headers = keys.join(",");
+
+  const rows = allEntries.map(entry =>
+    keys.map(key => (entry[key] !== undefined ? `"${entry[key]}"` : "")).join(",")
+  );
+
+  const csv = [headers, ...rows].join("\n");
 
   const blob = new Blob([csv], { type: "text/csv" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "pac_entries.csv";
+  link.download = fileName;
   link.click();
 
-  showToast("📁 CSV Exported!", "#17a2b8");
+  showToast("📁 Full CSV Exported!", "#17a2b8");
 }
 
 // ---------------------- DB SIZE CALCULATOR ----------------------
