@@ -433,7 +433,7 @@ tbody tr:last-child td {
   <span class="today-count"><i class="fa-solid fa-calendar-day"></i> Today Copied: <strong id="todayCopiedCount">0</strong></span>
   <span class="sync-status"><i class="fa-solid fa-sync-alt"></i> <span id="syncStatus">Synced</span></span>
   <span class="unused-count"><i class="fa-solid fa-box-open"></i> Unused PACs: <strong id="unusedCount">0</strong></span>
-  <span class="percent-used"><i class="fa-solid fa-chart-pie"></i> Usage: <strong id="pacPercent">0%</strong></span>
+  <!---<span class="percent-used"><i class="fa-solid fa-chart-pie"></i> Usage: <strong id="pacPercent">0%</strong></span>-->
   <span class="db-size"><i class="fa-solid fa-database"></i> DB Size:<strong id="dbSize">--</strong></span>
   <span class="income-total"><i class="fa-solid fa-money-bill-wave"></i> Income (Unused): ₹<strong id="incomeTotal">0</strong></span>
  <span class="backup-status" id="backupStatusBox">
@@ -600,7 +600,7 @@ function updateCounters() {
   document.getElementById("totalCount").innerText = total;
   document.getElementById("copiedCount").innerText = copied;
   document.getElementById("unusedCount").innerText = unused;
-  document.getElementById("pacPercent").innerText = percent + "%";
+  //document.getElementById("pacPercent").innerText = percent + "%";
 
   // 🔥 NEW → Income Total for UNUSED PACs
   let income = 0;
@@ -970,8 +970,13 @@ async function startBackupProcess() {
   // 🔥 If recent backup exists → just show 100%
   if (lastBackup && (now - parseInt(lastBackup)) < oneHour) {
     document.getElementById("backupPercent").innerText = "100%";
-    document.getElementById("lastBackup").innerText =
-  "Last Backup: " + new Date().toLocaleString("en-IN");
+  const saveTime = Date.now();
+localStorage.setItem("lastBackupTime", saveTime);
+
+document.getElementById("lastBackup").innerText =
+  "Last Backup: " + new Date(saveTime).toLocaleString("en-IN");
+
+
 
     return;
   }
