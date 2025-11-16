@@ -354,12 +354,68 @@ tbody tr:last-child td {
       .filter-bar { flex-direction: column; }
       .status-bar { flex-direction: column; }
     }
+#backupStatusBox {
+  border-left: 6px solid #ff5722;
+  animation: syncGlow 2s infinite;
+}
 
+/* 🌈 Backup box progress bar INSIDE status-box */
+#backupStatusBox {
+  position: relative;
+  padding-right: 15px;
+}
+
+/* 🌟 Modern Pagination Styling */
+.pagination-container {
+  text-align: center;
+  margin: 25px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.25);
+}
+
+.pagination-btn:hover:not(.disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 123, 255, 0.35);
+}
+
+.pagination-btn.disabled {
+  background: #bcd4f7;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.page-info-box {
+  background: white;
+  border: 2px solid #007bff;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  color: #007bff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
 
   </style>
 </head>
 
 <body>
+
 <header>
   <h1><i class="fa-solid fa-database"></i> PAC Management System</h1>
   <nav>
@@ -380,6 +436,19 @@ tbody tr:last-child td {
   <span class="percent-used"><i class="fa-solid fa-chart-pie"></i> Usage: <strong id="pacPercent">0%</strong></span>
   <span class="db-size"><i class="fa-solid fa-database"></i> DB Size:<strong id="dbSize">--</strong></span>
   <span class="income-total"><i class="fa-solid fa-money-bill-wave"></i> Income (Unused): ₹<strong id="incomeTotal">0</strong></span>
+ <span class="backup-status" id="backupStatusBox">
+  <i class="fa-solid fa-cloud-arrow-up"></i>
+  Backup: <strong id="backupPercent">0%</strong>
+
+  <div id="lastBackup" style="font-size:12px;color:#555;margin-top:3px;">
+    Last Backup: --
+  </div>
+</span>
+
+
+
+
+
 </div>
 
 
@@ -398,22 +467,30 @@ tbody tr:last-child td {
 <!-- 📋 PAC Data Table -->
 <table id="pacTable">
   <thead>
-    <tr>
-      <th>UCL No</th>
-      <th>CSC Ref</th>
-      <th>PAC Code</th>
-      <th>Pac Order Date</th>
-      <th>Amount</th>
-      <th>Entry Date</th>
-      <th>Entry IP</th>
-      <th>Copy Date</th>
-      <th>Copy Time</th>
-      <th>IP Address</th>
-      <th>Action</th>
-    </tr>
+   <tr>
+    <th onclick="sortTable(0)">UCL No</th>
+    <th onclick="sortTable(1)">CSC Ref</th>
+    <th onclick="sortTable(2)">PAC Code</th>
+    <th onclick="sortTable(3)">Pac Order Date</th>
+    <th onclick="sortTable(4)">Amount</th>
+    <th onclick="sortTable(5)">Entry Date</th>
+    <th onclick="sortTable(6)">Entry IP</th>
+    <th onclick="sortTable(7)">Copy Date</th>
+    <th onclick="sortTable(8)">Copy Time</th>
+    <th onclick="sortTable(9)">IP Address</th>
+    <th>Action</th>
+  </tr>
   </thead>
   <tbody id="tableBody"></tbody>
 </table>
+<div class="pagination-container">
+  <button class="pagination-btn" id="prevBtn" onclick="prevPage()">⟵ Prev</button>
+  
+  <span class="page-info-box" id="pageInfo">Page 1 of 1</span>
+  
+  <button class="pagination-btn" id="nextBtn" onclick="nextPage()">Next ⟶</button>
+</div>
+
 
 <!-- 🔔 Toast -->
 <div id="toast"></div>
@@ -436,11 +513,33 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// ---------------- SECOND BACKUP FIREBASE APP (Live Sync) ----------------
+const liveBackupConfig = {
+  apiKey: "AIzaSyAW-D-FVxt8UwoZaDGs4QTcbV4mmFkcNzY",
+  authDomain: "live-chat-2fd58.firebaseapp.com",
+  projectId: "live-chat-2fd58",
+  storageBucket: "live-chat-2fd58.firebasestorage.app",
+  messagingSenderId: "510975811904",
+  appId: "1:510975811904:web:e553dfe2f3efa7772f9aa5",
+  measurementId: "G-NE1J2NSTT9"
+};
+
+// Create second instance
+const liveBackupApp = firebase.initializeApp(liveBackupConfig, "liveBackupApp");
+const liveBackupDB = liveBackupApp.firestore();
+
+
 // Global
 let allEntries = [];
 let lastCopiedId = localStorage.getItem("lastCopiedId") || null;
 let todayCount = 0;
 let copyLock = false;
+let smoothBackupValue = 0;
+let backupAnimRunning = false;
+let currentPage = 1;
+let rowsPerPage = 20;   // You can change to 50, 100 etc.
+let filteredTableData = [];
+
 
 // ---------------------- REAL-TIME LISTENER FOR PAC ----------------------
 db.collection("pac_entries").onSnapshot(snapshot => {
@@ -450,7 +549,6 @@ db.collection("pac_entries").onSnapshot(snapshot => {
   updateCounters();
   filterTable();
   calculateDBSize();
-
   document.getElementById("syncStatus").innerText = "Synced";
 });
 
@@ -521,32 +619,48 @@ function updateCounters() {
 
 // ---------------------- FILTER TABLE ----------------------
 function filterTable() {
-  const search = document.getElementById("searchBox").value.toLowerCase();
+  const search = document.getElementById("searchBox").value.trim().toLowerCase();
   const date = document.getElementById("filterDate").value;
   const status = document.getElementById("filterStatus").value;
-  const tbody = document.getElementById("tableBody");
-  tbody.innerHTML = "";
 
-  const filtered = allEntries.filter(e => {
-    const matchSearch =
-      e.id.toLowerCase().includes(search) ||
-      (e.uclNo || "").toLowerCase().includes(search) ||
-      (e.copyIP || "").toLowerCase().includes(search);
+  // Filter PACs
+  filteredTableData = allEntries.filter(e => {
+    const id = (e.id || "").toLowerCase();
+    const uclNo = (e.uclNo || "").toLowerCase();
+    const copyIP = (e.copyIP || "").toLowerCase();
+    const entryDate = e.entryDate || "";
 
-    const matchDate = !date || e.entryDate === date;
+    const matchSearch = !search ||
+      id.includes(search) || uclNo.includes(search) || copyIP.includes(search);
+
+    const matchDate = !date || entryDate === date;
+
     const matchStatus =
-      status === "copied" ? e.copied :
+      status === "copied" ? Boolean(e.copied) :
       status === "unused" ? !e.copied : true;
 
     return matchSearch && matchDate && matchStatus;
   });
 
-  if (filtered.length === 0) {
+  currentPage = 1;   // reset to first page  
+  renderTablePage();
+  updatePaginationControls();
+}
+
+function renderTablePage() {
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  if (filteredTableData.length === 0) {
     tbody.innerHTML = "<tr><td colspan='11'>No PACs found.</td></tr>";
     return;
   }
 
-  filtered.forEach(e => {
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const pageData = filteredTableData.slice(start, end);
+
+  pageData.forEach(e => {
     const tr = document.createElement("tr");
     if (e.copied) tr.classList.add("copied-row");
 
@@ -564,9 +678,9 @@ function filterTable() {
     tr.innerHTML = `
       <td>${e.uclNo || ""}</td>
       <td>${e.cscRef || ""}</td>
-      <td>${e.id}</td>
-      <td>${e.orderDate}</td>
-      <td>${e.amount}</td>
+      <td>${e.id || ""}</td>
+      <td>${e.orderDate || ""}</td>
+      <td>${e.amount || ""}</td>
       <td>${e.entryDate || ""}</td>
       <td>${e.ipAddress || ""}</td>
       <td>${e.copyDate || "-"}</td>
@@ -578,6 +692,35 @@ function filterTable() {
   });
 }
 
+
+
+function updatePaginationControls() {
+  const totalPages = Math.ceil(filteredTableData.length / rowsPerPage);
+
+  document.getElementById("pageInfo").innerText =
+    `Page ${currentPage} of ${totalPages}`;
+
+  document.getElementById("prevBtn").disabled = currentPage === 1;
+  document.getElementById("nextBtn").disabled = currentPage === totalPages;
+}
+
+function nextPage() {
+  const totalPages = Math.ceil(filteredTableData.length / rowsPerPage);
+
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderTablePage();
+    updatePaginationControls();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderTablePage();
+    updatePaginationControls();
+  }
+}
 
 function getIST() {
   const d = new Date();
@@ -601,6 +744,11 @@ function getIST() {
 
 // ---------------------- COPY PAC ----------------------
 async function copyCode(id) {
+
+   // 🔉 Play sound IMMEDIATELY on click (browser allows this)
+  document.getElementById("copySound").currentTime = 0;
+  document.getElementById("copySound").play().catch(()=>{});
+
   if (copyLock) {
     showToast("⏳ Please wait 2 seconds!", "#ff9800");
     return;
@@ -656,6 +804,7 @@ async function copyCode(id) {
 
   lastCopiedId = id;
   localStorage.setItem("lastCopiedId", id);
+document.getElementById("copySound").play();
 
   showToast("✅ PAC Copied!", "#28a745");
 }
@@ -729,25 +878,216 @@ function exportCSV() {
 }
 
 // ---------------------- DB SIZE CALCULATOR ----------------------
-function calculateDBSize() {
-  let totalBytes = 0;
+function getFirestoreFieldSize(value) {
+    if (value === null || value === undefined) return 1;
 
-  allEntries.forEach(doc => {
-    const json = JSON.stringify(doc);
-    totalBytes += new Blob([json]).size;
+    switch (typeof value) {
+        case "string":
+            return value.length + 1;  // UTF-8 length + 1 byte
+        case "number":
+            return 8;                // Firestore always uses 8 bytes
+        case "boolean":
+            return 1;
+        case "object":
+            if (value instanceof Array) {
+                let arrSize = 1; // array metadata
+                value.forEach(v => arrSize += getFirestoreFieldSize(v));
+                return arrSize;
+            } else if (value instanceof Date) {
+                return 8; // Firestore stores timestamp as 64-bit
+            } else {
+                // nested document
+                let objSize = 0;
+                for (let key in value) {
+                    objSize += key.length + 1;        // field name + metadata
+                    objSize += getFirestoreFieldSize(value[key]);
+                }
+                return objSize;
+            }
+        default:
+            return 0;
+    }
+}
+
+function calculateDBSize() {
+    let totalBytes = 0;
+
+    allEntries.forEach(doc => {
+        for (let key in doc) {
+            totalBytes += key.length + 1;               // field name size
+            totalBytes += getFirestoreFieldSize(doc[key]); // field value size
+        }
+
+        totalBytes += 32; // Firestore document metadata overhead
+    });
+
+    let sizeText = "";
+    if (totalBytes < 1024) sizeText = totalBytes + " B";
+    else if (totalBytes < 1024 * 1024) sizeText = (totalBytes / 1024).toFixed(1) + " KB";
+    else sizeText = (totalBytes / (1024 * 1024)).toFixed(2) + " MB";
+
+    document.getElementById("dbSize").innerText = sizeText;
+}
+
+// ---------------------- COLUMN SORTING ----------------------
+let sortDirection = {};
+function sortTable(columnIndex) {
+  const table = document.getElementById("pacTable");
+  const tbody = table.querySelector("tbody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+
+  // Toggle ascending/descending
+  sortDirection[columnIndex] = !sortDirection[columnIndex];
+  const isAsc = sortDirection[columnIndex];
+
+  rows.sort((a, b) => {
+    let aText = a.children[columnIndex].innerText.trim();
+    let bText = b.children[columnIndex].innerText.trim();
+
+    // convert numbers
+    if (!isNaN(parseFloat(aText)) && !isNaN(parseFloat(bText))) {
+      return isAsc ? aText - bText : bText - aText;
+    }
+
+    return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
   });
 
-  totalBytes += allEntries.length * 500;
-
-  let sizeText = "";
-  if (totalBytes < 1024) sizeText = totalBytes + " B";
-  else if (totalBytes < 1024 * 1024) sizeText = (totalBytes / 1024).toFixed(1) + " KB";
-  else sizeText = (totalBytes / (1024 * 1024)).toFixed(2) + " MB";
-
-  document.getElementById("dbSize").innerText = sizeText;
+  // Re-attach sorted rows
+  rows.forEach(row => tbody.appendChild(row));
 }
+
+// ---------------------- LIVE BACKUP SYSTEM ----------------------
+let backupRunning = false;
+
+// Run backup only if 1 hour passed
+async function startBackupProcess() {
+
+  const lastBackup = localStorage.getItem("lastBackupTime");
+  const now = Date.now();
+
+  const oneHour = 60 * 60 * 1000;
+
+  // 🔥 If recent backup exists → just show 100%
+  if (lastBackup && (now - parseInt(lastBackup)) < oneHour) {
+    document.getElementById("backupPercent").innerText = "100%";
+    document.getElementById("lastBackup").innerText =
+  "Last Backup: " + new Date().toLocaleString("en-IN");
+
+    return;
+  }
+
+  if (backupRunning) return;
+  backupRunning = true;
+
+  smoothBackupValue = 0;
+  document.getElementById("backupPercent").innerText = "0%";
+
+  const collectionsToBackup = ["pac_entries", "used_pac", "today_used_pac"];
+  let totalDocs = 0;
+  let backedDocs = 0;
+
+  try {
+
+    // Count docs
+    for (const col of collectionsToBackup) {
+      const snap = await db.collection(col).get();
+      totalDocs += snap.size;
+    }
+
+    // No docs
+    if (totalDocs === 0) {
+      animateBackupTo(100);
+      localStorage.setItem("lastBackupTime", Date.now());
+      backupRunning = false;
+      return;
+    }
+
+    // Backup process
+    for (const col of collectionsToBackup) {
+      const snap = await db.collection(col).get();
+      const batch = liveBackupDB.batch();
+
+      snap.docs.forEach(doc => {
+        batch.set(liveBackupDB.collection(col).doc(doc.id), doc.data());
+      });
+
+      await batch.commit();
+
+      backedDocs += snap.size;
+      animateBackupTo(Math.round((backedDocs / totalDocs) * 100));
+    }
+
+    // All done
+    animateBackupTo(100);
+    document.getElementById("backupStatusBox").style.borderLeft = "6px solid #28a745";
+
+    // 🔥 Save backup timestamp
+    localStorage.setItem("lastBackupTime", Date.now());
+
+    // Show last backup
+   document.getElementById("lastBackup").innerText =
+  "Last Backup: " + new Date(parseInt(savedBackupTime)).toLocaleString("en-IN");
+
+
+  } catch (error) {
+    document.getElementById("backupPercent").innerText = "ERROR";
+    console.error("Backup Error:", error);
+  }
+
+  backupRunning = false;
+}
+
+// 🔄 Run every 1 hour
+setInterval(startBackupProcess, 60 * 60 * 1000);
+
+// ▶ Run once on page load (will NOT start backup if already done)
+startBackupProcess();
+
+
+function animateBackupTo(target) {
+  const text = document.getElementById("backupPercent");
+
+  target = Math.max(0, Math.min(100, Math.round(target)));
+
+  if (smoothBackupValue > target) {
+    smoothBackupValue = target;
+  }
+
+  let interval = setInterval(() => {
+    if (smoothBackupValue < target) {
+      smoothBackupValue++;
+      text.innerText = smoothBackupValue + "%";
+    } else {
+      clearInterval(interval);
+    }
+  }, 15);
+}
+
+
+function formatDateTime(dt) {
+  return dt.toLocaleString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour12: true
+  });
+}
+// Load saved last backup time
+const savedBackupTime = localStorage.getItem("lastBackupTime");
+if (savedBackupTime) {
+  document.getElementById("lastBackup").innerText =
+    "Last Backup: " + new Date(parseInt(savedBackupTime)).toLocaleString("en-IN");
+}
+
+
+
+
 </script>
-
-
+  <audio id="copySound">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-interface-click-1126.mp3" type="audio/mpeg">
+</audio>
 </body>
 </html>
