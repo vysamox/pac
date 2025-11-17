@@ -929,25 +929,74 @@ function getFirestoreFieldSize(value) {
     }
 }
 
-function calculateDBSize() {
-    let totalBytes = 0;
-
-    allEntries.forEach(doc => {
-        for (let key in doc) {
-            totalBytes += key.length + 1;               // field name size
-            totalBytes += getFirestoreFieldSize(doc[key]); // field value size
-        }
-
-        totalBytes += 32; // Firestore document metadata overhead
-    });
-
-    let sizeText = "";
-    if (totalBytes < 1024) sizeText = totalBytes + " B";
-    else if (totalBytes < 1024 * 1024) sizeText = (totalBytes / 1024).toFixed(1) + " KB";
-    else sizeText = (totalBytes / (1024 * 1024)).toFixed(2) + " MB";
-
-    document.getElementById("dbSize").innerText = sizeText;
+function getUTF8Size(str) {
+  let size = 0;
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code <= 0x7f) size += 1;
+    else if (code <= 0x7ff) size += 2;
+    else if (code <= 0xffff) size += 3;
+    else size += 4;
+  }
+  return size;
 }
+
+function calculateFieldSize(value) {
+  if (value === null || value === undefined) return 1; // null = 1 byte
+
+  if (typeof value === "string") {
+    return getUTF8Size(value) + 1; // +1 byte metadata
+  }
+
+  if (typeof value === "number") return 8; // Firestore always 8 bytes (double)
+  if (typeof value === "boolean") return 1;
+
+  if (value instanceof Date) return 16; // timestamp = 16 bytes
+
+  if (Array.isArray(value)) {
+    let size = 1; // array type metadata
+    value.forEach(v => size += calculateFieldSize(v));
+    return size;
+  }
+
+  if (typeof value === "object") {
+    let size = 1; // object metadata
+    for (let key in value) {
+      size += getUTF8Size(key) + 1;   // field name + metadata
+      size += calculateFieldSize(value[key]);
+    }
+    return size;
+  }
+
+  return 0;
+}
+
+function calculateDBSize() {
+  let totalBytes = 0;
+
+  allEntries.forEach(doc => {
+    let docSize = 32; // base Firestore document overhead (fixed)
+
+    // add document ID size (UTF-8)
+    docSize += getUTF8Size(doc.id);
+
+    for (let key in doc) {
+      docSize += getUTF8Size(key) + 1; // field name
+      docSize += calculateFieldSize(doc[key]); // field value
+      docSize += 32; // index entry cost (approx)
+    }
+
+    totalBytes += docSize;
+  });
+
+  let sizeText = "";
+  if (totalBytes < 1024) sizeText = totalBytes + " B";
+  else if (totalBytes < 1024 * 1024) sizeText = (totalBytes / 1024).toFixed(1) + " KB";
+  else sizeText = (totalBytes / (1024 * 1024)).toFixed(2) + " MB";
+
+  document.getElementById("dbSize").innerText = sizeText;
+}
+
 
 // ---------------------- COLUMN SORTING ----------------------
 let sortDirection = {};
