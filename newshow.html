@@ -847,10 +847,16 @@ async function resetCopy(id) {
 
 // ---------------------- DELETE ----------------------
 async function deletePAC(id) {
-  if (!confirm("Delete this PAC permanently?")) return;
+  // Ask with PAC code included
+  if (!confirm(`Delete PAC ${id} permanently?`)) return;
+
+  // Delete from database
   await db.collection("pac_entries").doc(id).delete();
-  showToast("🗑️ PAC Deleted!", "#dc3545");
+
+  // Toast with PAC code included
+  showToast(`🗑️ PAC ${id} Deleted!`, "#dc3545");
 }
+
 
 // ---------------------- CSV EXPORT ----------------------
 function exportCSV() {
@@ -971,108 +977,50 @@ function sortTable(columnIndex) {
 }
 
 // ---------------------- LIVE BACKUP SYSTEM ----------------------
+// ---------------------- FIREBASE BACKUP SYSTEM (5 HOURS SAFE) ----------------------
 let backupRunning = false;
 
-// Run backup only if 1 hour passed
-async function startBackupProcess() {
+// Collections to backup
+const collectionsToBackup = ["pac_entries", "used_pac", "today_used_pac"];
 
-  const lastBackup = localStorage.getItem("lastBackupTime");
-  const now = Date.now();
-
-  const oneHour = 60 * 60 * 1000;
-
-  // 🔥 If recent backup exists → just show 100%
-  if (lastBackup && (now - parseInt(lastBackup)) < oneHour) {
-    document.getElementById("backupPercent").innerText = "100%";
-  const saveTime = Date.now();
-localStorage.setItem("lastBackupTime", saveTime);
-
-document.getElementById("lastBackup").innerText =
-  "Last Backup: " + new Date(saveTime).toLocaleString("en-IN");
-
-
-
-    return;
-  }
-
-  if (backupRunning) return;
-  backupRunning = true;
-
-  smoothBackupValue = 0;
-  document.getElementById("backupPercent").innerText = "0%";
-
-  const collectionsToBackup = ["pac_entries", "used_pac", "today_used_pac"];
-  let totalDocs = 0;
-  let backedDocs = 0;
-
+/*
+   FUNCTION 1:
+   🔥 Load last backup time from Firebase (only 1 read!)
+*/
+async function loadBackupTime() {
   try {
+    const doc = await liveBackupDB.collection("backup_status")
+      .doc("last_backup")
+      .get();
 
-    // Count docs
-    for (const col of collectionsToBackup) {
-      const snap = await db.collection(col).get();
-      totalDocs += snap.size;
+    if (doc.exists) {
+      const t = doc.data().lastBackupTime;
+      document.getElementById("lastBackup").innerText =
+        "Last Backup: " + new Date(t).toLocaleString("en-IN");
+
+      return t;
+    } else {
+      document.getElementById("lastBackup").innerText =
+        "Last Backup: No backup yet";
+      return 0;
     }
 
-    // No docs
-    if (totalDocs === 0) {
-      animateBackupTo(100);
-      localStorage.setItem("lastBackupTime", Date.now());
-      backupRunning = false;
-      return;
-    }
-
-    // Backup process
-    for (const col of collectionsToBackup) {
-      const snap = await db.collection(col).get();
-      const batch = liveBackupDB.batch();
-
-      snap.docs.forEach(doc => {
-        batch.set(liveBackupDB.collection(col).doc(doc.id), doc.data());
-      });
-
-      await batch.commit();
-
-      backedDocs += snap.size;
-      animateBackupTo(Math.round((backedDocs / totalDocs) * 100));
-    }
-
-    // All done
-    animateBackupTo(100);
-    document.getElementById("backupStatusBox").style.borderLeft = "6px solid #28a745";
-
-    // 🔥 Save backup timestamp
-    localStorage.setItem("lastBackupTime", Date.now());
-
-    // Show last backup
-   document.getElementById("lastBackup").innerText =
-  "Last Backup: " + new Date(parseInt(savedBackupTime)).toLocaleString("en-IN");
-
-
-  } catch (error) {
-    document.getElementById("backupPercent").innerText = "ERROR";
-    console.error("Backup Error:", error);
+  } catch (err) {
+    console.error("Error loading backup time:", err);
+    return 0;
   }
-
-  backupRunning = false;
 }
 
-// 🔄 Run every 1 hour
-setInterval(startBackupProcess, 60 * 60 * 1000);
 
-// ▶ Run once on page load (will NOT start backup if already done)
-startBackupProcess();
-
-
+/*
+   FUNCTION 2:
+   🔥 Animate Backup Progress
+*/
 function animateBackupTo(target) {
   const text = document.getElementById("backupPercent");
+  target = Math.min(100, Math.max(0, target));
 
-  target = Math.max(0, Math.min(100, Math.round(target)));
-
-  if (smoothBackupValue > target) {
-    smoothBackupValue = target;
-  }
-
-  let interval = setInterval(() => {
+  const interval = setInterval(() => {
     if (smoothBackupValue < target) {
       smoothBackupValue++;
       text.innerText = smoothBackupValue + "%";
@@ -1083,23 +1031,107 @@ function animateBackupTo(target) {
 }
 
 
-function formatDateTime(dt) {
-  return dt.toLocaleString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour12: true
-  });
+/*
+   FUNCTION 3:
+   🔥 Start Backup (ONLY IF 5 HOURS PASSED)
+*/
+async function startBackupProcess() {
+  if (backupRunning) return;
+
+  backupRunning = true;
+
+  const lastTime = await loadBackupTime(); // Fetch from Firebase
+  const now = Date.now();
+  const hoursPassed = (now - lastTime) / (1000 * 60 * 60);
+
+  // ❌ If backup done < 5 hours ago → DO NOT BACKUP
+  if (hoursPassed < 5) {
+    console.log("⛔ Backup skipped. Not 5 hours yet.");
+    document.getElementById("backupPercent").innerText = "100%";
+    backupRunning = false;
+    return;
+  }
+
+  console.log("🔥 Starting new backup...");
+  smoothBackupValue = 0;
+  document.getElementById("backupPercent").innerText = "0%";
+
+  try {
+    let totalDocs = 0;
+    let backedDocs = 0;
+
+    // Count total documents
+    for (const col of collectionsToBackup) {
+      const snap = await db.collection(col).get();
+      totalDocs += snap.size;
+    }
+
+    if (totalDocs === 0) {
+      animateBackupTo(100);
+      await saveBackupTimeToFirebase();
+      backupRunning = false;
+      return;
+    }
+
+    // Backup each collection
+    for (const col of collectionsToBackup) {
+      const snap = await db.collection(col).get();
+      const batch = liveBackupDB.batch();
+
+      snap.docs.forEach(doc => {
+        batch.set(
+          liveBackupDB.collection(col).doc(doc.id),
+          doc.data()
+        );
+      });
+
+      await batch.commit();
+
+      backedDocs += snap.size;
+      animateBackupTo(Math.round((backedDocs / totalDocs) * 100));
+    }
+
+    // Save new backup time
+    await saveBackupTimeToFirebase();
+
+    document.getElementById("backupStatusBox").style.borderLeft =
+      "6px solid #28a745";
+
+  } catch (error) {
+    console.error("Backup Error:", error);
+    document.getElementById("backupPercent").innerText = "ERROR";
+  }
+
+  backupRunning = false;
 }
-// Load saved last backup time
-const savedBackupTime = localStorage.getItem("lastBackupTime");
-if (savedBackupTime) {
+
+
+/*
+   FUNCTION 4:
+   🔥 Save backup time to Firebase
+*/
+async function saveBackupTimeToFirebase() {
+  const timeNow = Date.now();
+
+  await liveBackupDB.collection("backup_status")
+    .doc("last_backup")
+    .set({
+      lastBackupTime: timeNow
+    });
+
   document.getElementById("lastBackup").innerText =
-    "Last Backup: " + new Date(parseInt(savedBackupTime)).toLocaleString("en-IN");
+    "Last Backup: " + new Date(timeNow).toLocaleString("en-IN");
 }
+
+
+/*
+   RUN BACKUP:
+   🔥 Check automatically every 5 hours
+*/
+setInterval(startBackupProcess, 5 * 60 * 60 * 1000);
+
+// 🔥 Run ONCE on page load
+startBackupProcess();
 
 
 
