@@ -381,6 +381,75 @@ footer .social a:hover {
   .hero h2 { font-size: 32px; }
   .hero img { width: 100%; }
 }
+
+/* ---------------- MOBILE FIXES (FINAL) ---------------- */
+@media (max-width: 768px) {
+
+  /* Fix header height */
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 15px;
+  }
+
+  /* Reduce title size */
+  header h1 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  /* NAVIGATION FIX */
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* smaller gap */
+  }
+
+  nav a {
+    font-size: 13px;        /* smaller text */
+    padding: 3px 6px;       /* reduce clickable area */
+    margin: 0;
+  }
+
+  nav a i {
+    font-size: 12px !important; /* smaller icons */
+  }
+
+  /* HERO FIX */
+  .hero {
+    padding: 65px 20px 55px;
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+  }
+
+  /* FIX PROFILE IMAGE */
+  .profile-photo {
+    width: 115px;
+    height: 115px;
+    margin-top: 5px;
+  }
+
+  .hero h2 {
+    font-size: 24px;
+    margin-top: 15px;
+  }
+
+  .hero p {
+    font-size: 14px;
+    padding: 0 10px;
+  }
+}
+
+/* Fix oval image clipping on mobile */
+@media (max-width: 768px) {
+  .profile-photo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -392,6 +461,7 @@ footer .social a:hover {
   <a href="/pastenewadd.html"><i class="fa-solid fa-circle-plus"></i> Add PAC</a>
   <a href="/newshow.html"><i class="fa-solid fa-eye"></i> Show PAC</a>
   <a href="/usedpac.html"><i class="fa-solid fa-clipboard-check"></i> Used PAC</a>
+  <a href="/adducl.html"><i class="fa-solid fa-user-plus"></i> Add UCL</a>
   <a href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a>
 </nav>
 
