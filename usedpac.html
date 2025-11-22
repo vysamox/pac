@@ -5,167 +5,160 @@
   <title>Used PAC Entries</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { font-family: Arial, sans-serif; background:#f4f4f9; margin:0; padding:0; }
+    body {
+  font-family: Arial, sans-serif;
+  background:#f4f4f9;
+  margin:0;
+  padding:0;
+}
 
-    header {
-      background: #007bff;
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+/* ---------------- HEADER (UNCHANGED STYLE) ---------------- */
+header {
+  background: #007bff;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+header h1 { margin: 0; font-size: 24px; }
+nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; }
+nav a:hover { text-decoration: underline; }
 
-    header h1 { margin: 0; font-size: 24px; }
-    nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; }
-    nav a:hover { text-decoration: underline; }
+/* ---------------- PAGE TITLE ---------------- */
+h2 {
+  text-align:center;
+  color:#333;
+  margin:20px 0;
+}
 
-    h2 { text-align:center; color:#333; margin:20px 0; }
-
-    /* 🌈 Cute Blue Cloud Table */
+/* ---------------- TABLE ---------------- */
 table {
   width: 95%;
   margin: 20px auto 40px;
   border-collapse: collapse;
-  background: linear-gradient(135deg, #e0f7ff, #ffffff, #e0f7ff);
-  background-size: 300% 300%;
-  animation: bgFlow 10s ease infinite;
+  background: #ffffff;
   border: 1px solid #b3d8ff;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.1);
-  transition: all 0.3s ease-in-out;
+  box-shadow: 0 3px 10px rgba(0, 123, 255, 0.12);
 }
 
-/* 💫 Subtle animated gradient background */
-@keyframes bgFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-
-/* 🌈 Animated Table Header */
+/* Header - clean gradient (NO animation) */
 thead {
-  background: linear-gradient(270deg, #00c9a7, #00d4ff, #7eff8b, #00c9a7);
-  background-size: 400% 400%;
+  background: linear-gradient(90deg, #00c4ff, #0096ff);
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  animation: headerFlow 8s ease infinite;
 }
 
 thead th {
   padding: 14px;
   font-size: 14px;
   font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
-
-@keyframes headerFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-
 
 /* Table Body */
-tbody tr {
-  transition: all 0.2s ease-in-out;
-  border-bottom: 1px solid #e0e0e0;
-}
-
 tbody tr:nth-child(even) {
   background-color: #f8faff;
 }
 
 tbody tr:hover {
-  background-color: #e3f2fd;
-  transform: scale(1.005);
-  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.15);
+  background-color: #e6f2ff;
+  transform: scale(1.003);
+  transition: 0.2s;
 }
 
 td {
   padding: 12px;
   font-size: 15px;
   color: #333;
-  border: 1px solid #d0d7de; /* inner grid lines */
+  border: 1px solid #d0d7de;
 }
 
-/* Rounded corners for outermost cells */
-th:first-child, td:first-child {
-  border-left: 1px solid #d0d7de;
-}
-
-th:last-child, td:last-child {
-  border-right: 1px solid #d0d7de;
-}
-
-
-    button {
-      padding:6px 10px; border:none; border-radius:5px; cursor:pointer;
-      font-size:14px; margin:2px;
-    }
-
-    .delete-btn { background:#dc3545; color:#fff; }
-    .restore-btn { background:#28a745; color:#fff; }
-    .export-btn { background:#17a2b8; color:#fff; }
-
-    .used-row td {
-  background: linear-gradient(270deg, #a8edea, #fed6e3, #a1ffce, #f9f586);
-  background-size: 400% 400%;
-  color: #004e64;
+/* USED PAC Rows (soft highlight - no animation) */
+.used-row td {
+  background: #e9fff5;
+  color: #003b2e;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
-  border-color: rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 0 8px rgba(255,255,255,0.4),
-              0 0 16px rgba(153, 230, 255, 0.6);
-  animation: gradientFlow 7s ease infinite, softPulse 4s ease-in-out infinite;
-  transition: all 0.3s ease;
+  border-color: #c3f7df;
 }
 
-@keyframes gradientFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* Buttons */
+button {
+  padding:6px 10px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  font-size:14px;
+  margin:2px;
 }
 
-@keyframes softPulse {
-  0% { box-shadow: 0 0 10px rgba(153,230,255,0.3), inset 0 0 8px rgba(255,255,255,0.3); }
-  50% { box-shadow: 0 0 20px rgba(153,230,255,0.6), inset 0 0 10px rgba(255,255,255,0.4); }
-  100% { box-shadow: 0 0 10px rgba(153,230,255,0.3), inset 0 0 8px rgba(255,255,255,0.3); }
+.delete-btn { background:#dc3545; color:#fff; }
+.restore-btn { background:#28a745; color:#fff; }
+.export-btn { background:#17a2b8; color:#fff; }
+
+/* Count Badge */
+.count-badge {
+  background:#28a745;
+  color:white;
+  padding:6px 12px;
+  border-radius:20px;
+  font-weight:bold;
 }
 
-    #toast {
-      visibility:hidden;
-      min-width:200px;
-      background:#007bff;
-      color:#fff;
-      text-align:center;
-      border-radius:8px;
-      padding:12px;
-      position:fixed;
-      z-index:1000;
-      left:50%;
-      bottom:30px;
-      transform:translateX(-50%);
-      font-size:16px;
-      box-shadow:0 3px 6px rgba(0,0,0,0.2);
-    }
+/* ---------------- FILTER BOX ---------------- */
+.filter-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  background:#ffffff;
+  padding: 18px 25px;
+  margin: 0 auto 25px;
+  border: 1px solid #e4eaf5;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,123,255,0.09);
+  max-width: 850px;
+}
 
-    #pagination {
-      text-align:center; margin-top:20px;
-    }
-    #pagination button {
-      background:#007bff; color:#fff; padding:8px 15px;
-      border:none; border-radius:5px; margin:5px;
-    }
+.filter-box input[type="text"],
+.filter-box input[type="date"] {
+  padding: 10px 14px;
+  border: 1px solid #d0d7e2;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #f9fbff;
+  color: #333;
+  min-width: 180px;
+}
 
-    .top-actions {
+.filter-box input:focus {
+  border-color: #007bff;
+  background: #ffffff;
+  box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+.filter-box button {
+  background: linear-gradient(135deg, #007bff, #00b4d8);
+  color: #fff;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.filter-box button:hover {
+  background: linear-gradient(135deg, #0066d6, #0094c7);
+}
+
+/* ---------------- TOP MENU BUTTON ---------------- */
+.top-actions {
   text-align: center;
   margin: 25px 0;
 }
@@ -179,149 +172,60 @@ th:last-child, td:last-child {
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.5px;
   box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-/* 💫 Glow hover effect */
-.top-actions button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.4), rgba(255,255,255,0));
-  transition: all 0.4s ease;
-}
-
-.top-actions button:hover::before {
-  left: 100%;
 }
 
 .top-actions button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.4);
   background: linear-gradient(135deg, #0066ff, #00aaff);
-}
-
-
-    /* 🌈 Filter Box Container */
-.filter-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  background: linear-gradient(145deg, #ffffff, #f4f8ff);
-  padding: 18px 25px;
-  margin: 0 auto 25px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.08);
-  max-width: 850px;
-  transition: all 0.3s ease;
-}
-
-/* Smooth hover depth */
-.filter-box:hover {
-  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.15);
   transform: translateY(-2px);
 }
 
-/* 🎯 Inputs and Date Fields */
-.filter-box input[type="text"],
-.filter-box input[type="date"] {
-  padding: 10px 14px;
-  border: 1px solid #d0d7e2;
-  border-radius: 8px;
-  font-size: 15px;
-  background: #f9fbff;
-  color: #333;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-  outline: none;
-  min-width: 180px;
+/* ---------------- TOAST ---------------- */
+#toast {
+  visibility:hidden;
+  min-width:200px;
+  background:#007bff;
+  color:#fff;
+  text-align:center;
+  border-radius:8px;
+  padding:12px;
+  position:fixed;
+  z-index:1000;
+  left:50%;
+  bottom:30px;
+  transform:translateX(-50%);
+  font-size:16px;
+  box-shadow:0 3px 6px rgba(0,0,0,0.2);
 }
 
-/* 🩵 Focus effect */
-.filter-box input[type="text"]:focus,
-.filter-box input[type="date"]:focus {
-  border-color: #007bff;
-  background: #ffffff;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+/* ---------------- PAGINATION ---------------- */
+#pagination {
+  text-align:center;
+  margin-top:20px;
+}
+#pagination button {
+  background:#007bff;
+  color:#fff;
+  padding:8px 15px;
+  border:none;
+  border-radius:5px;
+  margin:5px;
 }
 
-/* 📅 Date Picker - unified style */
-.filter-box input[type="date"]::-webkit-calendar-picker-indicator {
-  background-color: #007bff;
-  border-radius: 50%;
-  padding: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.filter-box input[type="date"]::-webkit-calendar-picker-indicator:hover {
-  background-color: #0056b3;
-}
-
-/* 🧭 Placeholder style */
-.filter-box input::placeholder {
-  color: #888;
-  font-style: italic;
-}
-
-/* ✨ Button inside filter */
-.filter-box button {
-  background: linear-gradient(135deg, #007bff, #00b4d8);
-  color: #fff;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  cursor: pointer;
-  font-weight: 600;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
-  transition: all 0.3s ease;
-}
-
-.filter-box button:hover {
-  background: linear-gradient(135deg, #0056b3, #0096c7);
-  box-shadow: 0 6px 14px rgba(0, 123, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-/* 🌍 Responsive */
-@media (max-width: 600px) {
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width:600px){
+  th, td {
+    font-size:13px;
+    padding:8px;
+  }
   .filter-box {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 15px;
+    flex-direction:column;
   }
   .filter-box input,
   .filter-box button {
-    width: 100%;
+    width:100%;
   }
 }
-
-
-    .count-badge {
-      background:#28a745;
-      color:white;
-      padding:6px 12px;
-      border-radius:20px;
-      font-weight:bold;
-    }
-
-    .top-actions button:hover { opacity:0.9; }
-
-    @media (max-width:600px){
-      th, td { font-size:13px; padding:8px; }
-      .filter-box { flex-direction:column; }
-    }
   </style>
 </head>
 

@@ -17,8 +17,9 @@
       --max-w: 960px;
     }
 
-   /* ---------------- GLOBAL ---------------- */
+ /* ---------------- GLOBAL ---------------- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
   font-family: 'Poppins', sans-serif;
   background: #f4f7ff;
@@ -26,7 +27,14 @@ body {
   overflow-x: hidden;
 }
 
-    header {
+/* ALWAYS hide toggle on desktop */
+.menu-toggle {
+  display: none !important;
+}
+
+
+/* ---------------- HEADER ---------------- */
+header {
   background: rgba(0, 123, 255, 0.9);
   backdrop-filter: blur(10px);
   color: #fff;
@@ -39,12 +47,14 @@ body {
   z-index: 1000;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
+
 header h1 {
   font-size: 26px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 nav a {
   color: white;
   margin-left: 25px;
@@ -53,9 +63,11 @@ nav a {
   position: relative;
   transition: 0.3s;
 }
+
 nav a:hover {
   color: #ffeb3b;
 }
+
 nav a::after {
   content: "";
   position: absolute;
@@ -66,9 +78,11 @@ nav a::after {
   background: #ffeb3b;
   transition: 0.3s;
 }
+
 nav a:hover::after {
   width: 100%;
 }
+
 
     .page{
       max-width:var(--max-w);
@@ -193,14 +207,78 @@ nav a:hover::after {
       left:0;
       width:100%;
     }
+
+    /* ---------------- MOBILE HEADER (FINAL FIXED VERSION) ---------------- */
+@media (max-width: 768px) {
+
+  header {
+    padding: 12px 18px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+  }
+
+  header h1 {
+    font-size: 18px;
+    gap: 8px;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  header h1 i {
+    font-size: 18px;
+  }
+
+  .menu-toggle {
+    display: block !important;
+    font-size: 24px;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  /* Mobile nav dropdown */
+  header nav {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: rgba(0,123,255,0.95);
+    max-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+    transition: max-height 0.35s ease;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 0;
+  }
+
+  header nav.show {
+    max-height: 450px;
+  }
+
+  header nav a {
+    padding: 14px 22px;
+    margin: 0;
+    display: block;
+    font-size: 15px;
+  }
+
+}
+
   </style>
 
 </head>
 <body>
 
 <header>
-  <h1><i class="fa-solid fa-database"></i> PAC Management System</h1>
- <nav>
+   <h1><i class="fa-solid fa-database"></i> PAC Management</h1>
+   <!-- Mobile Menu Toggle -->
+  <div class="menu-toggle" onclick="toggleMenu()">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+ <nav id="mainMenu">
+
     <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
     <a href="/newshow.html"><i class="fa-solid fa-table-list"></i> Show PAC</a>
     <a href="/usedpac.html"><i class="fa-solid fa-clipboard-check"></i> Used PAC</a>
@@ -315,7 +393,8 @@ async function loadOwners(){
       uclId: d.uclId || docSnap.id,
       name: d.name || "",
       ip: d.ip || "",
-      address: d.address || ""
+      address: d.address || "",
+      lastVerifiedAt: d.lastVerifiedAt || ""
     });
   });
 
@@ -357,16 +436,19 @@ searchBox.addEventListener("input",()=>{
 
 /* SELECT OWNER */
 let currentOwner = null;
+
 function selectOwner(o){
   currentOwner = o;
+
   ownerBox.innerHTML = `
-    <b>UCL:</b> ${o.uclId}<br>
-    <b>Name:</b> ${o.name}<br>
-    <b>IP:</b> ${o.ip}<br>
-    <b>Address:</b> ${o.address}
+    <b>🆔 UCL:</b> ${o.uclId}<br>
+    <b>👤 Name:</b> ${o.name}<br>
+    <b>🌐 IP:</b> ${o.ip}<br>
+    <b>📍 Address:</b> ${o.address}<br>
+     <b>🔎 Last Verify:</b> ${o.lastVerifiedAt}<br>
+     
   `;
 }
-
 /* AUTO DETECT USER IP & MATCH OWNER */
 async function autoDetectIP(){
   let ip = null;
@@ -518,9 +600,12 @@ function toISODate(dateStr) {
   return `${year}-${mon}-${day}`;
 }
 
-
 loadOwners();
-
+</script>
+<script>
+function toggleMenu() {
+  document.getElementById("mainMenu").classList.toggle("show");
+}
 </script>
 
 </body>
