@@ -178,11 +178,13 @@ nav a:hover::after {
   padding: 100px 40px;
   text-align: center;
 }
+
 .features h2 {
   font-size: 34px;
   color: #007bff;
   margin-bottom: 40px;
 }
+
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -190,25 +192,84 @@ nav a:hover::after {
   max-width: 1200px;
   margin: auto;
 }
+
+/* FEATURE CARD PREMIUM STYLE */
 .feature-card {
+  position: relative;
   background: linear-gradient(135deg, #f7faff, #eaf1ff);
-  border-radius: 20px;
+  border-radius: 22px;
   padding: 30px 25px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  transition: 0.3s;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  transition: 0.4s ease;
+  overflow: hidden;
 }
+
+/* Animated glowing border */
+.feature-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  border-radius: 22px;
+  background: linear-gradient(120deg, #007bff, #00eaff, #00ff8a, #008cff, #007bff);
+  background-size: 300% 300%;
+  animation: featureBorderGlow 5s linear infinite;
+  z-index: -1;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* CARD HOVER ANIMATION */
 .feature-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  transform: translateY(-12px) scale(1.03);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.18);
 }
+
+/* Hover Shine Effect */
+.feature-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
+  transition: 0.6s;
+}
+
+.feature-card:hover::after {
+  left: 120%;
+}
+
+/* ICON + TITLE FORMATTING */
 .feature-card img {
   width: 70px;
   margin-bottom: 15px;
+  transition: 0.4s ease;
 }
+
+.feature-card:hover img {
+  transform: scale(1.15);
+}
+
 .feature-card h3 {
   font-size: 20px;
   margin-bottom: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
+
+/* Border animation */
+@keyframes featureBorderGlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 
 /* ---------------- AGENTS ---------------- */
 .agents {
@@ -217,10 +278,13 @@ nav a:hover::after {
   padding: 100px 30px;
   text-align: center;
 }
+
 .agents h2 {
   font-size: 30px;
   margin-bottom: 25px;
 }
+
+/* Grid layout */
 .agent-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -228,32 +292,88 @@ nav a:hover::after {
   max-width: 1100px;
   margin: auto;
 }
+
+/* FLIP CARD WRAPPER */
 .agent-card {
-  background: rgba(255,255,255,0.15);
+  perspective: 1000px;
+  border-radius: 20px;
+  height: 260px;  /* NEW FIX */
+}
+
+/* INNER CARD FOR FLIP */
+.agent-card .flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s ease;
+  transform-style: preserve-3d;
+  border-radius: 20px;
+}
+
+/* FLIP EFFECT ON HOVER */
+.agent-card:hover .flip-inner {
+  transform: rotateY(180deg);
+}
+
+/* BOTH SIDES STYLING */
+.flip-front, .flip-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   padding: 25px;
   border-radius: 20px;
-  backdrop-filter: blur(10px);
-  transition: 0.4s;
+  backface-visibility: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.agent-card:hover {
-  transform: translateY(-8px);
-  background: rgba(255,255,255,0.25);
+
+/* FRONT SIDE */
+.flip-front {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
 }
-.agent-card img {
+
+.flip-front img {
   width: 100px;
   height: 100px;
   border-radius: 50%;
   border: 3px solid #fff;
-  margin-bottom: 10px;
+  object-fit: cover;
+  margin-bottom: 12px;
 }
-.agent-card h3 {
-  margin-bottom: 5px;
+
+.flip-front h3 {
   font-size: 18px;
+  margin-bottom: 5px;
 }
-.agent-card p {
+
+.flip-front p {
   font-size: 14px;
-  color: #eee;
+  color: #e6e6e6;
 }
+
+/* BACK SIDE */
+.flip-back {
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(12px);
+  transform: rotateY(180deg);
+  color: #fff;
+}
+
+.flip-back h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.flip-back p {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #e6e6e6;
+}
+
 
 /* ---------------- ACTIVITY ---------------- */
 .live-activity {
@@ -311,21 +431,54 @@ nav a:hover::after {
   max-width: 1000px;
   margin: auto;
 }
+/* Animated Border Effect */
 .why-item {
+  position: relative;
   background: white;
   border-radius: 15px;
   padding: 25px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+  z-index: 1;
   transition: 0.3s;
 }
+
+/* Glowing animated border */
+.why-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  padding: 2px;
+  background: linear-gradient(120deg, #007bff, #00eaff, #00ff87, #008cff, #007bff);
+  background-size: 300% 300%;
+  animation: borderGlow 4s linear infinite;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  z-index: -1;
+}
+
+/* Border animation */
+@keyframes borderGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Hover lift */
 .why-item:hover {
   transform: translateY(-8px);
 }
+
+/* Icon pulse */
 .why-item i {
   color: #007bff;
   font-size: 28px;
   margin-bottom: 10px;
 }
+
 
 /* ---------------- STATS ---------------- */
 .stats {
@@ -338,21 +491,81 @@ nav a:hover::after {
   justify-content: center;
   gap: 30px;
 }
+
+/* STAT BOX PREMIUM STYLE */
 .stat-box {
   background: rgba(255,255,255,0.2);
   padding: 30px;
-  border-radius: 16px;
+  border-radius: 18px;
   min-width: 220px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  transition: 0.3s;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  transition: 0.4s ease;
+  position: relative;
+  overflow: hidden;
 }
+
+/* Glow border animation */
+.stat-box::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  padding: 2px;
+  background: linear-gradient(120deg, #fff, #00e5ff, #00ff99, #0099ff, #fff);
+  background-size: 300% 300%;
+  animation: statGlow 6s linear infinite;
+  z-index: -1;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Subtle moving shine on hover */
+.stat-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: 0.4s;
+}
+
+.stat-box:hover::after {
+  left: 100%;
+}
+
+/* Hover lift */
 .stat-box:hover {
-  transform: translateY(-8px);
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.35);
 }
+
+/* Number styling */
 .stat-box h3 {
-  font-size: 30px;
-  margin-bottom: 5px;
+  font-size: 34px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  text-shadow: 0px 0px 10px rgba(255,255,255,0.5);
 }
+
+/* Description text */
+.stat-box p {
+  font-size: 15px;
+  opacity: 0.9;
+  letter-spacing: 0.4px;
+}
+
+/* KEYFRAME FOR BORDER ANIMATION */
+@keyframes statGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 
 /* ---------------- FOOTER ---------------- */
 footer {
@@ -478,69 +691,116 @@ footer .social a:hover {
 <section class="hero">
   <div class="profile-wrapper">
     <img src="assets/me.jpg" alt="Admin Photo" class="profile-photo">
-    <h2>Welcome, Admin</h2>
-    <p>PAC Management System Dashboard — Manage Aadhaar Centers, Agents, and Entries Effortlessly.</p>
+    <h2>Welcome Back</h2>
+    <p>Your PAC Management Dashboard — Monitor Centers, Track Agents, and Manage Entries Seamlessly.</p>
   </div>
 </section>
-
 
 <section class="features">
   <h2>Our Core Features</h2>
   <div class="feature-grid">
     <div class="feature-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/2891/2891523.png" alt="">
-      <h3>Center Management</h3>
-      <p>Monitor and manage Aadhaar centers efficiently with live reports.</p>
+      <img src="https://cdn-icons-png.flaticon.com/512/2891/2891523.png" alt=""><h3>Center Management</h3><p>Monitor and manage Aadhaar centers efficiently with live reports.</p>
     </div>
     <div class="feature-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/2965/2965871.png" alt="">
-      <h3>PAC Entries</h3>
-      <p>Securely add, review, and track PAC data with real-time analytics.</p>
+      <img src="https://cdn-icons-png.flaticon.com/512/2965/2965871.png" alt=""><h3>PAC Entries</h3><p>Securely add, review, and track PAC data with real-time analytics.</p>
     </div>
     <div class="feature-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="">
-      <h3>Agent Tracking</h3>
-      <p>View agent status, verify profiles, and manage permissions seamlessly.</p>
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt=""><h3>Agent Tracking</h3><p>View agent status, verify profiles, and manage permissions seamlessly.</p>
     </div>
     <div class="feature-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="">
-      <h3>Report Generator</h3>
-      <p>Generate instant performance, audit, and verification reports.</p>
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828743.png" alt=""><h3>Auto Backup System</h3><p>Automatic cloud backups protect all PAC and UCL data without manual effort.</p>
     </div>
   </div>
 </section>
 
 <section class="agents">
-  <h2>Our Top Users</h2>
+  <h2>Top Contributors & Operators</h2>
   <div class="agent-cards">
+    <!-- 1 -->
     <div class="agent-card">
-      <img src="/assets/sabir.jpg" alt="Chowdhury Saddam Hossain">
-      <h3>Chowdhury Saddam Hossain</h3>
-      <p>Singi Center - Verified</p>
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="/assets/me.jpg" alt="">
+          <h3>Sk Samrat <i class="fa-solid fa-circle-check" style="color:#4eff75;"></i></h3>
+          <p>Lead Developer</p>
+        </div>
+        <div class="flip-back">
+          <h3>More Info</h3>
+          <p><strong>Role:</strong> Lead Developer</p>
+          <p><strong>Location:</strong> Singi, Bolpur, Birbhum, West Bengal-731240</p>
+          <p><strong>Contact:</strong>+91 8710090805</p>
+          <p><strong>Status:</strong> Active 5 mins ago</p>
+        </div>
+      </div>
     </div>
+    <!-- 2 -->
     <div class="agent-card">
-      <img src="/assets/me.jpg" alt="">
-      <h3>Sk Samrat</h3>
-      <p>Developer</p>
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="/assets/anjali.jpg" alt="">
+          <h3>Anjali Sharma</h3>
+          <p>Front-End Designer</p>
+        </div>
+        <div class="flip-back">
+          <h3>More Info</h3>
+          <p><strong>Role:</strong> Designer</p>
+          <p><strong>Location:</strong>Bolpur, Birbhum, West Bengal-731204</p>
+          <p><strong>Contact:</strong>+91 8710090805</p>
+          <p><strong>Status:</strong> Active Today</p>
+        </div>
+      </div>
     </div>
+
+    <!-- 3 -->
     <div class="agent-card">
-      <img src="/assets/babi.png" alt="">
-      <h3>Meheraj Chowdhuri</h3>
-      <p>Opreator</p>
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="/assets/sabir.jpg" alt="">
+          <h3>Sabir Chowdhury <i class="fa-solid fa-circle-check" style="color:#4eff75;"></i></h3>
+          <p>Aadhaar Center Owner</p>
+        </div>
+        <div class="flip-back">
+          <h3>More Info</h3>
+          <p><strong>Location:</strong> Singi, Bolpur, Birbhum, West Bengal-731240</p>
+          <p><strong>Contact:</strong>+91 8392006494</p>
+          <p><strong>Status:</strong> Verified</p>
+        </div>
+      </div>
     </div>
+
+    <!-- 4 -->
+    <div class="agent-card">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="/assets/babi.png" alt="">
+          <h3>Meheraj Chowdhuri</h3>
+          <p>Operator</p>
+        </div>
+        <div class="flip-back">
+          <h3>More Info</h3>
+          <p><strong>Location:</strong> Singi, Bolpur, Birbhum, West Bengal-731240</p>
+          <p><strong>Contact:</strong>+91 7029861876</p>
+          <p><strong>Experience:</strong> 1 Year</p>
+          <p><strong>Status:</strong>Verified</p>  
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
-<section class="live-activity">
+
+
+<!--<section class="live-activity">
   <h2>Recent Activity</h2>
   <div class="activity-list">
     <div class="activity"><i class="fa-solid fa-circle-dot"></i><span>Chowdhury Saddam Hossain added PAC Entry #15 – 2 mins ago</span></div>
     <div class="activity"><i class="fa-solid fa-circle-dot"></i><span>Priya Sharma updated Aadhaar Center #512 – 10 mins ago</span></div>
     <div class="activity"><i class="fa-solid fa-circle-dot"></i><span>New Agent registered: Arun Singh (Lucknow)</span></div>
     <div class="activity"><i class="fa-solid fa-circle-dot"></i><span>System backup completed successfully.</span></div>
-    
   </div>
-</section>
+</section>-->
 
 <section class="why">
   <h2>Why Choose PAC?</h2>
@@ -548,42 +808,37 @@ footer .social a:hover {
     <div class="why-item"><i class="fa-solid fa-bolt"></i><h4>Fast & Reliable</h4><p>Optimized for instant data updates and report generation.</p></div>
     <div class="why-item"><i class="fa-solid fa-lock"></i><h4>Highly Secure</h4><p>Top-level encryption for all user and center data.</p></div>
     <div class="why-item"><i class="fa-solid fa-globe"></i><h4>Multi-Center Access</h4><p>Unified dashboard for all CSC and BC networks.</p></div>
-    <div class="why-item">
-  <i class="fa-solid fa-user-shield"></i>
-  <h4>Admin-Level Control</h4>
-  <p>Manage permissions and monitor activity with precision.</p>
-</div>
-
-<div class="why-item">
-  <i class="fa-solid fa-mobile-alt"></i>
-  <h4>Mobile Optimized</h4>
-  <p>Optimized dashboard for both mobile and desktop users.</p>
-</div>
-
-<div class="why-item">
-  <i class="fa-solid fa-server"></i>
-  <h4>Cloud Powered</h4>
-  <p>Hosted on secure Google Firestore servers.</p>
-</div>
-
-    <div class="why-item"><i class="fa-solid fa-chart-line"></i><h4>Analytics Ready</h4><p>Integrated visual reports with real-time PAC trends.</p></div>
-  </div>
+    <div class="why-item"><i class="fa-solid fa-user-shield"></i><h4>Admin-Level Control</h4><p>Manage permissions and monitor activity with precision.</p></div>
+    <div class="why-item"><i class="fa-solid fa-server"></i><h4>Cloud Powered</h4><p>Hosted on secure Google Firestore servers.</p></div>
+    <div class="why-item"><i class="fa-solid fa-chart-line"></i><h4>Analytics Ready</h4><p>Integrated visual reports with real-time PAC trends.</p></div></div>
 </section>
 
 <section class="stats">
-  <div class="stat-box"><h3>4.8★</h3><p>User Satisfaction</p></div>
-<div class="stat-box"><h3>250+</h3><p>Reports Generated Today</p></div>
-<div class="stat-box"><h3>80%</h3><p>Task Completion Rate</p></div>
-<div class="stat-box"><h3>99.5%</h3><p>System Reliability</p></div>
+  <div class="stat-box">
+    <h3 class="stat-number" data-target="99.7">0%</h3>
+    <p>Network Uptime Stability</p>
+  </div>
+
+  <div class="stat-box">
+    <h3 class="stat-number" data-target="450">0ms</h3>
+    <p>Database Response Time</p>
+  </div>
+
+  <div class="stat-box">
+    <h3 class="stat-number" data-target="92">0%</h3>
+    <p>Operator Efficiency Score</p>
+  </div>
+
+  <div class="stat-box">
+    <h3 class="stat-number" data-target="99.7">0%</h3>
+    <p>Application Service Health</p>
+  </div>
 </section>
 
+
+
+
 <footer>
-  <div class="social">
-    <a href="#"><i class="fab fa-facebook"></i></a>
-    <a href="#"><i class="fab fa-twitter"></i></a>
-    <a href="#"><i class="fab fa-linkedin"></i></a>
-    <a href="#"><i class="fab fa-instagram"></i></a>
-  </div>
   &copy; 2025 PAC Management System. All rights reserved.
   <div id="footer-info"><span id="live-time"></span> | <span id="user-ip"></span></div>
 </footer>
@@ -592,19 +847,89 @@ footer .social a:hover {
 function updateTime() {
   const el = document.getElementById("live-time");
   const now = new Date();
-  el.textContent = "🕒 " + now.toLocaleString();
+
+  // Format parts
+  let day = String(now.getDate()).padStart(2, '0');
+  let month = String(now.getMonth() + 1).padStart(2, '0');
+  let year = now.getFullYear();
+
+  let hours = now.getHours();
+  let minutes = String(now.getMinutes()).padStart(2, '0');
+  let seconds = String(now.getSeconds()).padStart(2, '0');
+
+  // AM/PM
+  let ampm = hours >= 12 ? "PM" : "AM";
+  
+  // Convert to 12-hour format
+  hours = hours % 12;
+  hours = hours ? hours : 12; // if 0, make it 12
+  hours = String(hours).padStart(2, '0');
+
+  const finalTime = `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+
+  el.textContent = "🕒 " + finalTime;
 }
+
 setInterval(updateTime, 1000);
 updateTime();
+
+// Fetch IP
 fetch('https://api.ipify.org?format=json')
   .then(r => r.json())
   .then(d => document.getElementById('user-ip').textContent = "🌐 IP: " + d.ip)
   .catch(()=>document.getElementById('user-ip').textContent="🌐 IP: Unavailable");
 
-  function toggleMenu() {
+// Mobile menu toggle
+function toggleMenu() {
   document.getElementById("mainMenu").classList.toggle("show");
 }
-</script>
 
+function animateStats(entries, observer) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const statNumbers = document.querySelectorAll('.stat-number');
+
+      statNumbers.forEach(num => {
+        const target = parseFloat(num.getAttribute('data-target'));
+        let count = 0;
+
+        // Slow animation speed
+        const duration = 2500; // 2.5 seconds slow animation
+        const startTime = performance.now();
+
+        function updateCount(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+
+          // Smooth easing
+          const easedProgress = progress * progress;
+
+          let value = target * easedProgress;
+
+          // Formatting
+          if (target === 450) {
+            num.textContent = Math.floor(value) + "ms";
+          } else {
+            num.textContent = value.toFixed(1) + "%";
+          }
+
+          if (progress < 1) {
+            requestAnimationFrame(updateCount);
+          } else {
+            num.textContent = (target === 450) ? target + "ms" : target + "%";
+          }
+        }
+
+        requestAnimationFrame(updateCount);
+      });
+
+      observer.disconnect(); // Run only once
+    }
+  });
+}
+
+const observer = new IntersectionObserver(animateStats, { threshold: 0.4 });
+observer.observe(document.querySelector(".stats"));
+</script>
 </body>
 </html>
