@@ -23,6 +23,9 @@ nav a{color:#fff;text-decoration:none;margin-left:14px;font-weight:700}
 label{display:block;margin-top:12px;font-weight:700;color:#06438a;font-size:13px}
 input[type="text"],textarea{width:100%;padding:11px;border-radius:10px;border:1.4px solid #cfd8e3;margin-top:6px;background:#fff;box-sizing:border-box;transition:.18s}
 textarea{min-height:76px;resize:vertical}
+.menu-toggle {
+  display: none !important;
+}
 input:focus,textarea:focus{outline:none;border-color:var(--accent1);box-shadow:0 6px 18px rgba(0,123,255,0.12)}
 .actions{display:flex;gap:12px;margin-top:16px}
 .btn{flex:1;padding:12px;border-radius:12px;border:none;color:#fff;background:linear-gradient(135deg,var(--accent1),var(--accent2));cursor:pointer;font-weight:700;box-shadow:0 8px 22px rgba(0,123,255,0.18)}
@@ -45,8 +48,106 @@ th,td{padding:8px;border-bottom:1px solid rgba(10,20,40,0.05);text-align:left}
 .otp-panel p{margin:0 0 12px;color:#41536b;font-size:13px}
 .otp-panel input{width:95%;padding:10px;border:1px solid #d8e2ef;border-radius:8px}
 .otp-actions{display:flex;gap:8px;margin-top:10px}
+
 @media(max-width:720px){.otp-panel{width:92%}}
 footer{background:var(--accent1);color:#fff;padding:12px;text-align:center;position:fixed;bottom:0;left:0;width:100%}
+
+/* ---------------- MOBILE HEADER (FINAL FIXED VERSION) ---------------- */
+@media (max-width: 768px) {
+
+  header {
+    padding: 12px 18px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+  }
+
+  header h1 {
+    font-size: 18px;
+    gap: 8px;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  header h1 i {
+    font-size: 18px;
+  }
+
+  .menu-toggle {
+    display: block !important;
+    font-size: 24px;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  /* Mobile nav dropdown */
+  header nav {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: rgba(0,123,255,0.95);
+    max-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+    transition: max-height 0.35s ease;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 0;
+  }
+
+  header nav.show {
+    max-height: 450px;
+  }
+
+  header nav a {
+    padding: 14px 22px;
+    margin: 0;
+    display: block;
+    font-size: 15px;
+  }
+  }
+
+  /* MOBILE TABLE FIX */
+@media (max-width: 768px) {
+  #ownersTableWrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 600px; /* ensures layout never breaks */
+  }
+  #ownersTableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+
+  .list-card {
+    padding: 8px;
+  }
+}
+
+/* MOBILE FOOTER FIX */
+@media (max-width: 768px) {
+  footer {
+    padding: 10px 5px;
+    font-size: 12px;
+    height: auto;
+    text-align: center;
+  }
+
+  #footer-ip {
+    font-size: 12px;
+    margin-left: 0 !important;
+    margin-top: 4px;
+    opacity: 0.9;
+    word-break: break-all;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -54,11 +155,16 @@ footer{background:var(--accent1);color:#fff;padding:12px;text-align:center;posit
 <header>
   <div class="left">
     <div>
-      <h1><i class="fa-solid fa-database"></i> PAC Management System</h1>
+      <h1><i class="fa-solid fa-database"></i> PAC Management</h1>
       <div style="font-size:12px;opacity:.9">Register UCL Owner — Telegram 2FA</div>
     </div>
+    
   </div>
-  <nav>
+    <!-- Mobile Menu Toggle -->
+  <div class="menu-toggle" onclick="toggleMenu()">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+ <nav id="mainMenu">
     <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
     <a href="/pastenewadd.html"><i class="fa-solid fa-circle-plus"></i> Add PAC</a>
     <a href="/newshow.html"><i class="fa-solid fa-table-list"></i> Show PAC</a>
@@ -151,6 +257,11 @@ footer{background:var(--accent1);color:#fff;padding:12px;text-align:center;posit
 
 
 <!-- SCRIPT -->
+ <script>// Mobile menu toggle
+function toggleMenu() {
+  document.getElementById("mainMenu").classList.toggle("show");
+}
+</script>
 <script type="module">
 /* ============================
    TELEGRAM 2FA + FIRESTORE PAGE
