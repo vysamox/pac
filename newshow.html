@@ -104,29 +104,69 @@ nav a:hover::after {
       transform: translateY(-2px);
     }
 
-    .live-count { border-left: 6px solid #28a745; }
-    .copied-count { border-left: 6px solid #ffc107; }
-    .sync-status { border-left: 6px solid #17a2b8; }
-    .today-count { border-left: 6px solid #6f42c1; } /* Purple color badge for today’s count */
-    .income-total{border-left: 6px solid #00c853; /* green */}
+   /* 💠 Dashboard Summary - Colored Left & Right Borders */
+
+/* Live PAC Count */
+.live-count {
+  border-left: 6px solid #28a745;
+  border-right: 6px solid #28a745;
+}
+
+/* Total Copied */
+.copied-count {
+  border-left: 6px solid #ffc107;
+  border-right: 6px solid #ffc107;
+}
+
+/* Sync Status */
+.sync-status {
+  border-left: 6px solid #17a2b8;
+  border-right: 6px solid #17a2b8;
+  animation: syncGlow 2.4s ease-in-out infinite;
+}
+
+/* Today Copied */
+.today-count {
+  border-left: 6px solid #6f42c1;
+  border-right: 6px solid #6f42c1;
+}
+
+/* Income Total */
+.income-total {
+  border-left: 6px solid #00c853;
+  border-right: 6px solid #00c853;
+}
 .income-total i {
   color: #00c853;
 }
 
-    /* DB Size – Blue-Green */
+/* Database Size */
 .db-size {
-  border-left: 6px solid #198754; /* green */
+  border-left: 6px solid #198754;
+  border-right: 6px solid #198754;
 }
 
-/* Unused PACs – Blue-Grey */
+/* Unused PACs */
 .unused-count {
-  border-left: 6px solid #6c757d; /* grey */
-}/* Usage Percentage – Sky Blue */
-.percent-used {
-  border-left: 6px solid #0dcaf0; /* cyan */
+  border-left: 6px solid #6c757d;
+  border-right: 6px solid #6c757d;
 }
 
-        /* 🔄 Sync Icon Rotate Animation */
+/* Usage Percentage */
+.percent-used {
+  border-left: 6px solid #0dcaf0;
+  border-right: 6px solid #0dcaf0;
+}
+#backupStatusBox {
+  border-left: 6px solid #ff5722;
+  border-right: 6px solid #ff5722;   /* Added right border for consistency */
+  
+  position: relative;
+  padding-right: 15px;
+  
+  animation: syncGlow 2s ease-in-out infinite; /* Smooth animation */
+}
+/* 🔄 Sync Icon – Rotation Animation */
 @keyframes syncSpin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -137,15 +177,16 @@ nav a:hover::after {
   animation: syncSpin 2s linear infinite;
 }
 
-/* 🌟 Smooth Glow Pulse for the whole Sync Box */
+/* 🌟 Sync Box – Glow Pulse Animation */
 @keyframes syncGlow {
-  0% { box-shadow: 0 0 6px rgba(23,162,184,0.3); }
-  50% { box-shadow: 0 0 14px rgba(23,162,184,0.7); }
+  0%   { box-shadow: 0 0 6px rgba(23,162,184,0.3); }
+  50%  { box-shadow: 0 0 14px rgba(23,162,184,0.7); }
   100% { box-shadow: 0 0 6px rgba(23,162,184,0.3); }
 }
 
-.sync-status {
-  animation: syncGlow 2.4s ease-in-out infinite;
+.copied-count,
+#backupStatusBox {
+  display: none !important;
 }
 
 
@@ -389,16 +430,7 @@ tbody tr:last-child td {
       .filter-bar { flex-direction: column; }
       .status-bar { flex-direction: column; }
     }
-#backupStatusBox {
-  border-left: 6px solid #ff5722;
-  animation: syncGlow 2s infinite;
-}
 
-/* 🌈 Backup box progress bar INSIDE status-box */
-#backupStatusBox {
-  position: relative;
-  padding-right: 15px;
-}
 
 /* 🌟 Modern Pagination Styling */
 .pagination-container {
