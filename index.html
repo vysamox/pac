@@ -676,14 +676,7 @@ footer .social a:hover {
     <i class="fa-solid fa-bars"></i>
   </div>
 
-  <nav id="mainMenu">
-    <!--<a href="#"><i class="fa-solid fa-house"></i> Home</a>-->
-    <a href="/pastenewadd.html"><i class="fa-solid fa-circle-plus"></i> Add PAC</a>
-    <a href="/newshow.html"><i class="fa-solid fa-eye"></i> Show PAC</a>
-    <a href="/usedpac.html"><i class="fa-solid fa-clipboard-check"></i> Used PAC</a>
-    <a href="/adducl.html"><i class="fa-solid fa-user-plus"></i> Add UCL</a>
-    <a href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a>
-  </nav>
+  <nav id="mainMenu"></nav>
 </header>
 
 
@@ -841,6 +834,71 @@ footer .social a:hover {
   &copy; 2025 PAC Management System. All rights reserved.
   <div id="footer-info"><span id="live-time"></span> | <span id="user-ip"></span></div>
 </footer>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { 
+  getFirestore, collection, onSnapshot,
+  query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+/* FIREBASE CONFIG */
+const firebaseConfig = {
+    apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+    authDomain: "mrsamrat08.firebaseapp.com",
+    projectId: "mrsamrat08",
+    storageBucket: "mrsamrat08.appspot.com",
+    messagingSenderId: "525481767881",
+    appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* ----------------------------------------------------
+   REAL-TIME LIVE NAVIGATION UPDATE (NO REFRESH NEEDED)
+----------------------------------------------------- */
+function loadNavMenuLive() {
+  const menu = document.getElementById("mainMenu");
+  if (!menu) return;
+
+  const currentPage = window.location.pathname;  
+  // Example: /addnav.html
+
+  const q = query(collection(db, "pacnav"), orderBy("order"));
+
+  onSnapshot(q, (snapshot) => {
+    let html = "";
+
+    snapshot.forEach((doc) => {
+      const v = doc.data();
+
+      // If this nav item’s URL matches the page URL → SKIP
+      if (v.url === currentPage) return;
+
+      const iconClass =
+        v.icon?.trim() ? v.icon : "fa-solid fa-circle-question";
+
+      html += `
+        <a href="${v.url}">
+          <i class="${iconClass}"></i> ${v.title}
+        </a>`;
+    });
+
+    menu.innerHTML = html;
+  });
+}
+
+loadNavMenuLive();
+
+/* ---------------- MOBILE MENU ---------------- */
+window.toggleMenu = function () {
+  const menu = document.getElementById("mainMenu");
+  if (menu) menu.classList.toggle("show");
+};
+</script>
+
 
 <script>
 function updateTime() {

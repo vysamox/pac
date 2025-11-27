@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Navigation | PAC Management System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ---------------- GLOBAL ---------------- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f4f7ff;
+  color: #333;
+  overflow-x: hidden;
+}
+
+.menu-toggle {
+  display: none !important;
+}
+
+/* ---------------- HEADER ---------------- */
+header {
+  background: rgba(0, 123, 255, 0.9);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+header h1 {
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#mainMenu a {
+  color: white;
+  margin-left: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+  transition: 0.3s;
+}
+
+#mainMenu a:hover { color: #ffeb3b; }
+
+#mainMenu a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background: #ffeb3b;
+  transition: 0.3s;
+}
+#mainMenu a:hover::after { width: 100%; }
+
+/* ---------------- PAGE TITLE ---------------- */
+.page-hero {
+  padding: 40px 20px 10px;
+  text-align: center;
+}
+
+.page-hero h2 {
+  font-size: 28px;
+  color: #007bff;
+  font-weight: 700;
+}
+
+.page-hero p {
+  margin-top: 6px;
+  color: #555;
+  font-size: 14px;
+}
+
+/* ---------------- FORM CARD ---------------- */
+.form-wrapper {
+  max-width: 650px;
+  margin: 20px auto 50px;
+  padding: 25px 25px 30px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f7faff, #eaf1ff);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.form-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  border-radius: 20px;
+  background: linear-gradient(120deg, #007bff, #00eaff, #00ff8a, #008cff, #007bff);
+  background-size: 300% 300%;
+  animation: formGlow 6s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+}
+
+@keyframes formGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.form-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.form-title-row h3 {
+  font-size: 20px;
+  color: #004aad;
+}
+
+.badge-small {
+  font-size: 12px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(0,123,255,0.1);
+  color: #005dd1;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5f0;
+  font-size: 14px;
+  margin-bottom: 18px;
+  outline: none;
+  background: #fff;
+}
+
+input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.18);
+}
+
+.help-text {
+  font-size: 12px;
+  color: #666;
+  margin-top: -10px;
+  margin-bottom: 14px;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #005dd1;
+  box-shadow: 0 6px 15px rgba(0,123,255,0.35);
+}
+
+.btn-ghost {
+  background: rgba(255,255,255,0.7);
+  color: #005dd1;
+  border: 1px solid rgba(0,123,255,0.25);
+}
+.btn-ghost:hover { background: #fff; }
+
+.preview-nav {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #333;
+  background: rgba(255,255,255,0.7);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.preview-nav i { margin-right: 8px; }
+
+.status-msg {
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  display: none;
+}
+
+.status-success {
+  background: #d4ffd8;
+  color: #0f7b1f;
+  border: 1px solid #9fe7aa;
+}
+
+.status-error {
+  background: #ffd4d4;
+  color: #7b0f0f;
+  border: 1px solid #f09a9a;
+}
+
+/* ---------------- TABLE ---------------- */
+.nav-table-wrapper {
+  max-width: 1100px;
+  margin: 40px auto 100px;
+  padding: 25px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+  overflow-x: auto;
+  border: 1px solid #e9eef9;
+}
+
+.table-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #007bff;
+  margin-bottom: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+#navTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+#navTable thead th {
+  background: #007bff;
+  color: #fff;
+  padding: 14px;
+  font-size: 15px;
+  text-align: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+#navTable tbody tr {
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  border-radius: 10px;
+}
+
+#navTable tbody td {
+  padding: 14px 10px;
+  font-size: 15px;
+  color: #333;
+  text-align: center;
+}
+
+/* Icon column */
+#navTable tbody td i {
+  color: #007bff;
+  font-size: 22px;
+}
+
+
+
+/* Mobile optimized */
+@media (max-width: 768px) {
+  #navTable {
+    border-spacing: 0 8px;
+  }
+
+  #navTable tbody td {
+    padding: 10px 6px;
+    font-size: 14px;
+  }
+
+  .action-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+}
+
+/* ---------------- OTP MODAL ---------------- */
+.otp-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.otp-box {
+  background: #fff;
+  width: 90%;
+  max-width: 380px;
+  padding: 25px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+  animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.otp-box input {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 18px;
+}
+
+/* ---------------- FOOTER ---------------- */
+footer {
+  background: linear-gradient(90deg, #004aad, #007bff);
+  color: #fff;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+#footer-info {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+
+/* ---------------- MOBILE ---------------- */
+@media (max-width: 768px) {
+  header { padding: 12px 18px; height: 60px; }
+  header h1 { font-size: 18px; gap: 8px; }
+
+  .menu-toggle {
+    display: block !important;
+    font-size: 24px;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  header nav {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: rgba(0,123,255,0.95);
+    max-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+    transition: max-height 0.35s ease;
+  }
+
+  header nav.show { max-height: 450px; }
+
+  header nav a {
+    padding: 14px 22px;
+    display: block;
+    margin: 0;
+    font-size: 15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1><i class="fa-solid fa-database"></i> PAC Management</h1>
+
+  <div class="menu-toggle" onclick="toggleMenu()">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+
+  <nav id="mainMenu"></nav>
+</header>
+
+<section class="page-hero">
+  <h2>Add Navigation Item</h2>
+  <p>Create PAC navigation links and store them in Firebase</p>
+</section>
+
+<section class="form-wrapper">
+  <div class="form-title-row">
+    <h3><i class="fa-solid fa-bars-progress"></i> Navigation Details</h3>
+    <span class="badge-small">Saved in pacnav</span>
+  </div>
+
+  <label>Navigation Title</label>
+  <input type="text" id="navTitle">
+
+  <label>Navigation URL</label>
+  <input type="text" id="navURL">
+
+  <label>Icon Class</label>
+  <input type="text" id="navIcon">
+
+  <label>Order (Optional)</label>
+  <input type="number" id="navOrder">
+
+  <div class="button-row">
+    <button class="btn-primary" onclick="startAddOTP()">Save Navigation</button>
+    <button class="btn-ghost" onclick="resetForm()">Reset</button>
+  </div>
+
+  <div class="preview-nav" id="previewNav"></div>
+
+  <div id="statusSuccess" class="status-msg status-success"></div>
+  <div id="statusError" class="status-msg status-error"></div>
+</section>
+
+<section class="nav-table-wrapper">
+  <h2 class="table-title"><i class="fa-solid fa-table-list"></i> Saved Navigation Items</h2>
+  <table id="navTable">
+    <thead>
+      <tr>
+        <th>Order</th>
+        <th>Icon</th>
+        <th>Title</th>
+        <th>URL</th>
+        <th>Active</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="navTableBody"></tbody>
+  </table>
+</section>
+
+<!-- OTP MODAL -->
+<div id="otpModal" class="otp-modal">
+  <div class="otp-box">
+    <h3><i class="fa-solid fa-key"></i> OTP Verification</h3>
+    <p>Enter the OTP sent to Telegram</p>
+    <input type="number" id="otpInput" placeholder="Enter OTP">
+    <button class="btn-primary" onclick="verifyOTP()">Verify</button>
+    <p id="otpError" class="otp-error"></p>
+  </div>
+</div>
+
+<footer>
+  &copy; 2025 PAC Management System. All rights reserved.
+  <div id="footer-info"><span id="live-time"></span> | <span id="user-ip"></span></div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { 
+  getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc,
+  doc, serverTimestamp, getDoc, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+    authDomain: "mrsamrat08.firebaseapp.com",
+    projectId: "mrsamrat08",
+    storageBucket: "mrsamrat08.appspot.com",
+    messagingSenderId: "525481767881",
+    appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* GLOBALS */
+let generatedOTP = null;
+let otpAction = null;
+let editDocId = null;
+let deleteDocId = null;
+
+/* SEND OTP */
+const BOT = "7607621792:AAHhgqpQ-ZK4Sf1iZySZHrKHoF9eGaBbxDs";
+const CHAT = "-1003045536794";
+
+function sendOTP(text) {
+    generatedOTP = Math.floor(100000 + Math.random() * 900000);
+
+    document.getElementById("otpInput").value = "";
+    document.getElementById("otpError").textContent = "";
+
+    fetch(`https://api.telegram.org/bot${BOT}/sendMessage`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+          chat_id: CHAT,
+          text: `🔐 PAC Navigation OTP\nAction: ${text}\nOTP: ${generatedOTP}`,
+      })
+    });
+
+    document.getElementById("otpModal").style.display = "flex";
+}
+
+/* VERIFY OTP */
+window.verifyOTP = function() {
+  const v = document.getElementById("otpInput").value.trim();
+  if (v !== String(generatedOTP)) {
+      document.getElementById("otpError").textContent = "Incorrect OTP";
+      return;
+  }
+  document.getElementById("otpModal").style.display = "none";
+
+  if (otpAction === "add") saveNav();
+  if (otpAction === "edit") updateNav();
+  if (otpAction === "delete") removeNav();
+};
+
+/* ADD NAV */
+window.startAddOTP = function() {
+  const t = document.getElementById('navTitle').value.trim();
+  const u = document.getElementById('navURL').value.trim();
+  const i = document.getElementById('navIcon').value.trim();
+
+  if (!t || !u || !i) return showError("All fields required");
+
+  otpAction = "add";
+  sendOTP("Add Navigation");
+};
+
+async function saveNav() {
+    const title = document.getElementById('navTitle').value.trim();
+    const url   = document.getElementById('navURL').value.trim();
+    const icon  = document.getElementById('navIcon').value.trim();
+    const order = Number(document.getElementById('navOrder').value) || 9999;
+
+    await addDoc(collection(db,"pacnav"), {
+        title, url, icon, order, active: true, createdAt: serverTimestamp()
+    });
+
+    resetForm();
+    showSuccess("Navigation Added");
+    loadTable();
+    loadNavMenu();
+}
+window.saveNav = saveNav;
+
+/* LOAD TABLE */
+async function loadTable() {
+  const tbody = document.getElementById("navTableBody");
+  tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
+
+  const q = query(collection(db,"pacnav"), orderBy("order"));
+  const snap = await getDocs(q);
+
+  let html = "";
+  snap.forEach(d => {
+     const v = d.data();
+     html += `
+      <tr>
+        <td>${v.order}</td>
+        <td><i class="${v.icon}" style="font-size:20px"></i></td>
+        <td>${v.title}</td>
+        <td>${v.url}</td>
+        <td>${v.active ? "✔" : "✘"}</td>
+        <td>
+           <button class="edit-btn" onclick="startEdit('${d.id}')" title="Edit">
+    <i class="fa-solid fa-pen-to-square"></i>
+</button>
+
+<button class="delete-btn" onclick="startDelete('${d.id}')" title="Delete">
+    <i class="fa-solid fa-trash"></i>
+</button>
+
+        </td>
+      </tr>`;
+  });
+
+  tbody.innerHTML = html || "<tr><td colspan='6'>No items</td></tr>";
+}
+loadTable();
+
+/* EDIT */
+window.startEdit = async function(id){
+  otpAction = "edit";
+  editDocId = id;
+
+  const snap = await getDoc(doc(db,"pacnav",id));
+  const d = snap.data();
+
+  document.getElementById("navTitle").value = d.title;
+  document.getElementById("navURL").value = d.url;
+  document.getElementById("navIcon").value = d.icon;
+  document.getElementById("navOrder").value = d.order;
+
+  updatePreview();
+  sendOTP("Edit Navigation");
+};
+
+async function updateNav(){
+  const ref = doc(db,"pacnav",editDocId);
+  await updateDoc(ref,{
+     title: navTitle.value,
+     url: navURL.value,
+     icon: navIcon.value,
+     order: Number(navOrder.value) || 9999
+  });
+
+  showSuccess("Navigation Updated");
+  resetForm();
+  loadTable();
+  loadNavMenu();
+}
+window.updateNav = updateNav;
+
+/* DELETE */
+window.startDelete = function(id){
+  otpAction = "delete";
+  deleteDocId = id;
+  sendOTP("Delete Navigation");
+};
+
+async function removeNav(){
+  await deleteDoc(doc(db,"pacnav",deleteDocId));
+  showSuccess("Navigation Deleted");
+  loadTable();
+  loadNavMenu();
+}
+window.removeNav = removeNav;
+
+/* RESET */
+window.resetForm = function(){
+  navTitle.value="";
+  navURL.value="";
+  navIcon.value="";
+  navOrder.value="";
+  updatePreview();
+};
+
+/* PREVIEW */
+function updatePreview(){
+  const t = navTitle.value || "Title Preview";
+  const i = navIcon.value || "fa-solid fa-circle-question";
+  previewNav.innerHTML = `<i class="${i}"></i> ${t}`;
+}
+navTitle.oninput = updatePreview;
+navIcon.oninput = updatePreview;
+
+/* STATUS */
+function showSuccess(msg){
+  statusSuccess.style.display="block";
+  statusSuccess.textContent = "✔ " + msg;
+  statusError.style.display="none";
+}
+
+function showError(msg){
+  statusError.style.display="block";
+  statusError.textContent = "✘ " + msg;
+  statusSuccess.style.display="none";
+}
+
+/* DYNAMIC NAV MENU */
+async function loadNavMenu(){
+  const menu = document.getElementById("mainMenu");
+  const q = query(collection(db,"pacnav"), orderBy("order"));
+  const snap = await getDocs(q);
+
+  let html="";
+  snap.forEach(d=>{
+      const v = d.data();
+      html+= `<a href="${v.url}"><i class="${v.icon}"></i> ${v.title}</a>`;
+  });
+
+  menu.innerHTML = html;
+}
+loadNavMenu();
+
+/* MOBILE MENU */
+window.toggleMenu = function(){
+   document.getElementById("mainMenu").classList.toggle("show");
+};
+</script>
+
+<script>
+/* TIME */
+setInterval(()=>{
+  const n=new Date();
+  const t = `${n.getDate()}-${n.getMonth()+1}-${n.getFullYear()} ${n.toLocaleTimeString()}`;
+  document.getElementById("live-time").textContent = t;
+},1000);
+
+/* IP */
+fetch("https://api.ipify.org?format=json")
+  .then(r=>r.json())
+  .then(d=> document.getElementById("user-ip").textContent="IP: "+d.ip);
+</script>
+
+</body>
+</html>

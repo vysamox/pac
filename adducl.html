@@ -165,12 +165,6 @@ footer{background:var(--accent1);color:#fff;padding:12px;text-align:center;posit
     <i class="fa-solid fa-bars"></i>
   </div>
  <nav id="mainMenu">
-    <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="/pastenewadd.html"><i class="fa-solid fa-circle-plus"></i> Add PAC</a>
-    <a href="/newshow.html"><i class="fa-solid fa-table-list"></i> Show PAC</a>
-    <a href="/usedpac.html"><i class="fa-solid fa-list-check"></i> Used PAC</a>
-    <a href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a>
-    <!--<a href="/adducl.html"><i class="fa-solid fa-user-plus"></i> Add UCL</a>-->
   </nav>
 </header>
 
@@ -732,6 +726,44 @@ otpCancelBtn.addEventListener("click", ()=>{
 clearBtn.addEventListener("click", clearForm);
 document.addEventListener("keydown", (e)=>{ if (e.ctrlKey && e.key === "Enter") saveBtn.click(); if (e.key === "Escape") clearBtn.click(); });
 
+function loadNavMenuLive() {
+  const menu = document.getElementById("mainMenu");
+  if (!menu) return;
+
+  const currentPage = window.location.pathname;  
+  // Example: /addnav.html
+
+  const q = query(collection(db, "pacnav"), orderBy("order"));
+
+  onSnapshot(q, (snapshot) => {
+    let html = "";
+
+    snapshot.forEach((doc) => {
+      const v = doc.data();
+
+      // If this nav item’s URL matches the page URL → SKIP
+      if (v.url === currentPage) return;
+
+      const iconClass =
+        v.icon?.trim() ? v.icon : "fa-solid fa-circle-question";
+
+      html += `
+        <a href="${v.url}">
+          <i class="${iconClass}"></i> ${v.title}
+        </a>`;
+    });
+
+    menu.innerHTML = html;
+  });
+}
+
+loadNavMenuLive();
+
+/* ---------------- MOBILE MENU ---------------- */
+window.toggleMenu = function () {
+  const menu = document.getElementById("mainMenu");
+  if (menu) menu.classList.toggle("show");
+};
 /* ----------------------
    INITIAL
    ---------------------- */

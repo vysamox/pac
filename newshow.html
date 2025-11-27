@@ -637,11 +637,6 @@ tbody tr:last-child td {
     <i class="fa-solid fa-bars"></i>
   </div>
   <nav id="mainMenu">
-    <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="/pastenewadd.html"><i class="fa-solid fa-plus-circle"></i> Add PAC</a>
-    <a href="/usedpac.html"><i class="fa-solid fa-archive"></i> Used PACs</a>
-    <a href="/adducl.html"><i class="fa-solid fa-user-plus"></i> Add UCL</a>
-    <a href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a>
   </nav>
 </header>
 
@@ -1386,6 +1381,40 @@ async function saveBackupTimeToFirebase() {
   document.getElementById("lastBackup").innerText =
     "Last Backup: " + new Date(timeNow).toLocaleString("en-IN");
 }
+
+function loadNavMenuLive() {
+  const menu = document.getElementById("mainMenu");
+  if (!menu) return;
+
+  const currentPage = window.location.pathname;
+
+  db.collection("pacnav")
+    .orderBy("order")
+    .onSnapshot((snapshot) => {
+      let html = "";
+
+      snapshot.forEach((doc) => {
+        const v = doc.data();
+
+        // Skip current page
+        if (v.url === currentPage) return;
+
+        const iconClass = v.icon ? v.icon : "fa-solid fa-circle-question";
+
+        html += `
+          <a href="${v.url}">
+            <i class="${iconClass}"></i> ${v.title}
+          </a>
+        `;
+      });
+
+      menu.innerHTML = html;
+    });
+}
+
+loadNavMenuLive();
+
+
 /*
    RUN BACKUP:
    🔥 Check automatically every 5 hours
