@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAC Management System | Maintenance</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ---------------- GLOBAL ---------------- */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Poppins',sans-serif;
+  background:#ffffff;
+  color:#333;
+  overflow-x:hidden;
+}
+.menu-toggle{display:none!important;}
+
+/* ---------------- HEADER ---------------- */
+header{
+  background:rgba(0,123,255,0.9);
+  backdrop-filter:blur(10px);
+  color:#fff;
+  padding:18px 40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  box-shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+header h1{
+  font-size:26px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+nav a{
+  color:white;
+  margin-left:25px;
+  font-weight:600;
+  text-decoration:none;
+  position:relative;
+  transition:0.3s;
+}
+nav a:hover{color:#ffeb3b;}
+nav a::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-4px;
+  width:0%;
+  height:2px;
+  background:#ffeb3b;
+  transition:0.3s;
+}
+nav a:hover::after{width:100%;}
+
+/* ---------------- MAINTENANCE PAGE ---------------- */
+/* MAINTENANCE SECTION */
+.under-working{
+  min-height:calc(100vh - 160px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:40px 20px;
+  text-align:center;
+}
+
+.maint-box{
+  max-width:700px;
+}
+
+.svg-icon{
+  width:160px;
+  height:auto;
+  margin-bottom:20px;
+}
+
+.maint-title{
+  font-size:30px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.maint-sub{
+  font-size:16px;
+  color:#666;
+  margin-bottom:6px;
+}
+
+.maint-small{
+  font-size:14px;
+  color:#888;
+}
+
+
+/* ---------------- FOOTER ---------------- */
+footer {
+  background: linear-gradient(90deg, #004aad, #007bff);
+  color: #fff;
+  text-align: center;
+  padding: 40px 20px;
+}
+footer .social a {
+  color: #fff;
+  margin: 0 10px;
+  font-size: 22px;
+  transition: 0.3s;
+}
+footer .social a:hover {
+  color: #ffeb3b;
+  transform: scale(1.2);
+}
+#footer-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ddd;
+}
+
+/* ---------------- MOBILE ---------------- */
+/* ---------------- MOBILE HEADER (FINAL FIXED VERSION) ---------------- */
+@media (max-width: 768px) {
+
+  header {
+    padding: 12px 18px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+  }
+
+  header h1 {
+    font-size: 18px;
+    gap: 8px;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  header h1 i {
+    font-size: 18px;
+  }
+
+  .menu-toggle {
+    display: block !important;
+    font-size: 24px;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  /* Mobile nav dropdown */
+  header nav {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: rgba(0,123,255,0.95);
+    max-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+    transition: max-height 0.35s ease;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 0;
+  }
+
+  header nav.show {
+    max-height: 450px;
+  }
+
+  header nav a {
+    padding: 14px 22px;
+    margin: 0;
+    display: block;
+    font-size: 15px;
+  }
+
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1><i class="fa-solid fa-database"></i> PAC Management</h1>
+
+  <div class="menu-toggle" onclick="toggleMenu()">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+
+  <nav id="mainMenu"></nav>
+</header>
+
+
+<section class="under-working">
+  <div class="maint-box">
+
+    <!-- YOUR SVG ICON -->
+    <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+      <path d="M28.8 49.9H54c1 0 1.8-.8 1.8-1.8v-6.8c0-1-.8-1.8-1.8-1.8H28.8c-1 0-1.8.8-1.8 1.8v6.8c.1 1.1.9 1.8 1.8 1.8zm1.8-6.7h21.7v3.3H30.6v-3.3zM28.6 66.3h8.2c1 0 1.8-.8 1.8-1.8v-8.2c0-1-.8-1.8-1.8-1.8h-8.2c-1 0-1.8.8-1.8 1.8v8.2c.1 1 .9 1.8 1.8 1.8zm1.8-8.2h4.7v4.7h-4.7v-4.7zM54 54.6h-8.2c-1 0-1.8.8-1.8 1.8v8.2c0 1 .8 1.8 1.8 1.8H54c1 0 1.8-.8 1.8-1.8v-8.2c0-1-.8-1.8-1.8-1.8zm-1.7 8.2h-4.7v-4.7h4.7v4.7zM36.9 81.4c1 0 1.8-.8 1.8-1.8v-8.2c0-1-.8-1.8-1.8-1.8h-8.2c-1 0-1.8.8-1.8 1.8v8.2c0 1 .8 1.8 1.8 1.8h8.2zm-6.5-8.2h4.7v4.7h-4.7v-4.7zM54 69.7h-8.2c-1 0-1.8.8-1.8 1.8v8.2c0 1 .8 1.8 1.8 1.8H54c1 0 1.8-.8 1.8-1.8v-8.2c0-1-.8-1.8-1.8-1.8zm-1.7 8.2h-4.7v-4.7h4.7v4.7z"/>
+      <path d="M106.2 24.4h8.8c1 0 1.8-.8 1.8-1.8V13c0-1-.8-1.8-1.8-1.8H13c-1.3 0-1.8.7-1.8 1.8v9.7c0 1 .8 1.8 1.8 1.8h63v39.9l-3.8 2.5c-.5.3-.8.9-.8 1.5v9.1c0 1 .8 1.8 1.8 1.8h9.3c1 0 1.8-.8 1.8-1.8v-9.1c0-.6-.3-1.1-.8-1.5l-3.8-2.5v-40H93v88.8h-7v-5c0-1-.8-1.8-1.8-1.8h-6v-3.3h6c1 0 1.8-.8 1.8-1.8v-6.8c0-1-.8-1.8-1.8-1.8h-6v-5c0-1-.8-1.8-1.8-1.8H62.6V34.7c0-1-.8-1.8-1.8-1.8H22c-1 0-1.8.8-1.8 1.8v78.6H13c-1 0-1.8.8-1.8 1.8s.8 1.8 1.8 1.8h102c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8h-8.8V24.4z"/>
+    </svg>
+
+    <h2 class="maint-title">We’re Updating the System</h2>
+    <p class="maint-sub">We are currently improving performance and adding new features.</p>
+    <p class="maint-small">New updates will be available soon. 🚀</p>
+
+  </div>
+</section>
+
+
+<footer>
+  &copy; 2025 PAC Management System. All rights reserved.
+  <div id="footer-info"><span id="live-time"></span> | <span id="user-ip"></span></div>
+</footer>
+
+
+<!-- Firebase Navigation -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } 
+from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+    authDomain: "mrsamrat08.firebaseapp.com",
+    projectId: "mrsamrat08",
+    storageBucket: "mrsamrat08.appspot.com",
+    messagingSenderId: "525481767881",
+    appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function loadNavMenuLive() {
+  const menu = document.getElementById("mainMenu");
+  const currentPage = window.location.pathname;
+
+  const q = query(collection(db, "pacnav"), orderBy("order"));
+  onSnapshot(q, (snapshot) => {
+    let html = "";
+    snapshot.forEach((doc) => {
+      const v = doc.data();
+      if (v.url === currentPage) return;
+      html += `<a href="${v.url}"><i class="${v.icon || 'fa-solid fa-circle-question'}"></i> ${v.title}</a>`;
+    });
+    menu.innerHTML = html;
+  });
+}
+loadNavMenuLive();
+</script>
+
+<script>
+
+// Live Time
+function updateTime(){
+  const el=document.getElementById("live-time");
+  const now=new Date();
+  let d=String(now.getDate()).padStart(2,'0');
+  let m=String(now.getMonth()+1).padStart(2,'0');
+  let y=now.getFullYear();
+  let h=now.getHours();
+  let min=String(now.getMinutes()).padStart(2,'0');
+  let s=String(now.getSeconds()).padStart(2,'0');
+  let ampm=h>=12?"PM":"AM";
+  h=h%12;h=h?h:12;h=String(h).padStart(2,'0');
+  el.textContent=`🕒 ${d}-${m}-${y} ${h}:${min}:${s} ${ampm}`;
+}
+setInterval(updateTime,1000);
+updateTime();
+
+// IP Fetch
+fetch('https://api.ipify.org?format=json')
+  .then(r=>r.json())
+  .then(d=>document.getElementById('user-ip').textContent="🌐 IP: "+d.ip)
+  .catch(()=>document.getElementById('user-ip').textContent="🌐 IP: Unavailable");
+
+// Toggle Menu
+function toggleMenu(){
+  document.getElementById("mainMenu").classList.toggle("show");
+}
+</script>
+
+</body>
+</html>
