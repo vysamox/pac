@@ -5,6 +5,8 @@
   <title>PAC Entry Form — Advanced Auto Process</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 
   <style>
     :root{
@@ -160,25 +162,98 @@ nav a:hover::after {
       background:#f1f6ff;
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:16px;
-      display:none;
-    }
+   /* ===================== PREMIUM TABLE UI ===================== */
 
-    th{
-      background:linear-gradient(90deg,var(--accent1),var(--accent2));
-      color:#fff;
-      padding:10px;
-    }
+table {
+  width: 100%;
+  border-collapse: separate; /* better than collapse */
+  border-spacing: 0;
+  margin-top: 16px;
+  display: none;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
 
-    td{
-      padding:10px;
-      border:1px solid #e6edf5;
-      font-size:14px;
-      text-align:center;
-    }
+/* Header Styling */
+th {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #fff;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+
+th:first-child {
+  border-top-left-radius: 14px;
+}
+th:last-child {
+  border-top-right-radius: 14px;
+}
+
+/* Table Row Styling */
+td {
+  padding: 12px;
+  border-bottom: 1px solid #eef2f9;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Zebra Effect */
+tbody tr:nth-child(even) {
+  background: #f9fbff;
+}
+
+/* Row Hover */
+tbody tr:hover {
+  background: #eef6ff !important;
+  transition: 0.25s ease-in-out;
+}
+
+/* Purpose Tag */
+.purpose-tag {
+  background: #e8f1ff;
+  color: #0054c7;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Amount Tag */
+.amount-tag {
+  background: #eaffea;
+  color: #0a8a28;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-block;
+}
+
+/* Status Tags */
+.status-new {
+  background: #e9ffef;
+  color: #0a8a28;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.status-exists {
+  background: #ffe6e6;
+  color: #d10000;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
 
     .btn{
       padding:12px 16px;
@@ -314,6 +389,7 @@ nav a:hover::after {
           <th>CSC REF</th>
           <th>PAC Number</th>
           <th>ORDERED ON</th>
+          <th>Purpose</th>
           <th>Total Amount</th>
           <th>Status</th>
         </tr>
@@ -322,7 +398,7 @@ nav a:hover::after {
     </table>
 
     <!-- Save -->
-    <button id="saveAllBtn" class="btn" style="display:none; margin-top:16px;">💾 Save All to Firebase</button>
+    <button id="saveAllBtn" class="btn" style="display:none; margin-top:16px;">💾 Save </button>
 
   </div>
 </div>
@@ -371,6 +447,8 @@ const saveAllBtn = document.getElementById("saveAllBtn");
 
 let owners = [];
 let pastedRefs = new Set();
+let currentUserIP = null;   // ← store current detected IP
+
 
 /* ESCAPE HTML */
 function escapeHtml(s){ return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;"); }
@@ -435,15 +513,35 @@ let currentOwner = null;
 function selectOwner(o){
   currentOwner = o;
 
+  const uclIP = o.ip || "Unknown";
+  const myIP = currentUserIP || "Detecting...";
+
+  let ipStatus = "";
+
+  if (currentUserIP === null) {
+    ipStatus = `<b>IP Check:</b> 🔄 Detecting your IP...`;
+  } 
+  else if (uclIP === myIP) {
+    ipStatus = `<b>IP Check:</b> <span style="color:#0a8a28;font-weight:600;">✔ MATCHED — You can add PAC</span>`;
+  } 
+  else {
+    ipStatus = `<b>IP Check:</b> <span style="color:#d10000;font-weight:600;">✖ MISMATCH — PAC saving will be blocked</span>`;
+  }
+
   ownerBox.innerHTML = `
     <b>🆔 UCL:</b> ${o.uclId}<br>
     <b>👤 Name:</b> ${o.name}<br>
-    <b>🌐 IP:</b> ${o.ip}<br>
+    <b>🌐 UCL IP:</b> ${uclIP}<br>
+    <b>🧑‍💻 Your IP:</b> ${myIP}<br>
     <b>📍 Address:</b> ${o.address}<br>
-     <b>🔎 Last Verify:</b> ${o.lastVerifiedAt}<br>
-     
+    <b>🔎 Last Verify:</b> ${o.lastVerifiedAt}<br>
+    <div style="text-align:center; margin-top:8px;">
+  ${ipStatus}
+</div>
+
   `;
 }
+
 /* AUTO DETECT USER IP & MATCH OWNER */
 async function autoDetectIP(){
   let ip = null;
@@ -453,6 +551,8 @@ async function autoDetectIP(){
   }catch(e){}
   
   footerIp.textContent = "IP: " + (ip || "Unavailable");
+currentUserIP = ip;   // ← SAVE CURRENT IP
+
 
   if(!ip) return;
 
@@ -474,13 +574,23 @@ pasteData.addEventListener("paste", ()=>{
 /* PROCESS PASTED DATA */
 async function processPastedData(){
 
+if (!currentOwner) {
+  alert("⚠️ Please select a UCL owner first!");
+  return;
+}
+
   const text = pasteData.value.trim();
   if(!text) return;
 
   // IMPROVED REGEX
   const refRegex = /CSC\s*REF[:\s]*([0-9]+)/gi;
   const orderRegex = /ORDERED\s*ON\s*[\r\n]+([^\r\n]+)/gi;
-  const amountRegex = /Total\s*Amount[:\s]*₹?\s*([0-9\.]+)/gi;
+  const amountRegex = /Total\s*Amount[:\s]*₹?\s*([0-9,\.]+)/gi;
+  // UNIVERSAL PURPOSE EXTRACTOR
+const purposeRegex = /WALLET\s*DEDUCTION[\s\S]*?Success([\s\S]*?)ORDER\s*TOTAL/gi;
+
+const purposes = [...text.matchAll(purposeRegex)]
+  .map(x => x[1].trim().replace(/\n+/g, " / ").replace(/\s+/g, " "));
 
   const refs = [...text.matchAll(refRegex)].map(x=>x[1]);
   const dates = [...text.matchAll(orderRegex)].map(x=>x[1].trim());
@@ -511,25 +621,44 @@ async function processPastedData(){
     const docRef = doc(db,"pac_entries",pacNo);
     const snap = await getDoc(docRef);
 
-    if(snap.exists()){
-      status = `<span style="color:#d10000;font-weight:600;">⚠️ Already Exists</span>`;
-      bg = "#ffe6e6";
-    } else {
-      status = `<span style="color:#009900;font-weight:600;">✅ New Entry</span>`;
-      bg = "#e9ffef";
-    }
+ if (snap.exists()) {
+  const oldUCL = snap.data().uclNo || "Unknown";
 
-    const tr = document.createElement("tr");
-    tr.style.background = bg;
-    tr.innerHTML = `
-      <td>${escapeHtml(currentOwner?.uclId || "UNKNOWN")}</td>
-      <td>${ref}</td>
-      <td>${pacNo}</td>
-      <td>${date}</td>
-      <td>₹${amt}</td>
-      <td>${status}</td>
-    `;
-    tbody.appendChild(tr);
+  status = `
+    <span style="color:#d10000;font-weight:600;">
+      ⚠️ Already Exists
+    </span><br>
+    <span style="font-size:12px; color:#444;">
+      Saved by: <b>${oldUCL}</b>
+    </span>
+  `;
+
+  bg = "#ffe6e6";
+} else {
+  status = `
+    <span style="color:#009900;font-weight:600;">
+      ✅ New Entry
+    </span>
+  `;
+  bg = "#e9ffef";
+}
+
+
+const tr = document.createElement("tr");
+tr.dataset.exists = snap.exists() ? "1" : "0";
+
+tr.style.background = bg;
+tr.innerHTML = `
+  <td>${escapeHtml(currentOwner?.uclId || "UNKNOWN")}</td>
+  <td>${ref}</td>
+  <td>${pacNo}</td>
+  <td>${date}</td>
+  <td><span class="purpose-tag">${escapeHtml(purposes[i] || "Unknown")}</span></td>
+  <td><span class="amount-tag">₹${amt}</span></td>
+  <td>${status}</td>
+`;
+tbody.appendChild(tr);
+
 
     const percent = Math.round(((i+1)/refs.length)*100);
     progressBar.style.width = percent + "%";
@@ -545,32 +674,47 @@ async function processPastedData(){
 /* SAVE ALL */
 saveAllBtn.onclick = async ()=>{
 
+  // 🚨 SECURITY CHECK — BLOCK SAVE IF IP DOES NOT MATCH OWNER IP
+  if (currentOwner?.ip !== currentUserIP) {
+    alert("❌ SECURITY BLOCKED!\n\nYour current IP does not match the selected UCL Owner's IP.\n\nPAC saving is stopped.");
+    return;
+  }
+
+
   const rows = [...tbody.querySelectorAll("tr")];
   let saved = 0;
 
   for(const row of rows){
+  // SKIP EXISTING PAC ENTRIES
+if (row.dataset.exists === "1") continue;
+
     const t = row.children;
 
     const uclId = t[0].innerText.trim();
     const ref = t[1].innerText.trim();
     const pac = t[2].innerText.trim();
     const date = t[3].innerText.trim();
-    const amt = t[4].innerText.replace("₹","").trim();
+     const purpose = t[4].innerText.trim();
+const amt = t[5].innerText.replace("₹", "").trim().replace(/,/g, "");
+
+
 
     const docRef = doc(db,"pac_entries",pac);
 
-    await setDoc(docRef,{
-      pacNo:pac,
-      cscRef:ref,
-      uclNo:uclId,
-      uclOwnerName: currentOwner?.name || "",
-      ipAddress: currentOwner?.ip || "",
-      orderDate:date,
-      amount:amt,
-      entryDate: new Date().toISOString().split("T")[0],
-      entryTime: new Date().toLocaleTimeString(),
-      uploadType:"Pasted"
-    });
+await setDoc(docRef,{
+  pacNo: pac,
+  cscRef: ref,
+  uclNo: uclId,
+  uclOwnerName: currentOwner?.name || "",
+  uclOwnerIp: currentOwner?.ip || "",       // ⭐ owner IP stored
+  savedFromIp: currentUserIP || "Unknown",  // ⭐ real-time user IP saved
+  orderDate: date,
+  purpose: purpose,
+  amount: amt,
+  entryDate: new Date().toISOString().split("T")[0],
+  entryTime: new Date().toLocaleTimeString(),
+  uploadType: "Pasted"
+});
 
     saved++;
   }
@@ -638,11 +782,6 @@ window.toggleMenu = function () {
 };
 
 loadOwners();
-</script>
-<script>
-function toggleMenu() {
-  document.getElementById("mainMenu").classList.toggle("show");
-}
 </script>
 
 </body>
