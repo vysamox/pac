@@ -362,11 +362,13 @@ tbody tr:last-child td {
 }
 
 
-    /* 🎨 Buttons */
-    .copy-btn { background: #007bff; color: white; }
-    .notused-btn { background: #ffc107; color: black; }
-    .delete-btn { background: #dc3545; color: white; }
-    
+      /* 🎨 Buttons */
+  .copy-btn { background: #007bff; color: white; }
+  .notused-btn { background: #ffc107; color: black; }
+  .delete-btn { background: #dc3545; color: white; }
+  .view-btn {background: #ee36d2; color: rgb(6, 2, 2);}  /* 👁️ View Button */
+  .view-btn:hover {opacity: 0.9;transform: scale(1.05);}
+
 
 
     button {
@@ -624,6 +626,112 @@ tbody tr:last-child td {
   }
 }
 
+/* ----- Modal Styling ----- */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 5000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 750px;
+  margin: 70px auto;
+  padding: 20px;
+  border-radius: 12px;
+  animation: zoomIn 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+@keyframes zoomIn {
+  0% { transform: scale(0.75); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.close {
+  float: right;
+  font-size: 26px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* 🌟 Clean, Soft, Modern PAC Details Table */
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  background: #f8fbff;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #d7e6ff;
+}
+
+/* Each row */
+.modal-table tr {
+  border-bottom: 1px solid #e3edff;
+}
+
+.modal-table tr:last-child {
+  border-bottom: none;
+}
+
+/* Cells */
+.modal-table td {
+  padding: 12px 15px;
+  font-size: 15px;
+  color: #28313f;
+}
+
+/* LEFT TITLE COLUMN */
+.modal-table td:first-child {
+  width: 190px;
+  background: #eef5ff;
+  font-weight: 600;
+  color: #0051c9;
+  border-right: 1px solid #d7e6ff;
+}
+
+/* HOVER EFFECT */
+.modal-table tr:hover td {
+  background: #e9f2ff;
+}
+
+/* Mobile Better Fit */
+@media (max-width: 600px) {
+  .modal-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+  .modal-table td:first-child {
+    width: 140px;
+  }
+}
+
+
+.modal-footer {
+  margin-top: 18px;
+  padding-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #444;
+  border-top: 1px solid rgba(0, 123, 255, 0.25);
+  letter-spacing: 0.5px;
+
+  /* small glow */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.modal-footer strong {
+  color: #007bff;
+  font-weight: 600;
+}
 
   </style>
 </head>
@@ -700,6 +808,17 @@ tbody tr:last-child td {
   <span class="page-info-box" id="pageInfo">Page 1 of 1</span>
   
   <button class="pagination-btn" id="nextBtn" onclick="nextPage()">Next ⟶</button>
+</div>
+
+<!-- 🔍 PAC View Modal -->
+<div id="pacModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2><i class="fa-solid fa-info-circle"></i> PAC Details</h2>
+    <table class="modal-table" id="modalTable"></table>
+    <!-- ❤️ Beautiful Footer -->
+    <div class="modal-footer"> Made with ❤️ by <strong>Samrat</strong> · Thank you for using this system 🙏✨</div>
+  </div>
 </div>
 
 
@@ -875,16 +994,39 @@ function renderTablePage() {
     const tr = document.createElement("tr");
     if (e.copied) tr.classList.add("copied-row");
 
-    let buttons = "";
-    if (e.copied) {
-      buttons = `
-        <button class="notused-btn" onclick="resetCopy('${e.id}')"><i class="fa-solid fa-undo"></i></button>
-        <button class="delete-btn" onclick="deletePAC('${e.id}')"><i class="fa-solid fa-trash"></i></button>`;
-    } else {
-      buttons = `
-        <button class="copy-btn" onclick="copyCode('${e.id}')"><i class="fa-solid fa-copy"></i></button>
-        <button class="delete-btn" onclick="deletePAC('${e.id}')"><i class="fa-solid fa-trash"></i></button>`;
-    }
+let buttons = "";
+
+// If PAC is copied
+if (e.copied) {
+  buttons = `
+    <button class="view-btn" onclick="viewPAC('${e.id}')">
+        <i class="fa-solid fa-eye"></i>
+    </button>
+    <button class="notused-btn" onclick="resetCopy('${e.id}')">
+        <i class="fa-solid fa-undo"></i>
+    </button>
+    <button class="delete-btn" onclick="deletePAC('${e.id}')">
+        <i class="fa-solid fa-trash"></i>
+    </button>`;
+}
+
+// If PAC is NOT copied
+else {
+  buttons = `
+    <button class="copy-btn" onclick="copyCode('${e.id}')">
+        <i class="fa-solid fa-copy"></i>
+    </button>
+
+    <!-- 👁️ NEW VIEW BUTTON AFTER COPY -->
+    <button class="view-btn" onclick="viewPAC('${e.id}')">
+        <i class="fa-solid fa-eye"></i>
+    </button>
+
+    <button class="delete-btn" onclick="deletePAC('${e.id}')">
+        <i class="fa-solid fa-trash"></i>
+    </button>`;
+}
+
 
     tr.innerHTML = `
       <td>${e.uclNo || ""}</td>
@@ -1411,6 +1553,42 @@ function loadNavMenuLive() {
       menu.innerHTML = html;
     });
 }
+
+
+function viewPAC(id) {
+  const pac = allEntries.find(x => x.id === id);
+  if (!pac) return;
+
+  let html = `
+    <tr><td>UCl Owner Name</td><td>${pac.uclOwnerName || "-"}</td></tr>
+    <tr><td>UCL ID</td><td>${pac.uclNo || "-"}</td></tr>
+    <tr><td>CSC Ref</td><td>${pac.cscRef || "-"}</td></tr>
+    <tr><td>PAC Code</td><td>${pac.id}</td></tr>
+    <tr><td>PAC Order Date</td><td>${pac.orderDate || "-"}</td></tr>
+    <tr><td>Amount</td><td>${pac.amount || "-"}</td></tr>
+    <tr><td>Entry Date</td><td>${pac.entryDate || "-"}</td></tr>
+    <tr><td>UCL IP</td><td>${pac.uclOwnerIp || "-"}</td></tr>
+    <tr><td>Entry IP</td><td>${pac.savedFromIp || "-"}</td></tr>
+    <tr><td>Copy Date</td><td>${pac.copyDate || "-"}</td></tr>
+    <tr><td>Copy Time</td><td>${pac.copyTime || "-"}</td></tr>
+    <tr><td>Copy IP</td><td>${pac.copyIP || "-"}</td></tr>
+    <tr><td>Purpose</td><td>${pac.purpose || "-"}</td></tr>
+    <tr><td>Status</td><td>${pac.copied ? "Copied" : "Unused"}</td></tr>
+  `;
+
+  document.getElementById("modalTable").innerHTML = html;
+  document.getElementById("pacModal").style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("pacModal").style.display = "none";
+}
+
+
+window.onclick = function(e) {
+  const modal = document.getElementById("pacModal");
+  if (e.target === modal) modal.style.display = "none";
+};
 
 loadNavMenuLive();
 
