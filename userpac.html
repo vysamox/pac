@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>PAC Management Dashboard</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+ <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PAC Management Dashboard User</title>
+
+<!-- 🔍 SEO Meta Tags -->
+<meta name="description" content="User dashboard for PAC Management System. View PAC status, manage entries, track records, and access personalized PAC tools.">
+<meta name="keywords" content="PAC User Dashboard, PAC Management, CSC PAC User Panel, PAC Tracking, PAC Entries, User Account">
+<meta name="author" content="Samrat">
+
+<!-- Google Search Essentials -->
+<meta name="robots" content="index, follow">
+<meta name="googlebot" content="index, follow">
+
+<!-- Canonical URL -->
+<link rel="canonical" href="https://cscpac.vercel.app/">
+
+<!-- 🌐 Open Graph -->
+<meta property="og:title" content="PAC Management Dashboard User">
+<meta property="og:description" content="Access your personal PAC dashboard, view PAC details, and manage your entries securely.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cscpac.vercel.app/">
+<meta property="og:image" content="https://cscpac.vercel.app/assets/fav.png">
+
+<!-- 🐦 Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PAC Management Dashboard User">
+<meta name="twitter:description" content="Complete user dashboard for CSC PAC management.">
+<meta name="twitter:image" content="https://cscpac.vercel.app/assets/fav.png">
+
+<!-- ⭐ Favicon -->
+<link rel="icon" type="image/png" href="assets/fav.png">
+<link rel="apple-touch-icon" href="assets/fav.png">
+
+<!-- 🎨 Styles -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
   /* ---------------- GLOBAL ---------------- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -866,16 +898,24 @@ let currentPage = 1;
 let rowsPerPage = 10;   // You can change to 50, 100 etc.
 let filteredTableData = [];
 
-// ---------------------- REAL-TIME LISTENER FOR PAC ----------------------
-db.collection("pac_entries").onSnapshot(snapshot => {
-  allEntries = [];
-  snapshot.forEach(doc => allEntries.push({ id: doc.id, ...doc.data() }));
 
-  updateCounters();
-  filterTable();
-  calculateDBSize();
-  document.getElementById("syncStatus").innerText = "Synced";
-});
+let userIP = "";
+
+fetch("https://api.ipify.org?format=json")
+  .then(r => r.json())
+  .then(r => userIP = r.ip);
+
+
+// ---------------------- REAL-TIME LISTENER FOR PAC ----------------------
+db.collection("pac_entries")
+  .where("uclOwnerIp", "==", userIP)   // show only user's PAC
+  .onSnapshot(snapshot => {
+    allEntries = [];
+    snapshot.forEach(doc => allEntries.push({ id: doc.id, ...doc.data() }));
+    updateCounters();
+    filterTable();
+  });
+
 
 function getLocalISTDate() {
   const d = new Date();
@@ -943,19 +983,16 @@ function filterTable() {
   const search = document.getElementById("searchBox").value.trim().toLowerCase();
   const date = document.getElementById("filterDate").value;
   const status = document.getElementById("filterStatus").value;
-
   // Filter PACs
   filteredTableData = allEntries.filter(e => {
     const id = (e.id || "").toLowerCase();
     const uclNo = (e.uclNo || "").toLowerCase();
     const copyIP = (e.copyIP || "").toLowerCase();
     const entryDate = e.entryDate || "";
-
     const matchSearch = !search ||
-      id.includes(search) || uclNo.includes(search) || copyIP.includes(search);
+    id.includes(search) || uclNo.includes(search) || copyIP.includes(search);
 
     const matchDate = !date || entryDate === date;
-
     const matchStatus =
       status === "copied" ? Boolean(e.copied) :
       status === "unused" ? !e.copied : true;
