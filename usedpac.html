@@ -36,6 +36,12 @@
 
 <!-- 🎨 Styles -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- ExcelJS for Excel Export -->
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+
+<!-- jsPDF + AutoTable for PDF Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     body {
@@ -232,17 +238,43 @@ button {
 }
 
 /* ---------------- PAGINATION ---------------- */
+/* PILL STYLE PAGINATION */
 #pagination {
-  text-align:center;
-  margin-top:20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin: 20px 0;
+  flex-wrap: wrap;
 }
-#pagination button {
-  background:#007bff;
-  color:#fff;
-  padding:8px 15px;
-  border:none;
-  border-radius:5px;
-  margin:5px;
+
+.page-btn {
+  padding: 8px 18px;
+  background: #eef3ff;
+  color: #0056d6;
+  border: 1px solid #cddcff;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.page-btn:hover {
+  background: #d9e6ff;
+  border-color: #aac4ff;
+}
+
+.page-active {
+  background: #0056d6 !important;
+  color: #fff !important;
+  border-color: #0043a8 !important;
+}
+  
+.page-disabled {
+  background: #e5e5e5;
+  border-color: #cccccc;
+  color: #999;
+  cursor: not-allowed;
 }
 
 /* ---------------- RESPONSIVE ---------------- */
@@ -295,6 +327,200 @@ button {
   }
 }
 
+.stats-box {
+  max-width: 900px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,123,255,0.12);
+  display: flex;
+  justify-content: space-around;
+  font-size: 15px;
+}
+/* ---------- MODAL BACKDROP ---------- */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(3px);
+}
+
+/* ---------- MODAL BOX ---------- */
+.modal-content {
+  background: #ffffff;
+  width: 850px;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- HEADERS ---------- */
+.modal-content h3 {
+  margin: 15px 0;
+  font-size: 22px;
+  color: #333;
+  font-weight: 700;
+}
+
+.modal-content hr {
+  margin: 20px 0;
+  border: none;
+  height: 1px;
+  background: #e2e2e2;
+}
+
+/* ---------- GRID BUTTON GROUPS ---------- */
+.range-group,
+.export-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+/* ---------- OPTION BUTTONS ---------- */
+.range-btn,
+.export-option {
+  padding: 14px;
+  background: linear-gradient(135deg, #007bff, #00a2ff);
+  color: #fff;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,123,255,0.25);
+  transition: 0.25s ease;
+}
+
+.range-btn:hover,
+.export-option:hover {
+  background: linear-gradient(135deg, #006ae6, #0087d6);
+  transform: translateY(-2px);
+}
+
+/* ACTIVE SELECTED BUTTON */
+.active-btn {
+  background: linear-gradient(135deg, #28a745, #1e8a35) !important;
+  box-shadow: 0 4px 14px rgba(40,167,69,0.35);
+  transform: scale(1.05);
+}
+
+/* ---------- INPUT FIELDS ---------- */
+/* ---------- INPUT FIELDS (Styled Same for UCL Dropdown & Date Input) ---------- */
+.range-input {
+  width: 95%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 2px solid #d7e3f0;
+  font-size: 16px;
+  background: #f9fbff;
+  color: #333;
+  margin-top: 12px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+  transition: 0.25s ease;
+  appearance: none;  /* clean dropdown style */
+}
+
+/* Dropdown Arrow styling */
+.range-input::-ms-expand {
+  display: none;
+}
+
+/* Focus style */
+.range-input:focus {
+  outline: none;
+  border-color: #007bff;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(0,123,255,0.35);
+}
+
+/* ---------- CUSTOM DATE INPUT STYLE ---------- */
+.range-input[type="date"] {
+  position: relative;
+}
+
+/* Replace default calendar icon */
+.range-input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  filter: invert(40%) sepia(70%) saturate(2000%) hue-rotate(190deg) brightness(95%);
+}
+
+
+/* ========================================================= */
+/* ================= FOOTER BUTTONS ======================== */
+/* ========================================================= */
+.export-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 25px;
+  width: 100%;
+}
+
+.export-footer button {
+  flex: 1;
+  padding: 15px;
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: 0.25s ease;
+}
+
+/* NEW COLORS */
+.export-now-btn {
+  background: linear-gradient(135deg, #14c9c9, #0ea5a5);
+  box-shadow: 0 4px 12px rgba(20, 201, 201, 0.35);
+}
+.export-now-btn:hover {
+  background: linear-gradient(135deg, #12b7b7, #0c9393);
+  transform: translateY(-2px);
+}
+
+
+.close-btn {
+  background: linear-gradient(135deg, #ff4444, #d63030);
+  box-shadow: 0 4px 12px rgba(255,68,68,0.35);
+}
+.close-btn:hover {
+  background: linear-gradient(135deg, #e63a3a, #b82323);
+  transform: translateY(-2px);
+}
+
+/* ---------- ALWAYS SIDE BY SIDE ON MOBILE ---------- */
+@media (max-width: 600px) {
+  .export-footer {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .export-footer button {
+    font-size: 15px;
+    padding: 12px;
+  }
+}
   </style>
 </head>
 
@@ -311,10 +537,20 @@ button {
 
 <h2>Archived / Used PAC Entries <span id="countBadge" class="count-badge">0</span></h2>
 
+<div id="statsBox" class="stats-box">
+  <div>Total Used: <b id="stTotal"></b></div>
+  <div>Today Used: <b id="stToday"></b></div>
+  <div>Unique IPs: <b id="stIPs"></b></div>
+  <div>Most Active IP: <b id="stTopIP"></b></div>
+</div>
+
+
 <div class="filter-box">
   <input type="text" id="searchBox" placeholder="🔍 Search PAC Code / UCL / IP..." oninput="filterTable()">
   <input type="date" id="filterDate" onchange="filterTable()">
-  <button class="export-btn" onclick="exportCSV()"><i class="fa-solid fa-file-export"></i> Export CSV</button>
+  <button class="export-btn" onclick="openExportMenu()"><i class="fa-solid fa-file-export"></i> Export Data</button>
+
+
 </div>
 
 <div class="top-actions">
@@ -325,7 +561,10 @@ button {
   <thead>
     <tr>
       <th>UCL No</th>
+      <th>CSC Ref</th>
       <th>PAC Code</th>
+      <th>Amount</th>
+      <th>Pac Order Date</th>
       <th>Entry Date</th>
       <th>Copy Date</th>
       <th>Copy Time</th>
@@ -338,6 +577,41 @@ button {
 
 <div id="pagination"></div>
 <div id="toast"></div>
+
+<!-- Export Modal -->
+<div id="exportModal" class="modal">
+  <div class="modal-content">
+
+    <h3>Select Data Range</h3>
+
+<div class="range-group">
+  <button class="range-btn" onclick="setRange('all', this)"><i class="fa-solid fa-list"></i> Export All</button>
+  <button class="range-btn" onclick="setRange('ucl', this)"><i class="fa-solid fa-id-card"></i> Export by UCL</button>
+  <button class="range-btn" onclick="setRange('date', this)"><i class="fa-solid fa-calendar-days"></i> Export by Date</button>
+</div>
+
+<!-- UCL and Date Inputs (will show only when selected) -->
+<select id="uclList" class="range-input" style="display:none;"></select>
+<input type="date" id="dateInput" class="range-input" style="display:none;">
+
+<hr>
+<h3>Select Export Type</h3>
+
+<div class="export-group">
+  <button class="export-option" onclick="selectExportType('csv', this)"><i class="fa-solid fa-file-csv"></i> CSV </button>
+  <button class="export-option" onclick="selectExportType('excel', this)"><i class="fa-solid fa-file-excel"></i> Excel</button>
+  <button class="export-option" onclick="selectExportType('pdf', this)"><i class="fa-solid fa-file-pdf"></i> PDF </button>
+</div>
+
+<div class="export-footer"> 
+  <button class="export-now-btn" onclick="startExport()"><i class="fa-solid fa-cloud-arrow-down"></i>Export Now</button>
+  <button class="close-btn" onclick="closeExportMenu()"><i class="fa-solid fa-xmark"></i>Close</button>
+</div>
+
+  </div>
+</div>
+
+
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -400,12 +674,13 @@ function showToast(msg, color="#007bff") {
   setTimeout(() => toast.style.visibility = "hidden", 2000);
 }
 
-/* ------------------ LOAD USED PACS ------------------ */
+/* ------------------ GLOBAL DATA ------------------ */
 let usedEntries = [];
 let filteredData = [];
 let currentPage = 1;
-const rowsPerPage = 20;
+const rowsPerPage = 10;
 
+/* ------------------ LOAD USED PACS ------------------ */
 async function loadUsedPACs() {
   try {
     const snapshot = await db.collection("used_pac")
@@ -418,6 +693,8 @@ async function loadUsedPACs() {
     document.getElementById("countBadge").innerHTML = usedEntries.length;
 
     renderTable();
+    computeStats();   // ✅ FIX: STATS NOW UPDATE!
+
   } catch (err) {
     showToast("Error loading used PACs!", "#dc3545");
   }
@@ -460,7 +737,10 @@ function renderTable() {
     tbody.innerHTML += `
       <tr class="used-row">
         <td>${e.uclNo || ""}</td>
+        <td>${e.cscRef || ""}</td>
         <td>${e.id}</td>
+        <td>${e.amount || ""}</td>
+        <td>${e.orderDate || ""}</td>
         <td>${e.entryDate || ""}</td>
         <td>${e.copyDate || ""}</td>
         <td>${e.copyTime || ""}</td>
@@ -480,23 +760,80 @@ function renderTable() {
   renderPagination();
 }
 
-/* ------------------ PAGINATION ------------------ */
+
+/* ------------------ IMPROVED PAGINATION ------------------ */
+/* ---------------- SMART ELLIPSIS PAGINATION ---------------- */
 function renderPagination() {
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const pg = document.getElementById("pagination");
   pg.innerHTML = "";
 
-  if (currentPage > 1)
-    pg.innerHTML += `<button onclick="changePage(${currentPage - 1})">Prev</button>`;
+  if (totalPages <= 1) return;
 
-  if (currentPage < totalPages)
-    pg.innerHTML += `<button onclick="changePage(${currentPage + 1})">Next</button>`;
+  function addBtn(pageNumber, active = false, disabled = false) {
+    pg.innerHTML += `
+      <button 
+        class="page-btn ${active ? "page-active" : ""} ${disabled ? "page-disabled" : ""}" 
+        onclick="${!disabled ? `changePage(${pageNumber})` : ''}">
+        ${pageNumber}
+      </button>
+    `;
+  }
+
+  function addDots() {
+    pg.innerHTML += `<span style="padding:5px 10px; color:#555;">...</span>`;
+  }
+
+  // Prev Button
+  pg.innerHTML += `
+    <button class="page-btn ${currentPage === 1 ? "page-disabled" : ""}" 
+            onclick="changePage(${currentPage - 1})">Prev</button>
+  `;
+
+  /* ---------- Logic Starts ---------- */
+
+  if (totalPages <= 7) {
+    // Show all pages normally
+    for (let i = 1; i <= totalPages; i++) {
+      addBtn(i, i === currentPage);
+    }
+  } 
+  else {
+    // Always show FIRST 2 pages
+    addBtn(1, currentPage === 1);
+    addBtn(2, currentPage === 2);
+
+    if (currentPage > 4) addDots();
+
+    // Show middle pages  - current page -1 to +1
+    let start = Math.max(3, currentPage - 1);
+    let end = Math.min(totalPages - 2, currentPage + 1);
+
+    for (let i = start; i <= end; i++) {
+      addBtn(i, i === currentPage);
+    }
+
+    if (currentPage < totalPages - 3) addDots();
+
+    // Always show LAST 2 pages
+    addBtn(totalPages - 1, currentPage === totalPages - 1);
+    addBtn(totalPages, currentPage === totalPages);
+  }
+
+  // Next Button
+  pg.innerHTML += `
+    <button class="page-btn ${currentPage === totalPages ? "page-disabled" : ""}" 
+            onclick="changePage(${currentPage + 1})">Next</button>
+  `;
 }
 
 function changePage(page) {
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  if (page < 1 || page > totalPages) return;
   currentPage = page;
   renderTable();
 }
+
 
 /* ------------------ RESTORE ------------------ */
 async function restorePAC(id) {
@@ -528,29 +865,390 @@ async function deleteUsedPAC(id) {
 }
 
 /* ------------------ CSV EXPORT ------------------ */
-function exportCSV() {
-  if (!usedEntries.length) return showToast("No data!", "#dc3545");
+function exportCSV(customData = usedEntries) {
 
-  const rows = usedEntries.map(e => 
-    [e.uclNo || "", e.id, e.entryDate || "", e.copyDate, e.copyTime, e.copyIP]
-      .join(",")
-  );
+  if (!customData.length) return showToast("No data!", "#dc3545");
 
-  const csv = "UCL,PAC,Entry,CopyDate,CopyTime,CopyIP\n" + rows.join("\n");
+  let csv = "UCL,CSC Ref,PAC,Amount,OrderDate,EntryDate,CopyDate,CopyTime,IP,Purpose\n";
 
-  const blob = new Blob([csv], { type: "text/csv" });
+  customData.forEach(e => {
+    csv += [
+      e.uclNo || "",
+      e.cscRef || "",
+      e.id || e.pacNo || "",
+      e.amount || "",
+      e.orderDate || "",
+      e.entryDate || "",
+      e.copyDate || "",
+      e.copyTime || "",
+      e.copyIP || "",
+      e.purpose || ""
+    ].join(",") + "\n";
+  });
+
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "used_pac.csv";
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = "Used_PAC_Entries.csv";
   a.click();
 
   showToast("CSV Exported!", "#17a2b8");
 }
 
+/* ------------------ COMPUTE STATS ------------------ */
+function computeStats() {
+  const today = new Date().toISOString().slice(0,10);
+
+  const todayUsed = usedEntries.filter(e => e.copyDate === today).length;
+  const ips = usedEntries.map(e => e.copyIP).filter(Boolean);
+
+  const ipCount = new Set(ips).size;
+
+  // Most frequent IP (clean & efficient)
+  let freq = {};
+  ips.forEach(ip => freq[ip] = (freq[ip] || 0) + 1);
+
+  const mostActiveIP = Object.keys(freq).length
+    ? Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b)
+    : "N/A";
+
+  // Update UI
+  document.getElementById("stTotal").innerText = usedEntries.length;
+  document.getElementById("stToday").innerText = todayUsed;
+  document.getElementById("stIPs").innerText = ipCount;
+  document.getElementById("stTopIP").innerText = mostActiveIP;
+}
+
+async function exportExcel(customData = usedEntries) {
+
+  if (!customData.length) return showToast("No data!", "#dc3545");
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("Used PAC Entries");
+
+  sheet.addRow([
+    "UCL No","CSC Ref","PAC Code","Amount",
+    "Order Date","Entry Date","Copy Date","Copy Time","Copy IP","Purpose"
+  ]);
+
+  customData.forEach(e => {
+    sheet.addRow([
+      e.uclNo || "",
+      e.cscRef || "",
+      e.id || e.pacNo || "",
+      e.amount || "",
+      e.orderDate || "",
+      e.entryDate || "",
+      e.copyDate || "",
+      e.copyTime || "",
+      e.copyIP || "",
+      e.purpose || ""
+    ]);
+  });
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([buffer]));
+  a.download = "Used_PAC_Entries.xlsx";
+  a.click();
+
+  showToast("Excel Exported!", "#17a2b8");
+}
+
+function exportPDF(customData = usedEntries) {
+
+  if (!customData.length) return showToast("No data!", "#dc3545");
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: "landscape" });
+
+  /* ===================== FOOTER LEFT TEXT ===================== */
+
+  let footerLine1 = "Export For: ALL Used PAC Entries";
+  let footerLine2 = ""; // Customer Name Line
+
+  if (selectedRange === "ucl") {
+    const selectedUCL = document.getElementById("uclList").value;
+
+    footerLine1 = `Export For: ${selectedUCL}`;
+
+    // fetch customer name automatically
+    const firstEntry = customData.find(e => e.uclNo === selectedUCL);
+    if (firstEntry && firstEntry.uclOwnerName) {
+      footerLine2 = `Customer: ${firstEntry.uclOwnerName}`;
+    }
+  }
+
+  if (selectedRange === "date") {
+    const selectedDate = document.getElementById("dateInput").value;
+    footerLine1 = `Export For: DATE — ${selectedDate}`;
+  }
+
+  /* ===================== TABLE DATA ===================== */
+
+  const tableData = customData.map(e => [
+    e.uclNo || "",
+    e.cscRef || "",
+    e.id || e.pacNo || "",
+    e.amount || "",
+    e.orderDate || "",
+    e.entryDate || "",
+    e.entryTime || "",
+    e.copyDate || "",
+    e.copyTime || "",
+    e.copyIP || "",
+    e.purpose || ""
+  ]);
+
+  doc.autoTable({
+    head: [[
+      "UCL No", "CSC Ref", "PAC Code", "Amount",
+      "Order Date", "Entry Date", "Entry Time",
+      "Copy Date", "Copy Time", "Copy IP", "Purpose"
+    ]],
+
+    body: tableData,
+    startY: 10,
+    theme: "grid",
+    margin: { bottom: 25 },
+
+    styles: {
+      fontSize: 8,
+      cellPadding: 3,
+      halign: "center",
+      valign: "middle",
+      lineWidth: 0.2,
+      lineColor: [60, 60, 60]
+    },
+
+    headStyles: {
+      fillColor: [0, 123, 255],
+      textColor: 255,
+      fontStyle: "bold",
+      halign: "center",
+      lineWidth: 0.5
+    },
+
+    alternateRowStyles: {
+      fillColor: [245, 247, 255]
+    }
+  });
+
+  /* ===================== DATE FORMAT ===================== */
+
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yyyy = now.getFullYear();
+
+  let hh = now.getHours();
+  const mins = String(now.getMinutes()).padStart(2, "0");
+  const ampm = hh >= 12 ? "PM" : "AM";
+  hh = hh % 12 || 12;
+
+  const formattedDate = `${dd}-${mm}-${yyyy}, ${hh}:${mins} ${ampm}`;
+
+  /* ===================== FOOTER ===================== */
+
+  const totalPages = doc.internal.getNumberOfPages();
+
+  for (let page = 1; page <= totalPages; page++) {
+    doc.setPage(page);
+
+    const pageW = doc.internal.pageSize.width;
+    const pageH = doc.internal.pageSize.height;
+
+     const y1 = pageH - 14;  // FIRST LINE (higher)
+  const y2 = pageH - 7;   // SECOND LINE
+
+    /* ------------ CENTER TEXTS ------------ */
+    const centerLine1 = `© ${yyyy} PAC Management System`;
+    const centerLine2 = "This is a system-generated report. No signature required.";
+
+    /* ------------ RIGHT TEXTS ------------ */
+    const rightLine1 = `Generated On: ${formattedDate}`;
+    const rightLine2 = `Page ${page} of ${totalPages}`;
+
+    /* ===================== LINE 1 ===================== */
+
+    // LEFT (Export For)
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(40, 40, 40);
+    doc.text(footerLine1, 10, pageH - 18);
+
+    // CENTER (© System Name)
+    const c1w = doc.getTextWidth(centerLine1);
+    doc.text(centerLine1, (pageW - c1w) / 2, pageH - 18);
+
+    // RIGHT (Generated On)
+    const r1w = doc.getTextWidth(rightLine1);
+    doc.text(rightLine1, pageW - r1w - 10, pageH - 18);
+
+    /* ===================== LINE 2 ===================== */
+
+    // LEFT (Customer Name)
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text(footerLine2, 10, pageH - 10);
+
+    // CENTER (Report Note)
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    const c2w = doc.getTextWidth(centerLine2);
+    doc.text(centerLine2, (pageW - c2w) / 2, pageH - 10);
+
+    // RIGHT (Page Number)
+    doc.setFontSize(9);
+    doc.setTextColor(60, 60, 60);
+    const r2w = doc.getTextWidth(rightLine2);
+    doc.text(rightLine2, pageW - r2w - 10, pageH - 10);
+  }
+
+  /* ===================== SAVE ===================== */
+
+  const fileName = `Used_PAC_Entries_${dd}-${mm}-${yyyy}_${hh}-${mins}${ampm}.pdf`;
+  doc.save(fileName);
+
+  showToast("PDF Exported!", "#28a745");
+}
+
+let selectedRange = null;
+
+let selectedExport = null;
+
+// Open modal
+function openExportMenu() {
+  document.getElementById("exportModal").style.display = "flex";
+  loadUCLList(); // Load UCL list only when modal opens
+}
+
+// Close modal
+function closeExportMenu() {
+  document.getElementById("exportModal").style.display = "none";
+}
+
+// Set export range based on button clicked
+function setRange(type) {
+  selectedRange = type;
+
+  // Hide both inputs initially
+  document.getElementById("uclList").style.display = "none";
+  document.getElementById("dateInput").style.display = "none";
+
+  // Show UCL list if selected
+  if (type === "ucl") {
+    document.getElementById("uclList").style.display = "block";
+  }
+
+  // Show date input if selected
+  if (type === "date") {
+    document.getElementById("dateInput").style.display = "block";
+  }
+
+  showToast("Range Selected: " + type.toUpperCase());
+}
+
+// Select export type
+function selectExportType(type) {
+  selectedExport = type;
+  showToast("Export Type: " + type.toUpperCase());
+}
+
+// Load UCL list from Firestore
+async function loadUCLList() {
+  const dropdown = document.getElementById("uclList");
+  dropdown.innerHTML = "<option value=''>Select UCL</option>";
+
+  const snap = await db.collection("used_pac").get();
+  let uclSet = new Set();
+
+  snap.forEach(doc => {
+    const u = doc.data().uclNo;
+    if (u) uclSet.add(u);
+  });
+
+  [...uclSet].sort().forEach(u => {
+    dropdown.innerHTML += `<option value="${u}">${u}</option>`;
+  });
+}
+
+// Start export after clicking Export Now
+function startExport() {
+
+  // Must select a range first
+  if (!selectedRange) {
+    return showToast("Please select a Data Range first!", "#dc3545");
+  }
+
+  // Must select an export type
+  if (!selectedExport) {
+    return showToast("Please select an Export Type!", "#dc3545");
+  }
+
+  let exportData = usedEntries;
+
+  // RANGE LOGIC
+  if (selectedRange === "ucl") {
+    const chosenUCL = document.getElementById("uclList").value;
+    if (!chosenUCL) return showToast("Please select a UCL!", "#dc3545");
+
+    exportData = usedEntries.filter(e => e.uclNo === chosenUCL);
+  }
+
+  else if (selectedRange === "date") {
+    const chosenDate = document.getElementById("dateInput").value;
+    if (!chosenDate) return showToast("Please select a Date!", "#dc3545");
+
+    exportData = usedEntries.filter(e => e.copyDate === chosenDate);
+  }
+
+  else if (selectedRange === "all") {
+    exportData = usedEntries; // keep all
+  }
+
+  // If no data found for the selected range
+  if (!exportData.length) {
+    return showToast("No data found for selected range!", "#dc3545");
+  }
+
+  // Run selected export
+  if (selectedExport === "csv") exportCSV(exportData);
+  if (selectedExport === "excel") exportExcel(exportData);
+  if (selectedExport === "pdf") exportPDF(exportData);
+
+  closeExportMenu();
+}
+
+let selectedRangeBtn = null;
+let selectedExportBtn = null;
+
+function setRange(type, btn) {
+  selectedRange = type;
+
+  if (selectedRangeBtn) selectedRangeBtn.classList.remove("active-btn");
+  btn.classList.add("active-btn");
+  selectedRangeBtn = btn;
+
+  document.getElementById("uclList").style.display = "none";
+  document.getElementById("dateInput").style.display = "none";
+
+  if (type === "ucl") document.getElementById("uclList").style.display = "block";
+  if (type === "date") document.getElementById("dateInput").style.display = "block";
+}
+
+function selectExportType(type, btn) {
+  selectedExport = type;
+
+  if (selectedExportBtn) selectedExportBtn.classList.remove("active-btn");
+  btn.classList.add("active-btn");
+  selectedExportBtn = btn;
+
+  showToast("Selected: " + type.toUpperCase());
+}
+
 /* ------------------ START ------------------ */
 loadUsedPACs();
-setInterval(loadUsedPACs, 60000);
+setInterval(loadUsedPACs, 60000); // Auto-refresh every minute
 </script>
-
 </body>
 </html>
