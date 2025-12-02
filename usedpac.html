@@ -277,21 +277,8 @@ button {
   cursor: not-allowed;
 }
 
-/* ---------------- RESPONSIVE ---------------- */
-@media (max-width:600px){
-  th, td {
-    font-size:13px;
-    padding:8px;
-  }
-  .filter-box {
-    flex-direction:column;
-  }
-  .filter-box input,
-  .filter-box button {
-    width:100%;
-  }
-}
 
+/* ---------------- RESPONSIVE ---------------- */
 /* Mobile menu toggle button */
 .menu-toggle {
   display: none;
@@ -327,17 +314,72 @@ button {
   }
 }
 
-.stats-box {
-  max-width: 900px;
-  margin: 20px auto;
-  background: #fff;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,123,255,0.12);
+/* ===================== STATUS BAR (NEW DESIGN) ===================== */
+.status-bar {
   display: flex;
-  justify-content: space-around;
-  font-size: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 20px auto;
 }
+
+/* Each metric box */
+.status-bar span {
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.10);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  transition: transform 0.2s ease;
+}
+
+.status-bar span:hover {
+  transform: translateY(-2px);
+}
+
+/* ===================== COLORED BORDER STYLES ===================== */
+
+/* Total Used PAC */
+.live-count {
+  border-left: 6px solid #28a745;
+  border-right: 6px solid #28a745;
+}
+
+/* Today Used */
+.copied-count {
+  border-left: 6px solid #ffc107;
+  border-right: 6px solid #ffc107;
+}
+
+/* Unique IP Count */
+.unique-ip {
+  border-left: 6px solid #17a2b8;
+  border-right: 6px solid #17a2b8;
+}
+
+/* Most Active IP */
+.top-ip {
+  border-left: 6px solid #007bff;
+  border-right: 6px solid #007bff;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .status-bar {
+    gap: 10px;
+  }
+
+  .status-bar span {
+    width: 75%;
+    justify-content: center;
+    font-size: 14px;
+  }
+}
+
 /* ---------- MODAL BACKDROP ---------- */
 .modal {
   display: none;
@@ -521,6 +563,158 @@ button {
     padding: 12px;
   }
 }
+
+/* ===================== MOBILE TABLE VIEW ===================== */
+/* ===================== PERFECT MOBILE UI FIX ===================== */
+@media (max-width: 768px) {
+
+  /* Page Title */
+  h2 {
+    font-size: 17px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Filter Box */
+  .filter-box {
+    width: 85%;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .filter-box input {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  .filter-box button {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  /* Back Button */
+  .top-actions button {
+    width: 95%;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+   /* Table container smoother */
+  table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  /* Header smaller & clean */
+  thead th {
+    font-size: 12px;
+    padding: 8px 3px;
+    letter-spacing: 0.4px;
+    background: linear-gradient(90deg, #0097ff, #007bff);
+  }
+
+  /* Row grid layout */
+  thead tr,
+  tbody tr {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr 55px;
+    align-items: center;
+  }
+
+  /* Style for rows */
+  tbody tr {
+    background: #f9fcff;
+    border-bottom: 1px solid #e1ecf7;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+
+  /* Alternate row color */
+  tbody tr:nth-child(even) {
+    background: #f2f7ff;
+  }
+
+  /* Hover glow effect */
+  tbody tr:hover {
+    background: #e8f2ff;
+    box-shadow: 0 2px 6px rgba(0,123,255,0.15);
+    transform: translateY(-1px);
+    transition: 0.15s ease;
+  }
+
+  /* Left color accent border */
+  tbody tr::before {
+    content: "";
+    width: 4px;
+    height: 100%;
+    background: #00aaff;
+    border-radius: 4px 0 0 4px;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  tbody tr {
+    position: relative;
+  }
+
+  /* Small fonts inside cells */
+  tbody td {
+    font-size: 12px;
+    padding: 8px 4px;
+    color: #033b5c;
+  }
+
+  /* ACTION button column */
+  .restore-btn,
+  .delete-btn {
+    padding: 5px 6px;
+    border-radius: 6px;
+    font-size: 11px;
+  }
+
+  /* Restore button soft green */
+  .restore-btn {
+    background: #18ce75;
+    box-shadow: 0 2px 4px rgba(0,255,100,0.25);
+  }
+
+  .restore-btn:hover {
+    background: #14b766;
+  }
+
+  /* Delete button soft red */
+  .delete-btn {
+    background: #ff4d4d;
+    box-shadow: 0 2px 4px rgba(255,0,0,0.25);
+  }
+
+  .delete-btn:hover {
+    background: #e64444;
+  }
+
+  /* Hide unwanted columns */
+  table thead th:nth-child(2),
+  table thead th:nth-child(4),
+  table thead th:nth-child(5),
+  table thead th:nth-child(6),
+  table thead th:nth-child(8),
+  table thead th:nth-child(9),
+  table tbody td:nth-child(2),
+  table tbody td:nth-child(4),
+  table tbody td:nth-child(5),
+  table tbody td:nth-child(6),
+  table tbody td:nth-child(8),
+  table tbody td:nth-child(9) {
+    display: none;
+  }
+}
+
+
+
   </style>
 </head>
 
@@ -535,14 +729,27 @@ button {
   </nav>
 </header>
 
-<h2>Archived / Used PAC Entries <span id="countBadge" class="count-badge">0</span></h2>
 
-<div id="statsBox" class="stats-box">
-  <div>Total Used: <b id="stTotal"></b></div>
-  <div>Today Used: <b id="stToday"></b></div>
-  <div>Unique IPs: <b id="stIPs"></b></div>
-  <div>Most Active IP: <b id="stTopIP"></b></div>
+<div class="status-bar">
+
+  <span class="live-count">
+    Total Used: <b id="stTotal"></b>
+  </span>
+
+  <span class="copied-count">
+    Today Used: <b id="stToday"></b>
+  </span>
+
+  <span class="unique-ip">
+    Unique IPs: <b id="stIPs"></b>
+  </span>
+
+  <span class="top-ip">
+    Most Active IP: <b id="stTopIP"></b>
+  </span>
+
 </div>
+
 
 
 <div class="filter-box">
@@ -689,8 +896,6 @@ async function loadUsedPACs() {
 
     usedEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     filteredData = usedEntries;
-
-    document.getElementById("countBadge").innerHTML = usedEntries.length;
 
     renderTable();
     computeStats();   // ✅ FIX: STATS NOW UPDATE!
