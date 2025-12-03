@@ -915,7 +915,7 @@ db.collection("pac_entries").onSnapshot(snapshot => {
 
   updateCounters();
   filterTable();
-  calculateDBSize();
+   setTimeout(() => calculateDBSize(), 100); // 🔥 ensures DOM + data are ready
   document.getElementById("syncStatus").innerText = "Synced";
 });
 
@@ -1416,16 +1416,37 @@ function getFirestoreFieldSize(value) {
     }
 }
 
-function getUTF8Size(str) {
-  let size = 0;
-  for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i);
-    if (code <= 0x7f) size += 1;
-    else if (code <= 0x7ff) size += 2;
-    else if (code <= 0xffff) size += 3;
-    else size += 4;
+function getUTF8Size(value) {
+  if (value === null || value === undefined) return 1;
+
+  if (typeof value === "string") {
+    return value.length + 1;
   }
-  return size;
+
+  if (typeof value === "number") {
+    return 8; // Firestore stores numbers as 8 bytes
+  }
+
+  if (typeof value === "boolean") {
+    return 1;
+  }
+
+  if (Array.isArray(value)) {
+    let arrSize = 1;
+    value.forEach(v => arrSize += getUTF8Size(v));
+    return arrSize;
+  }
+
+  if (value instanceof Object) {
+    let objSize = 0;
+    for (let key in value) {
+      objSize += key.length + 1;
+      objSize += getUTF8Size(value[key]);
+    }
+    return objSize;
+  }
+
+  return 0;
 }
 
 function calculateFieldSize(value) {
