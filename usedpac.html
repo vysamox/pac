@@ -369,16 +369,20 @@ button {
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
+
   .status-bar {
     gap: 10px;
+    justify-content: center;
   }
 
+  /* Two cards per row */
   .status-bar span {
-    width: 75%;
-    justify-content: center;
+    justify-content: space-between;
     font-size: 14px;
+    border-radius: 12px;
   }
 }
+
 
 /* ---------- MODAL BACKDROP ---------- */
 .modal {
@@ -582,16 +586,6 @@ button {
     gap: 10px;
   }
 
-  .filter-box input {
-    padding: 8px 10px;
-    font-size: 14px;
-  }
-
-  .filter-box button {
-    padding: 10px 12px;
-    font-size: 14px;
-  }
-
   /* Back Button */
   .top-actions button {
     width: 95%;
@@ -600,75 +594,48 @@ button {
     border-radius: 10px;
   }
 
-   /* Table container smoother */
+  /* Table container */
   table {
+    width: 95%;
+    margin: 0 auto;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
 
-  /* Header smaller & clean */
+  /* Header (only 3 columns) */
+  thead tr {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 70px;
+  }
+
   thead th {
     font-size: 12px;
-    padding: 8px 3px;
-    letter-spacing: 0.4px;
+    padding: 8px 4px;
     background: linear-gradient(90deg, #0097ff, #007bff);
+    color: #fff;
   }
 
-  /* Row grid layout */
-  thead tr,
+  /* Body layout — 3 columns */
   tbody tr {
     display: grid;
-    grid-template-columns: 1.1fr 1fr 1fr 55px;
+    grid-template-columns: 1.5fr 1fr 70px;
     align-items: center;
-  }
-
-  /* Style for rows */
-  tbody tr {
     background: #f9fcff;
     border-bottom: 1px solid #e1ecf7;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 4px;
+    padding: 4px 0;
   }
 
-  /* Alternate row color */
   tbody tr:nth-child(even) {
     background: #f2f7ff;
   }
 
-  /* Hover glow effect */
-  tbody tr:hover {
-    background: #e8f2ff;
-    box-shadow: 0 2px 6px rgba(0,123,255,0.15);
-    transform: translateY(-1px);
-    transition: 0.15s ease;
-  }
-
-  /* Left color accent border */
-  tbody tr::before {
-    content: "";
-    width: 4px;
-    height: 100%;
-    background: #00aaff;
-    border-radius: 4px 0 0 4px;
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-
-  tbody tr {
-    position: relative;
-  }
-
-  /* Small fonts inside cells */
   tbody td {
     font-size: 12px;
-    padding: 8px 4px;
+    padding: 6px 4px;
     color: #033b5c;
   }
 
-  /* ACTION button column */
+  /* ACTION BUTTONS */
   .restore-btn,
   .delete-btn {
     padding: 5px 6px;
@@ -676,44 +643,215 @@ button {
     font-size: 11px;
   }
 
-  /* Restore button soft green */
-  .restore-btn {
-    background: #18ce75;
-    box-shadow: 0 2px 4px rgba(0,255,100,0.25);
+  /* HIDE ALL OTHER COLUMNS EXCEPT 1,3,7 */
+  /* Hide unwanted columns — KEEP ONLY 1, 3, 7 */
+table thead th:nth-child(2),
+table thead th:nth-child(4),
+table thead th:nth-child(5),
+table thead th:nth-child(6),
+
+table tbody td:nth-child(2),
+table tbody td:nth-child(4),
+table tbody td:nth-child(5),
+table tbody td:nth-child(6) {
+  display: none !important;
+}
+
+}
+.sub-text {
+  margin-top: -5px;
+  font-size: 14px;
+  color: #666;
+  text-align:center;
+}
+
+/* ===================== NEW PAC VIEW MODAL ===================== */
+.pacview-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.pacview-box {
+  width: 850px;
+  max-width: 95%;
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  position: relative;
+  animation: pvZoom 0.3s ease;
+}
+
+@keyframes pvZoom {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.pacview-close {
+  position: absolute;
+  top: 14px; right: 18px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #333;
+}
+
+.pacview-title {
+  margin: 10px 0 20px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Desktop table */
+.pacview-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f8fbff;
+  border: 1px solid #d8e6ff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pacview-table tr {
+  border-bottom: 1px solid #e2eaff;
+}
+
+.pacview-table td {
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+.pacview-table td:first-child {
+  width: 220px;
+  font-weight: bold;
+  background: #eef5ff;
+  color: #0056d6;
+  border-right: 1px solid #d7e6ff;
+}
+
+.pacview-footer {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+  color: #444;
+}
+
+/* ===================== NEW SIMPLE MOBILE VIEW ===================== */
+@media (max-width: 650px) {
+
+  .pacview-box {
+    width: 95% !important;
+    padding: 15px !important;
+    border-radius: 14px;
   }
 
-  .restore-btn:hover {
-    background: #14b766;
+  .pacview-table {
+    width: 100%;
+    border: none !important;
+    background: transparent !important;
   }
 
-  /* Delete button soft red */
-  .delete-btn {
-    background: #ff4d4d;
-    box-shadow: 0 2px 4px rgba(255,0,0,0.25);
+  .pacview-table tr {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px 14px !important;
+    background: #f4f8ff !important;
+    margin-bottom: 10px !important;
+    border-radius: 10px !important;
+    border: 1px solid #d7e6ff !important;
   }
 
-  .delete-btn:hover {
-    background: #e64444;
+  .pacview-table td {
+    display: inline-block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    font-size: 14px !important;
+    width: auto !important;
   }
 
-  /* Hide unwanted columns */
-  table thead th:nth-child(2),
-  table thead th:nth-child(4),
-  table thead th:nth-child(5),
-  table thead th:nth-child(6),
-  table thead th:nth-child(8),
-  table thead th:nth-child(9),
-  table tbody td:nth-child(2),
-  table tbody td:nth-child(4),
-  table tbody td:nth-child(5),
-  table tbody td:nth-child(6),
-  table tbody td:nth-child(8),
-  table tbody td:nth-child(9) {
-    display: none;
+  .pacview-table td:first-child {
+    font-weight: 700 !important;
+    color: #0056d6 !important;
+    margin-right: 10px !important;
+  }
+
+  .pacview-table td:last-child {
+    color: #222 !important;
+    font-weight: 500 !important;
+    text-align: right !important;
   }
 }
 
+.view-btn {
+  background:#007bff;
+  color:#fff;
+  padding:6px 10px;
+  border-radius:6px;
+  font-size:12px;
+}
+.view-btn:hover {
+  background:#0056b3;
+}
 
+@media(max-width:768px){
+  thead th:nth-child(7){
+    text-align:center;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Hide only VIEW button */
+  .view-btn {
+    display: none !important;
+  }
+}
+/* Styled PAC View Footer */
+.pacview-footer {
+  margin-top: 20px;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  background: #f4f8ff;
+  border-radius: 10px;
+  border: 1px solid #d7e6ff;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Vertical separator line */
+.footer-sep {
+  color: #007bff;
+  font-weight: bold;
+}
+
+/* Make it clean for mobile */
+@media(max-width:650px){
+  .pacview-footer {
+    font-size: 12px;
+    padding: 10px 5px;
+  }
+}
+.hl {
+  background: #ffeb3b;
+  padding: 2px 3px;
+  border-radius: 4px;
+  font-weight: bold;
+  color: #000;
+}
 
   </style>
 </head>
@@ -731,33 +869,16 @@ button {
 
 
 <div class="status-bar">
-
-  <span class="live-count">
-    Total Used: <b id="stTotal"></b>
-  </span>
-
-  <span class="copied-count">
-    Today Used: <b id="stToday"></b>
-  </span>
-
-  <span class="unique-ip">
-    Unique IPs: <b id="stIPs"></b>
-  </span>
-
-  <span class="top-ip">
-    Most Active IP: <b id="stTopIP"></b>
-  </span>
-
+<span class="live-count">Total Used: <b id="stTotal"></b></span>
+<span class="copied-count"> Today Used: <b id="stToday"></b></span>
+<span class="unique-ip">Unique IPs: <b id="stIPs"></b> </span>
+<span class="top-ip">Most Active IP: <b id="stTopIP"></b></span>
 </div>
 
-
-
 <div class="filter-box">
-  <input type="text" id="searchBox" placeholder="🔍 Search PAC Code / UCL / IP..." oninput="filterTable()">
+  <input type="text" id="searchBox" placeholder="🔍 Search PAC / UCL / CSC Ref / IP..." oninput="filterTable()">
   <input type="date" id="filterDate" onchange="filterTable()">
   <button class="export-btn" onclick="openExportMenu()"><i class="fa-solid fa-file-export"></i> Export Data</button>
-
-
 </div>
 
 <div class="top-actions">
@@ -770,10 +891,7 @@ button {
       <th>UCL No</th>
       <th>CSC Ref</th>
       <th>PAC Code</th>
-      <th>Amount</th>
       <th>Pac Order Date</th>
-      <th>Entry Date</th>
-      <th>Copy Date</th>
       <th>Copy Time</th>
       <th>Copy IP</th>
       <th>Action</th>
@@ -785,11 +903,33 @@ button {
 <div id="pagination"></div>
 <div id="toast"></div>
 
+<!-- 🔍 PAC View Modal -->
+<!-- NEW PAC VIEW MODAL -->
+<div id="pacViewModal" class="pacview-overlay">
+  <div class="pacview-box">
+    <span class="pacview-close" onclick="closePacView()">×</span>
+
+    <h2 class="pacview-title"><i class="fa-solid fa-info-circle"></i> PAC Details</h2>
+
+    <table class="pacview-table" id="pacViewTable"></table>
+
+    <div class="pacview-footer">
+  <span>Made with ❤️ by <b>Samrat</b></span>
+  <span class="footer-sep">|</span>
+  <span>PAC Management System</span>
+  <span class="footer-sep">|</span>
+  <span>© 2025 All Rights Reserved</span>
+</div>
+
+  </div>
+</div>
+
 <!-- Export Modal -->
 <div id="exportModal" class="modal">
   <div class="modal-content">
 
-    <h3>Select Data Range</h3>
+    <h3>Export PAC Data</h3>
+    <p class="sub-text">Choose Data Range & Export Type</p>
 
 <div class="range-group">
   <button class="range-btn" onclick="setRange('all', this)"><i class="fa-solid fa-list"></i> Export All</button>
@@ -817,8 +957,6 @@ button {
 
   </div>
 </div>
-
-
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -872,6 +1010,12 @@ function toggleMenu() {
   document.getElementById("mainMenu").classList.toggle("show");
 }
 
+function highlight(text, query) {
+  if (!query) return text;
+  const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // escape regex
+  return text.replace(new RegExp(safeQuery, "gi"), match => `<span class="hl">${match}</span>`);
+}
+
 /* ------------------ TOAST ------------------ */
 function showToast(msg, color="#007bff") {
   const toast = document.getElementById("toast");
@@ -911,12 +1055,22 @@ function filterTable() {
   const d = document.getElementById("filterDate").value;
 
   filteredData = usedEntries.filter(e => {
-    const matchSearch =
-      e.id.toLowerCase().includes(q) ||
-      (e.uclNo || "").toLowerCase().includes(q) ||
-      (e.copyIP || "").toLowerCase().includes(q);
 
-    const matchDate = !d || e.copyDate === d;
+    const pacId   = (e.id || e.pacNo || "").toLowerCase();
+    const ucl     = (e.uclNo || "").toLowerCase();
+    const ip      = (e.copyIP || e.copyIp || "").toLowerCase();
+    const cscRef  = (e.cscRef || "").toLowerCase();
+
+    const matchSearch =
+      pacId.includes(q) ||
+      ucl.includes(q) ||
+      ip.includes(q) ||
+      cscRef.includes(q);   // ✅ NEW SEARCH FIELD
+
+    const matchDate =
+      !d ||
+      e.copyDate === d ||
+      (e.copyDate && e.copyDate.toString().includes(d));
 
     return matchSearch && matchDate;
   });
@@ -924,6 +1078,7 @@ function filterTable() {
   currentPage = 1;
   renderTable();
 }
+
 
 /* ------------------ RENDER TABLE ------------------ */
 function renderTable() {
@@ -939,34 +1094,35 @@ function renderTable() {
   }
 
   dataSlice.forEach(e => {
+
+    const q = document.getElementById("searchBox").value.toLowerCase();
+
+    const pac   = highlight(e.id || "", q);
+    const ucl   = highlight(e.uclNo || "", q);
+    const csc   = highlight(e.cscRef || "", q);
+    const ip    = highlight(e.copyIP || e.copyIp || "", q);
+
     tbody.innerHTML += `
       <tr class="used-row">
-        <td>${e.uclNo || ""}</td>
-        <td>${e.cscRef || ""}</td>
-        <td>${e.id}</td>
-        <td>${e.amount || ""}</td>
-        <td>${e.orderDate || ""}</td>
-        <td>${e.entryDate || ""}</td>
+        <td>${ucl}</td>
+        <td>${csc}</td>
+        <td>${pac}</td>
         <td>${e.copyDate || ""}</td>
         <td>${e.copyTime || ""}</td>
-        <td>${e.copyIP || ""}</td>
+        <td>${ip}</td>
         <td>
-          <button class="restore-btn" onclick="restorePAC('${e.id}')">
-            <i class="fa-solid fa-rotate-left"></i>
-          </button>
-          <button class="delete-btn" onclick="deleteUsedPAC('${e.id}')">
-            <i class="fa-solid fa-trash"></i>
-          </button>
+           ${q ? "" : `<button class="view-btn" onclick="viewPAC('${e.id}')"><i class="fa-solid fa-eye"></i></button>`}
+           <button class="restore-btn" onclick="restorePAC('${e.id}')"><i class="fa-solid fa-rotate-left"></i></button>
+           <button class="delete-btn" onclick="deleteUsedPAC('${e.id}')"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>
     `;
-  });
+});
+
 
   renderPagination();
 }
 
-
-/* ------------------ IMPROVED PAGINATION ------------------ */
 /* ---------------- SMART ELLIPSIS PAGINATION ---------------- */
 function renderPagination() {
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -1450,6 +1606,47 @@ function selectExportType(type, btn) {
 
   showToast("Selected: " + type.toUpperCase());
 }
+
+function viewPAC(id) {
+  const pac = usedEntries.find(x => x.id === id);
+  if (!pac) return;
+
+  function val(x) {
+    return (x === undefined || x === null || x === "") ? "Not Available" : x;
+  }
+
+  let html = `
+    <tr><td>UCL Owner Name</td><td>${val(pac.uclOwnerName)}</td></tr>
+    <tr><td>UCL ID</td><td>${val(pac.uclNo)}</td></tr>
+    <tr><td>CSC Ref</td><td>${val(pac.cscRef)}</td></tr>
+    <tr><td>PAC Code</td><td>${val(pac.id)}</td></tr>
+    <tr><td>PAC Order Date</td><td>${val(pac.orderDate)}</td></tr>
+    <tr><td>Amount</td><td>${val(pac.amount)}</td></tr>
+    <tr><td>Entry Date</td><td>${val(pac.entryDate)}</td></tr>
+    <tr><td>UCL IP</td><td>${val(pac.uclOwnerIp)}</td></tr>
+    <tr><td>Entry IP</td><td>${val(pac.savedFromIp)}</td></tr>
+    <tr><td>Copy Date</td><td>${val(pac.copyDate)}</td></tr>
+    <tr><td>Copy Time</td><td>${val(pac.copyTime)}</td></tr>
+    <tr><td>Copy IP</td><td>${val(pac.copyIp)}</td></tr>
+    <tr><td>Purpose</td><td>${val(pac.purpose)}</td></tr>
+  `;
+
+  document.getElementById("pacViewTable").innerHTML = html;
+  document.getElementById("pacViewModal").style.display = "flex";
+}
+
+
+
+function closePacView() {
+  document.getElementById("pacViewModal").style.display = "none";
+}
+
+/* Close on background click */
+window.addEventListener("click", (e) => {
+  const modal = document.getElementById("pacViewModal");
+  if (e.target === modal) closePacView();
+});
+
 
 /* ------------------ START ------------------ */
 loadUsedPACs();
