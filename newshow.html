@@ -1034,20 +1034,38 @@ function renderTablePage() {
 let buttons = "";
 
 // If PAC is copied
+// If PAC is copied
 if (e.copied) {
   buttons = `
-    <button class="view-btn" onclick="viewPAC('${e.id}')"><i class="fa-solid fa-eye"></i></button>
-    <button class="notused-btn" onclick="resetCopy('${e.id}')"><i class="fa-solid fa-undo"></i></button>
-    <button class="delete-btn" onclick="deletePAC('${e.firestoreId}', '${e.pacCode}')"> <i class="fa-solid fa-trash"></i></button>`;
+    <button class="view-btn" onclick="viewPAC('${e.firestoreId}', '${e.id}')">
+      <i class="fa-solid fa-eye"></i>
+    </button>
+
+    <button class="notused-btn" onclick="resetCopy('${e.firestoreId}', '${e.id}')">
+      <i class="fa-solid fa-undo"></i>
+    </button>
+
+    <button class="delete-btn" onclick="deletePAC('${e.firestoreId}', '${e.id}')">
+      <i class="fa-solid fa-trash"></i>
+    </button>`;
 }
 
 // If PAC is NOT copied
 else {
   buttons = `
-    <button class="copy-btn" onclick="copyCode('${e.id}')"><i class="fa-solid fa-copy"></i></button>
-    <button class="view-btn" onclick="viewPAC('${e.id}')"><i class="fa-solid fa-eye"></i></button>
-    <button class="delete-btn" onclick="deletePAC('${e.firestoreId}', '${e.pacCode}')"><i class="fa-solid fa-trash"></i></button>`;
+    <button class="copy-btn" onclick="copyCode('${e.firestoreId}', '${e.id}')">
+      <i class="fa-solid fa-copy"></i>
+    </button>
+
+    <button class="view-btn" onclick="viewPAC('${e.firestoreId}', '${e.id}')">
+      <i class="fa-solid fa-eye"></i>
+    </button>
+
+    <button class="delete-btn" onclick="deletePAC('${e.firestoreId}', '${e.id}')">
+      <i class="fa-solid fa-trash"></i>
+    </button>`;
 }
+
     tr.innerHTML = `
       <td>${e.uclNo || ""}</td>
       <td>${e.cscRef || ""}</td>
@@ -1671,9 +1689,10 @@ function loadNavMenuLive() {
 }
 
 
-function viewPAC(id) {
-  const pac = allEntries.find(x => x.id === id);
-  if (!pac) return;
+function viewPAC(docId, pacCode) {
+
+  const pac = allEntries.find(x => x.firestoreId === docId);
+  if (!pac) return showToast("PAC Not Found!", "#dc3545");
 
   let html = `
     <tr><td>UCl Owner Name</td><td>${pac.uclOwnerName || "-"}</td></tr>
@@ -1695,6 +1714,7 @@ function viewPAC(id) {
   document.getElementById("modalTable").innerHTML = html;
   document.getElementById("pacModal").style.display = "block";
 }
+
 
 function closeModal() {
   document.getElementById("pacModal").style.display = "none";
