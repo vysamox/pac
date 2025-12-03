@@ -836,9 +836,7 @@ tbody tr:last-child td {
 
 <div class="pagination-container">
   <button class="pagination-btn" id="prevBtn" onclick="prevPage()">⟵ Prev</button>
-  
   <span class="page-info-box" id="pageInfo">Page 1 of 1</span>
-  
   <button class="pagination-btn" id="nextBtn" onclick="nextPage()">Next ⟶</button>
 </div>
 
@@ -906,7 +904,14 @@ let filteredTableData = [];
 // ---------------------- REAL-TIME LISTENER FOR PAC ----------------------
 db.collection("pac_entries").onSnapshot(snapshot => {
   allEntries = [];
-  snapshot.forEach(doc => allEntries.push({ id: doc.id, ...doc.data() }));
+ snapshot.forEach(doc => {
+  allEntries.push({
+    firestoreId: doc.id,            // actual Firestore ID
+    pacCode: doc.data().id || doc.id, // PAC code stored inside doc
+    ...doc.data()
+  });
+});
+
 
   updateCounters();
   filterTable();
@@ -1031,39 +1036,22 @@ let buttons = "";
 // If PAC is copied
 if (e.copied) {
   buttons = `
-    <button class="view-btn" onclick="viewPAC('${e.id}')">
-        <i class="fa-solid fa-eye"></i>
-    </button>
-    <button class="notused-btn" onclick="resetCopy('${e.id}')">
-        <i class="fa-solid fa-undo"></i>
-    </button>
-    <button class="delete-btn" onclick="deletePAC('${e.id}')">
-        <i class="fa-solid fa-trash"></i>
-    </button>`;
+    <button class="view-btn" onclick="viewPAC('${e.id}')"><i class="fa-solid fa-eye"></i></button>
+    <button class="notused-btn" onclick="resetCopy('${e.id}')"><i class="fa-solid fa-undo"></i></button>
+    <button class="delete-btn" onclick="deletePAC('${e.firestoreId}', '${e.pacCode}')"> <i class="fa-solid fa-trash"></i></button>`;
 }
 
 // If PAC is NOT copied
 else {
   buttons = `
-    <button class="copy-btn" onclick="copyCode('${e.id}')">
-        <i class="fa-solid fa-copy"></i>
-    </button>
-
-    <!-- 👁️ NEW VIEW BUTTON AFTER COPY -->
-    <button class="view-btn" onclick="viewPAC('${e.id}')">
-        <i class="fa-solid fa-eye"></i>
-    </button>
-
-    <button class="delete-btn" onclick="deletePAC('${e.id}')">
-        <i class="fa-solid fa-trash"></i>
-    </button>`;
+    <button class="copy-btn" onclick="copyCode('${e.id}')"><i class="fa-solid fa-copy"></i></button>
+    <button class="view-btn" onclick="viewPAC('${e.id}')"><i class="fa-solid fa-eye"></i></button>
+    <button class="delete-btn" onclick="deletePAC('${e.firestoreId}', '${e.pacCode}')"><i class="fa-solid fa-trash"></i></button>`;
 }
-
-
     tr.innerHTML = `
       <td>${e.uclNo || ""}</td>
       <td>${e.cscRef || ""}</td>
-      <td>${e.id || ""}</td>
+      <td>${e.pacCode || ""}</td>
       <td>${e.orderDate || ""}</td>
       <td>${e.amount || ""}</td>
       <td>${e.entryDate || ""}</td>
@@ -1076,8 +1064,6 @@ else {
     tbody.appendChild(tr);
   });
 }
-
-
 
 function updatePaginationControls() {
   const totalPages = Math.ceil(filteredTableData.length / rowsPerPage);
@@ -1194,8 +1180,6 @@ document.getElementById("copySound").play();
   showToast("✅ PAC Copied!", "#28a745");
 }
 
-
-
 // ---------------------- RESET PAC ----------------------
 async function resetCopy(id) {
   try {
@@ -1229,18 +1213,118 @@ async function resetCopy(id) {
     showToast("Error resetting!", "#dc3545");
   }
 }
+// ---------------------- DELETE Devuce ID Generator ----------------------
+function getDeviceId() {
+  let id = localStorage.getItem("deviceId");
+
+  if (!id) {
+    // Generate random 8-digit hex ID
+    id = "DEVICE-" + Math.random().toString(16).substring(2, 10).toUpperCase();
+    localStorage.setItem("deviceId", id);
+  }
+
+  return id;
+}
+
+async function generateDeleteViewId() {
+  const counterRef = db.collection("system_counters").doc("delete_counter");
+  const doc = await counterRef.get();
+
+  let newNumber = 1;
+  if (doc.exists) newNumber = doc.data().count + 1;
+
+  await counterRef.set({ count: newNumber });
+
+  return "DEL-" + String(newNumber).padStart(5, "0");
+}
+
+
+function getDeviceInfo() {
+  const ua = navigator.userAgent;
+
+  let device = "Unknown Device";
+  if (/Android/i.test(ua)) device = "Android Phone";
+  else if (/iPhone/i.test(ua)) device = "iPhone";
+  else if (/iPad/i.test(ua)) device = "iPad";
+  else if (/Windows/i.test(ua)) device = "Windows PC";
+  else if (/Mac/i.test(ua)) device = "Mac OS";
+  else if (/Linux/i.test(ua)) device = "Linux";
+
+  return device + " | Browser: " + navigator.userAgent;
+}
 
 // ---------------------- DELETE ----------------------
-async function deletePAC(id) {
-  // Ask with PAC code included
-  if (!confirm(`Delete PAC ${id} permanently?`)) return;
+async function deletePAC(docId, pacCode) {
 
-  // Delete from database
-  await db.collection("pac_entries").doc(id).delete();
+  if (!confirm(`Delete PAC ${pacCode} permanently?`)) return;
 
-  // Toast with PAC code included
-  showToast(`🗑️ PAC ${id} Deleted!`, "#dc3545");
+  try {
+    // Generate Delete View ID early
+    const deleteViewId = await generateDeleteViewId();
+
+    // 👉 Read PAC BEFORE deleting
+    const snap = await db.collection("pac_entries").doc(docId).get();
+    let pacData = snap.exists ? snap.data() : {};
+
+    // 👉 DELETE IMMEDIATELY (fast UI)
+    await db.collection("pac_entries").doc(docId).delete();
+
+    showToast(`🗑️ Deleted! (${deleteViewId})`, "#dc3545");
+
+
+    // ⭐ BACKGROUND LOGGING (does NOT slow UI)
+    setTimeout(async () => {
+
+      const deviceInfo = getDeviceInfo();
+      const deviceId = getDeviceId();
+
+      // Fetch IP
+      let deleteIP = "UNKNOWN-IP";
+      try {
+        deleteIP = await fetch("https://api.ipify.org?format=json")
+          .then(r => r.json())
+          .then(r => r.ip);
+      } catch (e) { }
+
+      const now = new Date();
+      const deleteTime = now.toLocaleString("en-IN");
+
+      // EXTRA DATA ADDED (new features)
+      const deletedBy = navigator.userAgent;  // Full UA
+      const userBrowser = navigator.userAgent.split(") ").pop(); // Cleaner device
+
+
+      // 👉 FINAL LOG DATA
+      await db.collection("delete_pac").doc(docId).set({
+        pacCode: pacCode,          // Correct PAC code
+        firestoreId: docId,        // Real Firestore ID
+
+        ...pacData,                // ALL original PAC data
+
+        deleteViewId,              // DELET-00001 ID
+        deleteIP,
+        deleteDevice: deviceInfo,
+        deleteDeviceId: deviceId,
+        deleteType: "single",
+        deleteTime,
+
+        // ⭐ NEW EXTRA FIELDS
+        deletedBy,                 // Full browser info
+        userBrowser,               // Clean browser info
+        deletedAtTimestamp: now.getTime()  // For sorting by time
+      }, { merge: true });
+
+    }, 50);
+
+
+  } catch (err) {
+    console.error(err);
+    showToast("❌ Delete failed", "#dc3545");
+  }
 }
+
+
+
 
 
 // ---------------------- CSV EXPORT ----------------------
