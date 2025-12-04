@@ -904,13 +904,23 @@ let filteredTableData = [];
 // ---------------------- REAL-TIME LISTENER FOR PAC ----------------------
 db.collection("pac_entries").onSnapshot(snapshot => {
   allEntries = [];
- snapshot.forEach(doc => {
+snapshot.forEach(doc => {
+  const data = doc.data();
+
   allEntries.push({
-    firestoreId: doc.id,            // actual Firestore ID
-    pacCode: doc.data().id || doc.id, // PAC code stored inside doc
-    ...doc.data()
+    fsId: doc.id,          // Firestore Document ID
+    id: data.id || doc.id, // PAC Code
+    ...data
   });
 });
+
+// 🔥 Normalize old data for perfect compatibility
+allEntries = allEntries.map(e => ({
+  fsId: e.fsId || e.firestoreId,      // fix old firestoreId fields
+  id: e.id || e.pacCode || "",        // fix old pacCode/id mismatch
+  ...e
+}));
+
 
 
   updateCounters();
@@ -1037,39 +1047,41 @@ let buttons = "";
 // If PAC is copied
 if (e.copied) {
   buttons = `
-    <button class="view-btn" onclick="viewPAC('${e.firestoreId}', '${e.id}')">
+    <button class="view-btn" onclick="viewPAC('${e.fsId}', '${e.id}')">
       <i class="fa-solid fa-eye"></i>
     </button>
 
-    <button class="notused-btn" onclick="resetCopy('${e.firestoreId}', '${e.id}')">
+    <button class="notused-btn" onclick="resetCopy('${e.fsId}')">
       <i class="fa-solid fa-undo"></i>
     </button>
 
-    <button class="delete-btn" onclick="deletePAC('${e.firestoreId}', '${e.id}')">
+    <button class="delete-btn" onclick="deletePAC('${e.fsId}', '${e.id}')">
       <i class="fa-solid fa-trash"></i>
-    </button>`;
+    </button>
+`;
 }
 
 // If PAC is NOT copied
 else {
   buttons = `
-    <button class="copy-btn" onclick="copyCode('${e.firestoreId}', '${e.id}')">
+    <button class="copy-btn" onclick="copyCode('${e.fsId}')">
       <i class="fa-solid fa-copy"></i>
     </button>
 
-    <button class="view-btn" onclick="viewPAC('${e.firestoreId}', '${e.id}')">
+    <button class="view-btn" onclick="viewPAC('${e.fsId}', '${e.id}')">
       <i class="fa-solid fa-eye"></i>
     </button>
 
-    <button class="delete-btn" onclick="deletePAC('${e.firestoreId}', '${e.id}')">
+    <button class="delete-btn" onclick="deletePAC('${e.fsId}', '${e.id}')">
       <i class="fa-solid fa-trash"></i>
-    </button>`;
+    </button>
+`;
 }
 
     tr.innerHTML = `
       <td>${e.uclNo || ""}</td>
       <td>${e.cscRef || ""}</td>
-      <td>${e.pacCode || ""}</td>
+      <td>${e.id || ""}</td>
       <td>${e.orderDate || ""}</td>
       <td>${e.amount || ""}</td>
       <td>${e.entryDate || ""}</td>
@@ -1133,6 +1145,9 @@ function getIST() {
 
 // ---------------------- COPY PAC ----------------------
 async function copyCode(id) {
+
+   // FIX: if id is undefined, stop early
+  if (!id) return showToast("Invalid PAC ID!", "#dc3545");
 
    // 🔉 Play sound IMMEDIATELY on click (browser allows this)
   document.getElementById("copySound").currentTime = 0;
@@ -1486,7 +1501,8 @@ function calculateDBSize() {
     let docSize = 32; // base Firestore document overhead (fixed)
 
     // add document ID size (UTF-8)
-    docSize += getUTF8Size(doc.id);
+    docSize += getUTF8Size(doc.id || doc.fsId || "");
+
 
     for (let key in doc) {
       docSize += getUTF8Size(key) + 1; // field name
@@ -1712,7 +1728,8 @@ function loadNavMenuLive() {
 
 function viewPAC(docId, pacCode) {
 
-  const pac = allEntries.find(x => x.firestoreId === docId);
+  const pac = allEntries.find(x => x.fsId === docId);
+
   if (!pac) return showToast("PAC Not Found!", "#dc3545");
 
   let html = `
