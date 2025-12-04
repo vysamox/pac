@@ -361,6 +361,144 @@ footer{
   background: #ebc033;
 }
 
+/* PAGINATION BUTTONS */
+.page-btn {
+  padding: 8px 16px;
+  margin: 0 6px;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 10px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  backdrop-filter: blur(10px);
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* HOVER EFFECT */
+.page-btn:hover {
+  background: rgba(255,255,255,0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+/* ACTIVE PAGE BUTTON */
+.page-btn.active {
+  background: #00e5ff;
+  color: #000;
+  border-color: #00e5ff;
+  box-shadow: 0 0 12px #00e5ff;
+}
+
+/* DISABLED BUTTON */
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* PAGE SELECT DROPDOWN */
+.page-select {
+  padding: 8px 14px;
+  border-radius: 10px;
+  margin-left: 15px;
+  background: rgba(255,255,255,0.25);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: 0.3s;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+}
+
+/* CUSTOM ARROW */
+.page-select::after {
+  content: "▼";
+  font-size: 12px;
+  color: white;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* DROPDOWN OPTIONS */
+.page-select option {
+  background: #007bff;
+  color: white;
+  padding: 10px;
+}
+
+/* ============================
+      MOBILE PAGINATION FIX
+   ============================ */
+@media (max-width: 768px) {
+
+  /* Pagination wrapper spacing */
+  #pagination {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Page numbers container */
+  #pageNumbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  /* Buttons resize for mobile */
+  .page-btn {
+    min-width: 55px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  /* Move dropdown below buttons */
+  .page-select {
+    width: 90px;
+    text-align: center;
+    margin-left: 0;
+  }
+}
+
+/* SELECT WRAPPER FOR CUSTOM ARROW */
+/* WRAPPER FOR CUSTOM DROPDOWN */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* FIX SELECT PADDING SO ARROW HAS SPACE */
+.page-select {
+  padding-right: 35px !important; /* More space for arrow */
+}
+
+/* CUSTOM ARROW */
+.select-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  pointer-events: none;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+
 </style>
 </head>
 <body>
@@ -368,9 +506,7 @@ footer{
 <!-- HEADER -->
 <header>
   <h1><i class="fa-solid fa-database"></i> PAC Management</h1>
-  <div class="menu-toggle" onclick="toggleMenu()">
-    <i class="fa-solid fa-bars"></i>
-  </div>
+  <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
   <nav id="mainMenu"></nav>
 </header>
 
@@ -378,29 +514,14 @@ footer{
 
 <!-- STAT CARDS -->
 <div class="stats-bar">
-  <div class="stat-card">
-    <h3 id="totalCount">0</h3>
-    Total Deleted
-  </div>
-  <div class="stat-card">
-    <h3 id="todayCount">0</h3>
-    Today Deleted
-  </div>
-  <div class="stat-card">
-    <h3 id="todayAmount">₹0</h3>
-    Total Deleted Amount
-  </div>
-  <div class="stat-card">
-  <h3 id="dbSize">0 KB</h3>
-  DB Size
-</div>
-
+  <div class="stat-card"><h3 id="totalCount">0</h3> Total Deleted</div>
+  <div class="stat-card"><h3 id="todayCount">0</h3>Today Deleted</div>
+  <div class="stat-card"><h3 id="todayAmount">₹0</h3>Total Deleted Amount</div>
+  <div class="stat-card"><h3 id="dbSize">0 KB</h3>DB Size</div>
 </div>
 
 <!-- SEARCH -->
-<div class="search-bar">
-  <input id="searchInput" placeholder="Search PAC, UCL No, Owner Name...">
-</div>
+<div class="search-bar"><input id="searchInput" placeholder="Search PAC, UCL No, Owner Name..."></div>
 
 <!-- FILTERS -->
 <div class="filters">
@@ -412,7 +533,7 @@ footer{
 
 </div>
 
-<!-- TABLE -->
+<!-- Desktop TABLE View -->
 <div class="table-container">
   <table>
     <thead>
@@ -436,20 +557,33 @@ footer{
   </table>
 </div>
 
+<!-- MOBILE TABLE VIEW-->
 <div id="mobileCards"></div>
+
+<!-- PAGINATION -->
+<div id="pagination" style="text-align:center; margin:25px 0; color:white;">
+  <button id="prevPage" class="page-btn">Prev</button>
+  <span id="pageNumbers"></span>
+  <button id="nextPage" class="page-btn">Next</button>
+<div class="select-wrapper">
+  <select id="rowsPerPage" class="page-select">
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="50">50</option>
+  </select>
+  </div>
+</div>
 
 <!-- VIEW MODAL -->
 <div id="viewModal" class="modal-bg">
   <div class="modal-box">
     <h2>Deleted PAC Details</h2>
-
     <div id="modalContent"></div>
-
     <button class="close-btn" onclick="closeModal()">Close</button>
   </div>
 </div>
 
-
+<!-- FOOTER -->
 <footer>
   &copy; 2025 PAC Management System
   <br><span id="live-time"></span> |
@@ -494,14 +628,86 @@ const mobileCards = document.getElementById("mobileCards");
 
 let allPAC = [];
 
+let currentPage = 1;
+let rowsPerPageValue = 10;
+
+// For filtered results
+function getFilteredData() {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
+  const uclFilter = document.getElementById("uclFilter").value;
+
+  return allPAC.filter(d => {
+    let txt = JSON.stringify(d).toLowerCase();
+
+    if (search && !txt.includes(search)) return false;
+    if (uclFilter && String(d.uclNo).trim() !== String(uclFilter).trim()) return false;
+
+    // Date filter
+    let delDate = parseDate(formatDeleteDate(
+      d.deletedAt || d.deletedAtTimestamp || d.deleteTime
+    ));
+    let fromDate = from ? new Date(from) : null;
+    let toDate = to ? new Date(to) : null;
+
+    if (fromDate && (!delDate || delDate < fromDate)) return false;
+    if (toDate && (!delDate || delDate > toDate)) return false;
+
+    return true;
+  });
+}
+
+
+function renderPagination() {
+  const filtered = getFilteredData();
+  const totalPages = Math.ceil(filtered.length / rowsPerPageValue);
+
+  const pageNumbers = document.getElementById("pageNumbers");
+  pageNumbers.innerHTML = "";
+
+  if (totalPages <= 1) return;
+
+  function addBtn(p) {
+    pageNumbers.innerHTML += `
+      <button onclick="goToPage(${p})"
+      class="page-btn ${p === currentPage ? "active" : ""}">
+        ${p}
+      </button>`;
+  }
+
+  // Always show first page
+  addBtn(1);
+
+  // Show "..." if needed
+  if (currentPage > 4) {
+    pageNumbers.innerHTML += `<span style="color:white; margin:0 6px;">...</span>`;
+  }
+
+  // Pages around the current page (2 before, 2 after)
+  for (let p = currentPage - 2; p <= currentPage + 2; p++) {
+    if (p > 1 && p < totalPages) {
+      addBtn(p);
+    }
+  }
+
+  // Show "..." before last page
+  if (currentPage < totalPages - 3) {
+    pageNumbers.innerHTML += `<span style="color:white; margin:0 6px;">...</span>`;
+  }
+
+  // Always show last page if not same as first
+  if (totalPages > 1) addBtn(totalPages);
+}
+
+
+
 function loadPAC() {
   const q = query(collection(db, "delete_pac"), orderBy("pacNo", "desc"));
 
   onSnapshot(q, snapshot => {
 
-    allPAC = [];
-    tableBody.innerHTML = "";
-    mobileCards.innerHTML = "";
+    allPAC = []; // only reset array
 
     let todayISO = new Date().toISOString().slice(0, 10);
 
@@ -535,7 +741,7 @@ function loadPAC() {
 
     // ===== COUNTING VARIABLES =====
     let todayCount = 0;
-    let pacGroups = {};  
+    let pacGroups = {};
     let dbBytes = 0;
 
     // ===== UCL SET =====
@@ -544,12 +750,12 @@ function loadPAC() {
     snapshot.forEach(doc => {
 
       const d = doc.data();
-      allPAC.push(d);
+      allPAC.push(d); // store data for pagination
 
-      // Collect UCL IDs for filter dropdown
+      // Collect UCL IDs
       if (d.uclNo) uclSet.add(d.uclNo);
 
-      // DB size
+      // Calculate DB size
       dbBytes += JSON.stringify(d).length;
 
       // Total amount
@@ -568,10 +774,6 @@ function loadPAC() {
       if (delISO === todayISO) {
         todayCount++;
       }
-
-      // DIRECT RENDER (NO PAGINATION)
-      addRow(d);
-      addCard(d);
     });
 
     // ===== UPDATE UCL FILTER DROPDOWN =====
@@ -579,12 +781,12 @@ function loadPAC() {
     if (uclSelect) {
       uclSelect.innerHTML = `<option value="">Filter by UCL ID</option>`;
       uclSet.forEach(u => {
-  const cleanUCL = String(u).trim();
-  uclSelect.innerHTML += `<option value="${cleanUCL}">${cleanUCL}</option>`;
-});
+        const cleanUCL = String(u).trim();
+        uclSelect.innerHTML += `<option value="${cleanUCL}">${cleanUCL}</option>`;
+      });
     }
 
-    // ===== TOTAL AMOUNT ALL TIME =====
+    // ===== TOTAL AMOUNT =====
     let totalAmount = 0;
     Object.values(pacGroups).forEach(p => {
       totalAmount += p.count * p.amount;
@@ -603,10 +805,68 @@ function loadPAC() {
     document.getElementById("todayCount").textContent = todayCount;
     document.getElementById("todayAmount").textContent = "₹" + totalAmount;
     document.getElementById("dbSize").textContent = dbSize;
+
+    // 🔥 PAGINATION NOW CONTROLS RENDERING
+    renderPage();
   });
 }
 
 loadPAC();
+
+window.renderPage = function () {
+  const filtered = getFilteredData();
+
+  const start = (currentPage - 1) * rowsPerPageValue;
+  const end = start + rowsPerPageValue;
+
+  const displayData = filtered.slice(start, end);
+
+  // Clear displays
+  tableBody.innerHTML = "";
+  mobileCards.innerHTML = "";
+
+  // Render table + mobile cards
+  displayData.forEach(d => {
+    addRow(d);
+    addCard(d);
+  });
+
+  // Render page buttons
+  renderPagination();
+};
+
+// ✅ ADD THIS FIX
+window.goToPage = function(p) {
+  currentPage = p;
+  renderPage();
+};
+
+// PREVIOUS PAGE BUTTON
+document.getElementById("prevPage").onclick = function () {
+  if (currentPage > 1) {
+    currentPage--;
+    renderPage();
+  }
+};
+
+// NEXT PAGE BUTTON
+document.getElementById("nextPage").onclick = function () {
+  const filtered = getFilteredData();
+  const totalPages = Math.ceil(filtered.length / rowsPerPageValue);
+
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderPage();
+  }
+};
+
+// ROWS PER PAGE SELECT
+document.getElementById("rowsPerPage").onchange = function () {
+  rowsPerPageValue = Number(this.value);
+  currentPage = 1;
+  renderPage();
+};
+
 
 /* ---------------- ADD TABLE ROW ---------------- */
 function addRow(d) {
@@ -775,31 +1035,6 @@ function runFilters() {
   const fromDate = from ? new Date(from) : null;
   const toDate = to ? new Date(to) : null;
 
-  /* ===== DESKTOP: TABLE FILTER ===== */
-  if (!isMobile) {
-    const rows = document.querySelectorAll("#tableBody tr");
-
-    rows.forEach(row => {
-      let txt = row.innerText.toLowerCase();
-      let deleted = row.children[6].innerText;
-      let delDate = parseDate(deleted);
-
-      let show = true;
-
-      if (search && !txt.includes(search)) show = false;
-      if (uclFilter && !txt.includes(String(uclFilter).toLowerCase())) show = false;
-
-      if (fromDate && (!delDate || delDate < fromDate)) show = false;
-      if (toDate && (!delDate || delDate > toDate)) show = false;
-
-      row.style.display = show ? "" : "none";
-    });
-
-    document.querySelectorAll(".mobile-card").forEach(c => c.style.display = "none");
-    return;
-  }
-
-  /* ===== MOBILE: CARD FILTER ===== */
  /* ===== MOBILE: CARD FILTER ===== */
 const cards = document.querySelectorAll(".mobile-card");
 
@@ -818,7 +1053,9 @@ cards.forEach(card => {
   card.style.display = show ? "block" : "none";
 });
 
-document.querySelectorAll("#tableBody tr").forEach(r => r.style.display = "none");
+currentPage = 1;
+renderPage();
+
 
 }
 
@@ -859,6 +1096,7 @@ document.getElementById("searchInput").addEventListener("keyup", runFilters);
 document.getElementById("fromDate").addEventListener("change", runFilters);
 document.getElementById("toDate").addEventListener("change", runFilters);
 document.getElementById("uclFilter").addEventListener("change", runFilters);
+
 </script>
 
 <script>
@@ -889,6 +1127,8 @@ fetch("https://api.ipify.org?format=json")
 function toggleMenu(){
   document.getElementById("mainMenu").classList.toggle("show");
 }
+
+
 </script>
 
 </body>
