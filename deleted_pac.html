@@ -9,6 +9,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+
+
 <!-- ⭐ Favicon -->
 <link rel="icon" type="image/png" href="assets/fav.png">
 <link rel="apple-touch-icon" href="assets/fav.png">
@@ -498,6 +503,363 @@ footer{
   opacity: 0.9;
 }
 
+/* ===================== DELETED PAC EXPORT MODAL STYLES ===================== */
+
+/* ======= GLASS EXPORT MODAL (ACCOUNT THEME) ======= */
+
+#deletedExportModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+#deletedExportModal .modal-content {
+  width: 850px;
+  max-width: 95%;
+  padding: 35px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  animation: fadePopAccount 0.28s ease-out;
+  text-align: center;
+}
+
+@keyframes fadePopAccount {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+#deletedExportModal h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 0 12px rgba(255,255,255,0.35);
+}
+
+#deletedExportModal .sub-text {
+  color: #e8e8e8;
+  font-size: 14px;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+
+/* ===== Range Buttons ===== */
+.range-group {
+  display: flex;
+  gap: 16px;
+  margin: 25px auto;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.range-btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 14px;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.35);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.range-btn:hover {
+  background: rgba(255,255,255,0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(0,200,255,0.35);
+}
+
+/* ACTIVE state */
+.active-btn {
+  background: linear-gradient(135deg, #00eaff, #007bff) !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 18px rgba(0,200,255,0.65);
+  transform: scale(1.05);
+}
+
+
+/* ===== Input Fields ===== */
+
+.range-input {
+  width: 95%;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.25);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 14px;
+  font-size: 15px;
+  color: white;
+  display: none;
+  margin: 10px auto;
+  backdrop-filter: blur(10px);
+}
+
+.range-input::placeholder {
+  color: #eee;
+}
+
+ /* ---------------------------
+   EXPORT FORMAT BUTTONS ROW
+---------------------------- */
+
+.export-group {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 22px auto;
+}
+
+.export-option {
+  flex: 1;
+  min-width: 140px;
+  padding: 14px 0;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.15);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.30);
+  transition: 0.25s ease;
+}
+
+/* INDIVIDUAL BUTTON COLOR HINTS */
+.export-option:nth-child(1) { border-left: 4px solid #00a2ff; } /* CSV */
+.export-option:nth-child(2) { border-left: 4px solid #2ecc71; } /* Excel */
+.export-option:nth-child(3) { border-left: 4px solid #007bff; } /* PDF */
+
+/* Hover */
+.export-option:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.25);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.40);
+}
+
+/* Active */
+.export-option:active {
+  transform: scale(0.96);
+}
+
+
+/* -----------------------------
+   EXPORT NOW / CLOSE BUTTONS
+------------------------------ */
+
+.export-footer {
+  display: flex;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+/* Make ALL footer buttons perfectly equal size */
+.export-footer button {
+  flex: 1 !important;
+  width: 100% !important;
+  padding: 16px 20px;       /* equal padding */
+  border-radius: 18px;
+  border: none;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s ease;
+  letter-spacing: 0.4px;
+  backdrop-filter: blur(10px);
+  color: white;
+  text-align: center;       /* ensures text stays centered */
+}
+
+/* Export Now – Cyan Primary Button */
+.export-now-btn {
+  background: linear-gradient(135deg, #00dffb, #00a6d8);
+  box-shadow: 0 8px 26px rgba(0, 215, 255, 0.45);
+}
+
+.export-now-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 240, 255, 0.55);
+}
+
+/* Close Button – Soft Danger Red */
+.close-btn {
+  background: linear-gradient(135deg, #ff5959, #d63030);
+  box-shadow: 0 8px 26px rgba(255, 70, 70, 0.40);
+}
+
+.close-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(255, 70, 70, 0.55);
+}
+
+
+/* ======================================
+        MOBILE HEIGHT FIX (COMPACT UI)
+   ====================================== */
+@media (max-width: 600px) {
+
+  /* Reduce modal padding & radius */
+  #deletedExportModal .modal-content {
+    padding: 18px 20px !important;
+    border-radius: 14px !important;
+  }
+
+  /* Reduce header spacing */
+  #deletedExportModal h3 {
+    margin-bottom: 4px !important;
+    font-size: 19px !important;
+  }
+
+  .sub-text {
+    margin-bottom: 10px !important;
+    font-size: 13px !important;
+  }
+
+  /* SECTION TITLE spacing */
+  #deletedExportModal hr {
+    margin: 10px 0 !important;
+  }
+
+  /* RANGE BUTTONS */
+  .range-group {
+    gap: 10px !important;
+    margin: 10px 0 !important;
+  }
+
+  .range-btn {
+    padding: 10px !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+  }
+
+  /* EXPORT FORMAT BUTTONS */
+  .export-group {
+    gap: 10px !important;
+    margin: 12px 0 !important;
+  }
+
+  .export-option {
+    padding: 10px !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+  }
+
+  /* Export Now / Close Buttons */
+  .export-footer {
+    gap: 12px !important;
+    margin-top: 15px !important;
+  }
+
+  .export-footer button {
+    padding: 12px 0 !important;
+    font-size: 15px !important;
+    border-radius: 14px !important;
+  }
+
+}
+
+/* ==========================
+   UCL DROPDOWN (Glass Style)
+   ========================== */
+
+#delUclList {
+  width: 100%;
+  padding: 12px 16px;
+  margin: 8px 0 16px 0;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.15);
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+/* Placeholder color */
+#delUclList option {
+  color: black;
+}
+
+/* Hover */
+#delUclList:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* When dropdown opens */
+#delUclList:focus {
+  outline: none;
+  border-color: #00c8ff;
+  box-shadow: 0 0 12px rgba(0,200,255,0.45);
+}
+
+
+/* === FIX EXPORT BUTTON STYLING === */
+
+/* ======================== 
+      MAIN EXPORT BUTTON 
+   (Account Glass Theme)
+======================== */
+
+.export-container {
+  width: 100%;
+  text-align: center;
+  margin: 20px 0 35px;
+}
+
+.export-del-btn {
+  background: rgba(255,255,255,0.18);
+  padding: 15px 34px;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 18px;
+  font-size: 17px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: 0.28s ease;
+  box-shadow: 
+      0 8px 22px rgba(0,0,0,0.25),
+      0 0 15px rgba(0,200,255,0.35);
+}
+
+/* Icon inside button */
+.export-del-btn i {
+  font-size: 20px;
+  color: #00eaff;
+}
+
+/* Hover effect */
+.export-del-btn:hover {
+  background: rgba(255,255,255,0.28);
+  transform: translateY(-2px);
+  box-shadow: 
+      0 10px 28px rgba(0,0,0,0.35),
+      0 0 18px rgba(0,255,255,0.55);
+  border-color: rgba(0,255,255,0.65);
+}
+
+/* Active click effect */
+.export-del-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 5px 14px rgba(0,0,0,0.35);
+}
+
 
 </style>
 </head>
@@ -518,6 +880,8 @@ footer{
   <div class="stat-card"><h3 id="todayCount">0</h3>Today Deleted</div>
   <div class="stat-card"><h3 id="todayAmount">₹0</h3>Total Deleted Amount</div>
   <div class="stat-card"><h3 id="dbSize">0 KB</h3>DB Size</div>
+  <div class="stat-card"><h3 id="livePacCount">0</h3>Live PAC Count</div>
+
 </div>
 
 <!-- SEARCH -->
@@ -530,7 +894,46 @@ footer{
   <select id="uclFilter">
   <option value="">Filter by UCL ID</option>
 </select>
+</div>
+<!-- Export Funcation -->
+<div class="export-container">
+  <button class="export-del-btn" onclick="openDeletedExportMenu()">
+    <i class="fa-solid fa-file-export"></i> Export Deleted PAC Data
+  </button>
+</div>
 
+
+<!-- Deleted PAC Export Modal -->
+<div id="deletedExportModal" class="modal">
+  <div class="modal-content">
+
+    <h3>Export Deleted PAC Data</h3>
+    <p class="sub-text">Choose Data Range & Export Type</p>
+
+    <div class="range-group">
+      <button class="range-btn" onclick="setDelRange('all', this)">All Deleted</button>
+      <button class="range-btn" onclick="setDelRange('ucl', this)">By UCL</button>
+      <button class="range-btn" onclick="setDelRange('date', this)">By Delete Date</button>
+    </div>
+
+    <select id="delUclList" class="range-input" style="display:none;"></select>
+    <input type="date" id="delDateInput" class="range-input" style="display:none;">
+
+    <hr>
+
+    <h3>Select Export Format</h3>
+    <div class="export-group">
+      <button class="export-option" onclick="setDelExportType('csv', this)">CSV</button>
+      <button class="export-option" onclick="setDelExportType('excel', this)">Excel</button>
+      <button class="export-option" onclick="setDelExportType('pdf', this)">PDF</button>
+    </div>
+
+    <div class="export-footer">
+      <button class="export-now-btn" onclick="startDeletedExport()">Export Now</button>
+      <button class="close-btn" onclick="closeDeletedExportMenu()">Close</button>
+    </div>
+
+  </div>
 </div>
 
 <!-- Desktop TABLE View -->
@@ -583,6 +986,21 @@ footer{
   </div>
 </div>
 
+<div id="toast" 
+     style="visibility:hidden; 
+            position:fixed; 
+            bottom:20px; 
+            left:50%; 
+            transform:translateX(-50%); 
+            padding:12px 20px; 
+            background:#007bff; 
+            color:white; 
+            border-radius:10px; 
+            font-weight:600; 
+            z-index:999999; 
+            box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+</div>
+
 <!-- FOOTER -->
 <footer>
   &copy; 2025 PAC Management System
@@ -606,6 +1024,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+/* ---------------- Global ---------------- */
+let delRange = null;
+let delRangeBtn = null;
+let delExportType = null;
+let delExportTypeBtn = null;
+
 
 /* ---------------- LOAD NAV ---------------- */
 function loadNav() {
@@ -877,8 +1302,13 @@ function addRow(d) {
     d.deleteTime
   );
 
+  // If amount > 75 → highlight entire row
+  let highlightRow = Number(d.amount) > 75 
+    ? "style='background: rgba(255, 66, 66, 0.35); box-shadow: inset 0 0 10px rgba(255,0,0,0.4); border-left: 4px solid #ff2d2d;'" 
+    : "";
+
   tableBody.innerHTML += `
-<tr>
+<tr ${highlightRow}>
   <td>${d.uclNo}</td>
   <td>${d.cscRef}</td>
   <td>${d.pacNo}</td>
@@ -894,6 +1324,7 @@ function addRow(d) {
   <td><button class="action-btn del-btn" onclick="deletePAC('${d.pacNo}')">✖</button></td>
 </tr>`;
 }
+
 
 /* ---------------- ADD MOBILE CARD ---------------- */ 
 function addCard(d) {
@@ -1090,6 +1521,248 @@ window.closeModal = function() {
   document.getElementById("viewModal").style.display = "none";
 };
 
+
+/* ---------------- LIVE PAC COUNT (from pac_entries) ---------------- */
+function livePacCounter() {
+  const q = collection(db, "pac_entries");
+
+  onSnapshot(q, snap => {
+    const count = snap.size;
+    const el = document.getElementById("livePacCount");
+
+    // Update value
+    el.textContent = count;
+
+    // Small animation effect
+    el.style.transform = "scale(1.2)";
+    el.style.transition = "0.3s";
+    setTimeout(() => {
+      el.style.transform = "scale(1)";
+    }, 300);
+  });
+}
+
+livePacCounter();
+
+
+
+/* ----------------Export Model Close Button---------------- */
+window.openDeletedExportMenu = function() {
+  document.getElementById("deletedExportModal").style.display = "flex";
+  loadDeletedUCLList();
+};
+
+window.closeDeletedExportMenu = function() {
+  document.getElementById("deletedExportModal").style.display = "none";
+};
+
+
+window.setDelRange = function(type, btn) {
+  delRange = type;
+
+  if (delRangeBtn) delRangeBtn.classList.remove("active-btn");
+  btn.classList.add("active-btn");
+  delRangeBtn = btn;
+
+  document.getElementById("delUclList").style.display = "none";
+  document.getElementById("delDateInput").style.display = "none";
+
+  if (type === "ucl") document.getElementById("delUclList").style.display = "block";
+  if (type === "date") document.getElementById("delDateInput").style.display = "block";
+};
+
+window.setDelExportType = function(type, btn) {
+  delExportType = type;
+
+  if (delExportTypeBtn) delExportTypeBtn.classList.remove("active-btn");
+  btn.classList.add("active-btn");
+  delExportTypeBtn = btn;
+};
+ /* ===== UCL Export DROPDOWN List UCL ID ===== */
+async function loadDeletedUCLList() {
+  const dropdown = document.getElementById("delUclList");
+  dropdown.innerHTML = "<option value=''>Select UCL</option>";
+
+  let uclSet = new Set();
+  allPAC.forEach(e => {
+    if (e.uclNo) uclSet.add(e.uclNo);
+  });
+
+  [...uclSet].sort().forEach(u => {
+    dropdown.innerHTML += `<option value="${u}">${u}</option>`;
+  });
+}
+ /* ===== UCL Export Date Range ===== */
+window.startDeletedExport = function() {
+
+  if (!delRange) return alert("Select data range!");
+  if (!delExportType) return alert("Select export type!");
+
+  let exportData = allPAC;
+
+  if (delRange === "ucl") {
+    const u = document.getElementById("delUclList").value;
+    exportData = allPAC.filter(e => String(e.uclNo).trim() === String(u).trim());
+  }
+
+  if (delRange === "date") {
+    const d = document.getElementById("delDateInput").value;
+    exportData = allPAC.filter(e => 
+      formatDeleteDate(e.deletedAt || e.deletedAtTimestamp || e.deleteTime)
+        .startsWith(d.split("-").reverse().join("-"))
+    );
+  }
+
+  if (!exportData.length) return alert("No data found!");
+
+  if (delExportType === "csv") exportDeletedCSV(exportData);
+  if (delExportType === "excel") exportDeletedExcel(exportData);
+  if (delExportType === "pdf") exportDeletedPDF(exportData);
+
+  closeDeletedExportMenu();
+};
+
+ /* ===== Export CSV File ===== */
+function exportDeletedCSV(data) {
+  let csv = "UCL,CSC Ref,PAC,Amount,DeletedAt,Owner,IP\n";
+
+  data.forEach(e => {
+    csv += [
+      e.uclNo, e.cscRef, e.pacNo, e.amount,
+      formatDeleteDate(e.deletedAt || e.deletedAtTimestamp || e.deleteTime),
+      e.uclOwnerName, e.deleteIP
+    ].join(",") + "\n";
+  });
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = `Deleted_PAC_${getTimestamp()}.csv`;
+
+  a.click();
+}
+
+
+ /* ===== PDF Export ===== */
+/* ===== ADVANCED PDF EXPORT WITH COPYRIGHT FOOTER ===== */
+function exportDeletedPDF(data) {
+
+  if (!data.length) return showToast("No deleted records!", "#dc3545");
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
+
+  const now = new Date();
+  const timestamp = now.toLocaleString("en-IN");
+
+  /* ===== PREMIUM HEADER BOX ===== */
+  doc.setDrawColor(0, 122, 255);
+  doc.setLineWidth(0.8);
+  doc.roundedRect(10, 8, 270, 18, 4, 4);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(15);
+  doc.setTextColor(0, 122, 255);
+  doc.text("DELETED PAC DATA REPORT", 145, 20, { align: "center" });
+
+  /* SUBTITLE */
+  doc.setFontSize(10);
+  doc.setTextColor(50);
+  doc.text(`Exported On: ${timestamp}`, 12, 33);
+  doc.text(`Total Records: ${data.length}`, 250, 33);
+
+  /* TABLE */
+  const table = data.map((e, i) => [
+    i + 1,
+    e.uclNo || "",
+    e.cscRef || "",
+    e.pacNo || "",
+    e.amount || "",
+    e.entryDate || "",
+    e.entryTime || "",
+    formatDeleteDate(e.deletedAt || e.deletedAtTimestamp || e.deleteTime),
+    e.uclOwnerName || "",
+    e.deleteIP || "",
+    e.deleteViewId || ""
+  ]);
+
+  doc.autoTable({
+    startY: 40,
+    head: [[
+      "#","UCL No","CSC Ref","PAC No","Amount",
+      "Entry Date","Entry Time","Deleted Date",
+      "Owner","Deleted IP","Delete ID"
+    ]],
+    body: table,
+    theme: "grid",
+    headStyles: { fillColor: [0, 122, 255], fontSize: 10 },
+    bodyStyles: { fontSize: 9 },
+    alternateRowStyles: { fillColor: [240, 248, 255] },
+
+    didDrawPage: function (data) {
+      const pageHeight = doc.internal.pageSize.height;
+
+      /* PAGE NUMBER */
+      const pageCount = doc.internal.getNumberOfPages();
+      doc.setFontSize(10);
+      doc.text(
+        `Page ${doc.internal.getCurrentPageInfo().pageNumber} of ${pageCount}`,
+        doc.internal.pageSize.width / 2,
+        pageHeight - 12,
+        { align: "center" }
+      );
+
+      /* COPYRIGHT */
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      doc.text(
+        "© 2025 PAC Management System — All Rights Reserved",
+        doc.internal.pageSize.width / 2,
+        pageHeight - 5,
+        { align: "center" }
+      );
+    }
+  });
+
+  doc.save(`Deleted_PAC_Report_${getTimestamp()}.pdf`);
+  showToast("PDF Exported Successfully!", "#007bff");
+}
+
+
+
+function getTimestamp() {
+  const now = new Date();
+
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yyyy = now.getFullYear();
+
+  const hh = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
+
+  return `${dd}-${mm}-${yyyy} ${hh}-${min}-${ss}`;
+}
+
+
+
+function showToast(msg, color="#007bff") {
+  const toast = document.getElementById("toast");
+  if (!toast) return alert(msg); // fallback if toast missing
+
+  toast.innerText = msg;
+  toast.style.background = color;
+  toast.style.visibility = "visible";
+
+  setTimeout(() => {
+    toast.style.visibility = "hidden";
+  }, 2000);
+}
+
+function toISODate(del) {
+  let dt = formatDeleteDate(del);
+  let [dd, mm, yyyy] = dt.split(" ")[0].split("-");
+  return `${yyyy}-${mm}-${dd}`;
+}
 
 /* ---------------- LISTENERS ---------------- */
 document.getElementById("searchInput").addEventListener("keyup", runFilters);
