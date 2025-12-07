@@ -765,6 +765,11 @@ tbody tr:last-child td {
   font-weight: 600;
 }
 
+.amount-wrong {
+  background: #f8d7da !important;       /* light red */
+  border-left: 5px solid #dc3545 !important;
+}
+
   </style>
 </head>
 
@@ -1037,9 +1042,18 @@ function renderTablePage() {
   const end = start + rowsPerPage;
   const pageData = filteredTableData.slice(start, end);
 
-  pageData.forEach(e => {
-    const tr = document.createElement("tr");
-    if (e.copied) tr.classList.add("copied-row");
+pageData.forEach(e => {
+  const tr = document.createElement("tr");
+
+  // 🔥 Highlight if amount is NOT exactly 75
+  const amt = parseFloat(e.amount);
+  if (!isNaN(amt) && amt !== 75) {
+    tr.classList.add("amount-wrong");
+  }
+
+  // Keep copied style
+  if (e.copied) tr.classList.add("copied-row");
+
 
 let buttons = "";
 
