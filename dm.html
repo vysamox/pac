@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Database Monitor — PAC Management</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(145deg, #000428, #004e92);
+  background-size: 400% 400%;
+  animation: bgShift 20s ease infinite;
+  color: white;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ============================
+   DESKTOP HEADER
+============================ */
+header {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(14px);
+  padding: 20px 40px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #00eaff;
+  text-shadow: 0 0 12px rgba(0,238,255,0.7);
+}
+
+nav {
+  display: flex;
+  gap: 25px;
+}
+
+nav a {
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: 0.25s;
+}
+
+nav a:hover {
+  color: #00eaff;
+  text-shadow: 0 0 8px rgba(0,238,255,0.6);
+}
+
+/* 3-dot mobile menu button (hidden on desktop) */
+.menu-dots {
+  font-size: 28px;
+  color: #00eaff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none;
+}
+
+/* ============================
+   PAGE TITLE
+============================ */
+.page-title {
+  margin-top: 35px;
+  text-align: center;
+  font-size: 38px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  text-shadow: 0 0 18px rgba(0,238,255,0.7);
+}
+
+/* ============================
+   DASHBOARD CARDS
+============================ */
+.dashboard-grid {
+  width: 95%;
+  margin: 40px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+}
+/* ===========================================================
+   ULTRA MODERN GLASS CARD v4.0
+   =========================================================== */
+
+.card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 22px;
+  padding: 30px 25px;
+  
+  border: 1px solid rgba(0,255,255,0.18);
+  box-shadow:
+    0 6px 25px rgba(0,0,0,0.45),
+    inset 0 0 25px rgba(0,255,255,0.06);
+
+  backdrop-filter: blur(14px) saturate(140%);
+
+  position: relative;
+  overflow: hidden;
+  transition: 0.35s ease;
+}
+
+/* Floating hover effect */
+.card:hover {
+  transform: translateY(-8px) scale(1.015);
+  box-shadow:
+    0 12px 40px rgba(0,255,255,0.25),
+    0 0 18px rgba(0,255,255,0.35);
+}
+
+/* Title Number */
+.card h2 {
+  font-size: 46px;
+  font-weight: 700;
+  margin-bottom: 10px;
+
+  color: #00eaff;
+  text-shadow:
+    0 0 10px rgba(0,238,255,0.7),
+    0 0 18px rgba(0,238,255,0.4);
+}
+
+/* Sub label */
+.card-label {
+  font-size: 15px;
+  opacity: 0.88;
+  letter-spacing: 0.4px;
+}
+
+/* ===========================================================
+   Animated Shine Sweep
+   =========================================================== */
+.card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 120%;
+  height: 100%;
+
+  background: linear-gradient(
+    115deg,
+    transparent,
+    rgba(255,255,255,0.25),
+    transparent
+  );
+
+  transform: skewX(-25deg);
+  transition: 0.8s ease;
+}
+
+.card:hover::after {
+  left: 120%;
+}
+
+/* ===========================================================
+   Animated Border Glow
+   =========================================================== */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(0,255,255,0.35),
+    rgba(0,150,255,0.2),
+    rgba(0,255,255,0.35)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: 0.4s ease;
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+
+
+/* ===========================================================
+   Threat Card Pulse Mode (danger alerts)
+   =========================================================== */
+.card.threat {
+  border-color: rgba(255,70,70,0.8);
+  box-shadow:
+    0 8px 25px rgba(255,60,60,0.35),
+    inset 0 0 35px rgba(255,0,0,0.18);
+  animation: threatPulse 2s infinite ease-in-out;
+}
+
+.card.threat h2 {
+  color: #ff4444;
+  text-shadow:
+    0 0 14px rgba(255,60,60,0.7),
+    0 0 24px rgba(255,60,60,0.4);
+}
+
+@keyframes threatPulse {
+  0% {
+    box-shadow:
+      0 6px 25px rgba(255,0,0,0.25),
+      inset 0 0 20px rgba(255,0,0,0.15);
+  }
+  50% {
+    box-shadow:
+      0 10px 35px rgba(255,0,0,0.35),
+      inset 0 0 40px rgba(255,0,0,0.25);
+  }
+  100% {
+    box-shadow:
+      0 6px 25px rgba(255,0,0,0.25),
+      inset 0 0 20px rgba(255,0,0,0.15);
+  }
+}
+
+
+/* ============================
+   SYSTEM STATUS PANEL
+============================ */
+.status-box {
+  width: 95%;
+  margin: 40px auto;
+  padding: 35px 25px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 25px rgba(0,0,0,0.35);
+}
+
+.status-box h3 {
+  margin: 0 auto 25px auto;
+  display: inline-block;
+  padding: 8px 20px;
+  background: rgba(0,136,255,0.9);
+  border-radius: 10px;
+  text-shadow: 0 0 10px rgba(0,238,255,0.7);
+}
+
+.status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.status-item {
+  flex: 1 1 calc(50% - 20px);
+  padding: 15px 20px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 17px;
+}
+
+@media (max-width: 600px) {
+  .status-item {
+    flex: 1 1 100%;
+  }
+}
+
+/* ============================================
+   ULTRA MODERN GLASS NEON TABLE DESIGN v2.0
+============================================ */
+
+/* Wrapper with deeper glow */
+.table-container {
+  width: 95%;
+  margin: 45px auto;
+  padding: 28px;
+  border-radius: 24px;
+
+  background: rgba(0, 12, 32, 0.45);
+  backdrop-filter: blur(18px) saturate(140%);
+
+  border: 1px solid rgba(0, 255, 255, 0.25);
+
+  box-shadow:
+    0 12px 45px rgba(0,0,0,0.55),
+    inset 0 0 35px rgba(0, 238, 255, 0.12),
+    inset 0 0 80px rgba(0, 238, 255, 0.05);
+}
+
+/* Table core */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+/* Header - stronger neon + border line */
+th {
+  padding: 14px 10px;
+  font-size: 15px;
+  font-weight: 600;
+
+  color: #baf3ff;
+  letter-spacing: 0.7px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(0, 28, 48, 0.95),
+    rgba(0, 68, 104, 0.95)
+  );
+
+  border-bottom: 2px solid rgba(0, 255, 255, 0.35);
+
+  text-shadow:
+    0 0 6px rgba(0, 255, 255, 0.4),
+    0 0 12px rgba(0, 255, 255, 0.25);
+
+  /* Glossy glass highlight */
+  position: relative;
+  overflow: hidden;
+
+  /* Sticky top for scrolling tables */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Moving shine effect */
+th::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 120%;
+  height: 100%;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.18),
+    transparent
+  );
+
+  transform: skewX(-25deg);
+  transition: 0.6s ease-in-out;
+}
+
+th:hover::after {
+  left: 120%;
+}
+
+
+/* Table Cell Design */
+td {
+  padding: 14px 10px;
+  font-size: 14px;
+
+  color: #dff8ff;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+
+  transition: 0.25s ease;
+}
+
+/* Row hover - soft neon splash */
+tbody tr:hover {
+  background: rgba(0, 245, 255, 0.10);
+  box-shadow: inset 0 0 12px rgba(0,238,255,0.25);
+}
+
+/* Mismatch alert colors */
+tr.alert-high {
+  background: rgba(255, 70, 70, 0.25) !important;
+  box-shadow: inset 0 0 14px rgba(255,90,90,0.5);
+}
+
+tr.alert-low {
+  background: rgba(255,255,120,0.20) !important;
+  box-shadow: inset 0 0 14px rgba(255,255,120,0.4);
+}
+
+/* ============================
+   SOFT BORDER LINE ANIMATION
+============================ */
+tbody tr {
+  position: relative;
+}
+
+tbody tr::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 0%;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #00eaff, transparent);
+  transition: width 0.4s ease;
+}
+
+tbody tr:hover::after {
+  width: 100%;
+}
+
+/* ============================================
+   MOBILE VERSION (card layout)
+============================================ */
+@media (max-width: 600px) {
+
+  thead {
+    display: none;
+  }
+
+  table, tbody, tr, td {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    margin-bottom: 18px;
+    padding: 14px;
+    border-radius: 16px;
+
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.35);
+  }
+
+  td {
+    border: none;
+    padding: 8px 0;
+    position: relative;
+    padding-left: 130px;
+  }
+
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+
+    font-weight: 700;
+    color: #00eaff;
+    text-shadow: 0 0 8px rgba(0,238,255,0.7);
+  }
+}
+
+
+
+
+/* ============================
+   FOOTER
+============================ */
+footer {
+  margin-top: 60px;
+  text-align: center;
+  padding: 25px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255,255,255,0.3);
+}
+
+/* ================================
+   CYBERPULSE v3.0 - FULL RGB MODULE
+   ================================ */
+
+/* PULSE BOX WRAPPER */
+.pulse-box {
+  width: 95%;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  text-align: center;
+
+  box-shadow:
+    0 6px 25px rgba(0,0,0,0.35),
+    inset 0 0 15px rgba(0,238,255,0.1);
+
+  position: relative;
+}
+
+/* AMBIENT OUTER NEON GLOW */
+.pulse-box::after {
+  content: "";
+  position: absolute;
+  inset: -15px;
+  border-radius: 25px;
+
+  background: radial-gradient(
+    circle,
+    rgba(0,238,255,0.20),
+    transparent 70%
+  );
+  filter: blur(30px);
+  z-index: -1;
+}
+
+/* TITLE */
+.pulse-box h3 {
+  display: inline-block;
+  padding: 8px 20px;
+  background: rgba(0, 136, 255, 0.95);
+  border-radius: 10px;
+  color: white;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  margin-bottom: 15px;
+
+  text-shadow:
+    0 0 10px rgba(0,238,255,0.9),
+    0 0 15px rgba(0,238,255,0.6);
+}
+
+/* =======================
+   MAIN PULSE CONTAINER
+   ======================= */
+.pulse-line {
+  width: 100%;
+  height: 85px;
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.05),
+    rgba(0,0,20,0.15)
+  );
+
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+
+  box-shadow:
+    inset 0 0 25px rgba(0, 238, 255, 0.1),
+    inset 0 0 55px rgba(0, 238, 255, 0.05),
+    0 0 20px rgba(0, 238, 255, 0.12);
+
+  animation: borderGlow 5s ease-in-out infinite;
+}
+
+/* PULSE BORDER GLOW ANIMATION */
+@keyframes borderGlow {
+  0%   { box-shadow: inset 0 0 15px rgba(0,238,255,0.15); }
+  50%  { box-shadow: inset 0 0 30px rgba(0,238,255,0.25); }
+  100% { box-shadow: inset 0 0 15px rgba(0,238,255,0.15); }
+}
+
+/* =======================
+   MAIN RGB WAVE
+   ======================= */
+#pulseWave {
+  position: absolute;
+  width: 300%;
+  height: 100%;
+
+  background:
+    /* BLUE WAVE */
+    repeating-linear-gradient(
+      to right,
+      transparent 0px,
+      transparent 22px,
+      rgba(0, 180, 255, 0.85) 26px,
+      transparent 30px
+    ),
+    /* GREEN WAVE */
+    repeating-linear-gradient(
+      to right,
+      transparent 0px,
+      transparent 22px,
+      rgba(0,255,120,0.85) 26px,
+      transparent 30px
+    ),
+    /* RED WAVE */
+    repeating-linear-gradient(
+      to right,
+      transparent 0px,
+      transparent 22px,
+      rgba(255,60,60,0.85) 26px,
+      transparent 30px
+    );
+
+  background-size: 260px 85px;
+
+  animation:
+    pulseMain 2.7s linear infinite,
+    pulseFlicker 2.5s ease-in-out infinite;
+
+  filter:
+    drop-shadow(0 0 12px #00eaff)
+    drop-shadow(0 0 14px #00ff77)
+    drop-shadow(0 0 12px #ff4444);
+}
+
+/* MAIN MOVEMENT */
+@keyframes pulseMain {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* SOFT FLICKER EFFECT */
+@keyframes pulseFlicker {
+  0%, 100% { opacity: 1; }
+  45%      { opacity: 0.92; }
+  50%      { opacity: 0.85; }
+  55%      { opacity: 0.92; }
+}
+
+/* =======================
+   SHIMMER LAYER
+   ======================= */
+#pulseShimmer {
+  position: absolute;
+  width: 300%;
+  height: 100%;
+  
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.25),
+    transparent
+  );
+
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+
+  animation: shimmerFlow 1.8s linear infinite;
+}
+
+@keyframes shimmerFlow {
+  from { transform: translateX(-40%); }
+  to   { transform: translateX(0%); }
+}
+
+/* =======================
+   PARTICLE STREAM
+   ======================= */
+#pulseParticles {
+  position: absolute;
+  width: 300%;
+  height: 100%;
+
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 60%) 0 0,
+    radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 60%) 150px 20px,
+    radial-gradient(circle, rgba(255,255,255,0.45) 0%, transparent 60%) 300px 50px;
+
+  background-size: 300px 85px;
+  background-repeat: repeat-x;
+
+  animation: particleFlow 3.5s linear infinite;
+}
+
+@keyframes particleFlow {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* =======================
+   STATIC TEXT OUTPUT
+   ======================= */
+.pulse-status {
+  margin-top: 12px;
+  font-size: 14px;
+  opacity: 0.9;
+  color: #00eaff;
+  font-weight: 500;
+}
+
+/* ============================
+   MODERN GLASS MOBILE NAV
+============================ */
+@media (max-width: 768px) {
+
+  /* Compact header */
+  header {
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(14px);
+  }
+
+  header h1 {
+    font-size: 20px;
+    margin: 0;
+  }
+
+  /* 3-dot button */
+  .menu-dots {
+    display: block;
+    font-size: 26px;
+    background: none;
+    border: none;
+    color: #00eaff;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+
+  .menu-dots:active {
+    transform: scale(0.9);
+  }
+
+  /* NAV WRAPPER — modern glass menu */
+ nav {
+  display: none;
+
+  position: absolute;
+  top: 60px;         /* BELOW HEADER */
+  right: 12px;
+
+  width: 220px;
+  flex-direction: column;
+  gap: 14px;
+
+  background: rgba(0, 20, 40, 0.85);
+  backdrop-filter: blur(14px) saturate(180%);
+
+  padding: 18px 20px;
+  border-radius: 16px;
+
+  border: 1px solid rgba(0, 255, 255, 0.25);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+
+  animation: slideFade 0.25s ease forwards;
+  z-index: 9999;      /* <<< IMPORTANT FIX */
+}
+
+  /* Slide animation */
+  @keyframes slideDown {
+    from { transform: translateY(-12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Show menu */
+  nav.show {
+    display: flex;
+  }
+
+  /* Menu links */
+  nav a {
+    padding: 12px 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #dff8ff;
+    text-decoration: none;
+
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.25);
+
+    border-radius: 12px;
+    transition: 0.25s ease;
+
+    box-shadow: inset 0 0 8px rgba(0, 255, 255, 0.25);
+  }
+
+  /* Hover / Tap feedback */
+  nav a:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow:
+      0 0 12px rgba(0,255,255,0.4),
+      inset 0 0 8px rgba(0,255,255,0.3);
+  }
+
+  nav a:active {
+    transform: scale(0.96);
+  }
+}
+/* Mobile: Show 2 cards per row */
+@media (max-width: 600px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .card {
+    padding: 20px 15px;
+    border-radius: 18px;
+  }
+
+  .card h2 {
+    font-size: 32px;
+  }
+
+  .card-label {
+    font-size: 13px;
+  }
+}
+
+.card-icon-btn {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  font-size: 20px;
+  color: #00eaff;
+  transition: 0.3s ease;
+
+  padding: 5px;
+  border-radius: 8px;
+}
+
+.card-icon-btn:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px #00eaff;
+  transform: scale(1.15);
+}
+
+/* Fullscreen overlay */
+.ucl-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(10px);
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+/* Popup box */
+.ucl-modal-box {
+  width: 90%;
+  max-width: 1300px;
+  background: rgba(0,15,40,0.8);
+  border: 1px solid #00eaff;
+  border-radius: 16px;
+  padding: 25px;
+
+  box-shadow: 
+    0 0 25px rgba(0,238,255,0.4),
+    inset 0 0 20px rgba(0,238,255,0.15);
+  position: relative;
+  animation: popupShow 0.3s ease;
+}
+
+@keyframes popupShow {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.ucl-modal-box h3 {
+  text-align: center;
+  color: #00eaff;
+  margin-bottom: 15px;
+  font-size: 22px;
+  text-shadow: 0 0 10px #00eaff;
+}
+
+/* Close button */
+.ucl-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #00eaff;
+  cursor: pointer;
+}
+
+/* Table inside popup */
+.ucl-table-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.ucl-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ucl-table-container th {
+  background: rgba(0,40,80,0.8);
+  padding: 10px;
+  color: #00eaff;
+  text-shadow: 0 0 8px #00eaff;
+  position: sticky;
+  top: 0;
+}
+
+.ucl-table-container td {
+  padding: 8px;
+  color: #dffaff;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.ucl-edit-btn {
+  background: #00eaff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: black;
+  font-weight: 600;
+  transition: 0.25s;
+}
+
+.ucl-edit-btn:hover {
+  background: #33f6ff;
+  transform: scale(1.05);
+}
+
+/* ============================================
+   MOBILE VIEW FOR UCL POPUP (≤ 768px)
+============================================ */
+@media (max-width: 768px) {
+
+  /* Modal covers screen more naturally */
+  .ucl-modal-box {
+    width: 94%;
+    max-width: none;
+    height: 88vh;
+    padding: 18px;
+    border-radius: 14px;
+    overflow: hidden;
+    animation: popupShow 0.25s ease forwards;
+  }
+
+  /* Title */
+  .ucl-modal-box h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  /* Close button bigger for touch */
+  .ucl-close-btn {
+    top: 10px;
+    right: 14px;
+    font-size: 26px;
+    padding: 6px;
+  }
+
+  /* Table wrapper scroll optimized */
+  .ucl-table-container {
+    max-height: calc(88vh - 70px);
+    overflow-y: auto;
+    padding-right: 5px;
+  }
+
+  /* Table layout becomes block for readability */
+  .ucl-table-container table,
+  .ucl-table-container tbody,
+  .ucl-table-container tr,
+  .ucl-table-container td {
+    display: block;
+    width: 100%;
+  }
+
+  /* Hide full table header */
+  .ucl-table-container thead {
+    display: none;
+  }
+
+  /* Each row becomes a neon card */
+  .ucl-table-container tr {
+    margin-bottom: 14px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 0 10px rgba(0,238,255,0.15);
+  }
+
+  /* Mobile labels for each cell */
+  .ucl-table-container td {
+    padding: 8px 0 8px 115px;
+    position: relative;
+    font-size: 14px;
+  }
+
+  .ucl-table-container td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 600;
+    color: #00eaff;
+    font-size: 13px;
+    text-shadow: 0 0 8px #00eaff;
+  }
+
+  /* Edit button bigger */
+  .ucl-edit-btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+}
+
+/* ============================================
+   VERY SMALL SCREEN (≤ 480px)
+============================================ */
+@media (max-width: 480px) {
+
+  .ucl-modal-box {
+    width: 96%;
+    height: 90vh;
+  }
+
+  .ucl-table-container td {
+    padding-left: 105px;
+  }
+
+  .ucl-table-container td::before {
+    font-size: 12px;
+  }
+
+  .ucl-edit-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+.ucl-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 14px;
+
+  border-radius: 10px;
+  border: 1px solid #00eaff;
+
+  background: rgba(0,0,0,0.35);
+  color: white;
+  font-size: 15px;
+
+  outline: none;
+}
+
+.ucl-accept-btn {
+  padding: 6px 12px;
+  background: #00eaff;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.ucl-accept-btn:hover {
+  background: #33f6ff;
+}
+
+.ucl-suspend-btn {
+  padding: 6px 12px;
+  background: #ffbb00;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.ucl-suspend-btn:hover {
+  background: #ffcc33;
+}
+
+.ucl-delete-btn {
+  padding: 6px 12px;
+  background: #ff4444;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+}
+
+.ucl-delete-btn:hover {
+  background: #ff6666;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1><i class="fa-solid fa-database"></i> Database Control Panel</h1>
+
+  <button id="menuToggle" class="menu-dots">&#8942;</button>
+
+  <nav id="mainMenu"></nav>
+</header>
+
+
+<h2 class="page-title">System Intelligence Dashboard</h2>
+
+<!-- ==== ADVANCED GRID CARDS ==== -->
+<div class="dashboard-grid">
+
+   <div class="card">
+    <h2 id="livePacCount">0</h2>
+    <div class="card-label">Active PAC Entries</div>
+  </div>
+
+   <div class="card">
+  <h2 id="usedPacCount">0</h2>
+  <div class="card-label">Used PAC Count</div>
+</div>
+
+  <div class="card">
+    <h2 id="deletePacCount">0</h2>
+    <div class="card-label">Deleted PAC Records</div>
+  </div>
+
+  <div class="card">
+    <h2 id="duplicateDeleteIdCount">0</h2>
+    <div class="card-label">Duplicate Delete IDs detected</div>
+  </div>
+
+<div class="card" style="position: relative;">
+  <h2 id="userAccountCount">0</h2>
+  <div class="card-label">Registered UCL Accounts</div>
+
+  <!-- View icon -->
+  <button id="viewUclBtn" class="card-icon-btn">
+    <i class="fa-solid fa-eye"></i>
+  </button>
+</div>
+
+<!-- UCL Requests Card -->
+<div class="card" style="position: relative;">
+  <h2 id="uclRequestCount">0</h2>
+  <div class="card-label">UCL ID Requests</div>
+
+  <!-- View Request Icon -->
+  <button id="viewUclRequestBtn" class="card-icon-btn">
+    <i class="fa-solid fa-eye"></i>
+  </button>
+</div>
+
+
+  <div class="card">
+  <h2 id="pacNavCount">0</h2>
+  <div class="card-label">PAC Navigation Items</div>
+</div>
+
+<div class="card" style="border:1px solid #ff4444;">
+  <h2 id="threatLevel">0%</h2>
+  <div class="card-label">System Threat Level</div>
+  <small id="threatNote" style="opacity:0.8; font-size:13px;"></small>
+</div>
+
+<div class="card" style="position: relative;">
+  <h2 id="uclPacAmount">0</h2>
+  <div class="card-label">UCL PAC Amount (Global)</div>
+
+  <!-- Edit Button -->
+  <button id="editPacAmountBtn"
+    style="
+      position:absolute;
+      top:12px;
+      right:15px;
+      background:none;
+      border:none;
+      color:#00eaff;
+      font-size:20px;
+      cursor:pointer;
+    ">
+    <i class="fa-solid fa-pen-to-square"></i>
+  </button>
+</div>
+
+
+</div>
+
+<!-- ==== SYSTEM HEALTH ==== -->
+<div class="status-box">
+  <h3>System Activity Snapshot</h3>
+
+  <div class="status-row">
+
+    <div class="status-item">
+      Last Deleted PAC: <b id="lastDeletedPac">Loading...</b>
+    </div>
+
+    <div class="status-item">
+      System Uptime: <b id="systemUptime">0s</b>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="pulse-box">
+  <h3>System Live Pulse Monitor</h3>
+
+  <div class="pulse-line">
+    <div id="pulseWave"></div>
+    <div id="pulseShimmer"></div>
+    <div id="pulseParticles"></div>
+  </div>
+
+  <small class="pulse-status" id="pulseStatus">Normal Activity</small>
+</div>
+
+
+<!-- ==== DUPLICATE ID TABLE ==== -->
+<div class="table-container">
+  <h2 style="text-align:center; margin-bottom:20px;">Duplicate Delete ID Registry</h2>
+
+  <table>
+<thead>
+<tr>
+  <th>Delete ID</th>
+  <th>UCL</th>
+  <th>CSC</th>
+  <th>PAC</th>
+  <th>Amount</th>
+  <th>Date</th>
+  <th>Time</th>
+  <th>Deleted</th>
+  <th>IP</th>
+  <th>New Delete ID</th>
+  <th>Update</th>
+</tr>
+</thead>
+
+
+    <tbody id="duplicateTable"></tbody>
+  </table>
+</div>
+
+<div class="table-container" id="pacAmountTableBox" style="display:none;">
+<h2 id="pacAlertTitle" style="text-align:center; margin-bottom:20px;">
+  PAC Entries Amount Alert (Loading…)
+</h2>
+
+
+<table>
+<thead>
+  <tr>
+    <th>PAC No</th>
+    <th>UCL Owner</th>
+    <th>UCL</th>
+    <th>CSC Ref</th>
+    <th>Amount</th>
+    <th>Expected</th>   <!-- FIX -->
+    <th>Date</th>
+    <th>Time</th>
+    <th>IP</th>
+    <th>Purpose</th>
+  </tr>
+</thead>
+<tbody id="pacAmountTable"></tbody>
+</table>
+
+</div>
+
+<div id="pacAmountModal" 
+     style="
+       display:none;
+       position:fixed;
+       inset:0;
+       background:rgba(0,0,0,0.55);
+       backdrop-filter:blur(8px);
+       justify-content:center;
+       align-items:center;
+       z-index:9999;
+     ">
+  <div style="
+       background:rgba(255,255,255,0.1);
+       padding:25px;
+       width:300px;
+       border-radius:14px;
+       border:1px solid #00eaff;
+       text-align:center;
+       backdrop-filter:blur(12px);
+     ">
+
+    <h3 style="color:#00eaff; margin-bottom:15px;">Update PAC Amount</h3>
+
+    <input id="newPacAmountInput" type="number" 
+           style="
+             width:100%;
+             padding:12px;
+             border-radius:10px;
+             border:1px solid #00eaff;
+             background:rgba(0,0,0,0.4);
+             color:white;
+             text-align:center;
+             font-size:16px;
+           " />
+
+    <button id="savePacAmountBtn"
+            style="margin-top:15px; width:100%; padding:10px; background:#00eaff; border:none; border-radius:10px; font-weight:600; cursor:pointer;">
+      Save
+    </button>
+
+    <button id="closePacAmountBtn"
+            style="margin-top:10px; width:100%; padding:10px; background:#555; border:none; border-radius:10px; color:white; cursor:pointer;">
+      Cancel
+    </button>
+
+  </div>
+</div>
+
+<div id="uclModal" class="ucl-modal">
+  <div class="ucl-modal-box">
+    
+    <h3>UCL Owners List</h3>
+
+    <button class="ucl-close-btn" id="closeUclModal">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="ucl-table-container">
+      <table>
+     <thead>
+  <tr>
+    <th>UCL ID</th>
+    <th>Name</th>
+    <th>Amount</th>
+    <th>Count</th>
+    <th>IP</th>
+    <th>Address</th>
+    <th>Verified At</th>
+    <th>Action</th>
+  </tr>
+</thead>
+
+        <tbody id="uclTableBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="uclEditModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:500px;">
+    
+    <h3>Edit UCL Owner</h3>
+
+    <button class="ucl-close-btn" id="closeUclEditModal">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div style="margin-top:15px;">
+      <label>Name</label>
+      <input id="editUclName" type="text" class="ucl-input">
+
+      <label>PAC Amount</label>
+      <input id="editUclAmount" type="number" class="ucl-input">
+
+      <label>IP Address</label>
+      <input id="editUclIp" type="text" class="ucl-input">
+
+      <label>Address</label>
+      <input id="editUclAddress" type="text" class="ucl-input">
+
+      <button id="saveUclEditBtn" class="ucl-edit-btn" style="width:100%; margin-top:15px;">
+        Save Changes
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- UCL Requests Popup -->
+<div id="uclRequestPopup" class="ucl-modal">
+  <div class="ucl-modal-box" style=" width:95%; max-height:80vh; overflow:auto;">
+    
+    <h2 style="text-align:center;">UCL ID Requests</h2>
+
+    <button class="ucl-close-btn" onclick="closeUclRequestPopup()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div id="uclRequestTable"></div>
+  </div>
+</div>
+
+
+
+
+<footer>&copy; 2025 PAC Management System</footer>
+
+<script type="module">
+
+/* ============================================================
+   IMPORT SHARED FIREBASE API
+============================================================ */
+import {
+  db,
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  limit,
+  getDoc
+} from "./assets/js/firebase-config.js";
+
+
+
+window.openUclEditor = async function (uclDocId) {
+  alert("Edit UCL: " + uclDocId + "\n\nFull edit modal coming next!");
+};
+
+
+/* ============================================================
+   LOAD NAV LINKS
+============================================================ */
+function loadNav() {
+  const menu = document.getElementById("mainMenu");
+
+  const navQuery = query(
+    collection(db, "pacnav"),
+    orderBy("order", "asc")   // <-- Sort by order field
+  );
+
+  onSnapshot(navQuery, snap => {
+    menu.innerHTML = "";
+
+    snap.forEach(doc => {
+      const v = doc.data();
+
+      menu.innerHTML += `
+        <a href="${v.url}">
+          <i class="${v.icon}"></i> ${v.title}
+        </a>
+      `;
+    });
+  });
+}
+loadNav();
+
+
+/* ============================================================
+   GLOBAL PAC STORAGE FOR DUPLICATE FIX SYSTEM
+============================================================ */
+let allPAC = [];
+let deleteIdMapGlobal = {};
+let allPACRecordsGlobal = [];
+let uclRequestsData = [];
+
+
+
+/* ============================================================
+   COUNT + BUILD DUPLICATE DELETE ID TABLE
+============================================================ */
+onSnapshot(collection(db, "delete_pac"), snap => {
+
+  allPAC = [];
+  let deleteIdMap = {};
+
+  snap.forEach(docItem => {
+    let d = { id: docItem.id, ...docItem.data() };
+    allPAC.push(d);
+
+    let del = String(d.deleteViewId || "").trim();
+    deleteIdMap[del] = (deleteIdMap[del] || 0) + 1;
+  });
+
+  // store globally
+  deleteIdMapGlobal = deleteIdMap;
+  allPACRecordsGlobal = allPAC;
+
+
+  // Display count
+  document.getElementById("deletePacCount").textContent = allPAC.length;
+
+  const duplicateCount = Object.values(deleteIdMap).filter(v => v > 1).length;
+  document.getElementById("duplicateDeleteIdCount").textContent = duplicateCount;
+
+  const container = document.querySelector(".table-container");
+
+if (duplicateCount === 0) {
+    container.style.display = "none";   // hide table
+} else {
+    container.style.display = "block";  // show table
+}
+
+
+  // Build table
+  const table = document.getElementById("duplicateTable");
+  table.innerHTML = "";
+
+  Object.keys(deleteIdMap).forEach(delId => {
+
+    if (deleteIdMap[delId] <= 1) return; // skip normal ones
+
+   table.innerHTML += `
+  <tr style="background:rgba(0,0,0,0.35)">
+    <td colspan="10" style="padding:10px; color:#00eaff; font-weight:600;">
+      Duplicate Delete ID: ${delId} (${deleteIdMap[delId]} records)
+    </td>
+
+    <td colspan="2" style="text-align:right; padding-right:15px;">
+      <button onclick="updateAllDeleteIds('${delId}')"
+        style="
+          padding:7px 14px;
+          background:#00ffbf;
+          border:none;
+          border-radius:6px;
+          font-weight:600;
+          color:black;
+          cursor:pointer;
+        ">
+        Update All
+      </button>
+    </td>
+  </tr>
+`;
+
+window.updateAllDeleteIds = async function (oldId) {
+  const rows = allPACRecordsGlobal.filter(r => r.deleteViewId === oldId);
+  let usedIds = new Set(allPACRecordsGlobal.map(r => r.deleteViewId));
+
+  let keepOriginal = true;
+  let count = 0;
+
+  for (let rec of rows) {
+
+    let input = document.getElementById(`newDelId_${rec.pacNo}`);
+    if (!input) continue;
+
+    let newId;
+
+    if (keepOriginal) {
+      newId = rec.deleteViewId;  // first keeps original
+      keepOriginal = false;
+    } else {
+      newId = generateNextId(usedIds);
+      usedIds.add(newId);
+    }
+
+    input.value = newId;
+    input.style.background = "#fff2b3";
+
+    await setDoc(doc(db, "delete_pac", rec.id), {
+      deleteViewId: newId
+    }, { merge: true });
+
+    input.style.background = "#b3ffb3";
+    count++;
+  }
+
+  alert(`Updated ${count} records successfully!`);
+  setTimeout(() => location.reload(), 300);
+};
+
+
+let usedIds = new Set(allPAC.map(r => r.deleteViewId));
+
+
+    let keepOriginal = true;
+
+    allPAC.forEach(r => {
+      if (r.deleteViewId !== delId) return;
+
+      let newId;
+
+      if (keepOriginal) {
+        newId = r.deleteViewId;
+        keepOriginal = false;
+      } else {
+        newId = generateNextId(usedIds);
+        usedIds.add(newId);
+      }
+
+      table.innerHTML += `
+        <tr>
+          <td>${r.deleteViewId}</td>
+          <td>${r.uclNo}</td>
+          <td>${r.cscRef}</td>
+          <td>${r.pacNo}</td>
+          <td>${r.amount}</td>
+          <td>${r.entryDate || "—"}</td>
+          <td>${r.entryTime || r.deleteTime || "—"}</td>
+          <td>${formatDeleted(r)}</td>
+          <td>${r.deleteIP || "-"}</td>
+
+          <td>
+            <input id="newDelId_${r.pacNo}" value="${newId}"
+              readonly
+              style="padding:6px; width:130px; font-weight:600; background:#d4ffcf; border:none; border-radius:6px">
+          </td>
+
+          <td>
+            <button onclick="updateInlineDeleteId('${r.pacNo}')"
+              style="padding:7px 14px; background:#00eaff; border:none; border-radius:6px; font-weight:600; cursor:pointer;">
+              Update
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+
+    table.innerHTML += `
+      <tr><td colspan="12" style="border-bottom:1px solid rgba(255,255,255,0.1)"></td></tr>
+    `;
+  });
+
+});
+
+/* ============================================================
+   Delete Date 
+============================================================ */
+function formatDeleted(r) {
+  if (r.deletedAtTimestamp) {
+    return new Date(r.deletedAtTimestamp).toLocaleString();
+  }
+  if (r.deleteTime) return r.deleteTime;
+  if (r.deletedValue) return r.deletedValue;
+  return "—";
+}
+
+
+/* ============================================================
+   SAFE UNIQUE DELETE ID GENERATOR
+============================================================ */
+function generateNextId(usedSet) {
+  let next = 1;
+
+  while (true) {
+    let id = `DEL-${String(next).padStart(5, "0")}`;
+    if (!usedSet.has(id)) return id;
+    next++;
+  }
+}
+
+
+/* ============================================================
+   INLINE UPDATE FUNCTION
+============================================================ */
+window.updateInlineDeleteId = async function (pacNo) {
+
+  const input = document.getElementById(`newDelId_${pacNo}`);
+  const newId = input.value.trim();
+
+  const rec = allPAC.find(r => r.pacNo === pacNo);
+  if (!rec) return alert("Record not found!");
+
+  input.style.background = "#fff2b3";   // saving glow
+
+  await setDoc(doc(db, "delete_pac", rec.id), {
+    ...rec,
+    deleteViewId: newId
+  });
+
+  input.style.background = "#b3ffb3";   // saved glow
+
+  setTimeout(() => location.reload(), 350);
+};
+
+
+/* ============================================================
+   LIVE PAC COUNTERS
+============================================================ */
+onSnapshot(collection(db, "pac_entries"), snap =>
+  document.getElementById("livePacCount").textContent = snap.size
+);
+
+onSnapshot(collection(db, "ucl_owners"), snap =>
+  document.getElementById("userAccountCount").textContent = snap.size
+);
+
+onSnapshot(collection(db, "used_pac"), snap =>
+  document.getElementById("usedPacCount").textContent = snap.size
+);
+
+onSnapshot(collection(db, "pacnav"), snap => {
+  document.getElementById("pacNavCount").textContent = snap.size;
+});
+
+
+
+
+/* ============================================================
+   LAST DELETED PAC
+============================================================ */
+const lastDeletedQuery = query(
+  collection(db, "delete_pac"),
+  orderBy("deleteViewId", "desc"),
+  limit(1)
+);
+
+onSnapshot(lastDeletedQuery, snap => {
+  if (snap.empty)
+    return document.getElementById("lastDeletedPac").textContent = "—";
+
+  const d = snap.docs[0].data();
+  document.getElementById("lastDeletedPac").textContent =
+    d.deleteViewId || "—";
+});
+
+
+/* ============================================================
+   SYSTEM UPTIME
+============================================================ */
+let uptime = 0;
+setInterval(() => {
+  uptime++;
+  document.getElementById("systemUptime").textContent = uptime + "s";
+}, 1000);
+
+
+/* ============================================================
+   THREAT ANALYZER (NO READCOUNT)
+============================================================ */
+function analyzeThreats() {
+
+  const del = Number(document.getElementById("deletePacCount").textContent);
+  const dup = Number(document.getElementById("duplicateDeleteIdCount").textContent);
+  const live = Number(document.getElementById("livePacCount").textContent);
+
+  let score = 0;
+
+  if (del > 100) score += 20;
+  if (del > 400) score += 20;
+  if (dup > 10) score += 20;
+  if (dup > 40) score += 20;
+  if (live > 500) score += 15;
+  if (live > 1500) score += 25;
+
+  if (score > 100) score = 100;
+
+  const percent = document.getElementById("threatLevel");
+  const note = document.getElementById("threatNote");
+
+  percent.textContent = score + "%";
+
+  if (score < 30) {
+    percent.style.color = "#00ffcc";
+    note.textContent = "Safe — System stable.";
+  } else if (score < 60) {
+    percent.style.color = "#ffee55";
+    note.textContent = "Warning — Monitor activity.";
+  } else if (score < 80) {
+    percent.style.color = "#ff9900";
+    note.textContent = "Danger — Unusual patterns detected.";
+  } else {
+    percent.style.color = "#ff4444";
+    note.textContent = "CRITICAL — Immediate action required!";
+  }
+}
+
+setInterval(analyzeThreats, 2000);
+
+// Mobile nav toggle
+document.getElementById("menuToggle").addEventListener("click", () => {
+  document.getElementById("mainMenu").classList.toggle("show");
+});
+
+
+
+/* ============================================
+   LOAD UCL OWNERS FIRST
+=============================================== */
+let uclAmountMap = {};
+let uclLoaded = false;
+
+onSnapshot(collection(db, "ucl_owners"), snap => {
+  uclAmountMap = {};
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    const key = (d.uclId || "").trim();   // UCL number
+    if (!key) return;
+
+    uclAmountMap[key] = Number(d.pacAmount || 0);
+  });
+
+  console.log("✔ UCL Amount Map:", uclAmountMap);
+  uclLoaded = true;
+});
+
+
+
+
+
+/* ============================================
+   LOAD PAC ENTRIES AND COMPARE AMOUNTS
+=============================================== */
+const wait = setInterval(() => {
+  if (!uclLoaded) return console.log("❌ UCL not loaded yet");
+
+  clearInterval(wait);
+  console.log("🔥 UCL loaded, starting PAC mismatch check...");
+
+  onSnapshot(collection(db, "pac_entries"), snap => {
+
+    const tableBox = document.getElementById("pacAmountTableBox");
+    const table = document.getElementById("pacAmountTable");
+    table.innerHTML = "";
+
+    let alertList = [];
+
+    snap.forEach(doc => {
+      const d = { id: doc.id, ...doc.data() };
+
+      const uclNo = (d.uclNo || "").trim();   // match key
+      const entryAmount = Number(d.amount || 0);
+
+      const expectedAmount = uclAmountMap[uclNo];
+
+      if (expectedAmount === undefined) {
+        console.log("⚠ UCL missing:", uclNo);
+        return;
+      }
+
+      if (entryAmount !== expectedAmount) {
+        alertList.push({
+          ...d,
+          expectedAmount
+        });
+      }
+    });
+
+    console.log("🚨 Mismatch List:", alertList);
+
+    if (alertList.length === 0) {
+      tableBox.style.display = "none";
+      return;
+    }
+
+    tableBox.style.display = "block";
+
+    alertList.forEach(r => {
+      const bg = r.amount > r.expectedAmount
+        ? "rgba(255,80,80,0.3)"
+        : "rgba(255,255,0,0.3)";
+
+      table.innerHTML += `
+  <tr style="background:${bg}">
+    
+    <td data-label="PAC No">${r.pacNo || "-"}</td>
+    <td data-label="UCL Owner">${r.uclOwnerName || "-"}</td>
+    <td data-label="UCL">${r.uclNo || "-"}</td>
+    <td data-label="CSC Ref">${r.cscRef || "-"}</td>
+
+    <td data-label="Amount"><b>${r.amount}</b></td>
+    <td data-label="Expected" style="color:#00eaff;"><b>${r.expectedAmount}</b></td>
+
+    <td data-label="Date">${r.entryDate || "-"}</td>
+    <td data-label="Time">${r.entryTime || "-"}</td>
+    <td data-label="IP">${r.savedFromIp || r.copyIP || "-"}</td>
+    <td data-label="Purpose">${r.purpose || "-"}</td>
+
+  </tr>
+`;
+
+    });
+
+  });
+
+}, 300);
+
+
+document.getElementById("editPacAmountBtn").addEventListener("click", () => {
+  document.getElementById("pacAmountModal").style.display = "flex";
+
+  // Auto-fill current value
+  document.getElementById("newPacAmountInput").value =
+    document.getElementById("uclPacAmount").textContent;
+});
+
+document.getElementById("closePacAmountBtn").addEventListener("click", () => {
+  document.getElementById("pacAmountModal").style.display = "none";
+});
+
+document.getElementById("savePacAmountBtn").addEventListener("click", async () => {
+  const newAmount = Number(document.getElementById("newPacAmountInput").value);
+
+  if (!newAmount || newAmount <= 0) {
+    alert("Enter a valid amount!");
+    return;
+  }
+
+  const snap = await getDocs(collection(db, "ucl_owners"));
+  let updated = 0;
+
+  for (let docItem of snap.docs) {
+    await updateDoc(doc(db, "ucl_owners", docItem.id), {
+      pacAmount: newAmount
+    });
+    updated++;
+  }
+
+  alert(`PAC Amount updated for ALL UCL owners (${updated} users).`);
+  document.getElementById("pacAmountModal").style.display = "none";
+});
+
+onSnapshot(collection(db, "ucl_owners"), snap => {
+  let pacValue = 0;
+
+  snap.forEach(doc => {
+    pacValue = doc.data().pacAmount || pacValue;
+  });
+
+  document.getElementById("uclPacAmount").textContent = pacValue;
+});
+
+onSnapshot(collection(db, "ucl_owners"), snap => {
+  uclAmountMap = {};
+  let uniqueAmounts = new Set();
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    const key = (d.uclId || "").trim();
+    if (!key) return;
+
+    const amount = Number(d.pacAmount || 0);
+    uclAmountMap[key] = amount;
+    uniqueAmounts.add(amount);
+  });
+
+  uclLoaded = true;
+
+  // Update title dynamically
+  const title = document.getElementById("pacAlertTitle");
+
+  if (uniqueAmounts.size === 1) {
+    // Only one UCL amount exists
+    const val = [...uniqueAmounts][0];
+    title.textContent = `PAC Entries Amount Alert (≠ ${val})`;
+  } else {
+    // Multiple UCL amounts exist
+    title.textContent = `PAC Entries Amount Alert (≠ UCL PAC Amount)`;
+  }
+});
+
+
+// Store PAC count per UCL
+let pacCountMap = {};
+
+onSnapshot(collection(db, "pac_entries"), snap => {
+  pacCountMap = {};
+  snap.forEach(docItem => {
+    const d = docItem.data();
+    const ucl = (d.uclNo || "").trim();
+    if (!ucl) return;
+
+    pacCountMap[ucl] = (pacCountMap[ucl] || 0) + 1;
+  });
+});
+
+// Load UCL list in popup
+onSnapshot(collection(db, "ucl_owners"), snap => {
+  const body = document.getElementById("uclTableBody");
+  body.innerHTML = "";
+
+  snap.forEach(docItem => {
+    const d = docItem.data();
+    const uclId = d.uclId;
+
+    const pacCount = pacCountMap[uclId] || 0;
+
+    body.innerHTML += `
+      <tr>
+        <td>${uclId}</td>
+        <td>${d.name}</td>
+        <td>${d.pacAmount}</td>
+        <td style="color:#00eaff; font-weight:600">${pacCount}</td>
+        <td>${d.ip || "-"}</td>
+        <td>${d.address || "-"}</td>
+        <td>${d.lastVerifiedAt ? new Date(d.lastVerifiedAt).toLocaleString() : "-"}</td>
+
+        <td>
+          <button 
+            class="ucl-edit-btn"
+            onclick="openUclEditor('${docItem.id}')"
+          >
+            <i class="fa-solid fa-pen"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+});
+
+
+document.getElementById("viewUclBtn").addEventListener("click", () => {
+  document.getElementById("uclModal").style.display = "flex";
+});
+
+document.getElementById("closeUclModal").addEventListener("click", () => {
+  document.getElementById("uclModal").style.display = "none";
+});
+
+let currentUclDocId = null;
+
+/* Open editor and load data */
+window.openUclEditor = async function (uclDocId) {
+  currentUclDocId = uclDocId;
+
+  const ref = doc(db, "ucl_owners", uclDocId);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    alert("UCL record not found!");
+    return;
+  }
+
+  const d = snap.data();
+
+  // Fill modal inputs
+  document.getElementById("editUclName").value = d.name || "";
+  document.getElementById("editUclAmount").value = d.pacAmount || 0;
+  document.getElementById("editUclIp").value = d.ip || "";
+  document.getElementById("editUclAddress").value = d.address || "";
+
+  document.getElementById("uclEditModal").style.display = "flex";
+};
+
+/* Close editor */
+document.getElementById("closeUclEditModal").addEventListener("click", () => {
+  document.getElementById("uclEditModal").style.display = "none";
+});
+
+/* Save updates */
+document.getElementById("saveUclEditBtn").addEventListener("click", async () => {
+
+  if (!currentUclDocId) return alert("Error: No UCL selected.");
+
+  const newData = {
+    name: document.getElementById("editUclName").value.trim(),
+    pacAmount: Number(document.getElementById("editUclAmount").value),
+    ip: document.getElementById("editUclIp").value.trim(),
+    address: document.getElementById("editUclAddress").value.trim(),
+    lastVerifiedAt: Date.now()
+  };
+
+  await updateDoc(doc(db, "ucl_owners", currentUclDocId), newData);
+
+  alert("UCL updated successfully!");
+  document.getElementById("uclEditModal").style.display = "none";
+});
+
+
+
+/* ---------------- FETCH UCL REQUEST COUNT ---------------- */
+const uclRequestCountEl = document.getElementById("uclRequestCount");
+
+function loadUclRequests() {
+  const reqCollection = collection(db, "ucl_requests");
+
+  onSnapshot(reqCollection, snap => {
+    uclRequestsData = []; // global storage
+    snap.forEach(doc => uclRequestsData.push({ id: doc.id, ...doc.data() }));
+
+    uclRequestCountEl.textContent = snap.size;
+  });
+}
+
+loadUclRequests();
+
+
+document.getElementById("viewUclRequestBtn").onclick = function () {
+  renderUclRequestTable();
+  document.getElementById("uclRequestPopup").style.display = "flex";
+};
+
+
+
+function renderUclRequestTable() {
+  let html = `
+    <table style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="background:#001f33; color:#00eaff;">
+          <th>Request ID</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>District</th>
+          <th>Village</th>
+          <th>Pin Code</th>
+          <th>UCL ID</th>
+          <th>Status</th>
+          <th>IP</th>
+          <th>Created</th>
+          <th style="text-align:center;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  uclRequestsData.forEach(r => {
+    html += `
+      <tr style="background:rgba(255,255,255,0.05);">
+        <td>${r.requestId || r.id}</td>
+        <td>${r.name || "—"}</td>
+        <td>${r.phone || "—"}</td>
+        <td>${r.district || "—"}</td>
+        <td>${r.village || "—"}</td>
+        <td>${r.pinCode || "—"}</td>
+        <td>${r.uclId || "—"}</td>
+        <td>${r.status || "pending"}</td>
+        <td>${r.ip || "—"}</td>
+        <td>${formatDeleteDate(r.createdAt)}</td>
+
+        <td style="text-align:center; white-space:nowrap;">
+
+          <button 
+            class="ucl-accept-btn"
+            onclick="acceptUclRequest('${r.id}')">
+            Accept
+          </button>
+
+          <button 
+            class="ucl-suspend-btn"
+            onclick="suspendUclRequest('${r.id}')">
+            Suspend
+          </button>
+
+          <button 
+            class="ucl-delete-btn"
+            onclick="deleteUclRequest('${r.id}')">
+            Delete
+          </button>
+
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  document.getElementById("uclRequestTable").innerHTML = html;
+}
+
+
+function formatDeleteDate(d) {
+  if (!d) return "—";
+
+  let date;
+
+  if (typeof d === "number") date = new Date(d);
+  else if (d.includes("T") && d.includes("Z")) date = new Date(d);
+  else if (d.includes("/")) date = new Date(d);
+  else if (d.includes("-")) {
+    let [datePart, timePart] = d.split(" ");
+    let [dd, mm, yyyy] = datePart.split("-");
+    date = new Date(`${yyyy}-${mm}-${dd} ${timePart}`);
+  } else return d;
+
+  let day = String(date.getDate()).padStart(2, "0");
+  let month = String(date.getMonth() + 1).padStart(2, "0");
+  let year = date.getFullYear();
+
+  let hours = date.getHours();
+  let minutes = String(date.getMinutes()).padStart(2, "0");
+  let seconds = String(date.getSeconds()).padStart(2, "0");
+
+  let ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+  hours = String(hours).padStart(2, "0");
+
+  return `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+}
+window.closeUclRequestPopup = function () {
+  document.getElementById("uclRequestPopup").style.display = "none";
+};
+
+import { deleteDoc } from "./assets/js/firebase-config.js";
+
+// ACCEPT — Move request -> ucl_owners
+window.acceptUclRequest = async function (id) {
+
+  const ref = doc(db, "ucl_requests", id);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) return alert("Request not found!");
+
+  const r = snap.data();
+
+  // Build FULL address in your required format
+  const fullAddress =
+    `${r.landmark || ""}, ` +
+    `${r.village || ""}, ` +
+    `${r.postOffice || ""}, ` +
+    `${r.district || ""}, ` +
+    `${r.state || ""} - ${r.pinCode || ""}`;
+
+  // Create owner document using UCL ID as document ID
+  const ownerRef = doc(db, "ucl_owners", r.uclId);
+
+  await setDoc(ownerRef, {
+    uclId: r.uclId,
+    name: r.name,
+    phone: r.phone,
+    landmark: r.landmark || "",
+    village: r.village || "",
+    postOffice: r.postOffice || "",
+    district: r.district || "",
+    state: r.state || "",
+    pinCode: r.pinCode || "",
+    address: fullAddress,
+
+    // IP, device info, etc.
+    ip: r.ip || "",
+    createdAt: Date.now(),
+    lastVerifiedAt: Date.now(),
+    editedBy: "system-auto",
+
+    // Set default PAC Amount
+    pacAmount: r.pacAmount || 75,
+
+    // Store all other fields for safety
+    requestData: r
+  }, { merge: true });
+
+  // Delete request after accept
+  await deleteDoc(ref);
+
+  alert("UCL Request accepted and added to UCL Owners!");
+};
+
+
+
+// SUSPEND — Only update status
+window.suspendUclRequest = async function (id) {
+
+  const ref = doc(db, "ucl_requests", id);
+
+  await updateDoc(ref, {
+    status: "suspended",
+    suspendedAt: Date.now()
+  });
+
+  alert("Request suspended.");
+};
+
+
+// DELETE — Remove request completely
+window.deleteUclRequest = async function (id) {
+
+  const ref = doc(db, "ucl_requests", id);
+
+  await deleteDoc(ref);
+
+  alert("Request deleted.");
+};
+
+</script>
+
+</body>
+</html>

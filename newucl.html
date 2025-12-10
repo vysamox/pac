@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>UCL Owner Request — PAC Management</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* ============================================================
+   CYBER UI THEME
+============================================================ */
+:root{
+  --bg-dark:#05070d;
+  --bg-card:#0d111c;
+  --cyber-blue:#00c8ff;
+  --cyber-blue-glow:0 0 18px #00c8ff;
+  --cyber-shadow:0 0 22px rgba(0,200,255,0.35);
+  --radius:14px;
+}
+
+body{
+  margin:0;
+  font-family:'Poppins',Arial;
+  background:var(--bg-dark);
+  color:#d0e7ff;
+}
+
+/* HEADER */
+header{
+  background:rgba(10,20,40,0.8);
+  border-bottom:1px solid rgba(0,200,255,0.3);
+  backdrop-filter:blur(12px);
+  padding:16px 22px;
+  font-size:22px;
+  font-weight:700;
+  color:var(--cyber-blue);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  text-shadow:var(--cyber-blue-glow);
+}
+
+/* NAV */
+nav{
+  background:rgba(10,20,40,0.9);
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .35s ease;
+}
+nav.show{ max-height:350px; }
+nav a{
+  display:block;
+  padding:14px 20px;
+  text-decoration:none;
+  color:#76d5ff;
+  font-weight:600;
+  border-bottom:1px solid rgba(0,200,255,0.15);
+}
+nav a:hover{
+  background:rgba(0,200,255,0.12);
+  color:white;
+}
+
+.menu-toggle{
+  font-size:26px;
+  cursor:pointer;
+  color:var(--cyber-blue);
+}
+
+/* SEARCH BOX */
+.search-box{
+  margin:20px auto;
+  max-width:800px;
+  padding:0 18px;
+  display:flex;
+  gap:12px;
+}
+
+.search-box input{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid rgba(0,200,255,0.3);
+  background:#0b1320;
+  color:#d8f2ff;
+}
+
+.search-box button{
+  padding:12px 16px;
+  background:var(--cyber-blue);
+  border:none;
+  border-radius:10px;
+  color:#000;
+  cursor:pointer;
+  font-weight:700;
+  box-shadow:var(--cyber-shadow);
+}
+
+/* CARD */
+.page{
+  max-width:800px;
+  margin:25px auto;
+  padding:0 18px;
+}
+
+.card{
+  background:var(--bg-card);
+  padding:30px;
+  border-radius:var(--radius);
+  border:1px solid rgba(0,200,255,0.25);
+  box-shadow:var(--cyber-shadow);
+  animation:fadeInUp .6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from{ opacity:0; transform:translateY(20px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+.card h2{
+  margin:0 0 14px;
+  color:var(--cyber-blue);
+  font-size:24px;
+  text-shadow:var(--cyber-blue-glow);
+}
+
+/* INPUTS */
+label{
+  display:block;
+  margin-top:16px;
+  font-weight:700;
+  color:#88d6ff;
+}
+
+input, select{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid rgba(0,200,255,0.25);
+  margin-top:6px;
+  background:#0a1220;
+  color:#d8f2ff;
+}
+
+input:focus, select:focus{
+  border-color:var(--cyber-blue);
+  box-shadow:0 0 13px rgba(0,200,255,0.3);
+  outline:none;
+}
+
+/* ADDRESS GRID (Perfect Cyber Alignment) */
+.address-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:22px 26px; /* vertical | horizontal */
+  margin-top:18px;
+  align-items: start; /* prevent uneven field height */
+}
+
+/* consistent spacing and alignment for each item */
+.address-grid > div{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+}
+
+/* tighter spacing between label and input */
+.address-grid label{
+  margin-bottom:6px;
+  font-size:14px;
+}
+
+/* smooth + aligned cyber inputs */
+.address-grid input,
+.address-grid select{
+  padding:11px 12px;
+  border-radius:10px;
+}
+
+/* PIN STATUS FIX — reserve space to avoid layout jump */
+#pinStatus{
+  margin-top:4px;
+  font-size:12px;
+  color:#00ffbf;
+  height:16px; /* keeps grid alignment stable */
+}
+
+
+
+/* BUTTON */
+.btn{
+  width:100%;
+  margin-top:28px;
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,#009dff,#00c8ff);
+  color:#000;
+  font-size:17px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:var(--cyber-shadow);
+}
+.btn:hover{ opacity:.85; }
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.65);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  visibility:hidden;
+  transition:.25s ease;
+  z-index:9999;
+}
+
+.modal.show{
+  opacity:1;
+  visibility:visible;
+}
+
+.modal-box{
+  background:#101a2e;
+  padding:30px;
+  border-radius:16px;
+  max-width:420px;
+  width:90%;
+  text-align:center;
+  border:1px solid rgba(0,200,255,0.35);
+  box-shadow:var(--cyber-shadow);
+}
+
+.modal-box h3{
+  margin-top:0;
+  color:var(--cyber-blue);
+  text-shadow:var(--cyber-blue-glow);
+}
+
+.close-btn{
+  margin-top:18px;
+  padding:10px 18px;
+  background:var(--cyber-blue);
+  border:none;
+  border-radius:10px;
+  color:#000;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* PIN STATUS */
+#pinStatus{
+  margin-top:6px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.status-fetch{ color:#ffd135; }
+.status-good{ color:#00ffae; }
+.status-bad{ color:#ff4d4d; }
+
+/* Shake Animation */
+@keyframes shake {
+  10% { transform: translateX(-3px); }
+  20% { transform: translateX(3px); }
+  30% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+}
+
+.invalid{
+  animation:shake .3s ease;
+  border-color:#ff4d4d !important;
+  box-shadow:0 0 12px rgba(255,77,77,0.4) !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  PAC Management
+  <div class="menu-toggle" onclick="toggleMenu()"><i class="fa fa-bars"></i></div>
+</header>
+
+<nav id="mainMenu"></nav>
+
+<!-- SEARCH -->
+<div class="search-box">
+  <input id="searchInput" placeholder="Search Request ID (e.g. REQ-49283)">
+  <button onclick="searchRequest()">Search</button>
+</div>
+
+<!-- MAIN FORM -->
+<div class="page">
+  <div class="card">
+
+    <h2>Submit UCL Owner Request</h2>
+
+    <!-- Honeypot anti-bot -->
+    <input type="text" id="trapField" style="display:none !important">
+
+    <label>Owner Name *</label>
+    <input id="ownerName" type="text">
+
+    <label>Phone Number *</label>
+    <input id="phoneNumber" type="text" maxlength="10">
+
+    <label>UCL ID *</label>
+    <input id="uclId" type="text">
+
+    <label>UCL Register IP *</label>
+    <input id="ipAddress" type="text">
+
+    <h3 style="margin-top:25px;color:#00c8ff;">Address Information</h3>
+
+    <div class="address-grid">
+      <div>
+        <label>PIN Code *</label>
+        <input id="pinCode" type="text" maxlength="6">
+        <div id="pinStatus"></div>
+      </div>
+
+      <div>
+        <label>State *</label>
+        <input id="state" type="text" readonly>
+      </div>
+
+      <div>
+        <label>District *</label>
+        <input id="district" type="text" readonly>
+      </div>
+
+      <div>
+        <label>Post Office *</label>
+        <select id="postOfficeSelect"></select>
+      </div>
+
+      <div>
+        <label>Village / Locality *</label>
+        <select id="villageSelect"></select>
+      </div>
+
+      <div>
+        <label>Landmark (optional)</label>
+        <input id="landmark" type="text">
+      </div>
+    </div>
+
+    <button class="btn" id="submitBtn">Submit Request</button>
+
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="successModal" class="modal">
+  <div class="modal-box">
+    <h3>Request Submitted!</h3>
+    <div>Your Request ID:</div>
+    <div style="font-size:24px;color:#00c8ff;margin:12px 0;" id="reqIdText">REQ-00000</div>
+    <button class="close-btn" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div id="searchModal" class="modal">
+  <div class="modal-box" id="searchBox"></div>
+</div>
+
+<!-- SCRIPT START -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, onSnapshot, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain: "mrsamrat08.firebaseapp.com",
+  projectId: "mrsamrat08",
+  storageBucket: "mrsamrat08.appspot.com",
+  messagingSenderId: "525481767881",
+  appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* ==============
+   NAV MENU LOAD
+=================*/
+const nav = document.getElementById("mainMenu");
+function loadNavMenu(){
+  const qRef = query(collection(db,"pacnav"), orderBy("order"));
+  onSnapshot(qRef, snap=>{
+    let html="";
+    snap.forEach(d=>{
+      const v=d.data();
+      html+=`<a href="${v.url}"><i class="${v.icon}"></i> ${v.title}</a>`;
+    });
+    nav.innerHTML=html;
+  });
+}
+loadNavMenu();
+window.toggleMenu=()=>nav.classList.toggle("show");
+
+/* ============
+   ELEMENTS
+=============*/
+const nameEl=document.getElementById("ownerName");
+const phoneEl=document.getElementById("phoneNumber");
+const uclEl=document.getElementById("uclId");
+const ipEl=document.getElementById("ipAddress");
+const pinEl=document.getElementById("pinCode");
+const villageEl=document.getElementById("villageSelect");
+const postEl=document.getElementById("postOfficeSelect");
+const distEl=document.getElementById("district");
+const stateEl=document.getElementById("state");
+const landEl=document.getElementById("landmark");
+const trapEl=document.getElementById("trapField");
+const pinStatus=document.getElementById("pinStatus");
+const submitBtn=document.getElementById("submitBtn");
+
+/* ==========================
+   1. AUTO IP FETCH
+=============================*/
+async function fetchIP(){
+  try{
+    const r=await fetch("https://api.ipify.org?format=json");
+    const j=await r.json();
+    ipEl.value=j.ip;
+  }catch{
+    ipEl.value="Unavailable";
+  }
+}
+fetchIP();
+
+/* ==========================
+   2. GEO LOCATION FETCH
+=============================*/
+async function getGeo(ip){
+  try{
+    const r=await fetch(`https://ipapi.co/${ip}/json/`);
+    return await r.json();
+  }catch{
+    return {};
+  }
+}
+
+/* ==========================
+   3. DEVICE FINGERPRINT
+=============================*/
+function getFingerprint(){
+  let ua=navigator.userAgent;
+  let tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+  let scr=`${screen.width}x${screen.height}`;
+  let plt=navigator.platform;
+
+  let raw = ua+tz+scr+plt;
+  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw))
+    .then(buf => {
+      let hex=[...new Uint8Array(buf)]
+        .map(b=>b.toString(16).padStart(2,"0")).join("");
+      return hex.slice(0,20).toUpperCase();
+    });
+}
+
+/* ==========================
+   4. SHA-256 HASH GENERATOR
+=============================*/
+async function sha256(text){
+  let buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+/* ==========================
+   5. RATE LIMITING
+=============================*/
+function canSubmit(){
+  let last=localStorage.getItem("lastSubmit");
+  if(!last) return true;
+
+  let diff = Date.now() - parseInt(last);
+  return diff > 60000; // 60 sec
+}
+
+/* ==========================
+   6. PIN AUTO-FETCH
+=============================*/
+pinEl.addEventListener("input", async()=>{
+  const pin=pinEl.value.trim();
+  if(pin.length!==6) return;
+
+  pinStatus.textContent="Fetching…";
+  pinStatus.className="status-fetch";
+
+  const res=await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+  const data=await res.json();
+
+  if(!data[0].PostOffice){
+    pinStatus.textContent="Invalid PIN ❌";
+    pinStatus.className="status-bad";
+    return;
+  }
+
+  pinStatus.textContent="PIN Found ✓";
+  pinStatus.className="status-good";
+
+  const offices=data[0].PostOffice;
+  villageEl.innerHTML="";
+  postEl.innerHTML="";
+
+  offices.forEach(off=>{
+    let v=document.createElement("option");
+    v.value=off.Name;
+    v.textContent=off.Name;
+    villageEl.appendChild(v);
+
+    let p=document.createElement("option");
+    p.value=off.Name;
+    p.textContent=`${off.BranchType} - ${off.Name}`;
+    postEl.appendChild(p);
+  });
+
+  distEl.value=offices[0].District;
+  stateEl.value=offices[0].State;
+});
+
+/* ==========================
+   7. DUPLICATE CHECK (BLOCK)
+=============================*/
+async function uclExists(ucl){
+  const qRef=query(collection(db,"ucl_requests"), where("uclId","==",ucl), where("status","==","pending"));
+  const snap=await getDocs(qRef);
+  return !snap.empty;
+}
+
+/* ==========================
+   8. FORM SUBMIT
+=============================*/
+submitBtn.addEventListener("click", async()=>{
+
+  /* BOT TRAP */
+  if(trapEl.value!==""){ alert("Bot detected"); return; }
+
+  /* RATE LIMIT */
+  if(!canSubmit()){
+    alert("Wait before submitting again.");
+    return;
+  }
+
+  let name=nameEl.value.trim();
+  let phone=phoneEl.value.trim();
+  let ucl=uclEl.value.trim();
+  let ip=ipEl.value.trim();
+  let pin=pinEl.value.trim();
+  let village=villageEl.value;
+  let post=postEl.value;
+  let dist=distEl.value.trim();
+  let state=stateEl.value.trim();
+  let landmark=landEl.value.trim();
+
+  /* VALIDATION */
+  if(!name || !phone || !ucl || !ip || !pin){
+    alert("Fill all required fields.");
+    return;
+  }
+
+  if(ucl.includes(" ")){
+    alert("UCL ID cannot contain spaces.");
+    return;
+  }
+
+  if(!/^[0-9]{10}$/.test(phone) || ["0000000000","1111111111","1234567890","9999999999"].includes(phone)){
+    alert("Invalid phone number.");
+    return;
+  }
+
+  /* DUPLICATE CHECK */
+  if(await uclExists(ucl)){
+    alert("A pending request already exists for this UCL ID.");
+    return;
+  }
+
+  /* PREP DATA */
+  const reqId="REQ-"+Math.floor(10000+Math.random()*90000);
+
+  const geo = await getGeo(ip);
+  const fingerprint = await getFingerprint();
+
+  const payload={
+    requestId:reqId,
+    name, phone, uclId:ucl,
+    ip, pinCode:pin,
+    village, postOffice:post,
+    district:dist, state,
+    landmark,
+    createdAt:Date.now(),
+    status:"pending",
+    deviceFingerprint:fingerprint,
+    requestSource:{
+      ip,
+      city:geo.city || "",
+      region:geo.region || "",
+      country:geo.country_name || "",
+      org:geo.org || ""
+    }
+  };
+
+  payload.integrityToken = await sha256(reqId+ip+payload.createdAt);
+  payload.hashEnvelope = await sha256(JSON.stringify(payload));
+
+  const ref=doc(db,"ucl_requests",reqId);
+  await setDoc(ref,payload);
+
+  // LOG RECORD
+  const logRef=doc(db,"ucl_request_logs",reqId);
+  await setDoc(logRef,payload);
+
+  localStorage.setItem("lastSubmit", Date.now());
+
+  showModal(reqId);
+
+  nameEl.value=phoneEl.value=uclEl.value=pinEl.value=landEl.value="";
+  villageEl.innerHTML=postEl.innerHTML="";
+  distEl.value=stateEl.value="";
+});
+
+/* MODALS */
+const successModal=document.getElementById("successModal");
+const reqText=document.getElementById("reqIdText");
+
+function showModal(id){
+  reqText.textContent=id;
+  successModal.classList.add("show");
+}
+window.closeModal=()=>successModal.classList.remove("show");
+
+/* SEARCH */
+const searchModal=document.getElementById("searchModal");
+window.searchRequest=async()=>{
+  const key=document.getElementById("searchInput").value.trim();
+  const box=document.getElementById("searchBox");
+
+  if(!key){ alert("Enter Request ID"); return; }
+
+  const snap=await getDoc(doc(db,"ucl_requests",key));
+
+  if(!snap.exists()){
+    box.innerHTML=`
+      <h3 style="color:#ff4d4d">Not Found</h3>
+      <p>No request found for <b>${key}</b></p>
+      <button class="close-btn" onclick="closeSearch()">Close</button>`;
+  }else{
+    const d=snap.data();
+    box.innerHTML=`
+      <h3>Request Details</h3>
+      <div><b>Name:</b> ${d.name}</div>
+      <div><b>Phone:</b> ${d.phone}</div>
+      <div><b>UCL ID:</b> ${d.uclId}</div>
+      <div><b>IP:</b> ${d.ip}</div>
+      <div><b>Village:</b> ${d.village}</div>
+      <div><b>Post Office:</b> ${d.postOffice}</div>
+      <div><b>District:</b> ${d.district}</div>
+      <div><b>State:</b> ${d.state}</div>
+      <div><b>Landmark:</b> ${d.landmark}</div>
+      <div><b>Status:</b> ${d.status}</div>
+      <button class="close-btn" onclick="closeSearch()">Close</button>`;
+  }
+
+  searchModal.classList.add("show");
+};
+
+window.closeSearch=()=>searchModal.classList.remove("show");
+</script>
+</body>
+</html>
