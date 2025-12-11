@@ -1106,6 +1106,100 @@ footer {
   background: #ff6666;
 }
 
+/* PAC Amount Modal — moved from inline styles to classes */
+.pac-amount-modal {
+  display: none;                 /* default hidden */
+  position: fixed;
+  inset: 0;                      
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+/* When JS adds .show → modal appears */
+.pac-amount-modal.show {
+  display: flex !important;
+}
+
+.pac-amount-box {
+  width: 100%;
+  max-width: 360px;
+  background: rgba(255, 255, 255, 0.10);
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid #00eaff;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45), inset 0 0 10px rgba(0,238,255,0.03);
+}
+
+/* Title */
+.pac-amount-title {
+  color: #00eaff;
+  margin-bottom: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(0,234,255,0.25);
+}
+
+/* Input */
+.pac-amount-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #00eaff;
+  background: rgba(0,0,0,0.4);
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 12px;
+  outline: none;
+}
+
+/* Buttons */
+.pac-amount-save,
+.pac-amount-cancel {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.pac-amount-save {
+  background: #00eaff;
+  color: #000;
+}
+
+.pac-amount-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,234,255,0.12);
+}
+
+.pac-amount-cancel {
+  background: #555;
+  color: #fff;
+}
+
+.pac-amount-cancel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+/* Responsive tweaks */
+@media (max-width: 420px) {
+  .pac-amount-box { padding: 16px; max-width: 100%; border-radius: 12px; }
+  .pac-amount-title { font-size: 16px; }
+  .pac-amount-input { font-size: 15px; padding: 10px; }
+}
+
+
 </style>
 </head>
 
@@ -1119,61 +1213,31 @@ footer {
   <nav id="mainMenu"></nav>
 </header>
 
-
 <h2 class="page-title">System Intelligence Dashboard</h2>
 
 <!-- ==== ADVANCED GRID CARDS ==== -->
 <div class="dashboard-grid">
 
-   <div class="card">
-    <h2 id="livePacCount">0</h2>
-    <div class="card-label">Active PAC Entries</div>
-  </div>
+   <div class="card"><h2 id="livePacCount">0</h2><div class="card-label">Active PAC Entries</div></div>
 
-   <div class="card">
-  <h2 id="usedPacCount">0</h2>
-  <div class="card-label">Used PAC Count</div>
+   <div class="card"><h2 id="usedPacCount">0</h2><div class="card-label">Used PAC Count</div></div>
+
+  <div class="card"><h2 id="deletePacCount">0</h2><div class="card-label">Deleted PAC Records</div></div>
+
+  <div class="card"><h2 id="duplicateDeleteIdCount">0</h2><div class="card-label">Duplicate Delete IDs detected</div></div>
+
+<div class="card" style="position: relative;"><h2 id="userAccountCount">0</h2><div class="card-label">Registered UCL Accounts</div>
+  <button id="viewUclBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button><!-- View icon -->
 </div>
 
-  <div class="card">
-    <h2 id="deletePacCount">0</h2>
-    <div class="card-label">Deleted PAC Records</div>
-  </div>
-
-  <div class="card">
-    <h2 id="duplicateDeleteIdCount">0</h2>
-    <div class="card-label">Duplicate Delete IDs detected</div>
-  </div>
-
-<div class="card" style="position: relative;">
-  <h2 id="userAccountCount">0</h2>
-  <div class="card-label">Registered UCL Accounts</div>
-
-  <!-- View icon -->
-  <button id="viewUclBtn" class="card-icon-btn">
-    <i class="fa-solid fa-eye"></i>
-  </button>
-</div>
-
-<!-- UCL Requests Card -->
-<div class="card" style="position: relative;">
-  <h2 id="uclRequestCount">0</h2>
-  <div class="card-label">UCL ID Requests</div>
-
-  <!-- View Request Icon -->
-  <button id="viewUclRequestBtn" class="card-icon-btn">
-    <i class="fa-solid fa-eye"></i>
-  </button>
+<div class="card" style="position: relative;"><h2 id="uclRequestCount">0</h2><div class="card-label">UCL ID Requests</div>
+  <button id="viewUclRequestBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button> <!-- View Request Icon -->
 </div>
 
 
-  <div class="card">
-  <h2 id="pacNavCount">0</h2>
-  <div class="card-label">PAC Navigation Items</div>
-</div>
+  <div class="card"><h2 id="pacNavCount">0</h2><div class="card-label">PAC Navigation Items</div></div>
 
-<div class="card" style="border:1px solid #ff4444;">
-  <h2 id="threatLevel">0%</h2>
+<div class="card" style="border:1px solid #ff4444;"><h2 id="threatLevel">0%</h2>
   <div class="card-label">System Threat Level</div>
   <small id="threatNote" style="opacity:0.8; font-size:13px;"></small>
 </div>
@@ -1252,8 +1316,6 @@ footer {
   <th>Update</th>
 </tr>
 </thead>
-
-
     <tbody id="duplicateTable"></tbody>
   </table>
 </div>
@@ -1272,7 +1334,7 @@ footer {
     <th>UCL</th>
     <th>CSC Ref</th>
     <th>Amount</th>
-    <th>Expected</th>   <!-- FIX -->
+    <th>Expected</th>
     <th>Date</th>
     <th>Time</th>
     <th>IP</th>
@@ -1284,53 +1346,17 @@ footer {
 
 </div>
 
-<div id="pacAmountModal" 
-     style="
-       display:none;
-       position:fixed;
-       inset:0;
-       background:rgba(0,0,0,0.55);
-       backdrop-filter:blur(8px);
-       justify-content:center;
-       align-items:center;
-       z-index:9999;
-     ">
-  <div style="
-       background:rgba(255,255,255,0.1);
-       padding:25px;
-       width:300px;
-       border-radius:14px;
-       border:1px solid #00eaff;
-       text-align:center;
-       backdrop-filter:blur(12px);
-     ">
+<div id="pacAmountModal" class="pac-amount-modal" aria-hidden="true">
+  <div class="pac-amount-box" role="dialog" aria-labelledby="pacAmountTitle">
+    <h3 id="pacAmountTitle" class="pac-amount-title">Update PAC Amount</h3>
 
-    <h3 style="color:#00eaff; margin-bottom:15px;">Update PAC Amount</h3>
+    <input id="newPacAmountInput" type="number" class="pac-amount-input" />
 
-    <input id="newPacAmountInput" type="number" 
-           style="
-             width:100%;
-             padding:12px;
-             border-radius:10px;
-             border:1px solid #00eaff;
-             background:rgba(0,0,0,0.4);
-             color:white;
-             text-align:center;
-             font-size:16px;
-           " />
-
-    <button id="savePacAmountBtn"
-            style="margin-top:15px; width:100%; padding:10px; background:#00eaff; border:none; border-radius:10px; font-weight:600; cursor:pointer;">
-      Save
-    </button>
-
-    <button id="closePacAmountBtn"
-            style="margin-top:10px; width:100%; padding:10px; background:#555; border:none; border-radius:10px; color:white; cursor:pointer;">
-      Cancel
-    </button>
-
+    <button id="savePacAmountBtn" class="pac-amount-save">Save</button>
+    <button id="closePacAmountBtn" class="pac-amount-cancel">Cancel</button>
   </div>
 </div>
+
 
 <div id="uclModal" class="ucl-modal">
   <div class="ucl-modal-box">

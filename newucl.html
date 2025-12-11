@@ -9,671 +9,802 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* ============================================================
-   CYBER UI THEME
-============================================================ */
 :root{
-  --bg-dark:#05070d;
-  --bg-card:#0d111c;
-  --cyber-blue:#00c8ff;
-  --cyber-blue-glow:0 0 18px #00c8ff;
-  --cyber-shadow:0 0 22px rgba(0,200,255,0.35);
-  --radius:14px;
+  --bg:#071025;
+  --card:#0f1722;
+  --muted:#9fb7d6;
+  --accent:#22c1ff;
+  --accent-2:#6be5c7;
+  --glass: rgba(255,255,255,0.04);
+  --radius:12px;
+  --glass-border: rgba(255,255,255,0.06);
+  --success:#3fe0a1;
+  --danger:#ff6b6b;
+  --gold:#ffd166;
+  --shadow: 0 8px 30px rgba(2,6,23,0.6);
+  font-family: Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
+*{box-sizing:border-box}
+html,body{height:100%;}
 body{
   margin:0;
-  font-family:'Poppins',Arial;
-  background:var(--bg-dark);
-  color:#d0e7ff;
+  background: radial-gradient(1200px 500px at 10% 10%, rgba(34,193,255,0.06), transparent),
+              radial-gradient(800px 300px at 90% 90%, rgba(107,229,199,0.04), transparent),
+              var(--bg);
+  color:#e6f3ff;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:20px;
 }
 
-/* HEADER */
-header{
-  background:rgba(10,20,40,0.8);
-  border-bottom:1px solid rgba(0,200,255,0.3);
-  backdrop-filter:blur(12px);
-  padding:16px 22px;
-  font-size:22px;
-  font-weight:700;
-  color:var(--cyber-blue);
+/* Header */
+.header-wrap{
+  max-width:1100px;
+  margin:0 auto 20px;
   display:flex;
-  justify-content:space-between;
+  gap:16px;
   align-items:center;
-  text-shadow:var(--cyber-blue-glow);
+  justify-content:space-between;
 }
-
-/* NAV */
-nav{
-  background:rgba(10,20,40,0.9);
-  max-height:0;
-  overflow:hidden;
-  transition:max-height .35s ease;
-}
-nav.show{ max-height:350px; }
-nav a{
-  display:block;
-  padding:14px 20px;
-  text-decoration:none;
-  color:#76d5ff;
-  font-weight:600;
-  border-bottom:1px solid rgba(0,200,255,0.15);
-}
-nav a:hover{
-  background:rgba(0,200,255,0.12);
-  color:white;
-}
-
-.menu-toggle{
-  font-size:26px;
-  cursor:pointer;
-  color:var(--cyber-blue);
-}
-
-/* SEARCH BOX */
-.search-box{
-  margin:20px auto;
-  max-width:800px;
-  padding:0 18px;
+.header{
   display:flex;
-  gap:12px;
+  gap:14px;
+  align-items:center;
+}
+.logo{
+  width:56px;
+  height:56px;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  display:grid;place-items:center;
+  color:#012028;font-weight:800;font-size:18px;
+  box-shadow: 0 6px 18px rgba(34,193,255,0.08), inset 0 -6px 18px rgba(255,255,255,0.02);
+}
+.title{font-size:18px;font-weight:700;color:var(--accent-2)}
+.subtitle{color:var(--muted);font-size:13px}
+
+.container{
+  max-width:1100px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:20px;
 }
 
-.search-box input{
-  flex:1;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid rgba(0,200,255,0.3);
-  background:#0b1320;
-  color:#d8f2ff;
+.top-actions{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:flex-end
 }
 
-.search-box button{
-  padding:12px 16px;
-  background:var(--cyber-blue);
-  border:none;
-  border-radius:10px;
-  color:#000;
-  cursor:pointer;
-  font-weight:700;
-  box-shadow:var(--cyber-shadow);
-}
-
-/* CARD */
-.page{
-  max-width:800px;
-  margin:25px auto;
-  padding:0 18px;
-}
-
-.card{
-  background:var(--bg-card);
-  padding:30px;
-  border-radius:var(--radius);
-  border:1px solid rgba(0,200,255,0.25);
-  box-shadow:var(--cyber-shadow);
-  animation:fadeInUp .6s ease forwards;
-}
-
-@keyframes fadeInUp {
-  from{ opacity:0; transform:translateY(20px); }
-  to{ opacity:1; transform:translateY(0); }
-}
-
-.card h2{
-  margin:0 0 14px;
-  color:var(--cyber-blue);
-  font-size:24px;
-  text-shadow:var(--cyber-blue-glow);
-}
-
-/* INPUTS */
-label{
-  display:block;
-  margin-top:16px;
-  font-weight:700;
-  color:#88d6ff;
-}
-
-input, select{
+.search-box{
   width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid rgba(0,200,255,0.25);
-  margin-top:6px;
-  background:#0a1220;
-  color:#d8f2ff;
+  display:flex;gap:10px;align-items:center;
+}
+.search-box input{
+  flex:1;padding:12px 14px;border-radius:10px;border:1px solid var(--glass-border);
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color:var(--muted);outline:none;font-size:14px
+}
+.search-box button{padding:11px 14px;border-radius:10px;border:none;background:var(--accent);color:#012028;font-weight:700;cursor:pointer}
+
+/* Main card */
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:var(--radius);
+  padding:22px;
+  border:1px solid var(--glass-border);
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(8px) saturate(120%);
 }
 
-input:focus, select:focus{
-  border-color:var(--cyber-blue);
-  box-shadow:0 0 13px rgba(0,200,255,0.3);
-  outline:none;
+.card h2{margin:4px 0 6px;color:var(--gold);font-size:20px}
+.card p.lead{margin:0;color:var(--muted);font-size:13px}
+
+.form-grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:14px;
+  margin-top:16px;
 }
 
-/* ADDRESS GRID (Perfect Cyber Alignment) */
+.label{display:block;color:var(--muted);font-weight:700;margin-bottom:8px;font-size:13px}
+.input, input, select, textarea{
+  width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);
+  background:transparent;color:var(--muted);font-size:14px;outline:none;transition:box-shadow .18s,border-color .18s
+}
+.input:focus, input:focus, select:focus, textarea:focus{
+  box-shadow:0 6px 20px rgba(34,193,255,0.08);
+  border-color:rgba(34,193,255,0.28);
+}
+
+/* Make dropdown match your dark theme */
+select {
+    background: #0f1722 !important;
+    color: #d8f2ff !important;
+    border: 1px solid rgba(34,193,255,0.28) !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    outline: none;
+}
+select option { background: #0f1722 !important; color: #e6f3ff !important; padding: 10px !important; border-bottom: 1px solid rgba(255,255,255,0.06); }
+select option:hover { background: #0e8cff !important; color: #fff !important; }
+select option:checked { background: #0e8cff !important; color: #fff !important; }
+
+/* Address grid */
 .address-grid{
   display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap:22px 26px; /* vertical | horizontal */
-  margin-top:18px;
-  align-items: start; /* prevent uneven field height */
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:12px 18px;
+  align-items:start;
 }
+.address-grid > div{display:flex;flex-direction:column}
 
-/* consistent spacing and alignment for each item */
-.address-grid > div{
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-}
+/* Small helper text */
+.helper{font-size:12px;color:var(--muted);margin-top:6px}
 
-/* tighter spacing between label and input */
-.address-grid label{
-  margin-bottom:6px;
-  font-size:14px;
-}
-
-/* smooth + aligned cyber inputs */
-.address-grid input,
-.address-grid select{
-  padding:11px 12px;
-  border-radius:10px;
-}
-
-/* PIN STATUS FIX — reserve space to avoid layout jump */
-#pinStatus{
-  margin-top:4px;
-  font-size:12px;
-  color:#00ffbf;
-  height:16px; /* keeps grid alignment stable */
-}
-
-
-
-/* BUTTON */
+/* Button */
 .btn{
-  width:100%;
-  margin-top:28px;
-  padding:15px;
-  border:none;
-  border-radius:12px;
-  background:linear-gradient(135deg,#009dff,#00c8ff);
-  color:#000;
-  font-size:17px;
-  font-weight:700;
-  cursor:pointer;
-  box-shadow:var(--cyber-shadow);
+  display:inline-grid;place-items:center;padding:13px 16px;border-radius:12px;border:none;cursor:pointer;font-weight:800;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#012028;width:100%;font-size:15px
 }
-.btn:hover{ opacity:.85; }
+.btn.ghost{background:transparent;border:1px solid var(--glass-border);color:var(--muted)}
 
-/* MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.65);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  opacity:0;
-  visibility:hidden;
-  transition:.25s ease;
-  z-index:9999;
-}
+/* Status */
+#pinStatus{font-size:13px;height:20px;margin-top:6px}
+.status-fetch{color:var(--gold)}
+.status-good{color:var(--success)}
+.status-bad{color:var(--danger)}
 
-.modal.show{
-  opacity:1;
-  visibility:visible;
+.field-error { color: var(--danger); font-size:12px; margin-top:6px; display:none; }
+.field-error.show { display:block; animation:fadeErr .28s ease; }
+@keyframes fadeErr{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+
+/* Modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:9999}
+.modal.show{display:flex}
+.modal-box{width:min(520px,92%);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:22px;border:1px solid var(--glass-border);box-shadow:0 12px 40px rgba(2,6,23,0.7)}
+.modal-box h3{margin:0 0 8px;color:var(--accent)}
+.close-btn{margin-top:16px;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;background:var(--accent);color:#012028;font-weight:700}
+
+/* Small screens */
+@media (max-width:720px){
+  .address-grid{grid-template-columns:1fr}
+  .header-wrap{padding-bottom:6px;gap:10px}
+  .title{font-size:15px}
 }
 
-.modal-box{
-  background:#101a2e;
-  padding:30px;
-  border-radius:16px;
-  max-width:420px;
-  width:90%;
-  text-align:center;
-  border:1px solid rgba(0,200,255,0.35);
-  box-shadow:var(--cyber-shadow);
+/* Desktop layout - two column page */
+@media (min-width:900px){
+  .container{grid-template-columns: 1fr 380px}
+  .card.large{padding:28px}
 }
 
-.modal-box h3{
-  margin-top:0;
-  color:var(--cyber-blue);
-  text-shadow:var(--cyber-blue-glow);
-}
+/* subtle focus rings for accessibility */
+:focus{outline:2px solid rgba(34,193,255,0.12);outline-offset:2px}
 
-.close-btn{
-  margin-top:18px;
-  padding:10px 18px;
-  background:var(--cyber-blue);
-  border:none;
-  border-radius:10px;
-  color:#000;
-  font-size:15px;
-  font-weight:700;
-  cursor:pointer;
-}
+/* micro animations */
+.fade-up{animation:fadeUp .42s cubic-bezier(.2,.9,.3,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* PIN STATUS */
-#pinStatus{
-  margin-top:6px;
+/* simple home link */
+.home-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  color: var(--muted);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.18s, color 0.18s, transform 0.18s;
+}
+.home-nav i { color: var(--accent); }
+.home-nav:hover { background: rgba(34,193,255,0.12); color: #e6faff; transform: translateY(-2px); }
+
+.status-line {
   font-size:13px;
-  font-weight:600;
+  color:var(--muted);
+  margin-top:8px;
+  min-height:20px;
 }
 
-.status-fetch{ color:#ffd135; }
-.status-good{ color:#00ffae; }
-.status-bad{ color:#ff4d4d; }
-
-/* Shake Animation */
-@keyframes shake {
-  10% { transform: translateX(-3px); }
-  20% { transform: translateX(3px); }
-  30% { transform: translateX(-3px); }
-  40% { transform: translateX(3px); }
+/* small spinner */
+.spinner {
+  display:inline-block;
+  width:16px;height:16px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,0.12);
+  border-top-color:var(--accent);
+  animation:spin 0.9s linear infinite;
+  vertical-align:middle;
+  margin-right:8px;
 }
+@keyframes spin{ to{ transform:rotate(360deg) } }
 
-.invalid{
-  animation:shake .3s ease;
-  border-color:#ff4d4d !important;
-  box-shadow:0 0 12px rgba(255,77,77,0.4) !important;
+/* mast / credit block */
+.mast{
+  margin-top:18px;
+  padding:14px;
+  border-radius:10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+  border: 1px solid rgba(255,255,255,0.02);
+  color: var(--muted);
+  font-size:13px;
+  text-align:center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
 }
+.mast-line{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;color:var(--accent-2)}
+.mast-heart{font-size:16px; transform: translateY(1px);}
+.mast-spark{font-size:14px}
+.mast-text strong{color:var(--accent); font-weight:800}
+.mast-note{margin-top:8px;font-size:12px;color:var(--muted);opacity:0.92}
 </style>
 </head>
 <body>
 
-<header>
-  PAC Management
-  <div class="menu-toggle" onclick="toggleMenu()"><i class="fa fa-bars"></i></div>
-</header>
+<div class="header-wrap">
+  <div class="header">
+    <div class="logo">PAC</div>
+    <div>
+      <div class="title">PAC Management</div>
+      <div class="subtitle">UCL Owner Request Portal</div>
+    </div>
+  </div>
 
-<nav id="mainMenu"></nav>
-
-<!-- SEARCH -->
-<div class="search-box">
-  <input id="searchInput" placeholder="Search Request ID (e.g. REQ-49283)">
-  <button onclick="searchRequest()">Search</button>
-</div>
-
-<!-- MAIN FORM -->
-<div class="page">
-  <div class="card">
-
-    <h2>Submit UCL Owner Request</h2>
-
-    <!-- Honeypot anti-bot -->
-    <input type="text" id="trapField" style="display:none !important">
-
-    <label>Owner Name *</label>
-    <input id="ownerName" type="text">
-
-    <label>Phone Number *</label>
-    <input id="phoneNumber" type="text" maxlength="10">
-
-    <label>UCL ID *</label>
-    <input id="uclId" type="text">
-
-    <label>UCL Register IP *</label>
-    <input id="ipAddress" type="text">
-
-    <h3 style="margin-top:25px;color:#00c8ff;">Address Information</h3>
-
-    <div class="address-grid">
-      <div>
-        <label>PIN Code *</label>
-        <input id="pinCode" type="text" maxlength="6">
-        <div id="pinStatus"></div>
-      </div>
-
-      <div>
-        <label>State *</label>
-        <input id="state" type="text" readonly>
-      </div>
-
-      <div>
-        <label>District *</label>
-        <input id="district" type="text" readonly>
-      </div>
-
-      <div>
-        <label>Post Office *</label>
-        <select id="postOfficeSelect"></select>
-      </div>
-
-      <div>
-        <label>Village / Locality *</label>
-        <select id="villageSelect"></select>
-      </div>
-
-      <div>
-        <label>Landmark (optional)</label>
-        <input id="landmark" type="text">
-      </div>
+  <div class="top-actions">
+    <div class="search-box" style="max-width:420px">
+      <input id="searchInput" placeholder="Search Request ID (e.g. REQ-49283)" aria-label="Search Request ID">
+      <button onclick="searchRequest()">Search</button>
     </div>
 
-    <button class="btn" id="submitBtn">Submit Request</button>
-
+    <a href="/" class="home-nav" aria-label="Home">
+      <i class="fa fa-home"></i> Home
+    </a>
   </div>
 </div>
 
+<div class="container">
+  <!-- MAIN FORM -->
+  <div class="card large fade-up" role="region" aria-labelledby="formHeading">
+    <h2 id="formHeading">Submit UCL Owner Request</h2>
+    <p class="lead">Fill required fields carefully. We'll validate PIN and prevent duplicate submissions.</p>
+
+    <!-- ARIA live region for form status -->
+    <div id="formLive" aria-live="polite" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden"></div>
+
+    <!-- Honeypot anti-bot -->
+    <input type="text" id="trapField" style="display:none !important" autocomplete="nope">
+
+    <div class="form-grid">
+      <div>
+        <label class="label" for="ownerName">Owner Name *</label>
+        <input id="ownerName" type="text" class="input" autocomplete="name" />
+        <div id="ownerError" class="field-error" role="alert"></div>
+      </div>
+
+      <div>
+        <label class="label" for="phoneNumber">Phone Number *</label>
+        <input id="phoneNumber" type="tel" class="input" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" placeholder="10-digit mobile">
+        <div id="phoneError" class="field-error" role="alert"></div>
+      </div>
+
+      <div>
+        <label class="label" for="uclId">UCL ID *</label>
+        <input id="uclId" type="text" class="input" autocomplete="off">
+        <div id="uclError" class="field-error" role="alert"></div>
+      </div>
+
+      <div>
+        <label class="label" for="ipAddress">UCL Register IP *</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="ipAddress" type="text" class="input" placeholder="Auto-detected on load — you can edit" style="flex:1" />
+          <button id="detectIpBtn" class="btn ghost" type="button" style="width:auto;padding:10px 12px">Detect</button>
+        </div>
+        <div id="ipNote" class="helper">Auto-detected by IP service; editable.</div>
+      </div>
+
+      <h3 style="margin-top:6px;color:var(--accent)">Address Information</h3>
+
+      <div class="address-grid">
+        <div>
+          <label class="label" for="pinCode">PIN Code *</label>
+          <input id="pinCode" type="text" maxlength="6" class="input" pattern="[0-9]{6}" inputmode="numeric">
+          <div id="pinStatus" class="status-line" aria-live="polite"></div>
+          <div id="pinError" class="field-error" role="alert"></div>
+        </div>
+
+        <div>
+          <label class="label" for="state">State *</label>
+          <input id="state" type="text" class="input" readonly>
+        </div>
+
+        <div>
+          <label class="label" for="district">District *</label>
+          <input id="district" type="text" class="input" readonly>
+        </div>
+
+        <div>
+          <label class="label" for="postOfficeSelect">Post Office *</label>
+          <select id="postOfficeSelect" class="input"></select>
+        </div>
+
+        <div>
+          <label class="label" for="villageSelect">Village / Locality *</label>
+          <select id="villageSelect" class="input"></select>
+        </div>
+
+        <div>
+          <label class="label" for="landmark">Landmark (optional)</label>
+          <input id="landmark" type="text" class="input">
+        </div>
+      </div>
+
+      <button class="btn" id="submitBtn" type="button" aria-live="polite">
+        Submit Request
+      </button>
+      <div id="submitNote" class="helper" style="margin-top:6px"></div>
+    </div>
+  </div>
+
+  <!-- Right column / info card -->
+  <div class="card fade-up" style="min-height:220px">
+    <h3 style="margin-top:0;color:var(--accent)">Tips & Info</h3>
+    <div class="helper">• PIN lookup automatically fills state, district and post office options.</div>
+    <div class="helper">• We block duplicate pending requests for the same UCL ID (server-side rule recommended).</div>
+    <div class="helper">• Keep your phone handy for OTP (when enabled).</div>
+
+    <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:12px 0;border-radius:2px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" onclick="document.getElementById('pinCode').value='';clearPinData();">Clear PIN</button>
+      <button class="btn ghost" onclick="window.location.reload()">Reload Page</button>
+    </div>
+
+    <!-- Mast / credit block -->
+    <div class="mast" role="contentinfo" aria-label="Credits">
+      <div class="mast-line">
+        <span class="mast-heart" aria-hidden="true">💙</span>
+        <span class="mast-text">Made with love by <strong>Samrat</strong></span>
+        <span class="mast-spark" aria-hidden="true">✨</span>
+      </div>
+      <div class="mast-note">
+        <span>© <span id="mastYear"></span> PAC Management — crafted with care • small note: always validate PIN 🔍</span>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
 <!-- SUCCESS MODAL -->
-<div id="successModal" class="modal">
+<div id="successModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
   <div class="modal-box">
-    <h3>Request Submitted!</h3>
-    <div>Your Request ID:</div>
-    <div style="font-size:24px;color:#00c8ff;margin:12px 0;" id="reqIdText">REQ-00000</div>
-    <button class="close-btn" onclick="closeModal()">Close</button>
+    <h3 id="successTitle">Request Submitted!</h3>
+    <div class="helper">Your Request ID:</div>
+    <div style="font-size:22px;color:var(--accent);margin:12px 0;" id="reqIdText">REQ-00000</div>
+    <button class="close-btn" id="closeSuccess">Close</button>
   </div>
 </div>
 
 <!-- SEARCH MODAL -->
-<div id="searchModal" class="modal">
+<div id="searchModal" class="modal" role="dialog" aria-modal="true">
   <div class="modal-box" id="searchBox"></div>
 </div>
 
-<!-- SCRIPT START -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, onSnapshot, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+// Firebase imports — keep your config module
+import { db, doc, setDoc, getDoc, collection, query, orderBy, onSnapshot, where, getDocs } from "/assets/js/firebase-config.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
-  authDomain: "mrsamrat08.firebaseapp.com",
-  projectId: "mrsamrat08",
-  storageBucket: "mrsamrat08.appspot.com",
-  messagingSenderId: "525481767881",
-  appId: "1:525481767881:web:6fd53162b242709890ae18"
-};
+/* -------------------------
+   Element references
+------------------------- */
+const nameEl = document.getElementById('ownerName');
+const phoneEl = document.getElementById('phoneNumber');
+const uclEl = document.getElementById('uclId');
+const ipEl = document.getElementById('ipAddress');
+const detectIpBtn = document.getElementById('detectIpBtn');
+const pinEl = document.getElementById('pinCode');
+const villageEl = document.getElementById('villageSelect');
+const postEl = document.getElementById('postOfficeSelect');
+const distEl = document.getElementById('district');
+const stateEl = document.getElementById('state');
+const landEl = document.getElementById('landmark');
+const trapEl = document.getElementById('trapField');
+const pinStatus = document.getElementById('pinStatus');
+const submitBtn = document.getElementById('submitBtn');
+const submitNote = document.getElementById('submitNote');
+const successModal = document.getElementById('successModal');
+const reqText = document.getElementById('reqIdText');
+const closeSuccess = document.getElementById('closeSuccess');
+const formLive = document.getElementById('formLive');
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+/* field error elements */
+const ownerError = document.getElementById('ownerError');
+const phoneError = document.getElementById('phoneError');
+const uclError = document.getElementById('uclError');
+const pinError = document.getElementById('pinError');
+const ipNote = document.getElementById('ipNote');
 
-/* ==============
-   NAV MENU LOAD
-=================*/
-const nav = document.getElementById("mainMenu");
-function loadNavMenu(){
-  const qRef = query(collection(db,"pacnav"), orderBy("order"));
-  onSnapshot(qRef, snap=>{
-    let html="";
-    snap.forEach(d=>{
-      const v=d.data();
-      html+=`<a href="${v.url}"><i class="${v.icon}"></i> ${v.title}</a>`;
-    });
-    nav.innerHTML=html;
-  });
+/* -------------------------
+   Small helpers
+------------------------- */
+function showFieldError(el, msg){
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  formLive.textContent = msg;
+  // auto-hide after 5s
+  setTimeout(()=>el.classList.remove('show'),5000);
 }
-loadNavMenu();
-window.toggleMenu=()=>nav.classList.toggle("show");
+function clearFieldError(el){ if(el){el.textContent=''; el.classList.remove('show');} }
 
-/* ============
-   ELEMENTS
-=============*/
-const nameEl=document.getElementById("ownerName");
-const phoneEl=document.getElementById("phoneNumber");
-const uclEl=document.getElementById("uclId");
-const ipEl=document.getElementById("ipAddress");
-const pinEl=document.getElementById("pinCode");
-const villageEl=document.getElementById("villageSelect");
-const postEl=document.getElementById("postOfficeSelect");
-const distEl=document.getElementById("district");
-const stateEl=document.getElementById("state");
-const landEl=document.getElementById("landmark");
-const trapEl=document.getElementById("trapField");
-const pinStatus=document.getElementById("pinStatus");
-const submitBtn=document.getElementById("submitBtn");
+function setPinStatus(text, cls){
+  pinStatus.textContent = text;
+  pinStatus.className = cls || '';
+}
 
-/* ==========================
-   1. AUTO IP FETCH
-=============================*/
-async function fetchIP(){
+function numericOnly(input){
+  input.value = input.value.replace(/\D/g,'');
+}
+
+/* debounce */
+function debounce(fn, wait=420){
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(()=>fn(...args), wait); };
+}
+
+/* autosave localStorage */
+const LS_KEY = 'ucl_form_autosave_v1';
+function saveAutosave(){
+  const payload = {
+    owner: nameEl.value || '',
+    phone: phoneEl.value || '',
+    ucl: uclEl.value || '',
+    ip: ipEl.value || '',
+    pin: pinEl.value || '',
+    village: villageEl.value || '',
+    post: postEl.value || '',
+    landmark: landEl.value || ''
+  };
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(payload)); }catch(e){}
+}
+function restoreAutosave(){
   try{
-    const r=await fetch("https://api.ipify.org?format=json");
-    const j=await r.json();
-    ipEl.value=j.ip;
-  }catch{
-    ipEl.value="Unavailable";
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const p = JSON.parse(raw);
+    nameEl.value = p.owner || '';
+    phoneEl.value = p.phone || '';
+    uclEl.value = p.ucl || '';
+    ipEl.value = p.ip || '';
+    pinEl.value = p.pin || '';
+    villageEl.value = p.village || '';
+    postEl.value = p.post || '';
+    landEl.value = p.landmark || '';
+  }catch(e){}
+}
+
+/* -------------------------
+   IP detection & button
+------------------------- */
+async function fetchIP(){
+  if(!detectIpBtn) return;
+  try{
+    detectIpBtn.disabled = true;
+    detectIpBtn.textContent = 'Detecting…';
+    const r = await fetch('https://api.ipify.org?format=json');
+    const j = await r.json();
+    ipEl.value = j.ip || 'Unavailable';
+    ipNote.textContent = 'Auto-detected on load; editable.';
+    saveAutosave();
+  }catch(e){
+    ipEl.value = 'Unavailable';
+    ipNote.textContent = 'IP detection failed.';
+  }finally{
+    detectIpBtn.disabled = false;
+    detectIpBtn.textContent = 'Detect';
   }
 }
 fetchIP();
+if(detectIpBtn) detectIpBtn.addEventListener('click', fetchIP);
 
-/* ==========================
-   2. GEO LOCATION FETCH
-=============================*/
+/* -------------------------
+   PIN lookup (debounced)
+------------------------- */
+async function doPinLookup(pin){
+  if(!pin) return;
+  setPinStatus('Fetching…', 'status-fetch');
+  try{
+    const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+    const data = await res.json();
+    if(!Array.isArray(data) || !data[0] || !data[0].PostOffice || data[0].PostOffice.length===0){
+      setPinStatus('Invalid PIN ❌', 'status-bad');
+      villageEl.innerHTML='';
+      postEl.innerHTML='';
+      distEl.value = '';
+      stateEl.value = '';
+      showFieldError(pinError, 'No post office found for this PIN.');
+      return;
+    }
+    setPinStatus('PIN Found ✓', 'status-good');
+    const offices = data[0].PostOffice;
+    villageEl.innerHTML = '';
+    postEl.innerHTML = '';
+    offices.forEach(off => {
+      const v = document.createElement('option'); v.value = off.Name; v.textContent = off.Name;
+      villageEl.appendChild(v);
+      const p = document.createElement('option'); p.value = off.Name; p.textContent = `${off.BranchType} - ${off.Name}`;
+      postEl.appendChild(p);
+    });
+    distEl.value = offices[0].District || '';
+    stateEl.value = offices[0].State || '';
+    clearFieldError(pinError);
+    saveAutosave();
+  }catch(e){
+    console.error('PIN lookup failed', e);
+    setPinStatus('Lookup failed', 'status-bad');
+    villageEl.innerHTML='';
+    postEl.innerHTML='';
+    distEl.value = '';
+    stateEl.value = '';
+    showFieldError(pinError, 'PIN lookup failed. Try again.');
+  }
+}
+const debouncedPinLookup = debounce(async ()=>{
+  const pin = pinEl.value.trim();
+  if(pin.length !== 6) return;
+  await doPinLookup(pin);
+}, 500);
+
+pinEl.addEventListener('input', ()=>{
+  numericOnly(pinEl);
+  pinStatus.textContent = '';
+  pinError.textContent = '';
+  debouncedPinLookup();
+  saveAutosave();
+});
+
+/* -------------------------
+   Input sanitizers & autosave triggers
+------------------------- */
+phoneEl.addEventListener('input', ()=>{
+  numericOnly(phoneEl);
+  saveAutosave();
+});
+nameEl.addEventListener('input', saveAutosave);
+uclEl.addEventListener('input', saveAutosave);
+villageEl.addEventListener('change', saveAutosave);
+postEl.addEventListener('change', saveAutosave);
+landEl.addEventListener('input', saveAutosave);
+
+/* restore auto-saved */
+restoreAutosave();
+
+/* -------------------------
+   Duplicate check (client-side convenience)
+   NOTE: Must be enforced server-side too.
+------------------------- */
+async function uclExists(ucl){
+  try{
+    const qRef = query(collection(db,"ucl_requests"), where("uclId","==",ucl), where("status","==","pending"));
+    const snap = await getDocs(qRef);
+    return !snap.empty;
+  }catch(e){
+    console.error('dup check failed', e);
+    return false; // fail-open on client but server should protect
+  }
+}
+
+/* -------------------------
+   Submit flow with UX
+------------------------- */
+let submitting = false;
+function setSubmitting(on){
+  submitting = on;
+  submitBtn.disabled = on;
+  submitBtn.innerHTML = on ? `<span class="spinner" aria-hidden="true"></span>Submitting…` : 'Submit Request';
+  submitNote.textContent = on ? 'Please wait — saving request.' : '';
+}
+
+submitBtn.addEventListener('click', async ()=>{
+  // bot trap
+  if(trapEl.value !== ''){
+    showFieldError(ownerError, 'Bot detected');
+    return;
+  }
+
+  if(submitting) return;
+
+  // gather
+  const name = nameEl.value.trim();
+  const phone = phoneEl.value.trim();
+  const ucl = uclEl.value.trim();
+  const ip = ipEl.value.trim();
+  const pin = pinEl.value.trim();
+  const village = villageEl.value;
+  const post = postEl.value;
+  const dist = distEl.value.trim();
+  const state = stateEl.value.trim();
+  const landmark = landEl.value.trim();
+
+  // clear old errors
+  clearFieldError(ownerError); clearFieldError(phoneError); clearFieldError(uclError); clearFieldError(pinError);
+
+  // client validation
+  if(!name){ showFieldError(ownerError, 'Owner name is required.'); nameEl.focus(); return; }
+  if(!phone || !/^[0-9]{10}$/.test(phone) || ["0000000000","1111111111","1234567890","9999999999"].includes(phone)){
+    showFieldError(phoneError, 'Enter a valid 10-digit mobile number.');
+    phoneEl.focus(); return;
+  }
+  if(!ucl){ showFieldError(uclError, 'UCL ID is required.'); uclEl.focus(); return; }
+  if(/\s/.test(ucl)){ showFieldError(uclError, 'UCL ID cannot contain spaces.'); uclEl.focus(); return; }
+  if(!ip){ showFieldError(ipNote, 'IP is required.'); ipEl.focus(); return; }
+  if(!pin || pin.length !== 6){ showFieldError(pinError, 'Enter a 6-digit PIN.'); pinEl.focus(); return; }
+
+  // rate limiting (client convenience)
+  let last = localStorage.getItem('lastSubmit');
+  if(last && (Date.now() - parseInt(last) < 60_000)){
+    showFieldError(submitNote, 'Please wait a moment before submitting again.');
+    return;
+  }
+
+  // duplicate check (client side)
+  try{
+    setSubmitting(true);
+    if(await uclExists(ucl)){
+      showFieldError(uclError, 'A pending request already exists for this UCL ID.');
+      setSubmitting(false);
+      return;
+    }
+
+    const reqId = 'REQ-'+Math.floor(10000 + Math.random()*90000);
+    const geo = await getGeo(ip);
+    const fingerprint = await getFingerprint();
+
+    const payload = {
+      requestId: reqId,
+      name, phone, uclId: ucl,
+      ip, pinCode: pin,
+      village, postOffice: post,
+      district: dist, state,
+      landmark,
+      createdAt: Date.now(),
+      status: 'pending',
+      deviceFingerprint: fingerprint,
+      requestSource: {
+        ip,
+        city: geo.city || '',
+        region: geo.region || '',
+        country: geo.country_name || '',
+        org: geo.org || ''
+      }
+    };
+
+    payload.integrityToken = await sha256(reqId + ip + payload.createdAt);
+    payload.hashEnvelope = await sha256(JSON.stringify(payload));
+
+    const ref = doc(db, "ucl_requests", reqId);
+    await setDoc(ref, payload);
+
+    // audit log
+    const logRef = doc(db, "ucl_request_logs", reqId);
+    await setDoc(logRef, payload);
+
+    localStorage.setItem('lastSubmit', Date.now());
+    // clear autosave
+    try{ localStorage.removeItem(LS_KEY); }catch(e){}
+
+    // show success
+    reqText.textContent = reqId;
+    successModal.classList.add('show');
+
+    // reset form UI
+    nameEl.value = phoneEl.value = uclEl.value = pinEl.value = landEl.value = '';
+    villageEl.innerHTML = postEl.innerHTML = '';
+    distEl.value = stateEl.value = '';
+    setPinStatus('', '');
+    submitNote.textContent = 'Saved locally and to Firestore.';
+  }catch(e){
+    console.error('submit error', e);
+    showFieldError(submitNote, 'Submit failed — check console and try again.');
+  }finally{
+    setSubmitting(false);
+  }
+});
+
+/* -------------------------
+   Modal close
+------------------------- */
+if(closeSuccess) closeSuccess.addEventListener('click', ()=> successModal.classList.remove('show'));
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') successModal.classList.remove('show');
+});
+
+/* -------------------------
+   Helper functions (fingerprint, geo, sha256)
+------------------------- */
 async function getGeo(ip){
   try{
-    const r=await fetch(`https://ipapi.co/${ip}/json/`);
+    const r = await fetch(`https://ipapi.co/${ip}/json/`);
     return await r.json();
-  }catch{
+  }catch(e){
     return {};
   }
 }
-
-/* ==========================
-   3. DEVICE FINGERPRINT
-=============================*/
 function getFingerprint(){
-  let ua=navigator.userAgent;
-  let tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
-  let scr=`${screen.width}x${screen.height}`;
-  let plt=navigator.platform;
-
-  let raw = ua+tz+scr+plt;
-  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw))
-    .then(buf => {
-      let hex=[...new Uint8Array(buf)]
-        .map(b=>b.toString(16).padStart(2,"0")).join("");
-      return hex.slice(0,20).toUpperCase();
+  try{
+    let ua = navigator.userAgent;
+    let tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    let scr = `${screen.width}x${screen.height}`;
+    let plt = navigator.platform;
+    let raw = ua + tz + scr + plt;
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw)).then(buf=>{
+      return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,20).toUpperCase();
     });
+  }catch(e){
+    return Promise.resolve('');
+  }
 }
-
-/* ==========================
-   4. SHA-256 HASH GENERATOR
-=============================*/
 async function sha256(text){
-  let buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-/* ==========================
-   5. RATE LIMITING
-=============================*/
-function canSubmit(){
-  let last=localStorage.getItem("lastSubmit");
-  if(!last) return true;
-
-  let diff = Date.now() - parseInt(last);
-  return diff > 60000; // 60 sec
-}
-
-/* ==========================
-   6. PIN AUTO-FETCH
-=============================*/
-pinEl.addEventListener("input", async()=>{
-  const pin=pinEl.value.trim();
-  if(pin.length!==6) return;
-
-  pinStatus.textContent="Fetching…";
-  pinStatus.className="status-fetch";
-
-  const res=await fetch(`https://api.postalpincode.in/pincode/${pin}`);
-  const data=await res.json();
-
-  if(!data[0].PostOffice){
-    pinStatus.textContent="Invalid PIN ❌";
-    pinStatus.className="status-bad";
-    return;
-  }
-
-  pinStatus.textContent="PIN Found ✓";
-  pinStatus.className="status-good";
-
-  const offices=data[0].PostOffice;
-  villageEl.innerHTML="";
-  postEl.innerHTML="";
-
-  offices.forEach(off=>{
-    let v=document.createElement("option");
-    v.value=off.Name;
-    v.textContent=off.Name;
-    villageEl.appendChild(v);
-
-    let p=document.createElement("option");
-    p.value=off.Name;
-    p.textContent=`${off.BranchType} - ${off.Name}`;
-    postEl.appendChild(p);
-  });
-
-  distEl.value=offices[0].District;
-  stateEl.value=offices[0].State;
-});
-
-/* ==========================
-   7. DUPLICATE CHECK (BLOCK)
-=============================*/
-async function uclExists(ucl){
-  const qRef=query(collection(db,"ucl_requests"), where("uclId","==",ucl), where("status","==","pending"));
-  const snap=await getDocs(qRef);
-  return !snap.empty;
-}
-
-/* ==========================
-   8. FORM SUBMIT
-=============================*/
-submitBtn.addEventListener("click", async()=>{
-
-  /* BOT TRAP */
-  if(trapEl.value!==""){ alert("Bot detected"); return; }
-
-  /* RATE LIMIT */
-  if(!canSubmit()){
-    alert("Wait before submitting again.");
-    return;
-  }
-
-  let name=nameEl.value.trim();
-  let phone=phoneEl.value.trim();
-  let ucl=uclEl.value.trim();
-  let ip=ipEl.value.trim();
-  let pin=pinEl.value.trim();
-  let village=villageEl.value;
-  let post=postEl.value;
-  let dist=distEl.value.trim();
-  let state=stateEl.value.trim();
-  let landmark=landEl.value.trim();
-
-  /* VALIDATION */
-  if(!name || !phone || !ucl || !ip || !pin){
-    alert("Fill all required fields.");
-    return;
-  }
-
-  if(ucl.includes(" ")){
-    alert("UCL ID cannot contain spaces.");
-    return;
-  }
-
-  if(!/^[0-9]{10}$/.test(phone) || ["0000000000","1111111111","1234567890","9999999999"].includes(phone)){
-    alert("Invalid phone number.");
-    return;
-  }
-
-  /* DUPLICATE CHECK */
-  if(await uclExists(ucl)){
-    alert("A pending request already exists for this UCL ID.");
-    return;
-  }
-
-  /* PREP DATA */
-  const reqId="REQ-"+Math.floor(10000+Math.random()*90000);
-
-  const geo = await getGeo(ip);
-  const fingerprint = await getFingerprint();
-
-  const payload={
-    requestId:reqId,
-    name, phone, uclId:ucl,
-    ip, pinCode:pin,
-    village, postOffice:post,
-    district:dist, state,
-    landmark,
-    createdAt:Date.now(),
-    status:"pending",
-    deviceFingerprint:fingerprint,
-    requestSource:{
-      ip,
-      city:geo.city || "",
-      region:geo.region || "",
-      country:geo.country_name || "",
-      org:geo.org || ""
+/* -------------------------
+   Search request modal (kept)
+------------------------- */
+const searchModal = document.getElementById('searchModal');
+async function searchRequest(){
+  const key = document.getElementById('searchInput').value.trim();
+  const box = document.getElementById('searchBox');
+  if(!key){ alert('Enter Request ID'); return; }
+  try{
+    const snap = await getDoc(doc(db, 'ucl_requests', key));
+    if(!snap.exists()){
+      box.innerHTML = `<h3 style="color:var(--danger)">Not Found</h3><p>No request found for <b>${key}</b></p><button class="close-btn" onclick="closeSearch()">Close</button>`;
+    }else{
+      const d = snap.data();
+      box.innerHTML = `<h3>Request Details</h3>
+        <div><b>Name:</b> ${d.name}</div>
+        <div><b>Phone:</b> ${d.phone}</div>
+        <div><b>UCL ID:</b> ${d.uclId}</div>
+        <div><b>IP:</b> ${d.ip}</div>
+        <div><b>Village:</b> ${d.village}</div>
+        <div><b>Post Office:</b> ${d.postOffice}</div>
+        <div><b>District:</b> ${d.district}</div>
+        <div><b>State:</b> ${d.state}</div>
+        <div><b>Landmark:</b> ${d.landmark}</div>
+        <div><b>Status:</b> ${d.status}</div>
+        <button class="close-btn" onclick="closeSearch()">Close</button>`;
     }
-  };
-
-  payload.integrityToken = await sha256(reqId+ip+payload.createdAt);
-  payload.hashEnvelope = await sha256(JSON.stringify(payload));
-
-  const ref=doc(db,"ucl_requests",reqId);
-  await setDoc(ref,payload);
-
-  // LOG RECORD
-  const logRef=doc(db,"ucl_request_logs",reqId);
-  await setDoc(logRef,payload);
-
-  localStorage.setItem("lastSubmit", Date.now());
-
-  showModal(reqId);
-
-  nameEl.value=phoneEl.value=uclEl.value=pinEl.value=landEl.value="";
-  villageEl.innerHTML=postEl.innerHTML="";
-  distEl.value=stateEl.value="";
-});
-
-/* MODALS */
-const successModal=document.getElementById("successModal");
-const reqText=document.getElementById("reqIdText");
-
-function showModal(id){
-  reqText.textContent=id;
-  successModal.classList.add("show");
-}
-window.closeModal=()=>successModal.classList.remove("show");
-
-/* SEARCH */
-const searchModal=document.getElementById("searchModal");
-window.searchRequest=async()=>{
-  const key=document.getElementById("searchInput").value.trim();
-  const box=document.getElementById("searchBox");
-
-  if(!key){ alert("Enter Request ID"); return; }
-
-  const snap=await getDoc(doc(db,"ucl_requests",key));
-
-  if(!snap.exists()){
-    box.innerHTML=`
-      <h3 style="color:#ff4d4d">Not Found</h3>
-      <p>No request found for <b>${key}</b></p>
-      <button class="close-btn" onclick="closeSearch()">Close</button>`;
-  }else{
-    const d=snap.data();
-    box.innerHTML=`
-      <h3>Request Details</h3>
-      <div><b>Name:</b> ${d.name}</div>
-      <div><b>Phone:</b> ${d.phone}</div>
-      <div><b>UCL ID:</b> ${d.uclId}</div>
-      <div><b>IP:</b> ${d.ip}</div>
-      <div><b>Village:</b> ${d.village}</div>
-      <div><b>Post Office:</b> ${d.postOffice}</div>
-      <div><b>District:</b> ${d.district}</div>
-      <div><b>State:</b> ${d.state}</div>
-      <div><b>Landmark:</b> ${d.landmark}</div>
-      <div><b>Status:</b> ${d.status}</div>
-      <button class="close-btn" onclick="closeSearch()">Close</button>`;
+    searchModal.classList.add('show');
+  }catch(e){
+    console.error(e);
+    alert('Search failed');
   }
+}
+window.searchRequest = searchRequest;
+window.closeSearch = () => searchModal.classList.remove('show');
 
-  searchModal.classList.add("show");
-};
+/* -------------------------
+   Utility: clear pin data
+------------------------- */
+function clearPinData(){ villageEl.innerHTML=''; postEl.innerHTML=''; distEl.value=''; stateEl.value=''; setPinStatus('',''); }
 
-window.closeSearch=()=>searchModal.classList.remove("show");
+/* -------------------------
+   Set mast year
+------------------------- */
+try{ document.getElementById('mastYear').textContent = new Date().getFullYear(); }catch(e){}
+
+/* -------------------------
+   accessibility: focus first invalid is handled inline in validation
+------------------------- */
+
 </script>
 </body>
 </html>
