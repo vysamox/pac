@@ -873,180 +873,126 @@ footer{
 }
 
 
-/* ============ DELETE DETAIL MODAL (FULL RECORDS) ============ */
-.delete-modal-box {
-  max-width: 1500px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  overflow-x: auto;
-}
+/* ==========================
+   PAC Amount Color Legend
+========================== */
 
-/* FULL DETAIL TABLE → Show EVERYTHING (NO CUTTING) */
-.delete-popup-table table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: auto; /* expand naturally */
-}
-
-.delete-popup-table th,
-.delete-popup-table td {
-  padding: 10px;
+.note-box {
+  margin: 10px auto 25px;
+  padding: 14px 18px;
+  max-width: 450px;
+  text-align: left;
   font-size: 14px;
-  white-space: normal;      /* allow wrapping */
-  overflow: visible !important;
-  text-overflow: unset !important;
-  word-break: break-word;   /* break long CSC, PAC, IP, Deleted Date */
-}
-
-/* ============ VIEW POPUP (SMALL DETAILS) ============ */
-.view-modal-box {
-  width: 95%;
-  max-width: 500px;
-}
-
-
-/* ==========================================================
-   🔵 UPDATE SINGLE BUTTON
-   ========================================================== */
-.update-single-btn {
-  background: #00c853;        /* Green */
   color: white;
-  padding: 6px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.4);
-  transition: 0.2s ease-in-out;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  backdrop-filter: blur(12px);
 }
 
-.update-single-btn:hover {
-  background: #00e676;
-  box-shadow: 0 4px 16px rgba(0, 230, 118, 0.55);
-  transform: translateY(-2px);
+.note-box p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
 }
 
-.update-single-btn:active {
-  transform: scale(0.95);
+/* Colored dots */
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
-
-/* ==========================================================
-   🟢 UPDATE ALL BUTTON
-   ========================================================== */
-.update-all-btn {
-  background: #2979ff;        /* Blue */
-  color: white;
-  padding: 6px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  margin-left: 10px;
-  box-shadow: 0 4px 12px rgba(41, 121, 255, 0.4);
-  transition: 0.2s ease-in-out;
+/* LESS THAN LIMIT — GREEN */
+.green-dot {
+  background: #00ff87;
+  box-shadow: 0 0 12px #00ff87;
 }
 
-.update-all-btn:hover {
-  background: #448aff;
-  box-shadow: 0 4px 16px rgba(68, 138, 255, 0.55);
-  transform: translateY(-2px);
+/* GREATER THAN LIMIT — RED */
+.red-dot {
+  background: #ff4d4d;
+  box-shadow: 0 0 12px #ff4d4d;
 }
 
-.update-all-btn:active {
-  transform: scale(0.95);
+/* EQUAL LIMIT — SILVER */
+.normal-dot {
+  background: #cccccc;
+  box-shadow: 0 0 8px #cccccc;
 }
 
-/* ==========================================================
-   📱 MOBILE OPTIMIZATION FOR ALL POPUPS
-   Applies to: modal-box, delete-modal-box, view-modal-box,
-   single update button, update-all button
-========================================================== */
-@media (max-width: 600px) {
-
-  /* Universal Modal Background */
-  .modal-bg {
-    padding: 10px; /* prevent edges cutting */
-    align-items: flex-start; /* allow top scroll */
+/* ==========================
+   MOBILE VIEW FIXES
+========================== */
+@media (max-width: 768px) {
+  .note-box {
+    padding: 12px 14px;
+    margin: 10px auto 20px;
+    max-width: 90%;
+    font-size: 13px;
+    border-radius: 10px;
   }
 
-  /* Universal Modal Box */
-  .modal-box {
+  .note-box p {
+    gap: 8px;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* ==========================
+   MOBILE: 2 STAT CARDS PER ROW
+========================== */
+@media (max-width: 768px) {
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 95%;
+    margin: 15px auto;
+  }
+
+  .stat-card {
+    min-width: unset;
     width: 100%;
-    max-width: 100%;
-    padding: 15px !important;
-    border-radius: 12px !important;
-    margin-top: 25px; /* better spacing on small screens */
-    max-height: 85vh !important;
-    overflow-y: auto !important;
+    padding: 16px 10px;
+    border-radius: 14px;
+    text-align: center;
   }
 
-  /* Large DELETE DETAILS Modal */
-  .delete-modal-box {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 10px !important;
-    border-radius: 10px !important;
-    max-height: 85vh !important;
-  }
-
-  /* Table inside delete modal */
-  .delete-popup-table table {
-    font-size: 12px !important;
-  }
-
-  .delete-popup-table th,
-  .delete-popup-table td {
-    padding: 6px !important;
-    font-size: 12px !important;
-    line-height: 1.3;
-  }
-
-  /* View Popup (small details) */
-  .view-modal-box {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 15px !important;
-  }
-
-  /* Update Single Button */
-  .update-single-btn {
-    padding: 6px 10px !important;
-    font-size: 13px !important;
-    border-radius: 5px !important;
-  }
-
-  /* Update All Button */
-  .update-all-btn {
-    padding: 6px 12px !important;
-    font-size: 13px !important;
-    margin-left: 5px !important;
-    border-radius: 5px !important;
-  }
-
-  /* Input fields inside table */
-  .delete-popup-table input {
-    width: 100px !important;
-    padding: 4px !important;
-    font-size: 12px !important;
-  }
-
-  /* Headings inside popup */
-  #deleteIdTable h2,
-  #deleteIdTable h3 {
-    font-size: 16px !important;
-    text-align: center !important;
-    margin: 10px 0 !important;
-  }
-
-  /* Close button */
-  .close-btn {
-    padding: 10px !important;
-    font-size: 14px !important;
-    border-radius: 10px !important;
+  .stat-card h3 {
+    font-size: 22px;
   }
 }
+
+/* Mobile card highlight variants */
+.mobile-card.green {
+  background: linear-gradient(180deg, rgba(46,204,113,0.12), rgba(46,204,113,0.06));
+  border-left: 6px solid #2ecc71;
+  box-shadow: 0 10px 30px rgba(46,204,113,0.12), inset 0 0 12px rgba(46,204,113,0.05);
+}
+
+.mobile-card.red {
+  background: linear-gradient(180deg, rgba(255,77,77,0.12), rgba(255,77,77,0.06));
+  border-left: 6px solid #ff4d4d;
+  box-shadow: 0 10px 30px rgba(255,77,77,0.12), inset 0 0 12px rgba(255,77,77,0.05);
+}
+
+.mobile-card.equal {
+  background: linear-gradient(180deg, rgba(204,204,204,0.08), rgba(204,204,204,0.03));
+  border-left: 6px solid #cccccc;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* Make sure default mobile-card border-left isn't forcing one color.
+   If you still have `border-left: 4px solid #00e5ff;` on .mobile-card,
+   either remove it OR override it with the classes above (6px will override). */
 
 </style>
 </head>
@@ -1068,8 +1014,6 @@ footer{
   <div class="stat-card"><h3 id="todayAmount">₹0</h3>Total Deleted Amount</div>
   <div class="stat-card"><h3 id="dbSize">0 KB</h3>DB Size</div>
   <div class="stat-card"><h3 id="livePacCount">0</h3>Live PAC Count</div>
-<div class="stat-card" onclick="openDuplicateDeleteTable()" style="cursor:pointer;"><h3 id="sameDeleteIdCount">0</h3>Same Delete ID Count <i class="fa-solid fa-eye"></i></div>
-
 </div>
 
 <!-- SEARCH -->
@@ -1089,6 +1033,22 @@ footer{
     <i class="fa-solid fa-file-export"></i> Export Deleted PAC Data
   </button>
 </div>
+
+<div class="color-note glass-box note-box">
+  <p>
+    <span class="dot green-dot"></span>
+    Amount less than UCL PAC limit
+  </p>
+  <p>
+    <span class="dot red-dot"></span>
+    Amount greater than UCL PAC limit
+  </p>
+  <p>
+    <span class="dot normal-dot"></span>
+    Amount equal to PAC limit (no highlight)
+  </p>
+</div>
+
 
 <!-- Deleted PAC Export Modal -->
 <div id="deletedExportModal" class="modal">
@@ -1164,14 +1124,6 @@ footer{
   </div>
 </div>
 
-<!-- DUPLICATE DELETE ID POPUP -->
-<div id="deleteIdPopup" class="modal-bg">
-  <div class="modal-box delete-modal-box">
-      <div id="deleteIdTable"></div>
-      <button class="close-btn" onclick="closeDeleteIdPopup()">Close</button>
-  </div>
-</div>
-
 <!-- VIEW MODAL -->
 <div id="viewModal" class="modal-bg">
   <div class="modal-box view-modal-box">
@@ -1181,12 +1133,8 @@ footer{
   </div>
 </div>
 
+<div id="toast" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:10px;color:#fff;visibility:hidden;z-index:99999"></div>
 
-<script>
-  function closeDeleteIdPopup() {
-    document.getElementById("deleteIdPopup").style.display = "none";
-  }
-</script>
 
 <!-- FOOTER -->
 <footer>
@@ -1197,7 +1145,7 @@ footer{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, setDoc }
+import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, setDoc, getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1217,6 +1165,7 @@ let delRange = null;
 let delRangeBtn = null;
 let delExportType = null;
 let delExportTypeBtn = null;
+
 
 
 /* ---------------- LOAD NAV ---------------- */
@@ -1319,9 +1268,7 @@ function loadPAC() {
 
   onSnapshot(q, snapshot => {
 
-    allPAC = [];                // reset PAC array
-    deleteIdCountMap = {};      // reset Delete ID count map
-
+    allPAC = [];         
     let todayISO = new Date().toISOString().slice(0, 10);
 
     // UNIVERSAL DATE PARSER
@@ -1359,10 +1306,11 @@ function loadPAC() {
 
     // 🔥 FIXED — Count Delete IDs & collect PAC data INSIDE snapshot
     snapshot.forEach(doc => {
+      
       const d = doc.data();
 
       allPAC.push(d);            // store PAC
-      updateDeleteIdCounts(d);   // count deleteViewId
+    
 
       if (d.uclNo) uclSet.add(d.uclNo);
 
@@ -1382,8 +1330,6 @@ function loadPAC() {
       }
     });
 
-    // ⭐ Update Delete ID Card
-    updateSameDeleteIdCountDisplay();
 
     // ⭐ Continue with your existing amount, UCL dropdown & pagination
     // (Your original code below here stays the same ↓)
@@ -1480,65 +1426,165 @@ document.getElementById("rowsPerPage").onchange = function () {
   renderPage();
 };
 
+function getOwnerPacAmount(uclNo) {
+  const key = String(uclNo).trim();
+  return uclPacAmountMap.has(key)
+      ? uclPacAmountMap.get(key)
+      : null; // no fallback
+}
+
+// Map: uclId → pacAmount
+const uclPacAmountMap = new Map();
+
+// Load UCL Owner pacAmount dynamically from Firestore
+function loadOwnerPacAmount() {
+  const ref = collection(db, "ucl_owners");
+
+  onSnapshot(ref, snap => {
+    uclPacAmountMap.clear();
+
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      const uclId = String(d.uclId || docSnap.id).trim();
+      const amt = Number(d.pacAmount || 0);
+      uclPacAmountMap.set(uclId, amt);
+    });
+
+    // Re-render when owner pacAmount changes
+    try { renderPage(); } catch (e) {}
+  });
+}
+
+loadOwnerPacAmount();
+
+function getAmountIndicator(amount, limit) {
+  if (limit === null) return `<span style="color:#ccc;">(Limit not set)</span>`;
+
+  amount = Number(amount);
+  limit = Number(limit);
+
+  if (amount < limit) {
+    return `<span style="color:#4cd137; font-weight:600;">✔ OK</span>`;
+  }
+
+  if (amount === limit) {
+    return `<span style="color:#fbc531; font-weight:600;">⚠ Equal</span>`;
+  }
+
+  return `<span style="color:#e84118; font-weight:600;">✖ Over</span>`;
+}
 
 /* ---------------- ADD TABLE ROW ---------------- */
 function addRow(d) {
-
   let deletedValue = formatDeleteDate(
-    d.deletedAt || 
-    d.deletedAtTimestamp || 
-    d.deleteTime
+    d.deletedAt || d.deletedAtTimestamp || d.deleteTime
   );
 
-  // If amount > 75 → highlight entire row
-  let highlightRow = Number(d.amount) > 75 
-    ? "style='background: rgba(255, 66, 66, 0.35); box-shadow: inset 0 0 10px rgba(255,0,0,0.4); border-left: 4px solid #ff2d2d;'" 
-    : "";
+  // Fetch pacAmount from Map
+  const pacLimit = getOwnerPacAmount(d.uclNo);
+
+  // Decide highlight style (no text)
+  let highlightRow = "";
+
+  if (pacLimit != null && !isNaN(Number(d.amount))) {
+    const amt = Number(d.amount);
+    const limit = Number(pacLimit);
+
+    // Amount LESS than limit → Deep Green Glow
+    if (amt < limit) {
+      highlightRow = `
+        style="
+          background: rgba(0, 255, 135, 0.18);
+          border-left: 5px solid #00ff87;
+          box-shadow: inset 0 0 12px rgba(0, 255, 135, 0.45);
+          backdrop-filter: blur(4px);
+        "
+      `;
+    }
+
+    // Amount GREATER than limit → Deep Red Glow
+    else if (amt > limit) {
+      highlightRow = `
+        style="
+          background: rgba(255, 52, 52, 0.20);
+          border-left: 5px solid #ff2e2e;
+          box-shadow: inset 0 0 14px rgba(255, 60, 60, 0.55);
+          backdrop-filter: blur(4px);
+        "
+      `;
+    }
+
+    // equal → no highlight
+  }
 
   tableBody.innerHTML += `
 <tr ${highlightRow}>
   <td>${d.uclNo}</td>
   <td>${d.cscRef}</td>
   <td>${d.pacNo}</td>
-  <td>${d.amount}</td>
+  <td title="Limit: ₹${pacLimit ?? 'Not Set'}">₹${d.amount}</td>
   <td>${d.entryDate}</td>
   <td>${d.entryTime}</td>
   <td>${deletedValue}</td>
   <td>${d.uclOwnerName}</td>
   <td>${d.deleteIP}</td>
   <td>${d.deleteViewId}</td>
-  <td><button class="action-btn view-btn" onclick='viewPAC(${JSON.stringify(d)})'>👁</button></td>
-  <td><button class="action-btn restore-btn" onclick='restorePAC(${JSON.stringify(d)})'>↩</button></td>
-  <td><button class="action-btn del-btn" onclick="deletePAC('${d.pacNo}')">✖</button></td>
+  <td><button class="action-btn view-btn" data-pac="${d.pacNo}">👁</button></td>
+  <td><button class="action-btn restore-btn" data-pac="${d.pacNo}">↩</button></td>
+  <td><button class="action-btn del-btn" data-pac="${d.pacNo}">✖</button></td>
 </tr>`;
 }
 
 
+
+
 /* ---------------- ADD MOBILE CARD ---------------- */ 
 function addCard(d) {
-
   let deletedValue = formatDeleteDate(
     d.deletedAt || 
     d.deletedAtTimestamp || 
     d.deleteTime
   );
 
-mobileCards.innerHTML += `
-<div class="mobile-card">
-  <p><b>UCL:</b> ${d.uclNo}</p>
-  <p><b>PAC:</b> ${d.pacNo}</p>
-  <p><b>Amount:</b> ${d.amount}</p>
-  <p><b>Date:</b> ${d.entryDate}</p>
-  <p><b>Time:</b> ${d.entryTime}</p>
-  <p><b>Deleted:</b> ${deletedValue}</p>
-  <p><b>Owner:</b> ${d.uclOwnerName}</p>
-  <p><b>Deleted IP:</b> ${d.deleteIP}</p>
-  <p><b>Deleted ID:</b> ${d.deleteViewId}</p>
-  <button class="action-btn view-btn" onclick='viewPAC(${JSON.stringify(d)})'>View</button>
-  <button class="action-btn restore-btn" onclick='restorePAC(${JSON.stringify(d)})'>Restore</button>
-  <button class="action-btn del-btn" onclick="deletePAC('${d.pacNo}')">Delete</button>
-</div>`;
+  // Get owner's pac limit (number or null)
+  const pacLimit = getOwnerPacAmount(d.uclNo);
+
+  // decide class
+  let highlightClass = "";
+  if (pacLimit != null && !isNaN(Number(d.amount))) {
+    const amt = Number(d.amount);
+    const limit = Number(pacLimit);
+    if (amt < limit) {
+      highlightClass = "green";
+    } else if (amt > limit) {
+      highlightClass = "red";
+    } else {
+      highlightClass = "equal"; // equal → subtle style
+    }
+  }
+
+  // build card HTML (use data attributes for pacNo and json-free handlers)
+  mobileCards.innerHTML += `
+    <div class="mobile-card ${highlightClass}" data-pac="${d.pacNo}">
+      <p><b>UCL:</b> ${d.uclNo}</p>
+      <p><b>PAC:</b> ${d.pacNo}</p>
+      <p><b>Amount:</b> ₹${d.amount}</p>
+      <p><b>Date:</b> ${d.entryDate}</p>
+      <p><b>Time:</b> ${d.entryTime}</p>
+      <p><b>Deleted:</b> ${deletedValue}</p>
+      <p><b>Owner:</b> ${d.uclOwnerName}</p>
+      <p><b>Deleted IP:</b> ${d.deleteIP}</p>
+      <p><b>Deleted ID:</b> ${d.deleteViewId}</p>
+
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button class="action-btn view-btn" data-action="view" data-pac="${d.pacNo}">View</button>
+        <button class="action-btn restore-btn" data-action="restore" data-pac="${d.pacNo}">Restore</button>
+        <button class="action-btn del-btn" data-action="delete" data-pac="${d.pacNo}">Delete</button>
+      </div>
+    </div>
+  `;
 }
+
 
 /* ---------------- RESTORE ---------------- */
 window.restorePAC = async function(data) {
@@ -1655,22 +1701,23 @@ function runFilters() {
   const toDate = to ? new Date(to) : null;
 
  /* ===== MOBILE: CARD FILTER ===== */
-const cards = document.querySelectorAll(".mobile-card");
+// Event delegation for table buttons
+// Event delegation for mobile cards (buttons)
+mobileCards.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-pac]');
+  if (!btn) return;
+  const pacNo = btn.getAttribute('data-pac');
+  const action = btn.getAttribute('data-action');
 
-cards.forEach(card => {
-  let txt = card.innerText.toLowerCase();
-  let match = txt.match(/deleted:\s*(.*)/i);
-  let delDate = match ? parseDate(match[1].trim()) : null;
+  const rec = allPAC.find(r => String(r.pacNo) === String(pacNo));
+  if (!rec) return;
 
-  let show = true;
-
-  if (search && !txt.includes(search)) show = false;
-  if (uclFilter && !txt.includes(String(uclFilter).toLowerCase())) show = false;
-  if (fromDate && (!delDate || delDate < fromDate)) show = false;
-  if (toDate && (!delDate || delDate > toDate)) show = false;
-
-  card.style.display = show ? "block" : "none";
+  if (action === 'view') viewPAC(rec);
+  else if (action === 'restore') restorePAC(rec);
+  else if (action === 'delete') deletePAC(pacNo);
 });
+
+
 
 currentPage = 1;
 renderPage();
@@ -1829,7 +1876,6 @@ function exportDeletedCSV(data) {
 }
 
 
- /* ===== PDF Export ===== */
 /* ===== ADVANCED PDF EXPORT WITH COPYRIGHT FOOTER ===== */
 function exportDeletedPDF(data) {
 
@@ -1951,263 +1997,68 @@ function toISODate(del) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-
-// GLOBAL Delete ID Count Map
-let deleteIdCountMap = {};
-
-// Update the count map inside loadPAC()
-function updateDeleteIdCounts(record) {
-  if (!record.deleteViewId) return;
-  let id = String(record.deleteViewId).trim();
-  deleteIdCountMap[id] = (deleteIdCountMap[id] || 0) + 1;
-}
-
-function updateSameDeleteIdCountDisplay() {
-  let duplicateCount = Object.values(deleteIdCountMap).filter(c => c > 1).length;
-  document.getElementById("sameDeleteIdCount").textContent = duplicateCount;
-}
-
-updateSameDeleteIdCountDisplay();
-
-/* ===============================================================
-   🔥 OPEN DUPLICATE DELETE ID POPUP (FINAL CLEAN VERSION)
-================================================================ */
-window.openDuplicateDeleteTable = function () {
-
-  const duplicateIds = Object.keys(deleteIdCountMap)
-    .filter(id => deleteIdCountMap[id] > 1);
-
-  if (!duplicateIds.length) {
-    alert("No duplicate Delete IDs found.");
-    return;
-  }
-
-  let html = `
-    <h2 style="text-align:center; margin-bottom:20px;">
-      Duplicate Delete ID Records
-    </h2>
-  `;
-
-  duplicateIds.forEach(delId => {
-
-    const list = allPAC.filter(r => r.deleteViewId === delId);
-
-    // Track IDs already assigned (unique for the popup)
-    let usedIds = new Set(Object.keys(deleteIdCountMap));
-
-    html += `
-      <h3 style="margin:20px 0; text-align:center; color:#ffeb3b;">
-        Duplicate Delete ID: <b>${delId}</b>
-
-        <button 
-          class="update-all-btn"
-          onclick="updateAllDeleteId('${delId}')">
-          Update All
-        </button>
-      </h3>
-
-      <div class="delete-popup-table">
-        <table style="width:100%; border-collapse:collapse;">
-          <thead>
-            <tr style="background:#000; color:white;">
-              <th>UCL</th>
-              <th>CSC</th>
-              <th>PAC</th>
-              <th>Amount</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Deleted</th>
-              <th>IP</th>
-              <th>New Delete ID</th>
-              <th>Update</th>
-            </tr>
-          </thead>
-          <tbody>
-    `;
-
-    let keepOriginal = true;
-
-    list.forEach(e => {
-
-      let newId;
-
-      if (keepOriginal) {
-        newId = e.deleteViewId; // keep first ID
-        keepOriginal = false;
-        usedIds.add(newId);
-      } else {
-        newId = generateNextId(usedIds);
-        usedIds.add(newId);
-      }
-
-      html += `
-        <tr>
-          <td>${e.uclNo}</td>
-          <td>${e.cscRef}</td>
-          <td>${e.pacNo}</td>
-          <td>${e.amount}</td>
-          <td>${e.entryDate}</td>
-          <td>${e.entryTime}</td>
-          <td>${formatDeleteDate(e.deletedAt || e.deletedAtTimestamp || e.deleteTime)}</td>
-          <td>${e.deleteIP}</td>
-
-          <td>
-            <input 
-              id="newDelId_${e.pacNo}"
-              type="text"
-              value="${newId}"
-              readonly
-              style="
-                padding:4px 6px;
-                width:130px;
-                border-radius:6px;
-                border:none;
-                background:#d4ffcf;
-                font-weight:600;
-              ">
-          </td>
-
-          <td>
-            <button 
-              class="update-single-btn"
-              onclick="updateSingleDeleteId('${e.pacNo}')">
-              Update
-            </button>
-          </td>
-
-        </tr>
-      `;
-    });
-
-    html += `
-          </tbody>
-        </table>
-      </div>
-
-      <hr style="margin:25px 0; border-color:rgba(255,255,255,0.2);">
-    `;
-  });
-
-  document.getElementById("deleteIdTable").innerHTML = html;
-  document.getElementById("deleteIdPopup").style.display = "flex";
-};
-
-
-
-/* ===============================================================
-   🔥 SMART UNIQUE DELETE ID GENERATOR (NO DUPLICATES EVER)
-================================================================ */
-function generateNextId(usedSet) {
-
-  let next = 1;
-
-  while (true) {
-    let id = `DEL-${String(next).padStart(5, "0")}`;
-
-    if (!usedSet.has(id)) return id;
-
-    next++;
-  }
-}
-
-
-
-/* ===============================================================
-   🔥 UPDATE SINGLE RECORD DELETE ID
-================================================================ */
-window.updateSingleDeleteId = async function(pacNo) {
-
-  const input = document.getElementById(`newDelId_${pacNo}`);
-  let newId = input.value.trim();
-
-  const rec = allPAC.find(r => r.pacNo === pacNo);
-  if (!rec) return alert("Record not found!");
-
-  input.style.background = "#fff2b3"; // yellow while saving
-
-  await setDoc(doc(db, "delete_pac", pacNo), {
-    ...rec,
-    deleteViewId: newId
-  });
-
-  input.style.background = "#b3ffb3"; // green after save
-
-  setTimeout(openDuplicateDeleteTable, 300);
-};
-
-
-
-/* ===============================================================
-   🔥 UPDATE ALL RECORDS INSIDE SAME DUPLICATE GROUP
-================================================================ */
-window.updateAllDeleteId = async function(oldId) {
-
-  const rows = allPAC.filter(r => r.deleteViewId === oldId);
-  let count = 0;
-
-  for (let rec of rows) {
-
-    const input = document.getElementById(`newDelId_${rec.pacNo}`);
-    const newId = input.value.trim();
-
-    input.style.background = "#fff2b3";
-
-    await setDoc(doc(db, "delete_pac", rec.pacNo), {
-      ...rec,
-      deleteViewId: newId
-    });
-
-    input.style.background = "#b3ffb3";
-    count++;
-  }
-
-  alert(`Updated ${count} records successfully!`);
-
-  setTimeout(openDuplicateDeleteTable, 300);
-};
-
-
-
-
-/* ---------------- LISTENERS ---------------- */
-document.getElementById("searchInput").addEventListener("keyup", runFilters);
-document.getElementById("fromDate").addEventListener("change", runFilters);
-document.getElementById("toDate").addEventListener("change", runFilters);
-document.getElementById("uclFilter").addEventListener("change", runFilters);
-
-</script>
-
-<script>
-/* ---------------- TIME ---------------- */
-function updateTime() {
+/* ---------------- LIVE TIME ---------------- */
+/* ---------------- LIVE DATE (DD-MM-YYYY) + TIME ---------------- */
+function updateLiveDateTime() {
   const el = document.getElementById("live-time");
+  if (!el) return;
+
   const now = new Date();
-  let d = String(now.getDate()).padStart(2,"0");
-  let m = String(now.getMonth()+1).padStart(2,"0");
-  let y = now.getFullYear();
-  let h = now.getHours();
-  let min = String(now.getMinutes()).padStart(2,"0");
-  let sec = String(now.getSeconds()).padStart(2,"0");
-  let ampm = h>=12?"PM":"AM";
-  h = (h%12)||12;
-  el.textContent = `${d}-${m}-${y} ${h}:${min}:${sec} ${ampm}`;
-}
-setInterval(updateTime,1000);
-updateTime();
 
+  // DD-MM-YYYY format
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yyyy = now.getFullYear();
 
-/* ---------------- IP ---------------- */
-fetch("https://api.ipify.org?format=json")
-.then(r=>r.json())
-.then(d=>document.getElementById("user-ip").textContent="IP: "+d.ip);
+  const dateStr = `${dd}-${mm}-${yyyy}`;
 
-/* ---------------- MENU ---------------- */
-function toggleMenu(){
-  document.getElementById("mainMenu").classList.toggle("show");
+  // Time in HH:MM:SS AM/PM
+  const timeStr = now.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  el.textContent = `${dateStr} ${timeStr}`;
 }
 
+setInterval(updateLiveDateTime, 1000);
+updateLiveDateTime();
+
+
+/* ---------------- FETCH USER IP ---------------- */
+async function loadUserIP() {
+  try {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const data = await res.json();
+    document.getElementById("user-ip").textContent = data.ip;
+  } catch (e) {
+    document.getElementById("user-ip").textContent = "IP unavailable";
+  }
+}
+
+loadUserIP();
+
+// GLOBAL BUTTON HANDLER FOR VIEW / RESTORE / DELETE
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-pac]");
+  if (!btn) return;
+
+  const pacNo = btn.getAttribute("data-pac");
+  const record = allPAC.find(r => String(r.pacNo) === pacNo);
+
+  if (btn.classList.contains("view-btn")) {
+    if (record) viewPAC(record);
+  }
+  else if (btn.classList.contains("restore-btn")) {
+    if (record) restorePAC(record);
+  }
+  else if (btn.classList.contains("del-btn")) {
+    deletePAC(pacNo);
+  }
+});
 
 </script>
-
 </body>
 </html>
