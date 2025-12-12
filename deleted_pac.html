@@ -2059,6 +2059,34 @@ document.addEventListener("click", (e) => {
   }
 });
 
+// Prefer this approach — attach listener after DOM is ready
+const menuToggle = document.querySelector('.menu-toggle');
+const mainMenu  = document.getElementById('mainMenu');
+
+function handleToggleMenu() {
+  if (!mainMenu) return;
+  mainMenu.classList.toggle('show');
+}
+
+// attach safely
+if (menuToggle) menuToggle.addEventListener('click', handleToggleMenu);
+
+// close menu if user clicks outside (mobile)
+document.addEventListener('click', (e) => {
+  if (!mainMenu || !menuToggle) return;
+  if (window.innerWidth > 768) return; // only on mobile
+  const target = e.target;
+  if (!mainMenu.contains(target) && !menuToggle.contains(target)) {
+    mainMenu.classList.remove('show');
+  }
+});
+
+// close nav when a nav link is clicked (improves UX)
+mainMenu?.addEventListener('click', (e) => {
+  if (e.target.tagName === 'A') mainMenu.classList.remove('show');
+});
+
+
 </script>
 </body>
 </html>
