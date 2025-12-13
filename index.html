@@ -701,6 +701,7 @@ footer .social a:hover {
   }
 }
 
+
 </style>
 </head>
 <body>
@@ -895,36 +896,51 @@ const db = getFirestore(app);
 /* ----------------------------------------------------
    REAL-TIME LIVE NAVIGATION UPDATE (NO REFRESH NEEDED)
 ----------------------------------------------------- */
-function loadNavMenuLive() {
+function loadNavMenuLive(options = {}) {
   const menu = document.getElementById("mainMenu");
   if (!menu) return;
 
-  const currentPage = window.location.pathname;  
-  // Example: /addnav.html
+  const ROLE_CONFIG = {
+    public: options.public ?? true,
+    ucl: options.ucl ?? true,
+    admin: options.admin ?? false
+  };
 
-  const q = query(collection(db, "pacnav"), orderBy("order"));
+  const currentPage = window.location.pathname.split("/").pop();
 
-  onSnapshot(q, (snapshot) => {
+  onSnapshot(query(collection(db, "pacnav"), orderBy("order")), snap => {
     let html = "";
 
-    snapshot.forEach((doc) => {
-      const v = doc.data();
+    snap.forEach(docItem => {
+      const v = docItem.data();
+      console.log("NAV ITEM:", v);
 
-      // If this nav item’s URL matches the page URL → SKIP
-      if (v.url === currentPage) return;
+      if (v.active === false) {
+        console.log("❌ inactive");
+        return;
+      }
 
-      const iconClass =
-        v.icon?.trim() ? v.icon : "fa-solid fa-circle-question";
+      if (Array.isArray(v.roles)) {
+        const allowed = v.roles.some(r => ROLE_CONFIG[r]);
+        if (!allowed) {
+          console.log("❌ role blocked", v.roles);
+          return;
+        }
+      }
 
-      html += `
-        <a href="${v.url}">
-          <i class="${iconClass}"></i> ${v.title}
-        </a>`;
+      const navUrl = (v.url || "").split("/").pop();
+      if (navUrl === currentPage) {
+        console.log("❌ same page");
+        return;
+      }
+
+      html += `<a href="${v.url}">${v.title}</a>`;
     });
 
     menu.innerHTML = html;
   });
 }
+
 
 loadNavMenuLive();
 
@@ -1023,6 +1039,10 @@ function animateStats(entries, observer) {
 
 const observer = new IntersectionObserver(animateStats, { threshold: 0.4 });
 observer.observe(document.querySelector(".stats"));
+
+
 </script>
+
+
 </body>
 </html>

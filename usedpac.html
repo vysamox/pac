@@ -980,22 +980,34 @@ function loadNavMenuLive() {
   const menu = document.getElementById("mainMenu");
   if (!menu) return;
 
-  const currentPage = window.location.pathname;
+  // Get only filename (safe match)
+  const currentPage = window.location.pathname.split("/").pop();
 
-  db.collection("pacnav")
+  firebase.firestore()
+    .collection("pacnav")
     .orderBy("order")
     .onSnapshot((snapshot) => {
+
       let html = "";
 
       snapshot.forEach((doc) => {
         const v = doc.data();
-        if (v.url === currentPage) return;
 
-        const iconClass = v.icon || "fa-solid fa-circle-question";
+        // ❌ Skip inactive nav
+        if (v.active === false) return;
+
+        // ❌ Skip current page
+        const navUrl = (v.url || "").split("/").pop();
+        if (navUrl === currentPage) return;
+
+        const iconClass =
+          v.icon && v.icon.trim()
+            ? v.icon
+            : "fa-solid fa-circle-question";
 
         html += `
           <a href="${v.url}">
-            <i class="${iconClass}"></i> ${v.title}
+            <i class="${iconClass}"></i> ${v.title || ""}
           </a>
         `;
       });
@@ -1003,7 +1015,9 @@ function loadNavMenuLive() {
       menu.innerHTML = html;
     });
 }
+
 loadNavMenuLive();
+
 
 /* MOBILE MENU */
 function toggleMenu() {

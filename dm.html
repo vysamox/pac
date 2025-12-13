@@ -1199,6 +1199,46 @@ footer {
   .pac-amount-input { font-size: 15px; padding: 10px; }
 }
 
+/* =========================
+   ROLE CHECKBOX STYLE
+========================= */
+
+/* ROLE SELECTION BOX */
+.role-box {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.role-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+  border-radius: 10px;
+
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.25);
+
+  color: #dffaff;
+  font-weight: 600;
+  font-size: 14px;
+
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.role-item:hover {
+  background: rgba(0, 255, 255, 0.18);
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.35);
+}
+
+.role-item input {
+  accent-color: #00eaff;
+  cursor: pointer;
+}
+
 
 </style>
 </head>
@@ -1234,8 +1274,27 @@ footer {
   <button id="viewUclRequestBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button> <!-- View Request Icon -->
 </div>
 
+<div class="card" style="position: relative;">
+  <h2 id="pacNavCount">0</h2>
+  <div class="card-label">PAC Navigation Items</div>
 
-  <div class="card"><h2 id="pacNavCount">0</h2><div class="card-label">PAC Navigation Items</div></div>
+  <!-- View Button -->
+  <button 
+    class="card-icon-btn"
+    style="right: 46px;"
+    title="View PAC Navigation"
+    onclick="openPacNavList()">
+    <i class="fa-solid fa-eye"></i>
+  </button>
+
+  <!-- Add Button -->
+  <button 
+    class="card-icon-btn"
+    title="Add PAC Navigation"
+    onclick="openAddPacNav()">
+    <i class="fa-solid fa-plus"></i>
+  </button>
+</div>
 
 <div class="card" style="border:1px solid #ff4444;"><h2 id="threatLevel">0%</h2>
   <div class="card-label">System Threat Level</div>
@@ -1434,7 +1493,151 @@ footer {
   </div>
 </div>
 
+<div id="pacNavModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:420px;">
+    
+    <h3>Add PAC Navigation</h3>
 
+    <button class="ucl-close-btn" onclick="closePacNavModal()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <label>Title</label>
+    <input id="navTitle" class="ucl-input">
+
+    <label>URL</label>
+    <input id="navUrl" class="ucl-input">
+
+    <label>Icon Class</label>
+    <input id="navIcon" class="ucl-input" placeholder="fa-solid fa-trash">
+
+    <label>Order</label>
+    <input id="navOrder" type="number" class="ucl-input">
+
+<label>Roles</label>
+
+<div class="role-box">
+
+  <label class="role-item">
+    <input type="checkbox" class="nav-role-add" value="admin">
+    <span>Admin</span>
+  </label>
+
+  <label class="role-item">
+    <input type="checkbox" class="nav-role-add" value="ucl">
+    <span>UCL</span>
+  </label>
+
+  <label class="role-item">
+    <input type="checkbox" class="nav-role-add" value="public">
+    <span>Public</span>
+  </label>
+
+</div>
+
+
+    <button class="ucl-edit-btn" style="width:100%" onclick="savePacNav()">
+      Save Navigation
+    </button>
+
+  </div>
+</div>
+
+<!-- PAC NAV LIST MODAL -->
+<div id="pacNavListModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:900px; max-height:85vh; overflow:hidden;">
+
+    <h3>PAC Navigation Manager</h3>
+
+    <!-- Close -->
+    <button class="ucl-close-btn" onclick="closePacNavList()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <!-- Table Wrapper -->
+    <div class="ucl-table-container" style="max-height:65vh; overflow-y:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Title</th>
+            <th>URL</th>
+            <th>Icon</th>
+            <th>Roles</th>
+            <th>Status</th>
+            <th style="text-align:center;">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="pacNavTableBody">
+          <!-- JS injects rows here -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- PAC NAV EDIT MODAL -->
+<div id="pacNavEditModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:420px;">
+
+    <h3>Edit PAC Navigation</h3>
+
+    <button class="ucl-close-btn" onclick="closeEditPacNav()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <label>Title</label>
+    <input id="editNavTitle" class="ucl-input">
+
+    <label>URL</label>
+    <input id="editNavUrl" class="ucl-input">
+
+    <label>Icon Class</label>
+    <input id="editNavIcon" class="ucl-input">
+
+    <label>Order</label>
+    <input id="editNavOrder" type="number" class="ucl-input">
+<label>Roles</label>
+
+<div class="role-box">
+
+  <label class="role-item">
+    <input type="checkbox" class="nav-role-edit" value="admin">
+    <span>Admin</span>
+  </label>
+
+  <label class="role-item">
+    <input type="checkbox" class="nav-role-edit" value="ucl">
+    <span>UCL</span>
+  </label>
+
+  <label class="role-item">
+    <input type="checkbox" class="nav-role-edit" value="public">
+    <span>Public</span>
+  </label>
+
+</div>
+
+
+
+
+    <label>Status</label>
+    <select id="editNavActive" class="ucl-input">
+      <option value="true">Active</option>
+      <option value="false">Inactive</option>
+    </select>
+
+    <button
+      class="ucl-edit-btn"
+      style="width:100%; margin-top:15px;"
+      onclick="saveEditPacNav()">
+      Save Changes
+    </button>
+
+  </div>
+</div>
 
 
 <footer>&copy; 2025 PAC Management System</footer>
@@ -1455,6 +1658,7 @@ import {
   query,
   orderBy,
   limit,
+    addDoc,   
   getDoc
 } from "./assets/js/firebase-config.js";
 
@@ -1468,29 +1672,45 @@ window.openUclEditor = async function (uclDocId) {
 /* ============================================================
    LOAD NAV LINKS
 ============================================================ */
-function loadNav() {
+function loadNav(userRole = "admin") {
   const menu = document.getElementById("mainMenu");
 
   const navQuery = query(
     collection(db, "pacnav"),
-    orderBy("order", "asc")   // <-- Sort by order field
+    orderBy("order", "asc")
   );
 
   onSnapshot(navQuery, snap => {
     menu.innerHTML = "";
 
-    snap.forEach(doc => {
-      const v = doc.data();
+    snap.forEach(docItem => {
+      const v = docItem.data();
+
+      // ✅ 1. Skip inactive
+      if (v.active === false) return;
+
+      // ✅ 2. Skip if roles exist and user role not allowed
+      if (Array.isArray(v.roles) && v.roles.length > 0) {
+        if (!v.roles.includes(userRole)) return;
+      }
+
+      // ✅ 3. Safe defaults
+      const url = v.url || "#";
+      const icon = v.icon || "fa-solid fa-circle";
+      const title = v.title || "Untitled";
 
       menu.innerHTML += `
-        <a href="${v.url}">
-          <i class="${v.icon}"></i> ${v.title}
+        <a href="${url}">
+          <i class="${icon}"></i> ${title}
         </a>
       `;
     });
   });
 }
-loadNav();
+
+// 🔐 TEMP: change role later when auth added
+loadNav("admin");
+
 
 
 /* ============================================================
@@ -1500,6 +1720,7 @@ let allPAC = [];
 let deleteIdMapGlobal = {};
 let allPACRecordsGlobal = [];
 let uclRequestsData = [];
+let currentPacNavEditId = null;
 
 
 
@@ -2298,8 +2519,236 @@ window.deleteUclRequest = async function (id) {
   alert("Request deleted.");
 };
 
+
+window.openAddPacNav = function () {
+  document.getElementById("pacNavModal").style.display = "flex";
+};
+
+window.closePacNavModal = function () {
+  document.getElementById("pacNavModal").style.display = "none";
+};
+window.savePacNav = async function () {
+
+  const title = navTitle.value.trim();
+  const url = navUrl.value.trim();
+  const icon = navIcon.value.trim();
+  const order = Number(navOrder.value);
+
+  // ✅ GET ROLES FROM CHECKBOXES (FIX)
+  const roles = Array.from(
+    document.querySelectorAll(".nav-role-add:checked")
+  ).map(cb => cb.value);
+
+  if (!title || !url || !icon || !order) {
+    alert("All fields required");
+    return;
+  }
+
+  if (roles.length === 0) {
+    alert("Select at least one role");
+    return;
+  }
+
+  await addDoc(collection(db, "pacnav"), {
+    title,
+    url,
+    icon,
+    order,
+    roles,
+    active: true,
+    createdAt: Date.now()
+  });
+
+  alert("PAC Navigation added!");
+
+  // ✅ RESET FORM
+  navTitle.value = "";
+  navUrl.value = "";
+  navIcon.value = "";
+  navOrder.value = "";
+  document.querySelectorAll(".nav-role-add").forEach(cb => cb.checked = false);
+
+  closePacNavModal();
+};
+
+window.openPacNavList = function () {
+  document.getElementById("pacNavListModal").style.display = "flex";
+};
+
+window.closePacNavList = function () {
+  document.getElementById("pacNavListModal").style.display = "none";
+};
+
+
+onSnapshot(
+  query(collection(db, "pacnav"), orderBy("order", "asc")),
+  snap => {
+
+    const body = document.getElementById("pacNavTableBody");
+    body.innerHTML = "";
+
+    snap.forEach(docItem => {
+      const d = docItem.data();
+
+      // ✅ default active = true if missing
+      const isActive = d.active !== false;
+
+     body.innerHTML += `
+  <tr>
+    <td>${d.order ?? "-"}</td>
+    <td>${d.title || "-"}</td>
+    <td>${d.url || "-"}</td>
+    <td><i class="${d.icon || ""}"></i></td>
+    <td>${(d.roles || []).join(", ")}</td>
+
+    <td>
+      <span
+        style="
+          font-weight:600;
+          color:${isActive ? "#00ffcc" : "#ff7777"};
+        ">
+        ${isActive ? "Active" : "Inactive"}
+      </span>
+    </td>
+
+    <td style="white-space:nowrap;">
+      <!-- EDIT -->
+      <button
+        class="ucl-edit-btn"
+        onclick="openEditPacNav('${docItem.id}')">
+        Edit
+      </button>
+
+      <!-- TOGGLE -->
+      <button
+        class="ucl-accept-btn"
+        onclick="togglePacNav('${docItem.id}', ${isActive})">
+        ${isActive ? "Deactivate" : "Activate"}
+      </button>
+
+      <!-- DELETE -->
+      <button
+        class="ucl-delete-btn"
+        onclick="deletePacNav('${docItem.id}')">
+        Delete
+      </button>
+    </td>
+  </tr>
+`;
+
+    });
+  }
+);
+
+window.togglePacNav = async function (id, currentStatus) {
+  try {
+    await updateDoc(doc(db, "pacnav", id), {
+      active: !currentStatus,
+      updatedAt: Date.now()
+    });
+
+    alert(`PAC Navigation ${currentStatus ? "deactivated" : "activated"}`);
+  } catch (e) {
+    console.error(e);
+    alert("Failed to update status");
+  }
+};
+
+window.deletePacNav = async function (id) {
+  const ok = confirm("Delete this PAC Navigation item permanently?");
+  if (!ok) return;
+
+  try {
+    await deleteDoc(doc(db, "pacnav", id));
+    alert("PAC Navigation deleted");
+  } catch (e) {
+    console.error(e);
+    alert("Delete failed");
+  }
+};
+
+/* ============================
+   OPEN EDIT MODAL
+============================ */
+window.openEditPacNav = async function (id) {
+
+  currentPacNavEditId = id;
+
+  const ref = doc(db, "pacnav", id);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    alert("PAC Navigation not found!");
+    return;
+  }
+
+  const d = snap.data();
+
+  // Fill inputs
+  editNavTitle.value = d.title || "";
+  editNavUrl.value = d.url || "";
+  editNavIcon.value = d.icon || "";
+  editNavOrder.value = d.order ?? 0;
+  editNavActive.value = String(d.active !== false);
+
+  // ✅ SET ROLE CHECKBOXES (FIX)
+document.querySelectorAll(".nav-role-edit").forEach(cb => {
+  cb.checked = (d.roles || []).includes(cb.value);
+});
+
+
+  document.getElementById("pacNavEditModal").style.display = "flex";
+};
+
+/* ============================
+   CLOSE EDIT MODAL
+============================ */
+window.closeEditPacNav = function () {
+  document.getElementById("pacNavEditModal").style.display = "none";
+  currentPacNavEditId = null;
+};
+
+/* ============================
+   SAVE EDIT
+============================ */
+window.saveEditPacNav = async function () {
+
+  if (!currentPacNavEditId) {
+    alert("No PAC Navigation selected");
+    return;
+  }
+
+  const title = editNavTitle.value.trim();
+  const url = editNavUrl.value.trim();
+  const icon = editNavIcon.value.trim();
+  const order = Number(editNavOrder.value);
+  const active = editNavActive.value === "true";
+
+  // ✅ COLLECT ROLES FROM CHECKBOXES
+const roles = Array.from(
+  document.querySelectorAll(".nav-role-edit:checked")
+).map(cb => cb.value);
+
+
+  if (!title || !url || !icon || !order) {
+    alert("All fields are required");
+    return;
+  }
+
+  await updateDoc(doc(db, "pacnav", currentPacNavEditId), {
+    title,
+    url,
+    icon,
+    order,
+    roles,
+    active,
+    updatedAt: Date.now()
+  });
+
+  alert("PAC Navigation updated successfully");
+  closeEditPacNav();
+};
+
 </script>
-
-
 </body>
 </html>

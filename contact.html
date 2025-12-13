@@ -322,26 +322,37 @@ function loadNavMenuLive() {
   const menu = document.getElementById("mainMenu");
   if (!menu) return;
 
-  const currentPage = window.location.pathname;
+  // Get only file name (safe compare)
+  const currentPage = window.location.pathname.split("/").pop();
 
-  const q = query(collection(db, "pacnav"), orderBy("order"));
+  const q = query(
+    collection(db, "pacnav"),
+    orderBy("order", "asc")
+  );
 
   onSnapshot(q, (snapshot) => {
     let html = "";
 
-    snapshot.forEach((doc) => {
-      const data = doc.data();
+    snapshot.forEach((docSnap) => {
+      const v = docSnap.data();
 
-      if (data.url === currentPage) return;
+      // ❌ Skip inactive nav
+      if (v.active === false) return;
 
-      const icon = data.icon?.trim()
-        ? data.icon
-        : "fa-solid fa-circle-question";
+      // ❌ Skip current page
+      const navUrl = (v.url || "").split("/").pop();
+      if (navUrl === currentPage) return;
+
+      const iconClass =
+        v.icon && v.icon.trim()
+          ? v.icon
+          : "fa-solid fa-circle-question";
 
       html += `
-        <a href="${data.url}">
-          <i class="${icon}"></i> ${data.title}
-        </a>`;
+        <a href="${v.url}">
+          <i class="${iconClass}"></i> ${v.title || ""}
+        </a>
+      `;
     });
 
     menu.innerHTML = html;
@@ -349,6 +360,7 @@ function loadNavMenuLive() {
 }
 
 loadNavMenuLive();
+
 
 /* -------------------------
    MOBILE MENU TOGGLE

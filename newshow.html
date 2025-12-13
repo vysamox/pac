@@ -1713,24 +1713,32 @@ function loadNavMenuLive() {
   const menu = document.getElementById("mainMenu");
   if (!menu) return;
 
-  const currentPage = window.location.pathname;
+  // Current page filename only
+  const currentPage = window.location.pathname.split("/").pop();
 
   db.collection("pacnav")
-    .orderBy("order")
+    .orderBy("order", "asc")
     .onSnapshot((snapshot) => {
       let html = "";
 
       snapshot.forEach((doc) => {
         const v = doc.data();
 
-        // Skip current page
-        if (v.url === currentPage) return;
+        // ❌ Skip inactive
+        if (v.active === false) return;
 
-        const iconClass = v.icon ? v.icon : "fa-solid fa-circle-question";
+        // ❌ Skip current page
+        const navUrl = (v.url || "").split("/").pop();
+        if (navUrl === currentPage) return;
+
+        const iconClass =
+          v.icon && v.icon.trim()
+            ? v.icon
+            : "fa-solid fa-circle-question";
 
         html += `
           <a href="${v.url}">
-            <i class="${iconClass}"></i> ${v.title}
+            <i class="${iconClass}"></i> ${v.title || ""}
           </a>
         `;
       });
@@ -1738,6 +1746,10 @@ function loadNavMenuLive() {
       menu.innerHTML = html;
     });
 }
+
+
+loadNavMenuLive();
+
 
 
 function viewPAC(docId, pacCode) {

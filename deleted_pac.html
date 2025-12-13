@@ -1171,16 +1171,44 @@ let delExportTypeBtn = null;
 /* ---------------- LOAD NAV ---------------- */
 function loadNav() {
   const menu = document.getElementById("mainMenu");
-  const q = query(collection(db, "pacnav"), orderBy("order"));
+  if (!menu) return;
 
-  onSnapshot(q, snap => {
-    menu.innerHTML = "";
-    snap.forEach(doc => {
-      const v = doc.data();
-      menu.innerHTML += `<a href="${v.url}"><i class="${v.icon}"></i> ${v.title}</a>`;
+  const currentPage = window.location.pathname.split("/").pop();
+
+  const q = query(
+    collection(db, "pacnav"),
+    orderBy("order", "asc")
+  );
+
+  onSnapshot(q, (snap) => {
+    let html = "";
+
+    snap.forEach((docSnap) => {
+      const v = docSnap.data();
+
+      // Skip inactive nav items
+      if (v.active === false) return;
+
+      // Skip current page
+      const navUrl = (v.url || "").split("/").pop();
+      if (navUrl === currentPage) return;
+
+      const iconClass =
+        v.icon && v.icon.trim()
+          ? v.icon
+          : "fa-solid fa-circle-question";
+
+      html += `
+        <a href="${v.url}">
+          <i class="${iconClass}"></i> ${v.title || ""}
+        </a>
+      `;
     });
+
+    menu.innerHTML = html;
   });
 }
+
 loadNav();
 
 /* ---------------- LOAD DELETED PAC DATA ---------------- */

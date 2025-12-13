@@ -778,27 +778,37 @@ function loadNavMenuLive() {
   const menu = document.getElementById("mainMenu");
   if (!menu) return;
 
-  const currentPage = window.location.pathname;  
-  // Example: /addnav.html
+  // Get current filename only
+  const currentPage = window.location.pathname.split("/").pop();
 
-  const q = query(collection(db, "pacnav"), orderBy("order"));
+  const q = query(
+    collection(db, "pacnav"),
+    orderBy("order", "asc")
+  );
 
   onSnapshot(q, (snapshot) => {
     let html = "";
 
-    snapshot.forEach((doc) => {
-      const v = doc.data();
+    snapshot.forEach((docSnap) => {
+      const v = docSnap.data();
 
-      // If this nav item’s URL matches the page URL → SKIP
-      if (v.url === currentPage) return;
+      // ❌ Skip inactive
+      if (v.active === false) return;
+
+      // ❌ Skip current page
+      const navUrl = (v.url || "").split("/").pop();
+      if (navUrl === currentPage) return;
 
       const iconClass =
-        v.icon?.trim() ? v.icon : "fa-solid fa-circle-question";
+        v.icon && v.icon.trim()
+          ? v.icon
+          : "fa-solid fa-circle-question";
 
       html += `
         <a href="${v.url}">
-          <i class="${iconClass}"></i> ${v.title}
-        </a>`;
+          <i class="${iconClass}"></i> ${v.title || ""}
+        </a>
+      `;
     });
 
     menu.innerHTML = html;
@@ -806,6 +816,7 @@ function loadNavMenuLive() {
 }
 
 loadNavMenuLive();
+
 
 /* ---------------- MOBILE MENU ---------------- */
 window.toggleMenu = function () {
