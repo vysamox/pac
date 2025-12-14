@@ -1240,6 +1240,8 @@ footer {
 }
 
 
+
+
 </style>
 </head>
 
@@ -1320,8 +1322,6 @@ footer {
     <i class="fa-solid fa-pen-to-square"></i>
   </button>
 </div>
-
-
 </div>
 
 <!-- ==== SYSTEM HEALTH ==== -->
@@ -1363,8 +1363,7 @@ footer {
 <thead>
 <tr>
   <th>Delete ID</th>
-  <th>UCL</th>
-  <th>CSC</th>
+  <th>CSC Ref</th>
   <th>PAC</th>
   <th>Amount</th>
   <th>Date</th>
@@ -1721,6 +1720,7 @@ let deleteIdMapGlobal = {};
 let allPACRecordsGlobal = [];
 let uclRequestsData = [];
 let currentPacNavEditId = null;
+let globalUsedDeleteIds = new Set(); // ✅ ADD THIS
 
 
 
@@ -1729,16 +1729,22 @@ let currentPacNavEditId = null;
 ============================================================ */
 onSnapshot(collection(db, "delete_pac"), snap => {
 
-  allPAC = [];
-  let deleteIdMap = {};
+allPAC = [];
+let deleteIdMap = {};
+globalUsedDeleteIds.clear(); // ✅ RESET
 
-  snap.forEach(docItem => {
-    let d = { id: docItem.id, ...docItem.data() };
-    allPAC.push(d);
+snap.forEach(docItem => {
+  let d = { id: docItem.id, ...docItem.data() };
+  allPAC.push(d);
 
-    let del = String(d.deleteViewId || "").trim();
-    deleteIdMap[del] = (deleteIdMap[del] || 0) + 1;
-  });
+  if (d.deleteViewId) {
+    globalUsedDeleteIds.add(d.deleteViewId); // ✅ STORE GLOBALLY
+  }
+
+  let del = String(d.deleteViewId || "").trim();
+  deleteIdMap[del] = (deleteIdMap[del] || 0) + 1;
+});
+
 
   // store globally
   deleteIdMapGlobal = deleteIdMap;
@@ -1768,65 +1774,82 @@ if (duplicateCount === 0) {
 
     if (deleteIdMap[delId] <= 1) return; // skip normal ones
 
-   table.innerHTML += `
-  <tr style="background:rgba(0,0,0,0.35)">
-    <td colspan="10" style="padding:10px; color:#00eaff; font-weight:600;">
-      Duplicate Delete ID: ${delId} (${deleteIdMap[delId]} records)
-    </td>
+   // Collect all rows for this Delete ID
+const rowsForThisId = allPAC.filter(r => r.deleteViewId === delId);
 
-    <td colspan="2" style="text-align:right; padding-right:15px;">
-      <button onclick="updateAllDeleteIds('${delId}')"
-        style="
-          padding:7px 14px;
-          background:#00ffbf;
-          border:none;
-          border-radius:6px;
-          font-weight:600;
-          color:black;
-          cursor:pointer;
-        ">
-        Update All
-      </button>
-    </td>
-  </tr>
+// Extract unique UCLs
+const uclSet = new Set(
+  rowsForThisId.map(r => r.uclNo).filter(Boolean)
+);
+
+// Decide display label
+const uclLabel =
+  uclSet.size === 1 ? [...uclSet][0] : "Multiple";
+
+// Header row
+table.innerHTML += `
+<tr style="background:rgba(0,0,0,0.35)">
+  <td colspan="9" style="padding:10px; color:#00eaff; font-weight:600;">
+    Duplicate Delete ID: ${delId}
+    (${deleteIdMap[delId]} records)
+    <span style="margin-left:12px; color:#7fffd4;">
+      | UCL: ${uclLabel}
+    </span>
+  </td>
+
+  <td colspan="2" style="text-align:right; padding-right:15px;">
+    <button onclick="updateAllDeleteIds('${delId}')"
+      style="
+        padding:7px 14px;
+        background:#00ffbf;
+        border:none;
+        border-radius:6px;
+        font-weight:600;
+        color:black;
+        cursor:pointer;
+      ">
+      Update All
+    </button>
+  </td>
+</tr>
 `;
 
+
 window.updateAllDeleteIds = async function (oldId) {
+
+  if (!confirm(`Update ALL records for ${oldId}?`)) return;
+
   const rows = allPACRecordsGlobal.filter(r => r.deleteViewId === oldId);
-  let usedIds = new Set(allPACRecordsGlobal.map(r => r.deleteViewId));
 
   let keepOriginal = true;
   let count = 0;
 
   for (let rec of rows) {
-
     let input = document.getElementById(`newDelId_${rec.pacNo}`);
     if (!input) continue;
 
     let newId;
 
     if (keepOriginal) {
-      newId = rec.deleteViewId;  // first keeps original
+      newId = rec.deleteViewId; // keep first
       keepOriginal = false;
     } else {
-      newId = generateNextId(usedIds);
-      usedIds.add(newId);
+      newId = generateNextId(); // ✅ GLOBAL SAFE
     }
 
-    input.value = newId;
-    input.style.background = "#fff2b3";
-
-    await setDoc(doc(db, "delete_pac", rec.id), {
+    await updateDoc(doc(db, "delete_pac", rec.id), {
       deleteViewId: newId
-    }, { merge: true });
+    });
 
+    input.value = newId;
     input.style.background = "#b3ffb3";
     count++;
   }
 
-  alert(`Updated ${count} records successfully!`);
+  alert(`Updated ${count} records safely.`);
   setTimeout(() => location.reload(), 300);
 };
+
 
 
 let usedIds = new Set(allPAC.map(r => r.deleteViewId));
@@ -1850,7 +1873,6 @@ let usedIds = new Set(allPAC.map(r => r.deleteViewId));
       table.innerHTML += `
         <tr>
           <td>${r.deleteViewId}</td>
-          <td>${r.uclNo}</td>
           <td>${r.cscRef}</td>
           <td>${r.pacNo}</td>
           <td>${r.amount}</td>
@@ -1898,15 +1920,20 @@ function formatDeleted(r) {
 /* ============================================================
    SAFE UNIQUE DELETE ID GENERATOR
 ============================================================ */
-function generateNextId(usedSet) {
-  let next = 1;
+function generateNextId() {
+  let next = globalUsedDeleteIds.size + 1;
 
   while (true) {
-    let id = `DEL-${String(next).padStart(5, "0")}`;
-    if (!usedSet.has(id)) return id;
+    const id = `DEL-${String(next).padStart(5, "0")}`;
+    if (!globalUsedDeleteIds.has(id)) {
+      globalUsedDeleteIds.add(id);
+      return id;
+    }
     next++;
   }
 }
+
+
 
 
 /* ============================================================
@@ -1915,22 +1942,29 @@ function generateNextId(usedSet) {
 window.updateInlineDeleteId = async function (pacNo) {
 
   const input = document.getElementById(`newDelId_${pacNo}`);
+  if (!input) return alert("Input not found");
+
   const newId = input.value.trim();
 
   const rec = allPAC.find(r => r.pacNo === pacNo);
   if (!rec) return alert("Record not found!");
 
-  input.style.background = "#fff2b3";   // saving glow
+  if (globalUsedDeleteIds.has(newId) && rec.deleteViewId !== newId) {
+    return alert("This Delete ID already exists!");
+  }
 
-  await setDoc(doc(db, "delete_pac", rec.id), {
-    ...rec,
+  input.style.background = "#fff2b3";
+
+  await updateDoc(doc(db, "delete_pac", rec.id), {
     deleteViewId: newId
   });
 
-  input.style.background = "#b3ffb3";   // saved glow
+  globalUsedDeleteIds.add(newId);
+  input.style.background = "#b3ffb3";
 
-  setTimeout(() => location.reload(), 350);
+  setTimeout(() => location.reload(), 300);
 };
+
 
 
 /* ============================================================
@@ -2156,19 +2190,29 @@ document.getElementById("savePacAmountBtn").addEventListener("click", async () =
     return;
   }
 
-  const snap = await getDocs(collection(db, "ucl_owners"));
-  let updated = 0;
+  if (!confirm("This will update PAC Amount for ALL UCL owners. Continue?")) return;
 
-  for (let docItem of snap.docs) {
-    await updateDoc(doc(db, "ucl_owners", docItem.id), {
-      pacAmount: newAmount
-    });
-    updated++;
+  const snap = await getDocs(collection(db, "ucl_owners"));
+
+  if (snap.empty) {
+    alert("No UCL owners found.");
+    return;
   }
 
-  alert(`PAC Amount updated for ALL UCL owners (${updated} users).`);
+  // 🔥 UPDATE ALL IN PARALLEL (FAST & SAFE)
+  await Promise.all(
+    snap.docs.map(docItem =>
+      updateDoc(doc(db, "ucl_owners", docItem.id), {
+        pacAmount: newAmount,
+        updatedAt: Date.now()
+      })
+    )
+  );
+
+  alert(`PAC Amount updated for ALL UCL owners (${snap.size} users).`);
   document.getElementById("pacAmountModal").style.display = "none";
 });
+
 
 onSnapshot(collection(db, "ucl_owners"), snap => {
   let pacValue = 0;
