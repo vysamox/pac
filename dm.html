@@ -1103,7 +1103,6 @@ tbody tr:hover::after {
 <div class="card" style="position:relative; border:1px solid #a7f36b;">
   <h2 id="pacNavCount">0</h2> <div class="card-label">PAC Navigation Items</div>
   <button  class="card-icon-btn" style="right: 46px;" title="View PAC Navigation" onclick="openPacNavList()"><i class="fa-solid fa-eye"></i></button>
-
   <button  class="card-icon-btn" title="Add PAC Navigation" onclick="openAddPacNav()"> <i class="fa-solid fa-plus"></i></button>
 </div>
 
@@ -1114,13 +1113,11 @@ tbody tr:hover::after {
 
   <div class="card" style="position:relative; border:1px solid #ffd27f;">
 
-  <h2 id="uclPacAmount">0</h2>
-  <div class="card-label">UCL PAC Amount (Global)</div>
+  <h2 id="uclPacAmount">0</h2> <div class="card-label">UCL PAC Amount (Global)</div>
 
   <!-- Edit Button -->
   <button id="editPacAmountBtn"
-    style="
-      position:absolute;
+    style="position:absolute;
       top:12px;
       right:15px;
       background:none;
@@ -1339,7 +1336,7 @@ tbody tr:hover::after {
 
 <!-- PAC NAV LIST MODAL -->
 <div id="pacNavListModal" class="ucl-modal">
-  <div class="ucl-modal-box" style="max-width:900px; max-height:85vh; overflow:hidden;">
+  <div class="ucl-modal-box" style="max-height:85vh; overflow:hidden;">
 
     <h3>PAC Navigation Manager</h3>
 
