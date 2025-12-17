@@ -1074,42 +1074,37 @@ tbody tr:hover::after {
 <!-- ==== ADVANCED GRID CARDS ==== -->
 <div class="dashboard-grid">
 
-   <div class="card"><h2 id="livePacCount">0</h2><div class="card-label">Active PAC Entries</div></div>
+  <div class="card" style="border:1px solid #7ee8c9;">
+    <h2 id="livePacCount">0</h2> <div class="card-label">Active PAC Entries</div>
+  </div>
 
-   <div class="card"><h2 id="usedPacCount">0</h2><div class="card-label">Used PAC Count</div></div>
+    <div class="card" style="border:2px solid #8fd3ff;">
+    <h2 id="usedPacCount">0</h2> <div class="card-label">Used PAC Count</div>
+  </div>
 
-  <div class="card"><h2 id="deletePacCount">0</h2><div class="card-label">Deleted PAC Records</div></div>
+    <div class="card" style="border:1px solid #ffb199;">
+    <h2 id="deletePacCount">0</h2> <div class="card-label">Deleted PAC Records</div>
+  </div>
 
-  <div class="card"><h2 id="duplicateDeleteIdCount">0</h2><div class="card-label">Duplicate Delete IDs detected</div></div>
+   <div class="card" style="border:1px solid #ffc36a;">
+    <h2 id="duplicateDeleteIdCount">0</h2> <div class="card-label">Duplicate Delete IDs detected</div>
+  </div>
 
-<div class="card" style="position: relative;"><h2 id="userAccountCount">0</h2><div class="card-label">Registered UCL Accounts</div>
-  <button id="viewUclBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button><!-- View icon -->
-</div>
+ <div class="card" style="position:relative; border:1px solid #bfa8ff;">
+    <h2 id="userAccountCount">0</h2> <div class="card-label">Registered UCL Accounts</div>
+    <button id="viewUclBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button>
+  </div>
 
-<div class="card" style="position: relative;"><h2 id="uclRequestCount">0</h2><div class="card-label">UCL ID Requests</div>
-  <button id="viewUclRequestBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button> <!-- View Request Icon -->
-</div>
+  <div class="card" style="position:relative; border:1px solid #ff9ac1;">
+    <h2 id="uclRequestCount">0</h2><div class="card-label">UCL ID Requests</div>
+    <button id="viewUclRequestBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button>
+  </div>
 
-<div class="card" style="position: relative;">
-  <h2 id="pacNavCount">0</h2>
-  <div class="card-label">PAC Navigation Items</div>
+<div class="card" style="position:relative; border:1px solid #a7f36b;">
+  <h2 id="pacNavCount">0</h2> <div class="card-label">PAC Navigation Items</div>
+  <button  class="card-icon-btn" style="right: 46px;" title="View PAC Navigation" onclick="openPacNavList()"><i class="fa-solid fa-eye"></i></button>
 
-  <!-- View Button -->
-  <button 
-    class="card-icon-btn"
-    style="right: 46px;"
-    title="View PAC Navigation"
-    onclick="openPacNavList()">
-    <i class="fa-solid fa-eye"></i>
-  </button>
-
-  <!-- Add Button -->
-  <button 
-    class="card-icon-btn"
-    title="Add PAC Navigation"
-    onclick="openAddPacNav()">
-    <i class="fa-solid fa-plus"></i>
-  </button>
+  <button  class="card-icon-btn" title="Add PAC Navigation" onclick="openAddPacNav()"> <i class="fa-solid fa-plus"></i></button>
 </div>
 
 <div class="card" style="border:1px solid #ff4444;"><h2 id="threatLevel">0%</h2>
@@ -1117,7 +1112,8 @@ tbody tr:hover::after {
   <small id="threatNote" style="opacity:0.8; font-size:13px;"></small>
 </div>
 
-<div class="card" style="position: relative;">
+  <div class="card" style="position:relative; border:1px solid #ffd27f;">
+
   <h2 id="uclPacAmount">0</h2>
   <div class="card-label">UCL PAC Amount (Global)</div>
 
