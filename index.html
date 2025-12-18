@@ -603,28 +603,144 @@ nav a:hover::after {
 }
 
 
-/* ---------------- FOOTER ---------------- */
+/* ---------------- FOOTER (ADVANCED) ---------------- */
 footer {
-  background: linear-gradient(90deg, #004aad, #007bff);
-  color: #fff;
+  background: linear-gradient(120deg, #003a8f, #007bff, #00b4ff);
+  background-size: 300% 300%;
+  animation: footerGradient 18s ease infinite;
+
+  color: #ffffff;
   text-align: center;
-  padding: 40px 20px;
+  padding: 42px 20px 36px;
+  position: relative;
+  overflow: hidden;
 }
-footer .social a {
-  color: #fff;
-  margin: 0 10px;
-  font-size: 22px;
-  transition: 0.3s;
+
+/* Subtle top glow line */
+footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 80%;
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
 }
-footer .social a:hover {
-  color: #ffeb3b;
-  transform: scale(1.2);
+
+/* Gradient animation */
+@keyframes footerGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
+
+/* COPYRIGHT TEXT */
+footer > div:first-child,
+footer {
+  font-size: 14px;
+  letter-spacing: 0.4px;
+}
+
+/* VERSION LINE (HIGHLIGHT) */
+.dashboard-version {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #eaf6ff;
+
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(6px);
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* SECOND LINE INFO (TIME / IP) */
 #footer-info {
   margin-top: 10px;
-  font-size: 14px;
-  color: #ddd;
+  font-size: 13px;
+  color: #dce9ff;
+  opacity: 0.9;
 }
+
+/* Prevent wrap glitches */
+#footer-info span,
+.dashboard-version {
+  white-space: nowrap;
+}
+
+/* SOCIAL ICONS */
+footer .social a {
+  color: #ffffff;
+  margin: 0 12px;
+  font-size: 22px;
+  transition: transform 0.35s ease, color 0.35s ease;
+}
+
+footer .social a:hover {
+  color: #ffeb3b;
+  transform: translateY(-4px) scale(1.2);
+}
+
+/* MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+  .dashboard-version {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  #footer-info {
+    font-size: 12px;
+  }
+}
+
+/* ---------------- FOOTER MOBILE FIX ---------------- */
+@media (max-width: 600px) {
+
+  footer {
+    padding: 28px 14px 24px;
+  }
+
+  /* Version badge wraps nicely */
+  .dashboard-version {
+    display: block;
+    max-width: 100%;
+    margin: 10px auto 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: normal;   /* ✅ allow wrap */
+    text-align: center;
+  }
+
+  /* Footer info stack */
+  #footer-info {
+    display: flex;
+    flex-direction: column;   /* ✅ stack vertically */
+    gap: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    margin-top: 6px;
+  }
+
+  #footer-info span {
+    display: block;
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
 
 /* ---------------- MOBILE HEADER (FINAL FIXED VERSION) ---------------- */
 @media (max-width: 768px) {
@@ -870,8 +986,17 @@ footer .social a:hover {
 
 <footer>
   &copy; 2025 PAC Management System. All rights reserved.
-  <div id="footer-info"><span id="live-time"></span> | <span id="user-ip"></span></div>
+
+  <!-- VERSION LINE (TOP) -->
+  <div class="dashboard-version"></div>
+
+  <!-- SECOND LINE -->
+  <div id="footer-info">
+    <span id="live-time"></span> |
+    <span id="user-ip"></span>
+  </div>
 </footer>
+
 
 
 <script type="module">
@@ -1044,6 +1169,10 @@ observer.observe(document.querySelector(".stats"));
 
 </script>
 
+<script type="module">
+  import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
+  loadDashboardVersion();
+</script>
 
 </body>
 </html>

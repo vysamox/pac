@@ -373,6 +373,38 @@ tbody tr:hover {
 
 }
 
+.app-footer {
+  background: linear-gradient(90deg, #004aad, #007bff);
+  color: #fff;
+  text-align: center;
+  padding: 18px 12px;
+  font-size: 13px;
+}
+
+.app-footer .footer-line {
+  margin-top: 6px;
+  opacity: 0.95;
+}
+
+.dashboard-version {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(5px);
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .dashboard-version {
+    white-space: normal;
+    line-height: 1.4;
+  }
+}
+
   </style>
 
 </head>
@@ -435,10 +467,20 @@ tbody tr:hover {
   </div>
 </div>
 
-<footer>
-  © 2025 PAC Management System — Auto Process Enabled  
-  <span id="footer-ip" style="margin-left:6px;">IP: Loading...</span>
+<footer class="app-footer">
+  <div class="footer-line">
+    © 2025 PAC Management System — Auto Process Enabled
+  </div>
+
+  <div class="dashboard-version">
+    Loading dashboard version…
+  </div>
+
+  <div class="footer-line">
+    <span id="footer-ip">IP: Loading…</span>
+  </div>
 </footer>
+
 
 <!-- Firebase -->
 <script type="module">
@@ -448,6 +490,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebas
 import {
   getFirestore, doc, getDoc, setDoc, collection, getDocs, onSnapshot, query, orderBy
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
@@ -825,6 +868,10 @@ window.toggleMenu = function () {
 };
 
 loadOwners();
+</script>
+<script type="module">
+  import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
+  loadDashboardVersion();
 </script>
 
 </body>

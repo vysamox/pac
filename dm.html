@@ -1129,8 +1129,43 @@ tbody tr:hover::after {
     <i class="fa-solid fa-pen-to-square"></i>
   </button>
 </div>
-</div>
+<div class="card" style="position:relative; border:1px solid #60a5fa;">
 
+  <!-- CURRENT VERSION -->
+  <h2 id="currentVersion">v0.0.0</h2>
+
+  <div class="card-label">
+    Build <span id="currentBuild">#0</span> •
+    <span id="currentDate">—</span>
+  </div>
+
+  <hr style="margin:12px 0; opacity:0.2;">
+
+  <!-- NEXT VERSION -->
+  <div class="card-label">
+    Next Version:
+    <span id="nextVersion">v0.0.1</span>
+  </div>
+
+  <!-- VIEW DETAILS -->
+  <button
+    class="card-icon-btn"
+    style="right:46px"
+    title="View Version Details"
+    onclick="openVersionView()">
+    <i class="fa-solid fa-eye"></i>
+  </button>
+
+  <!-- UPDATE VERSION -->
+  <button
+    class="card-icon-btn"
+    title="Update to Next Version"
+    onclick="autoUpdateVersion()">
+    <i class="fa-solid fa-rocket"></i>
+  </button>
+
+</div>
+</div>
 <!-- ==== SYSTEM HEALTH ==== -->
 <div class="status-box">
   <h3>System Activity Snapshot</h3>
@@ -1145,7 +1180,6 @@ tbody tr:hover::after {
 
   </div>
 </div>
-
 
 <!-- ==== DUPLICATE ID TABLE ==== -->
 <div class="table-container">
@@ -1427,6 +1461,46 @@ tbody tr:hover::after {
   </div>
 </div>
 
+<div id="versionViewModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:420px;">
+
+    <h3>Version Details</h3>
+
+    <button class="ucl-close-btn" onclick="closeVersionView()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="status-item">
+      Current Version:
+      <b id="viewCurrentVersion">—</b>
+    </div>
+
+    <div class="status-item">
+      Build Number:
+      <b id="viewBuildNumber">—</b>
+    </div>
+
+    <div class="status-item">
+      Last Updated:
+      <b id="viewBuildDate">—</b>
+    </div>
+
+    <hr style="margin:12px 0; opacity:0.3;">
+
+    <div class="status-item">
+      Next Version:
+      <b id="viewNextVersion">—</b>
+    </div>
+
+    <div class="status-item">
+      Next Build:
+      <b id="viewNextBuild">—</b>
+    </div>
+
+  </div>
+</div>
+
+
 <footer class="dashboard-footer">
   <div class="dashboard-version"></div>
   <div class="footer-copy">&copy; 2025 PAC Management System</div>
@@ -1455,10 +1529,20 @@ import {
 } from "./assets/js/firebase-config.js";
 import "./assets/js/system-uptime.js";
 import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
+import {
+  autoUpdateVersion,
+  bindVersionCard,
+  openVersionView,
+  closeVersionView
+} from "./assets/js/version-control.js";
 
+window.autoUpdateVersion = autoUpdateVersion;
+window.openVersionView = openVersionView;
+window.closeVersionView = closeVersionView;
 
 loadDashboardVersion();
 
+bindVersionCard();
 
 
 
