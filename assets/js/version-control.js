@@ -6,42 +6,135 @@ import {
   onSnapshot
 } from "./firebase-config.js";
 
-/* -------------------------------------------------- */
+/* ==================================================
+   REFS
+================================================== */
 const versionRef = doc(db, "system", "version");
 
-/* -------------------------------------------------- */
+/* ==================================================
+   UTIL: NEXT VERSION
+================================================== */
 function nextVersion(version) {
-  const [a = 0, b = 0, c = 0] = String(version || "0.0.0")
+  const [a = 1, b = 0, c = 0] = String(version || "1.0.0")
     .split(".")
     .map(n => parseInt(n, 10));
+
   return `${a}.${b}.${c + 1}`;
 }
 
-/* -------------------------------------------------- */
-/* UPDATE VERSION */
-export async function autoUpdateVersion() {
+/* ==================================================
+   UTIL: DATETIME DOCUMENT ID
+   FORMAT: dd-mm-yyyy_hh-mm-ss-ms
+================================================== */
+function getHistoryDocId() {
+  const now = new Date();
+
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yyyy = now.getFullYear();
+
+  const hh = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
+  const ms = String(now.getMilliseconds()).padStart(3, "0");
+
+  return `${dd}-${mm}-${yyyy}_${hh}-${min}-${ss}-${ms}`;
+}
+
+/* ==================================================
+   UTIL: FETCH CLIENT IP (SAFE)
+================================================== */
+async function getClientIP() {
+  try {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const data = await res.json();
+    return data.ip || "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
+/* ==================================================
+   ENSURE VERSION EXISTS (AUTO INIT)
+================================================== */
+async function ensureVersionDoc() {
   const snap = await getDoc(versionRef);
 
-  let version = "1.0.0";
-  let build = 0;
-  let env = "PROD";
-
-  if (snap.exists()) {
-    const d = snap.data();
-    version = d.version || version;
-    build = d.buildNumber || 0;
-    env = d.env || env;
+  if (!snap.exists()) {
+    await setDoc(versionRef, {
+      version: "1.0.0",
+      buildNumber: 1,
+      buildTime: Date.now(),
+      env: "PROD",
+      meta: {
+        createdAt: Date.now()
+      }
+    });
   }
+}
 
-  const newVersion = nextVersion(version);
+/* ==================================================
+   UPDATE VERSION + SAVE PREVIOUS VERSION (HISTORY)
+================================================== */
+export async function autoUpdateVersion(changelog = []) {
+  await ensureVersionDoc();
+
+  const snap = await getDoc(versionRef);
+  if (!snap.exists()) return;
+
+  const d = snap.data();
+
+  const currentVersion = d.version || "1.0.0";
+  const currentBuild = Number(d.buildNumber) || 1;
+  const env = d.env || "PROD";
+
+  const clientIP = await getClientIP();
+
+  const meta = {
+    ip: clientIP,
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+  };
+
+  /* ------------------------------------
+     SAVE PREVIOUS VERSION (IMMUTABLE)
+  ------------------------------------ */
+  const historyId = getHistoryDocId();
+
+  await setDoc(
+    doc(db, "system_version_history", historyId),
+    {
+      version: currentVersion,
+      buildNumber: currentBuild,
+      buildTime: d.buildTime || Date.now(),
+      env,
+      changelog,
+      meta,
+      action: "UPDATE",
+      savedAt: Date.now(),
+      savedBy: "admin" // 🔐 replace with auth later
+    }
+  );
+
+  /* ------------------------------------
+     UPDATE LIVE VERSION
+  ------------------------------------ */
+  const newVersion = nextVersion(currentVersion);
 
   await setDoc(
     versionRef,
     {
       version: newVersion,
-      buildNumber: build + 1,
+      buildNumber: currentBuild + 1,
       buildTime: Date.now(),
-      env
+      env,
+      lastUpdate: {
+        ip: clientIP,
+        at: Date.now(),
+        by: "admin"
+      }
     },
     { merge: true }
   );
@@ -49,51 +142,84 @@ export async function autoUpdateVersion() {
   alert(`Dashboard updated to v${newVersion}`);
 }
 
-/* -------------------------------------------------- */
-/* BIND CARD */
+/* ==================================================
+   BIND VERSION CARD (SINGLE LIVE LISTENER)
+================================================== */
+let versionUnsub = null;
+
 export function bindVersionCard() {
   const cur = document.getElementById("currentVersion");
   const next = document.getElementById("nextVersion");
+  const build = document.getElementById("currentBuild");
+  const dateEl = document.getElementById("currentDate");
 
   if (!cur || !next) return;
 
-  onSnapshot(versionRef, snap => {
-    if (!snap.exists()) {
-      cur.textContent = "v1.0.0";
-      next.textContent = "v1.0.1";
-      return;
-    }
+  if (versionUnsub) versionUnsub();
 
-    const v = snap.data();
-    cur.textContent = `v${v.version}`;
-    next.textContent = `v${nextVersion(v.version)}`;
-  });
-}
-
-/* -------------------------------------------------- */
-/* VIEW MODAL */
-export function openVersionView() {
-  const modal = document.getElementById("versionViewModal");
-  if (!modal) return;
-
-  onSnapshot(versionRef, snap => {
+  versionUnsub = onSnapshot(versionRef, snap => {
     if (!snap.exists()) return;
 
     const v = snap.data();
-    const date = v.buildTime
-      ? new Date(v.buildTime).toLocaleString("en-GB")
-      : "—";
 
-    document.getElementById("viewCurrentVersion").textContent = `v${v.version}`;
-    document.getElementById("viewBuildNumber").textContent = `#${v.buildNumber}`;
-    document.getElementById("viewBuildDate").textContent = date;
-    document.getElementById("viewNextVersion").textContent = `v${nextVersion(v.version)}`;
-    document.getElementById("viewNextBuild").textContent = `#${v.buildNumber + 1}`;
+    cur.textContent = `v${v.version || "—"}`;
+    next.textContent = `v${nextVersion(v.version)}`;
+
+    if (build) build.textContent = `#${v.buildNumber || "—"}`;
+
+    if (dateEl) {
+      dateEl.textContent = v.buildTime
+        ? new Date(v.buildTime).toLocaleString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+          })
+        : "—";
+    }
   });
+}
+
+/* ==================================================
+   VIEW VERSION MODAL (ONE-TIME READ)
+================================================== */
+export async function openVersionView() {
+  const modal = document.getElementById("versionViewModal");
+  if (!modal) return;
+
+  await ensureVersionDoc();
+
+  const snap = await getDoc(versionRef);
+  if (!snap.exists()) return;
+
+  const v = snap.data();
+
+  const date = v.buildTime
+    ? new Date(v.buildTime).toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      })
+    : "—";
+
+  document.getElementById("viewCurrentVersion").textContent = `v${v.version}`;
+  document.getElementById("viewBuildNumber").textContent = `#${v.buildNumber}`;
+  document.getElementById("viewBuildDate").textContent = date;
+  document.getElementById("viewNextVersion").textContent = `v${nextVersion(v.version)}`;
+  document.getElementById("viewNextBuild").textContent = `#${v.buildNumber + 1}`;
 
   modal.style.display = "flex";
 }
 
+/* ==================================================
+   CLOSE MODAL
+================================================== */
 export function closeVersionView() {
-  document.getElementById("versionViewModal").style.display = "none";
+  const modal = document.getElementById("versionViewModal");
+  if (modal) modal.style.display = "none";
 }

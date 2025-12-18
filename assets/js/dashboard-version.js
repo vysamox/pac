@@ -4,9 +4,12 @@ import { db, doc, onSnapshot } from "./firebase-config.js";
    Helpers
 -------------------------------------------- */
 function timeAgo(ts) {
-  const diff = Date.now() - ts;
-  const sec = Math.floor(diff / 1000);
+  if (!ts) return "";
 
+  const diff = Date.now() - ts;
+  if (diff < 0) return "just now";
+
+  const sec = Math.floor(diff / 1000);
   if (sec < 60) return `${sec}s ago`;
 
   const mins = Math.floor(sec / 60);
@@ -19,9 +22,8 @@ function timeAgo(ts) {
   return `${days} day${days > 1 ? "s" : ""} ago`;
 }
 
-
 function envBadge(env) {
-  switch (env) {
+  switch ((env || "").toUpperCase()) {
     case "DEV": return "🟡 DEV";
     case "TEST": return "🟠 TEST";
     default: return "🟢 PROD";
@@ -36,8 +38,6 @@ export function loadDashboardVersion() {
   if (!el) return;
 
   const ref = doc(db, "system", "version");
-
-  // Fallback if offline
   el.textContent = "Dashboard loading version…";
 
   onSnapshot(ref, snap => {
@@ -46,11 +46,22 @@ export function loadDashboardVersion() {
       return;
     }
 
-    const v = snap.data();
+    const v = snap.data() || {};
 
-    const buildDate = v.buildTime
-      ? new Date(v.buildTime)
-      : null;
+    const version = v.version || "0.0.0";
+    const buildNumber = Number.isFinite(v.buildNumber)
+      ? v.buildNumber
+      : "—";
+
+    // ✅ FIX: support Firestore Timestamp + number
+    let buildTime = null;
+    if (typeof v.buildTime === "number") {
+      buildTime = v.buildTime;
+    } else if (v.buildTime?.toMillis) {
+      buildTime = v.buildTime.toMillis();
+    }
+
+    const buildDate = buildTime ? new Date(buildTime) : null;
 
     const formattedDate = buildDate
       ? buildDate.toLocaleString("en-GB", {
@@ -63,21 +74,18 @@ export function loadDashboardVersion() {
         })
       : "—";
 
-    const relative = buildDate
-      ? timeAgo(v.buildTime)
-      : "";
-
-    const env = envBadge(v.env || "PROD");
+    const relative = buildTime ? timeAgo(buildTime) : "";
+    const env = envBadge(v.env);
 
     el.textContent =
-      `Dashboard v${v.version} ` +
-      `• Build #${v.buildNumber} ` +
-      `• Updated ${formattedDate} (${relative}) ` +
-      `• ${env}`;
+      `Dashboard v${version} ` +
+      `• Build #${buildNumber} ` +
+      `• Updated ${formattedDate}` +
+      (relative ? ` (${relative})` : "") +
+      ` • ${env}`;
 
-    // Tooltip with raw timestamp
-    if (buildDate) {
-      el.title = `Build Time: ${buildDate.toISOString()}`;
-    }
+    el.title = buildDate
+      ? `Build Time: ${buildDate.toISOString()}`
+      : "";
   });
 }

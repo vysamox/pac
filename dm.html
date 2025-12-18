@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Database Monitor — PAC Management</title>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!-- ⭐ Favicon -->
+<link rel="icon" type="image/png" href="assets/fav.png">
+<link rel="apple-touch-icon" href="assets/fav.png">
 
 <style>
 /* RESET */
@@ -1149,19 +1150,12 @@ tbody tr:hover::after {
 
   <!-- VIEW DETAILS -->
   <button
-    class="card-icon-btn"
-    style="right:46px"
-    title="View Version Details"
-    onclick="openVersionView()">
-    <i class="fa-solid fa-eye"></i>
+    class="card-icon-btn" style="right:46px" title="View Version Details" onclick="openVersionView()"> <i class="fa-solid fa-eye"></i>
   </button>
 
   <!-- UPDATE VERSION -->
   <button
-    class="card-icon-btn"
-    title="Update to Next Version"
-    onclick="autoUpdateVersion()">
-    <i class="fa-solid fa-rocket"></i>
+    class="card-icon-btn" title="Update to Next Version" onclick="autoUpdateVersion()"><i class="fa-solid fa-rocket"></i>
   </button>
 
 </div>
@@ -1208,8 +1202,6 @@ tbody tr:hover::after {
 <h2 id="pacAlertTitle" style="text-align:center; margin-bottom:20px;">
   PAC Entries Amount Alert (Loading…)
 </h2>
-
-
 <table>
 <thead>
   <tr>
@@ -1227,30 +1219,23 @@ tbody tr:hover::after {
 </thead>
 <tbody id="pacAmountTable"></tbody>
 </table>
-
 </div>
 
 <div id="pacAmountModal" class="pac-amount-modal" aria-hidden="true">
   <div class="pac-amount-box" role="dialog" aria-labelledby="pacAmountTitle">
     <h3 id="pacAmountTitle" class="pac-amount-title">Update PAC Amount</h3>
-
     <input id="newPacAmountInput" type="number" class="pac-amount-input" />
-
     <button id="savePacAmountBtn" class="pac-amount-save">Save</button>
     <button id="closePacAmountBtn" class="pac-amount-cancel">Cancel</button>
   </div>
 </div>
 
-
 <div id="uclModal" class="ucl-modal">
-  <div class="ucl-modal-box">
-    
+  <div class="ucl-modal-box">    
     <h3>UCL Owners List</h3>
-
     <button class="ucl-close-btn" id="closeUclModal">
       <i class="fa-solid fa-xmark"></i>
     </button>
-
     <div class="ucl-table-container">
       <table>
      <thead>
@@ -1267,14 +1252,12 @@ tbody tr:hover::after {
 
   </tr>
 </thead>
-
-        <tbody id="uclTableBody"></tbody>
+    <tbody id="uclTableBody"></tbody>
       </table>
     </div>
 
   </div>
 </div>
-
 
 <div id="uclEditModal" class="ucl-modal">
   <div class="ucl-modal-box" style="max-width:500px;">
@@ -1359,8 +1342,6 @@ tbody tr:hover::after {
   </label>
 
 </div>
-
-
     <button class="ucl-edit-btn" style="width:100%" onclick="savePacNav()">
       Save Navigation
     </button>
@@ -1399,7 +1380,6 @@ tbody tr:hover::after {
         </tbody>
       </table>
     </div>
-
   </div>
 </div>
 
@@ -1409,9 +1389,7 @@ tbody tr:hover::after {
 
     <h3>Edit PAC Navigation</h3>
 
-    <button class="ucl-close-btn" onclick="closeEditPacNav()">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
+    <button class="ucl-close-btn" onclick="closeEditPacNav()"><i class="fa-solid fa-xmark"></i></button>
 
     <label>Title</label>
     <input id="editNavTitle" class="ucl-input">
@@ -1422,7 +1400,7 @@ tbody tr:hover::after {
     <label>Icon Class</label>
     <input id="editNavIcon" class="ucl-input">
 
-    <label>Order</label>
+    <label>Order</label> 
     <input id="editNavOrder" type="number" class="ucl-input">
 <label>Roles</label>
 
@@ -1442,7 +1420,6 @@ tbody tr:hover::after {
     <input type="checkbox" class="nav-role-edit" value="public">
     <span>Public</span>
   </label>
-
 </div>
 
     <label>Status</label>
@@ -1466,46 +1443,47 @@ tbody tr:hover::after {
 
     <h3>Version Details</h3>
 
+    <!-- CLOSE -->
     <button class="ucl-close-btn" onclick="closeVersionView()">
       <i class="fa-solid fa-xmark"></i>
     </button>
 
+    <!-- CURRENT VERSION -->
     <div class="status-item">
-      Current Version:
-      <b id="viewCurrentVersion">—</b>
+      <span>Current Version</span><br>
+      <b id="viewCurrentVersion">v—</b>
     </div>
 
     <div class="status-item">
-      Build Number:
-      <b id="viewBuildNumber">—</b>
+      <span>Build Number</span><br>
+      <b id="viewBuildNumber">#—</b>
     </div>
 
     <div class="status-item">
-      Last Updated:
+      <span>Last Updated</span><br>
       <b id="viewBuildDate">—</b>
     </div>
 
-    <hr style="margin:12px 0; opacity:0.3;">
+    <hr style="margin:14px 0; opacity:0.3;">
 
+    <!-- NEXT VERSION -->
     <div class="status-item">
-      Next Version:
-      <b id="viewNextVersion">—</b>
+      <span>Next Version</span><br>
+      <b id="viewNextVersion">v—</b>
     </div>
 
     <div class="status-item">
-      Next Build:
-      <b id="viewNextBuild">—</b>
+      <span>Next Build</span><br>
+      <b id="viewNextBuild">#—</b>
     </div>
 
   </div>
 </div>
 
-
 <footer class="dashboard-footer">
   <div class="dashboard-version"></div>
   <div class="footer-copy">&copy; 2025 PAC Management System</div>
 </footer>
-
 
 <script type="module">
 
@@ -1543,8 +1521,6 @@ window.closeVersionView = closeVersionView;
 loadDashboardVersion();
 
 bindVersionCard();
-
-
 
 /* ============================================================
    LOAD NAV LINKS
@@ -1588,8 +1564,6 @@ function loadNav(userRole = "admin") {
 // 🔐 TEMP: change role later when auth added
 loadNav("admin");
 
-
-
 /* ============================================================
    GLOBAL PAC STORAGE FOR DUPLICATE FIX SYSTEM
 ============================================================ */
@@ -1599,8 +1573,6 @@ let allPACRecordsGlobal = [];
 let uclRequestsData = [];
 let currentPacNavEditId = null;
 let globalUsedDeleteIds = new Set(); // ✅ ADD THIS
-
-
 
 /* ============================================================
    COUNT + BUILD DUPLICATE DELETE ID TABLE
@@ -1623,11 +1595,9 @@ snap.forEach(docItem => {
   deleteIdMap[del] = (deleteIdMap[del] || 0) + 1;
 });
 
-
   // store globally
   deleteIdMapGlobal = deleteIdMap;
   allPACRecordsGlobal = allPAC;
-
 
   // Display count
   document.getElementById("deletePacCount").textContent = allPAC.length;
@@ -1652,7 +1622,7 @@ if (duplicateCount === 0) {
 
     if (deleteIdMap[delId] <= 1) return; // skip normal ones
 
-   // Collect all rows for this Delete ID
+// Collect all rows for this Delete ID
 const rowsForThisId = allPAC.filter(r => r.deleteViewId === delId);
 
 // Extract unique UCLs
@@ -1692,7 +1662,6 @@ table.innerHTML += `
 </tr>
 `;
 
-
 window.updateAllDeleteIds = async function (oldId) {
 
   if (!confirm(`Update ALL records for ${oldId}?`)) return;
@@ -1727,8 +1696,6 @@ window.updateAllDeleteIds = async function (oldId) {
   alert(`Updated ${count} records safely.`);
   setTimeout(() => location.reload(), 300);
 };
-
-
 
 let usedIds = new Set(allPAC.map(r => r.deleteViewId));
 
@@ -1794,7 +1761,6 @@ function formatDeleted(r) {
   return "—";
 }
 
-
 /* ============================================================
    SAFE UNIQUE DELETE ID GENERATOR
 ============================================================ */
@@ -1810,9 +1776,6 @@ function generateNextId() {
     next++;
   }
 }
-
-
-
 
 /* ============================================================
    INLINE UPDATE FUNCTION
@@ -2204,14 +2167,20 @@ function renderUclRow(docId, d, isActive) {
           isActive
           ? `
             <button class="ucl-edit-btn"
-              onclick="openUclEditor('${docId}')">Edit</button>
+  onclick="openUclEditor('${docId}')">
+  <i class="fa-solid fa-pen-to-square"></i>
+</button>
 
             <button class="ucl-delete-btn"
-              onclick="toggleUclStatus('${docId}', true)">Deactivate</button>
+  onclick="toggleUclStatus('${docId}', true)">
+  <i class="fa-solid fa-user-slash"></i>
+</button>
           `
           : `
             <button class="ucl-accept-btn"
-              onclick="toggleUclStatus('${docId}', false)">Activate</button>
+  onclick="toggleUclStatus('${docId}', false)">
+  <i class="fa-solid fa-user-check"></i>
+</button>
           `
         }
       </td>
@@ -2622,83 +2591,114 @@ onSnapshot(
 
     snap.forEach(docItem => {
       const d = docItem.data();
+      const id = docItem.id;
 
-      // ✅ default active = true if missing
+      // default active = true
       const isActive = d.active !== false;
 
-     body.innerHTML += `
-  <tr>
-    <td>${d.order ?? "-"}</td>
-    <td>${d.title || "-"}</td>
-    <td>${d.url || "-"}</td>
-    <td><i class="${d.icon || ""}"></i></td>
-    <td>${(d.roles || []).join(", ")}</td>
+      body.innerHTML += `
+        <tr style="${isActive ? "" : "opacity:0.65"}">
+          <td>${d.order ?? "-"}</td>
+          <td>${d.title || "-"}</td>
+          <td>${d.url || "-"}</td>
+          <td><i class="${d.icon || "fa-solid fa-circle"}"></i></td>
+          <td>${(d.roles || []).join(", ") || "-"}</td>
 
-    <td>
-      <span
-        style="
-          font-weight:600;
-          color:${isActive ? "#00ffcc" : "#ff7777"};
-        ">
-        ${isActive ? "Active" : "Inactive"}
-      </span>
-    </td>
+          <!-- STATUS -->
+          <td>
+            <span style="
+              padding:4px 10px;
+              border-radius:12px;
+              font-size:12px;
+              font-weight:700;
+              color:#000;
+              background:${isActive ? "#00ffcc" : "#ff7777"};
+            ">
+              ${isActive ? "ACTIVE" : "INACTIVE"}
+            </span>
+          </td>
 
-    <td style="white-space:nowrap;">
-      <!-- EDIT -->
-      <button
-        class="ucl-edit-btn"
-        onclick="openEditPacNav('${docItem.id}')">
-        Edit
-      </button>
+          <!-- ACTIONS -->
+          <td style="white-space:nowrap; text-align:center;">
 
-      <!-- TOGGLE -->
-      <button
-        class="ucl-accept-btn"
-        onclick="togglePacNav('${docItem.id}', ${isActive})">
-        ${isActive ? "Deactivate" : "Activate"}
-      </button>
+            <!-- EDIT -->
+            <button
+              class="ucl-edit-btn"
+              title="Edit"
+              onclick="openEditPacNav('${id}')">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
 
-      <!-- DELETE -->
-      <button
-        class="ucl-delete-btn"
-        onclick="deletePacNav('${docItem.id}')">
-        Delete
-      </button>
-    </td>
-  </tr>
-`;
+            <!-- TOGGLE -->
+            <button
+              class="ucl-accept-btn"
+              title="${isActive ? "Deactivate" : "Activate"}"
+              onclick="togglePacNav('${id}', ${isActive}, this)">
+              <i class="fa-solid ${isActive ? "fa-eye-slash" : "fa-eye"}"></i>
+            </button>
 
+            <!-- SOFT DELETE -->
+            <button
+              class="ucl-delete-btn"
+              title="Archive"
+              onclick="archivePacNav('${id}', this)">
+              <i class="fa-solid fa-box-archive"></i>
+            </button>
+
+          </td>
+        </tr>
+      `;
     });
   }
 );
 
-window.togglePacNav = async function (id, currentStatus) {
+
+window.togglePacNav = async function (id, currentStatus, btn) {
+  if (!confirm(`${currentStatus ? "Deactivate" : "Activate"} this PAC Navigation?`)) return;
+
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
   try {
     await updateDoc(doc(db, "pacnav", id), {
       active: !currentStatus,
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
+      updatedBy: "admin" // 🔐 later replace with auth uid
     });
 
-    alert(`PAC Navigation ${currentStatus ? "deactivated" : "activated"}`);
+    alert(`PAC Navigation ${currentStatus ? "deactivated" : "activated"} successfully`);
   } catch (e) {
     console.error(e);
     alert("Failed to update status");
+  } finally {
+    btn.disabled = false;
   }
 };
 
-window.deletePacNav = async function (id) {
-  const ok = confirm("Delete this PAC Navigation item permanently?");
+window.archivePacNav = async function (id, btn) {
+  const ok = confirm("Archive this PAC Navigation?\n(It can be restored later)");
   if (!ok) return;
 
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
   try {
-    await deleteDoc(doc(db, "pacnav", id));
-    alert("PAC Navigation deleted");
+    await updateDoc(doc(db, "pacnav", id), {
+      active: false,
+      archived: true,
+      archivedAt: Date.now(),
+      archivedBy: "admin"
+    });
+
+    alert("PAC Navigation archived successfully");
   } catch (e) {
     console.error(e);
-    alert("Delete failed");
+    alert("Archive failed");
+  } finally {
+    btn.disabled = false;
   }
 };
+
 
 /* ============================
    OPEN EDIT MODAL
