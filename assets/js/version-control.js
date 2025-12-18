@@ -3,7 +3,10 @@ import {
   doc,
   getDoc,
   setDoc,
-  onSnapshot
+  onSnapshot,
+  collection,
+  query,
+  orderBy
 } from "./firebase-config.js";
 
 /* ==================================================
@@ -223,3 +226,60 @@ export function closeVersionView() {
   const modal = document.getElementById("versionViewModal");
   if (modal) modal.style.display = "none";
 }
+
+/* ==================================================
+   OPEN VERSION HISTORY
+================================================== */
+window.openVersionHistory = function () {
+  const modal = document.getElementById("versionHistoryModal");
+  const body = document.getElementById("versionHistoryBody");
+
+  if (!modal || !body) return;
+
+  modal.style.display = "flex";
+  body.innerHTML = "<tr><td colspan='6'>Loading…</td></tr>";
+
+  const q = query(
+    collection(db, "system_version_history"),
+    orderBy("savedAt", "desc")
+  );
+
+  onSnapshot(q, snap => {
+    body.innerHTML = "";
+
+    if (snap.empty) {
+      body.innerHTML = "<tr><td colspan='6'>No history found</td></tr>";
+      return;
+    }
+
+    snap.forEach(doc => {
+      const d = doc.data();
+
+      const date = d.savedAt
+        ? new Date(d.savedAt).toLocaleString("en-GB")
+        : "—";
+
+      body.innerHTML += `
+        <tr>
+          <td>${date}</td>
+          <td>v${d.version}</td>
+          <td>#${d.buildNumber}</td>
+          <td>${d.env || "—"}</td>
+          <td>${d.meta?.ip || d.ip || "—"}</td>
+          <td>
+            <span style="color:#00eaff; font-weight:600;">
+              ${d.action || "UPDATE"}
+            </span>
+          </td>
+        </tr>
+      `;
+    });
+  });
+};
+
+/* ==================================================
+   CLOSE VERSION HISTORY
+================================================== */
+window.closeVersionHistory = function () {
+  document.getElementById("versionHistoryModal").style.display = "none";
+};
