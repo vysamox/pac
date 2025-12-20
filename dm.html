@@ -1056,6 +1056,163 @@ tbody tr:hover::after {
   }
 }
 
+/* ===============================
+   LABEL
+================================ */
+.lbl {
+  display: inline-block;
+  min-width: 150px;
+  font-weight: 700;
+  color: #00eaff;
+  letter-spacing: 0.3px;
+}
+
+/* ===============================
+   VALUE
+================================ */
+.val {
+  color: #e8faff;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Long technical values */
+.val.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  word-break: break-all;
+  opacity: 0.9;
+}
+
+/* Highlighted values (Delete ID, Amount) */
+.highlight {
+  font-weight: 800;
+  color: #00eaff;
+  text-shadow: 0 0 6px rgba(0, 234, 255, 0.45);
+}
+
+/* ===============================
+   GROUP WRAPPER
+================================ */
+.group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+/* ===============================
+   SEPARATOR
+================================ */
+.sep {
+  margin: 12px 0;
+  border: none;
+  border-top: 1px dashed rgba(255,255,255,0.18);
+}
+
+/* ===============================
+   STATUS BADGE
+================================ */
+.status-ok {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00ffcc, #00d6b2);
+  color: #002b2b;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  box-shadow: 0 0 10px rgba(0,255,204,0.45);
+}
+
+/* ===============================
+   MOBILE OPTIMIZATION
+================================ */
+@media (max-width: 600px) {
+  .group {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .lbl {
+    min-width: unset;
+    font-size: 13px;
+  }
+
+  .val {
+    font-size: 14px;
+  }
+}
+/* ===============================
+   MOBILE FIX: LAST DELETE MODAL
+================================ */
+@media (max-width: 768px) {
+
+  #lastDeleteModal .ucl-modal-box {
+    max-height: 90vh;          /* fit screen */
+    overflow-y: auto;          /* ENABLE SCROLL */
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
+  }
+}
+
+
+/* ===============================
+   VIEW / INSPECT BUTTON
+================================ */
+.ucl-view-btn {
+  background: rgba(0, 234, 255, 0.15);
+  border: 1px solid rgba(0, 234, 255, 0.45);
+  padding: 6px 12px;
+  border-radius: 10px;
+
+  color: #00eaff;
+  font-size: 13px;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    inset 0 0 8px rgba(0, 234, 255, 0.25),
+    0 0 10px rgba(0, 234, 255, 0.25);
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* Hover */
+.ucl-view-btn:hover {
+  background: rgba(0, 234, 255, 0.25);
+  box-shadow:
+    0 0 16px rgba(0, 234, 255, 0.6),
+    inset 0 0 10px rgba(0, 234, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Active (mobile tap) */
+.ucl-view-btn:active {
+  transform: scale(0.95);
+  box-shadow:
+    0 0 6px rgba(0, 234, 255, 0.4),
+    inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Disabled */
+.ucl-view-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Icon size */
+.ucl-view-btn i {
+  font-size: 14px;
+}
 
 </style>
 </head>
@@ -1168,9 +1325,22 @@ tbody tr:hover::after {
 <div class="status-box">
   <h3>System Activity Snapshot</h3>
   <div class="status-row">
-    <div class="status-item">
-      Last Deleted PAC: <b id="lastDeletedPac">Loading...</b>
-    </div>
+<div class="status-item" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+  <span>
+    Last Deleted PAC:
+    <b id="lastDeletedPac">Loading...</b>
+  </span>
+
+  <button
+    id="viewLastDeletedBtn"
+    class="ucl-view-btn"
+    title="View Last Deleted PAC"
+    disabled
+  >
+    <i class="fa-solid fa-eye"></i>
+  </button>
+</div>
+
 
     <div class="status-item">
       System Uptime: <b id="systemUptime">0s</b>
@@ -1454,7 +1624,7 @@ tbody tr:hover::after {
 
     <!-- CURRENT VERSION -->
     <div class="status-item">
-      <span>Current Version</span><br>
+<span>Current Version</span><br>
       <b id="viewCurrentVersion">v—</b>
     </div>
 
@@ -1515,6 +1685,20 @@ tbody tr:hover::after {
   </div>
 </div>
 
+<div id="lastDeleteModal" class="ucl-modal">
+  <div class="ucl-modal-box">
+    <h3>Last Deleted PAC Details</h3>
+
+    <button class="ucl-close-btn" onclick="closeLastDeleteModal()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div id="lastDeleteDetails" class="status-item"
+         style="margin-top:15px; line-height:1.6;">
+      Loading…
+    </div>
+  </div>
+</div>
 
 <footer class="dashboard-footer">
   <div class="dashboard-version"></div>
@@ -1526,29 +1710,13 @@ tbody tr:hover::after {
 /* ============================================================
    IMPORT SHARED FIREBASE API
 ============================================================ */
-import {
-  db,
-  collection,
-  doc,
-  setDoc,
-  getDocs,
-  updateDoc,
-  onSnapshot,
-  deleteDoc,
-  query,
-  orderBy,
-  limit,
-    addDoc,   
-  getDoc
-} from "./assets/js/firebase-config.js";
+import { db, collection, doc, setDoc, getDocs, updateDoc, onSnapshot, deleteDoc, query, orderBy, limit, addDoc, getDoc } from "./assets/js/firebase-config.js";
 import "./assets/js/system-uptime.js";
 import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
-import {
-  autoUpdateVersion,
-  bindVersionCard,
-  openVersionView,
-  closeVersionView
-} from "./assets/js/version-control.js";
+import { autoUpdateVersion, bindVersionCard, openVersionView, closeVersionView } from "./assets/js/version-control.js";
+import "./assets/js/duplicate-delete-registry.js";
+import { initLastDeletedPac } from "./assets/js/last-deleted-pac.js";
+
 
 window.autoUpdateVersion = autoUpdateVersion;
 window.openVersionView = openVersionView;
@@ -1603,245 +1771,8 @@ loadNav("admin");
 /* ============================================================
    GLOBAL PAC STORAGE FOR DUPLICATE FIX SYSTEM
 ============================================================ */
-let allPAC = [];
-let deleteIdMapGlobal = {};
-let allPACRecordsGlobal = [];
 let uclRequestsData = [];
 let currentPacNavEditId = null;
-let globalUsedDeleteIds = new Set(); // ✅ ADD THIS
-
-/* ============================================================
-   COUNT + BUILD DUPLICATE DELETE ID TABLE
-============================================================ */
-onSnapshot(collection(db, "delete_pac"), snap => {
-
-allPAC = [];
-let deleteIdMap = {};
-globalUsedDeleteIds.clear(); // ✅ RESET
-
-snap.forEach(docItem => {
-  let d = { id: docItem.id, ...docItem.data() };
-  allPAC.push(d);
-
-  if (d.deleteViewId) {
-    globalUsedDeleteIds.add(d.deleteViewId); // ✅ STORE GLOBALLY
-  }
-
-  let del = String(d.deleteViewId || "").trim();
-  deleteIdMap[del] = (deleteIdMap[del] || 0) + 1;
-});
-
-  // store globally
-  deleteIdMapGlobal = deleteIdMap;
-  allPACRecordsGlobal = allPAC;
-
-  // Display count
-  document.getElementById("deletePacCount").textContent = allPAC.length;
-
-  const duplicateCount = Object.values(deleteIdMap).filter(v => v > 1).length;
-  document.getElementById("duplicateDeleteIdCount").textContent = duplicateCount;
-
-  const container = document.querySelector(".table-container");
-
-if (duplicateCount === 0) {
-    container.style.display = "none";   // hide table
-} else {
-    container.style.display = "block";  // show table
-}
-
-
-  // Build table
-  const table = document.getElementById("duplicateTable");
-  table.innerHTML = "";
-
-  Object.keys(deleteIdMap).forEach(delId => {
-
-    if (deleteIdMap[delId] <= 1) return; // skip normal ones
-
-// Collect all rows for this Delete ID
-const rowsForThisId = allPAC.filter(r => r.deleteViewId === delId);
-
-// Extract unique UCLs
-const uclSet = new Set(
-  rowsForThisId.map(r => r.uclNo).filter(Boolean)
-);
-
-// Decide display label
-const uclLabel =
-  uclSet.size === 1 ? [...uclSet][0] : "Multiple";
-
-// Header row
-table.innerHTML += `
-<tr style="background:rgba(0,0,0,0.35)">
-  <td colspan="9" style="padding:10px; color:#00eaff; font-weight:600;">
-    Duplicate Delete ID: ${delId}
-    (${deleteIdMap[delId]} records)
-    <span style="margin-left:12px; color:#7fffd4;">
-      | UCL: ${uclLabel}
-    </span>
-  </td>
-
-  <td colspan="2" style="text-align:right; padding-right:15px;">
-    <button onclick="updateAllDeleteIds('${delId}')"
-      style="
-        padding:7px 14px;
-        background:#00ffbf;
-        border:none;
-        border-radius:6px;
-        font-weight:600;
-        color:black;
-        cursor:pointer;
-      ">
-      Update All
-    </button>
-  </td>
-</tr>
-`;
-
-window.updateAllDeleteIds = async function (oldId) {
-
-  if (!confirm(`Update ALL records for ${oldId}?`)) return;
-
-  const rows = allPACRecordsGlobal.filter(r => r.deleteViewId === oldId);
-
-  let keepOriginal = true;
-  let count = 0;
-
-  for (let rec of rows) {
-    let input = document.getElementById(`newDelId_${rec.pacNo}`);
-    if (!input) continue;
-
-    let newId;
-
-    if (keepOriginal) {
-      newId = rec.deleteViewId; // keep first
-      keepOriginal = false;
-    } else {
-      newId = generateNextId(); // ✅ GLOBAL SAFE
-    }
-
-    await updateDoc(doc(db, "delete_pac", rec.id), {
-      deleteViewId: newId
-    });
-
-    input.value = newId;
-    input.style.background = "#b3ffb3";
-    count++;
-  }
-
-  alert(`Updated ${count} records safely.`);
-  setTimeout(() => location.reload(), 300);
-};
-
-let usedIds = new Set(allPAC.map(r => r.deleteViewId));
-
-
-    let keepOriginal = true;
-
-    allPAC.forEach(r => {
-      if (r.deleteViewId !== delId) return;
-
-      let newId;
-
-      if (keepOriginal) {
-        newId = r.deleteViewId;
-        keepOriginal = false;
-      } else {
-        newId = generateNextId(usedIds);
-        usedIds.add(newId);
-      }
-
-      table.innerHTML += `
-        <tr>
-          <td>${r.deleteViewId}</td>
-          <td>${r.cscRef}</td>
-          <td>${r.pacNo}</td>
-          <td>${r.amount}</td>
-          <td>${r.entryDate || "—"}</td>
-          <td>${r.entryTime || r.deleteTime || "—"}</td>
-          <td>${formatDeleted(r)}</td>
-          <td>${r.deleteIP || "-"}</td>
-
-          <td>
-            <input id="newDelId_${r.pacNo}" value="${newId}"
-              readonly
-              style="padding:6px; width:130px; font-weight:600; background:#d4ffcf; border:none; border-radius:6px">
-          </td>
-
-          <td>
-            <button onclick="updateInlineDeleteId('${r.pacNo}')"
-              style="padding:7px 14px; background:#00eaff; border:none; border-radius:6px; font-weight:600; cursor:pointer;">
-              Update
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-
-    table.innerHTML += `
-      <tr><td colspan="12" style="border-bottom:1px solid rgba(255,255,255,0.1)"></td></tr>
-    `;
-  });
-
-});
-
-/* ============================================================
-   Delete Date 
-============================================================ */
-function formatDeleted(r) {
-  if (r.deletedAtTimestamp) {
-    return new Date(r.deletedAtTimestamp).toLocaleString();
-  }
-  if (r.deleteTime) return r.deleteTime;
-  if (r.deletedValue) return r.deletedValue;
-  return "—";
-}
-
-/* ============================================================
-   SAFE UNIQUE DELETE ID GENERATOR
-============================================================ */
-function generateNextId() {
-  let next = globalUsedDeleteIds.size + 1;
-
-  while (true) {
-    const id = `DEL-${String(next).padStart(5, "0")}`;
-    if (!globalUsedDeleteIds.has(id)) {
-      globalUsedDeleteIds.add(id);
-      return id;
-    }
-    next++;
-  }
-}
-
-/* ============================================================
-   INLINE UPDATE FUNCTION
-============================================================ */
-window.updateInlineDeleteId = async function (pacNo) {
-
-  const input = document.getElementById(`newDelId_${pacNo}`);
-  if (!input) return alert("Input not found");
-
-  const newId = input.value.trim();
-
-  const rec = allPAC.find(r => r.pacNo === pacNo);
-  if (!rec) return alert("Record not found!");
-
-  if (globalUsedDeleteIds.has(newId) && rec.deleteViewId !== newId) {
-    return alert("This Delete ID already exists!");
-  }
-
-  input.style.background = "#fff2b3";
-
-  await updateDoc(doc(db, "delete_pac", rec.id), {
-    deleteViewId: newId
-  });
-
-  globalUsedDeleteIds.add(newId);
-  input.style.background = "#b3ffb3";
-
-  setTimeout(() => location.reload(), 300);
-};
-
 
 
 /* ============================================================
@@ -1860,7 +1791,6 @@ async function updateUclAccountCount() {
 
 setInterval(updateUclAccountCount, 3000);
 
-
 onSnapshot(collection(db, "used_pac"), snap =>
   document.getElementById("usedPacCount").textContent = snap.size
 );
@@ -1868,28 +1798,6 @@ onSnapshot(collection(db, "used_pac"), snap =>
 onSnapshot(collection(db, "pacnav"), snap => {
   document.getElementById("pacNavCount").textContent = snap.size;
 });
-
-
-
-
-/* ============================================================
-   LAST DELETED PAC
-============================================================ */
-const lastDeletedQuery = query(
-  collection(db, "delete_pac"),
-  orderBy("deleteViewId", "desc"),
-  limit(1)
-);
-
-onSnapshot(lastDeletedQuery, snap => {
-  if (snap.empty)
-    return document.getElementById("lastDeletedPac").textContent = "—";
-
-  const d = snap.docs[0].data();
-  document.getElementById("lastDeletedPac").textContent =
-    d.deleteViewId || "—";
-});
-
 
 /* ============================================================
    THREAT ANALYZER (NO READCOUNT)
@@ -2818,6 +2726,10 @@ const roles = Array.from(
   closeEditPacNav();
 };
 
+
+document.addEventListener("DOMContentLoaded", () => {
+  initLastDeletedPac();
+});
 </script>
 </body>
 </html>
