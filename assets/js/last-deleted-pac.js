@@ -2,14 +2,7 @@
    LAST DELETED PAC — MODULE (FIXED)
 ============================================================ */
 
-import {
-  db,
-  collection,
-  query,
-  orderBy,
-  limit,
-  onSnapshot
-} from "./firebase-config.js";
+import { db, collection, query, orderBy, limit, onSnapshot } from "./firebase-config.js";
 
 /* ============================================================
    STATE
@@ -171,7 +164,7 @@ box.innerHTML = `
       <span class="lbl">Upload Type:</span>
       <span class="val">${r.uploadType || "—"}</span>
     </div>
-    
+
     <hr class="sep">
 
     <div class="group">

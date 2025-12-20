@@ -1214,6 +1214,164 @@ tbody tr:hover::after {
   font-size: 14px;
 }
 
+/* ===============================
+   VERSION CARD – MOBILE FIX
+================================ */
+@media (max-width: 600px) {
+
+  .version-card h2 {
+    font-size: 22px;          /* smaller, cleaner */
+    margin-bottom: 6px;
+  }
+
+  .version-card .card-label {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .version-card .version-icons {
+    top: 10px;
+    right: 10px;
+    gap: 8px;
+  }
+
+  .version-card .version-icons i {
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .version-card .divider {
+    margin: 10px 0;
+  }
+}
+
+/* ===============================
+   VERSION HISTORY ACTION BUTTONS
+================================ */
+
+.vh-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+/* Base button */
+.vh-btn {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,0.08);
+
+  color: #e6faff;
+  font-size: 14px;
+  cursor: pointer;
+
+  transition: 
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+/* Hover lift */
+.vh-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Disabled */
+.vh-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 👁 VIEW */
+.vh-btn.view {
+  border-color: rgba(0,234,255,0.45);
+  color: #00eaff;
+}
+
+.vh-btn.view:hover {
+  background: rgba(0,234,255,0.2);
+  box-shadow: 0 0 12px rgba(0,234,255,0.6);
+}
+
+/* 🔄 RESTORE */
+.vh-btn.restore {
+  border-color: rgba(255,193,7,0.45);
+  color: #ffcc33;
+}
+
+.vh-btn.restore:hover {
+  background: rgba(255,193,7,0.18);
+  box-shadow: 0 0 12px rgba(255,193,7,0.5);
+}
+
+/* 🗑 DELETE */
+.vh-btn.delete {
+  border-color: rgba(255,80,80,0.55);
+  color: #ff6666;
+}
+
+.vh-btn.delete:hover {
+  background: rgba(255,80,80,0.2);
+  box-shadow: 0 0 14px rgba(255,80,80,0.6);
+}
+
+/* ===============================
+   STATUS BADGES (OK / DUP / LIVE)
+================================ */
+
+.vh-badge {
+  margin-left: 8px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.vh-badge.ok {
+  background: linear-gradient(135deg, #00ffcc, #00d6b2);
+  color: #003333;
+  box-shadow: 0 0 8px rgba(0,255,204,0.5);
+}
+
+.vh-badge.dup {
+  background: linear-gradient(135deg, #ffb347, #ff8c00);
+  color: #2b1a00;
+  box-shadow: 0 0 8px rgba(255,140,0,0.5);
+}
+
+.vh-badge.live {
+  background: linear-gradient(135deg, #00eaff, #008cff);
+  color: #001b33;
+  box-shadow: 0 0 10px rgba(0,234,255,0.7);
+}
+
+/* ===============================
+   MOBILE TWEAK
+================================ */
+@media (max-width: 600px) {
+  .vh-actions {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .vh-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
 </style>
 </head>
 
@@ -1476,7 +1634,7 @@ tbody tr:hover::after {
 </div>
 
 <div id="pacNavModal" class="ucl-modal">
-  <div class="ucl-modal-box" style="max-width:420px;">
+  <div class="ucl-modal-box">
     
     <h3>Add PAC Navigation</h3>
 
@@ -1656,7 +1814,7 @@ tbody tr:hover::after {
 
 <!-- VERSION HISTORY MODAL -->
 <div id="versionHistoryModal" class="ucl-modal">
-  <div class="ucl-modal-box" style="max-width:900px;">
+  <div class="ucl-modal-box">
 
     <h3>Version History</h3>
 
@@ -1713,9 +1871,20 @@ tbody tr:hover::after {
 import { db, collection, doc, setDoc, getDocs, updateDoc, onSnapshot, deleteDoc, query, orderBy, limit, addDoc, getDoc } from "./assets/js/firebase-config.js";
 import "./assets/js/system-uptime.js";
 import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
-import { autoUpdateVersion, bindVersionCard, openVersionView, closeVersionView } from "./assets/js/version-control.js";
 import "./assets/js/duplicate-delete-registry.js";
 import { initLastDeletedPac } from "./assets/js/last-deleted-pac.js";
+import {
+  autoUpdateVersion,
+  bindVersionCard,
+  openVersionView,
+  closeVersionView,
+  openVersionHistory,
+  closeVersionHistory
+} from "./assets/js/version-control.js";
+
+window.openVersionHistory = openVersionHistory;
+window.closeVersionHistory = closeVersionHistory;
+
 
 
 window.autoUpdateVersion = autoUpdateVersion;
