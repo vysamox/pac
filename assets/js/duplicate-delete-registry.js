@@ -205,18 +205,24 @@ onSnapshot(collection(db, "delete_pac"), snap => {
   duplicates.forEach(([delId, count]) => {
 
     table.innerHTML += `
-      <tr style="background:rgba(0,0,0,0.35)">
-        <td colspan="8" style="color:#00eaff;font-weight:700">
-          Duplicate Delete ID: ${delId} (${count})
-        </td>
-        <td colspan="2" style="text-align:right">
-          <button onclick="bulkFix('${delId}')"
-            style="padding:6px 14px;background:#00ffcc;
-            border:none;border-radius:6px;font-weight:700">
-            Fix All
-          </button>
-        </td>
-      </tr>
+     <tr class="dup-header-row">
+  <td data-label="Duplicate ID" colspan="10">
+    <div class="dup-header">
+      <div class="dup-title">
+        Duplicate Delete ID:
+        <span class="dup-id">${delId}</span>
+        <span class="dup-count">(${count})</span>
+      </div>
+
+      <button
+        class="dup-fix-btn"
+        onclick="bulkFix('${delId}')">
+        Fix All
+      </button>
+    </div>
+  </td>
+</tr>
+
     `;
 
     let keep = true;
@@ -238,14 +244,14 @@ onSnapshot(collection(db, "delete_pac"), snap => {
 
         table.innerHTML += `
           <tr>
-            <td>${r.deleteViewId}</td>
-            <td>${r.cscRef || "-"}</td>
-            <td>${r.pacNo}</td>
-            <td>${r.amount}</td>
-            <td>${r.entryDate || "-"}</td>
-            <td>${r.entryTime || "-"}</td>
-            <td>${fmt(r)}</td>
-            <td>${r.deleteIP || "-"}</td>
+            <td data-label="Delete ID">${r.deleteViewId}</td>
+            <td data-label="CSC Ref">${r.cscRef || "-"}</td>
+            <td data-label="PAC No">${r.pacNo}</td>
+            <td data-label="Amount">${r.amount}</td>
+            <td data-label="Date">${r.entryDate || "-"}</td>
+            <td data-label="Time">${r.entryTime || "-"}</td>
+            <td data-label="Deleted">${fmt(r)}</td>
+            <td data-label="IP">${r.deleteIP || "-"}</td>
             <td>
               <input id="fix_${r.pacNo}" value="${newId}"
                 readonly

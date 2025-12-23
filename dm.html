@@ -10,6 +10,12 @@
 <link rel="icon" type="image/png" href="assets/fav.png">
 <link rel="apple-touch-icon" href="assets/fav.png">
 
+<!-- CSS -->
+<link rel="stylesheet" href="./assets/css/card-border-style.css">
+<link rel="stylesheet" href="./assets/css/duplicate-delete-registry.css">
+<link rel="stylesheet" href="./assets/css/ucl-owner-list-button.css">
+<link rel="stylesheet" href="./assets/css/pacnav-table-body.css">
+
 <style>
 /* RESET */
 * {
@@ -1372,6 +1378,8 @@ tbody tr:hover::after {
   }
 }
 
+
+
 </style>
 </head>
 
@@ -1390,45 +1398,45 @@ tbody tr:hover::after {
 <!-- ==== ADVANCED GRID CARDS ==== -->
 <div class="dashboard-grid">
 
-  <div class="card" style="border:1px solid #7ee8c9;">
+  <div class="card info">            <!-- Active PAC -->
     <h2 id="livePacCount">0</h2> <div class="card-label">Active PAC Entries</div>
   </div>
 
-    <div class="card" style="border:2px solid #8fd3ff;">
+    <div class="card primary">         <!-- Used PAC -->
     <h2 id="usedPacCount">0</h2> <div class="card-label">Used PAC Count</div>
   </div>
 
-    <div class="card" style="border:1px solid #ffb199;">
+    <div class="card warning">         <!-- Deleted PAC -->
     <h2 id="deletePacCount">0</h2> <div class="card-label">Deleted PAC Records</div>
   </div>
 
-   <div class="card" style="border:1px solid #ffc36a;">
+  <div class="card caution">         <!-- Duplicate IDs -->
     <h2 id="duplicateDeleteIdCount">0</h2> <div class="card-label">Duplicate Delete IDs detected</div>
   </div>
 
- <div class="card" style="position:relative; border:1px solid #bfa8ff;">
+ <div class="card user">            <!-- UCL Accounts -->
     <h2 id="userAccountCount">0</h2> <div class="card-label">Registered UCL Accounts</div>
     <button id="viewUclBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button>
   </div>
 
-  <div class="card" style="position:relative; border:1px solid #ff9ac1;">
+  <div class="card request">         <!-- UCL Requests -->
     <h2 id="uclRequestCount">0</h2><div class="card-label">UCL ID Requests</div>
     <button id="viewUclRequestBtn" class="card-icon-btn"><i class="fa-solid fa-eye"></i></button>
   </div>
 
-<div class="card" style="position:relative; border:1px solid #a7f36b;">
+<div class="card nav">             <!-- PAC Navigation -->
   <h2 id="pacNavCount">0</h2> <div class="card-label">PAC Navigation Items</div>
   <button  class="card-icon-btn" style="right: 46px;" title="View PAC Navigation" onclick="openPacNavList()"><i class="fa-solid fa-eye"></i></button>
   <button  class="card-icon-btn" title="Add PAC Navigation" onclick="openAddPacNav()"> <i class="fa-solid fa-plus"></i></button>
 </div>
 
-<div class="card" style="border:1px solid #ff4444;"><h2 id="threatLevel">0%</h2>
+<div class="card danger">          <!-- Threat Level -->
+  <h2 id="threatLevel">0%</h2>
   <div class="card-label">System Threat Level</div>
   <small id="threatNote" style="opacity:0.8; font-size:13px;"></small>
 </div>
 
-  <div class="card" style="position:relative; border:1px solid #ffd27f;">
-
+  <div class="card finance">         <!-- PAC Amount -->
   <h2 id="uclPacAmount">0</h2> <div class="card-label">UCL PAC Amount (Global)</div>
 
   <!-- Edit Button -->
@@ -1445,11 +1453,9 @@ tbody tr:hover::after {
     <i class="fa-solid fa-pen-to-square"></i>
   </button>
 </div>
-<div class="card" style="position:relative; border:1px solid #60a5fa;">
 
-  <!-- CURRENT VERSION -->
+<div class="card version">         <!-- Version Card -->
   <h2 id="currentVersion">v0.0.0</h2>
-
   <div class="card-label">
     Build <span id="currentBuild">#0</span> •
     <span id="currentDate">—</span>
@@ -1683,6 +1689,7 @@ tbody tr:hover::after {
 
 <!-- PAC NAV LIST MODAL -->
 <div id="pacNavListModal" class="ucl-modal">
+
   <div class="ucl-modal-box" style="max-height:85vh; overflow:hidden;">
 
     <h3>PAC Navigation Manager</h3>
@@ -2249,54 +2256,83 @@ async function loadUclTable() {
     renderUclRow(docItem.id, docItem.data(), false);
   });
 }
-
 function renderUclRow(docId, d, isActive) {
   const body = document.getElementById("uclTableBody");
   const pacCount = pacCountMap[d.uclId] || 0;
 
   body.innerHTML += `
-    <tr style="${isActive ? '' : 'background:rgba(255,80,80,0.12)'}">
-      <td>${d.uclId}</td>
-      <td>${d.name || "-"}</td>
-      <td>${d.pacAmount ?? "-"}</td>
-      <td style="color:#00eaff;font-weight:600">${pacCount}</td>
-      <td>${d.ip || "-"}</td>
-      <td>${d.address || "-"}</td>
-      <td>${d.lastVerifiedAt ? new Date(d.lastVerifiedAt).toLocaleString() : "-"}</td>
+    <tr style="${isActive ? "" : "background:rgba(255,80,80,0.12)"}">
 
-      <!-- ✅ STATUS COLUMN -->
-      <td>
+      <td data-label="UCL ID">${d.uclId}</td>
+
+      <td data-label="Name">${d.name || "-"}</td>
+
+      <td data-label="PAC Amount">${d.pacAmount ?? "-"}</td>
+
+      <td data-label="PAC Count"
+          style="color:#00eaff;font-weight:600">
+        ${pacCount}
+      </td>
+
+      <td data-label="IP">${d.ip || "-"}</td>
+
+      <td data-label="Address">${d.address || "-"}</td>
+
+      <td data-label="Verified At">
+        ${d.lastVerifiedAt
+          ? new Date(d.lastVerifiedAt).toLocaleString()
+          : "-"
+        }
+      </td>
+
+      <!-- STATUS -->
+      <td data-label="Status">
         <span style="
           font-weight:700;
-          color:${isActive ? '#00ffcc' : '#ff6666'};
+          color:${isActive ? "#00ffcc" : "#ff6666"};
         ">
-          ${isActive ? 'ACTIVE' : 'DEACTIVE'}
+          ${isActive ? "ACTIVE" : "DEACTIVE"}
         </span>
       </td>
 
-      <!-- ACTION -->
-      <td>
-        ${
-          isActive
-          ? `
-            <button class="ucl-edit-btn"
-  onclick="openUclEditor('${docId}')">
-  <i class="fa-solid fa-pen-to-square"></i>
-</button>
+      <td data-label="Action">
+  <div class="ucl-action-row">
 
-            <button class="ucl-delete-btn"
-  onclick="toggleUclStatus('${docId}', true)">
-  <i class="fa-solid fa-user-slash"></i>
-</button>
-          `
-          : `
-            <button class="ucl-accept-btn"
-  onclick="toggleUclStatus('${docId}', false)">
-  <i class="fa-solid fa-user-check"></i>
-</button>
-          `
-        }
-      </td>
+    <!-- EDIT (always available) -->
+    <button
+      class="ucl-action-btn edit"
+      title="Edit UCL"
+      onclick="openUclEditor('${docId}')">
+      <i class="fa-solid fa-pen-to-square"></i>
+    </button>
+
+    ${
+      isActive
+        ? `
+          <!-- DEACTIVATE -->
+          <button
+            class="ucl-action-btn danger"
+            title="Deactivate UCL"
+            onclick="toggleUclStatus('${docId}', true)">
+            <i class="fa-solid fa-user-slash"></i>
+          </button>
+        `
+        : `
+          <!-- ACTIVATE -->
+          <button
+            class="ucl-action-btn success"
+            title="Activate UCL"
+            onclick="toggleUclStatus('${docId}', false)">
+            <i class="fa-solid fa-user-check"></i>
+          </button>
+        `
+    }
+
+  </div>
+</td>
+
+
+
     </tr>
   `;
 }
@@ -2710,57 +2746,76 @@ onSnapshot(
       const isActive = d.active !== false;
 
       body.innerHTML += `
-        <tr style="${isActive ? "" : "opacity:0.65"}">
-          <td>${d.order ?? "-"}</td>
-          <td>${d.title || "-"}</td>
-          <td>${d.url || "-"}</td>
-          <td><i class="${d.icon || "fa-solid fa-circle"}"></i></td>
-          <td>${(d.roles || []).join(", ") || "-"}</td>
+  <tr class="pacnav-row ${isActive ? "" : "pacnav-inactive"}">
 
-          <!-- STATUS -->
-          <td>
-            <span style="
-              padding:4px 10px;
-              border-radius:12px;
-              font-size:12px;
-              font-weight:700;
-              color:#000;
-              background:${isActive ? "#00ffcc" : "#ff7777"};
-            ">
-              ${isActive ? "ACTIVE" : "INACTIVE"}
-            </span>
-          </td>
+    <td data-label="Order">${d.order ?? "-"}</td>
 
-          <!-- ACTIONS -->
-          <td style="white-space:nowrap; text-align:center;">
+    <td data-label="Title">${d.title || "-"}</td>
 
-            <!-- EDIT -->
-            <button
-              class="ucl-edit-btn"
-              title="Edit"
-              onclick="openEditPacNav('${id}')">
-              <i class="fa-solid fa-pen-to-square"></i>
-            </button>
+    <td data-label="URL">${d.url || "-"}</td>
 
-            <!-- TOGGLE -->
-            <button
-              class="ucl-accept-btn"
-              title="${isActive ? "Deactivate" : "Activate"}"
-              onclick="togglePacNav('${id}', ${isActive}, this)">
-              <i class="fa-solid ${isActive ? "fa-eye-slash" : "fa-eye"}"></i>
-            </button>
+    <td data-label="Icon">
+      <i class="${d.icon || "fa-solid fa-circle"}"></i>
+    </td>
 
-            <!-- SOFT DELETE -->
-            <button
-              class="ucl-delete-btn"
-              title="Archive"
-              onclick="archivePacNav('${id}', this)">
-              <i class="fa-solid fa-box-archive"></i>
-            </button>
+    <td data-label="Roles">
+      ${(d.roles || []).join(", ") || "-"}
+    </td>
 
-          </td>
-        </tr>
-      `;
+    <!-- STATUS -->
+    <td data-label="Status">
+      <span class="pacnav-status ${isActive ? "active" : "inactive"}">
+        ${isActive ? "ACTIVE" : "INACTIVE"}
+      </span>
+    </td>
+
+    <!-- ACTIONS -->
+    <td data-label="Actions">
+      <div class="pacnav-actions">
+
+        <!-- EDIT -->
+        <button
+          class="ucl-action-btn edit"
+          title="Edit Navigation"
+          onclick="openEditPacNav('${id}')">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+
+        <!-- ACTIVATE / DEACTIVATE -->
+        ${
+          isActive
+            ? `
+              <button
+                class="ucl-action-btn danger"
+                title="Deactivate Navigation"
+                onclick="togglePacNav('${id}', true, this)">
+                <i class="fa-solid fa-eye-slash"></i>
+              </button>
+            `
+            : `
+              <button
+                class="ucl-action-btn success"
+                title="Activate Navigation"
+                onclick="togglePacNav('${id}', false, this)">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            `
+        }
+
+        <!-- ARCHIVE -->
+        <button
+          class="ucl-action-btn archive"
+          title="Archive Navigation"
+          onclick="archivePacNav('${id}', this)">
+          <i class="fa-solid fa-box-archive"></i>
+        </button>
+
+      </div>
+    </td>
+
+  </tr>
+`;
+
     });
   }
 );

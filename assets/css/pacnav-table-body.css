@@ -1,0 +1,156 @@
+/* ============================================================
+   PAC NAVIGATION MANAGER — CORE
+============================================================ */
+
+/* Inactive row */
+.pacnav-inactive {
+  opacity: 0.65;
+}
+
+/* ============================================================
+   STATUS BADGES
+============================================================ */
+.pacnav-status {
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.pacnav-status.active {
+  background: linear-gradient(135deg, #00ffcc, #00d6b2);
+  color: #003333;
+  box-shadow: 0 0 14px rgba(0,255,204,0.6);
+}
+
+.pacnav-status.inactive {
+  background: linear-gradient(135deg, #ff6b6b, #ff2f2f);
+  color: #330000;
+  box-shadow: 0 0 14px rgba(255,80,80,0.6);
+}
+
+/* ============================================================
+   ACTION BUTTON GROUP (DESKTOP)
+============================================================ */
+.pacnav-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Base button */
+.ucl-action-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 15px;
+  transition: 0.2s ease;
+}
+
+/* Button variants */
+.ucl-action-btn.edit {
+  background: linear-gradient(135deg, #00eaff, #00bcd4);
+  color: #002b33;
+  box-shadow: 0 0 12px rgba(0,234,255,0.45);
+}
+
+.ucl-action-btn.success {
+  background: linear-gradient(135deg, #00ff99, #00cc66);
+  color: #00331a;
+  box-shadow: 0 0 12px rgba(0,255,153,0.45);
+}
+
+.ucl-action-btn.danger {
+  background: linear-gradient(135deg, #ff5c5c, #ff2f2f);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(255,80,80,0.55);
+}
+
+.ucl-action-btn.archive {
+  background: linear-gradient(135deg, #ffb347, #ff8c00);
+  color: #2b1a00;
+  box-shadow: 0 0 14px rgba(255,140,0,0.6);
+}
+
+/* Hover (desktop only) */
+@media (hover: hover) {
+  .ucl-action-btn:hover {
+    transform: translateY(-1px) scale(1.06);
+  }
+}
+
+.ucl-action-btn:active {
+  transform: scale(0.94);
+}
+
+/* ============================================================
+   MOBILE CARD MODE (≤ 768px)
+============================================================ */
+/* =========================================
+   PAC NAV – MOBILE ACTION BUTTON POLISH
+========================================= */
+@media (max-width: 768px) {
+
+  /* Actions wrapper */
+  .pacnav-actions {
+    gap: 12px;
+  }
+
+  /* Base button – smaller & cleaner */
+  .pacnav-actions .ucl-action-btn {
+    height: 44px;              /* ↓ from 54px */
+    border-radius: 14px;       /* softer */
+    box-shadow: none;          /* remove heavy glow */
+  }
+
+  /* Icon size */
+  .pacnav-actions .ucl-action-btn i {
+    font-size: 18px;           /* ↓ from 21px */
+  }
+
+  /* Edit (cyan) */
+  .ucl-action-btn.edit {
+    box-shadow: 0 0 10px rgba(0,234,255,0.35);
+  }
+
+  /* Deactivate (red) */
+  .ucl-action-btn.danger {
+    box-shadow: 0 0 10px rgba(255,80,80,0.35);
+  }
+
+  /* Archive (orange) */
+  .ucl-action-btn.archive {
+    box-shadow: 0 0 10px rgba(255,165,0,0.35);
+  }
+
+  /* Tap feedback (important on mobile) */
+  .pacnav-actions .ucl-action-btn:active {
+    transform: scale(0.95);
+    box-shadow: none;
+  }
+}
+
+/* ============================================================
+   VERY SMALL SCREENS (≤ 420px)
+============================================================ */
+@media (max-width: 420px) {
+
+  #pacNavTableBody td {
+    padding-left: 130px;
+  }
+
+  #pacNavTableBody td::before {
+    width: 120px;
+    font-size: 13px;
+  }
+}
