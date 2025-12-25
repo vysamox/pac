@@ -1207,6 +1207,7 @@ async function copyCode(id) {
   // Update current PAC
   await db.collection("pac_entries").doc(id).update({
     copied: true,
+      pacCode: id,        // ✅ ADD THIS
     copyDate: date,   // ✅ Correct IST date
     copyTime: time,   // ✅ Correct 12-hour IST time
     copyIP: ip

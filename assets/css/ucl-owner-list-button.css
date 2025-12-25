@@ -138,3 +138,75 @@
     box-shadow: 0 0 14px rgba(0,255,204,0.55);
   }
 }
+
+/* ===============================
+   LAST COPIED PAC – MOBILE FIX
+================================ */
+@media (max-width: 768px) {
+
+  /* Modal box sizing */
+  #lastCopyModal .ucl-modal-box {
+    width: 95%;
+    max-height: 90vh;
+    padding: 16px;
+    border-radius: 14px;
+    overflow-y: auto;
+  }
+
+  /* Title */
+  #lastCopyModal h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  /* Each info row */
+  #lastCopyDetails .group {
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+
+  /* Label */
+  #lastCopyDetails .lbl {
+    font-size: 12px;
+    min-width: unset;
+    opacity: 0.9;
+  }
+
+  /* Value */
+  #lastCopyDetails .val {
+    font-size: 14px;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  /* Highlight values */
+  #lastCopyDetails .highlight {
+    font-size: 15px;
+  }
+
+  /* Monospace values (IPs, refs) */
+  #lastCopyDetails .mono {
+    font-size: 12px;
+  }
+
+  /* Separator spacing */
+  #lastCopyDetails .sep {
+    margin: 10px 0;
+  }
+
+  /* Status badge */
+  #lastCopyDetails .status-ok {
+    font-size: 11px;
+    padding: 4px 10px;
+    align-self: flex-start;
+  }
+
+  /* Reduce glow on small screens */
+  #lastCopyModal .ucl-modal-box {
+    box-shadow:
+      0 0 16px rgba(0,238,255,0.35),
+      inset 0 0 12px rgba(0,238,255,0.12);
+  }
+}

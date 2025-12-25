@@ -1505,13 +1505,54 @@ tbody tr:hover::after {
   </button>
 </div>
 
-
     <div class="status-item">
       System Uptime: <b id="systemUptime">0s</b>
     </div>
+    
+    <div class="status-item">
+  Last Restart Time: <b id="lastRestartTime">—</b>
+</div>
+
+<div class="status-item"
+     style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+
+  <span>
+    Last PAC Copy Code:
+    <b id="lastPacCopyCode">—</b>
+  </span>
+
+  <button
+    id="viewLastPacCopyBtn"
+    class="ucl-view-btn"
+    title="View Last Copied PAC"
+    disabled>
+    <i class="fa-solid fa-eye"></i>
+  </button>
+
+</div>
+
 
   </div>
+  
 </div>
+
+<!-- LAST COPIED PAC MODAL -->
+<div id="lastCopyModal" class="ucl-modal">
+  <div class="ucl-modal-box">
+    <h3>Last Copied PAC Details</h3>
+
+    <button class="ucl-close-btn" onclick="closeLastCopyModal()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div id="lastCopyDetails"
+         class="status-item"
+         style="margin-top:15px; line-height:1.6;">
+      Loading…
+    </div>
+  </div>
+</div>
+
 
 <!-- ==== DUPLICATE ID TABLE ==== -->
 <div class="table-container">
@@ -1683,22 +1724,17 @@ tbody tr:hover::after {
     <button class="ucl-edit-btn" style="width:100%" onclick="savePacNav()">
       Save Navigation
     </button>
-
   </div>
 </div>
 
 <!-- PAC NAV LIST MODAL -->
 <div id="pacNavListModal" class="ucl-modal">
-
   <div class="ucl-modal-box" style="max-height:85vh; overflow:hidden;">
-
     <h3>PAC Navigation Manager</h3>
-
     <!-- Close -->
     <button class="ucl-close-btn" onclick="closePacNavList()">
       <i class="fa-solid fa-xmark"></i>
     </button>
-
     <!-- Table Wrapper -->
     <div class="ucl-table-container" style="max-height:65vh; overflow-y:auto;">
       <table>
@@ -1713,7 +1749,6 @@ tbody tr:hover::after {
             <th style="text-align:center;">Actions</th>
           </tr>
         </thead>
-
         <tbody id="pacNavTableBody">
           <!-- JS injects rows here -->
         </tbody>
@@ -1725,23 +1760,17 @@ tbody tr:hover::after {
 <!-- PAC NAV EDIT MODAL -->
 <div id="pacNavEditModal" class="ucl-modal">
   <div class="ucl-modal-box" style="max-width:420px;">
-
     <h3>Edit PAC Navigation</h3>
-
     <button class="ucl-close-btn" onclick="closeEditPacNav()"><i class="fa-solid fa-xmark"></i></button>
-
     <label>Title</label>
     <input id="editNavTitle" class="ucl-input">
-
     <label>URL</label>
     <input id="editNavUrl" class="ucl-input">
-
     <label>Icon Class</label>
     <input id="editNavIcon" class="ucl-input">
-
     <label>Order</label> 
     <input id="editNavOrder" type="number" class="ucl-input">
-<label>Roles</label>
+    <label>Roles</label>
 
 <div class="role-box">
 
@@ -1875,11 +1904,30 @@ tbody tr:hover::after {
 /* ============================================================
    IMPORT SHARED FIREBASE API
 ============================================================ */
-import { db, collection, doc, setDoc, getDocs, updateDoc, onSnapshot, deleteDoc, query, orderBy, limit, addDoc, getDoc } from "./assets/js/firebase-config.js";
+import {
+  db,
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  updateDoc,
+  onSnapshot,
+  deleteDoc,
+  query,
+  orderBy,
+  limit,
+  addDoc,
+  getDoc
+} from "./assets/js/firebase-config.js";
+
 import "./assets/js/system-uptime.js";
+import "./assets/js/last-pac-copy-code.js";   // ✅ ADDED HERE
+
 import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
 import "./assets/js/duplicate-delete-registry.js";
+
 import { initLastDeletedPac } from "./assets/js/last-deleted-pac.js";
+
 import {
   autoUpdateVersion,
   bindVersionCard,
@@ -1888,6 +1936,8 @@ import {
   openVersionHistory,
   closeVersionHistory
 } from "./assets/js/version-control.js";
+
+
 
 window.openVersionHistory = openVersionHistory;
 window.closeVersionHistory = closeVersionHistory;
