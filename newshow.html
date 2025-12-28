@@ -805,6 +805,9 @@ tbody tr:last-child td {
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="assets/js/temp-url.js"></script>
+
+
 
 <!-- 📜 Script Logic -->
 <script>
@@ -820,6 +823,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+(async () => {
+  await secureTempAccess(db);   // ✅ NOW IT EXISTS
+})();
 
 // Global
 let allEntries = [];
@@ -829,6 +835,8 @@ let copyLock = false;
 let currentPage = 1;
 let rowsPerPage = 10;   // You can change to 50, 100 etc.
 let filteredTableData = [];
+
+
 
 
 // ---------------------- REAL-TIME LISTENER FOR PAC ----------------------
@@ -1574,6 +1582,13 @@ window.onclick = function(e) {
 
 loadNavMenuLive();
 
+function startHeartbeat(ref) {
+  setInterval(() => {
+    ref.update({
+      lastHeartbeatAt: Date.now()
+    }).catch(() => {});
+  }, HEARTBEAT_INTERVAL);
+}
 
 </script>
 <script>

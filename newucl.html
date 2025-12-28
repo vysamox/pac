@@ -395,10 +395,22 @@ select option:checked { background: #0e8cff !important; color: #fff !important; 
 <div id="searchModal" class="modal" role="dialog" aria-modal="true">
   <div class="modal-box" id="searchBox"></div>
 </div>
+<!-- 🔐 TEMP ACCESS SYSTEM -->
+<script src="assets/js/temp-url.js"></script>
 
 <script type="module">
 // Firebase imports — keep your config module
-import { db, doc, setDoc, getDoc, collection, query, orderBy, onSnapshot, where, getDocs } from "/assets/js/firebase-config.js";
+import { db, doc, setDoc, getDoc, collection, query, orderBy, onSnapshot, where, getDocs,updateDoc } from "/assets/js/firebase-config.js";
+/* 🔑 expose helpers for temp-url.js */
+window.__FIREBASE_V9__ = {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+};
+
+// 🔐 TEMP ACCESS CHECK (MANDATORY)
+secureTempAccess(db);
 
 /* -------------------------
    Element references

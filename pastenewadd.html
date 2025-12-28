@@ -481,6 +481,8 @@ tbody tr:hover {
   </div>
 </footer>
 
+<!-- 🔐 TEMP ACCESS SYSTEM -->
+<script src="assets/js/temp-url.js"></script>
 
 <!-- Firebase -->
 <script type="module">
@@ -488,8 +490,16 @@ tbody tr:hover {
 /*  FIREBASE INIT  */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, collection, getDocs, onSnapshot, query, orderBy
+  getFirestore, doc, getDoc, setDoc, collection, getDocs, onSnapshot, query, orderBy, updateDoc
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+/* 🔑 expose Firebase v9 helpers for temp-url.js */
+window.__FIREBASE_V9__ = {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+};
 
 
 const firebaseConfig = {
@@ -503,6 +513,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// 🔐 TEMP ACCESS CHECK (REQUIRED)
+secureTempAccess(db);
 
 /* ELEMENTS */
 const searchBox = document.getElementById("searchBox");

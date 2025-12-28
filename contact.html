@@ -6,223 +6,164 @@
 
 <title>Contact — PAC Management</title>
 
-<!-- 🔍 SEO Tags -->
-<meta name="description" content="Contact the PAC Management support team for help with PAC issues, UCL owner registration, staff management, and account solutions.">
-<meta name="keywords" content="PAC Contact, CSC PAC Support, PAC Help, PAC Management Contact, UCL Support">
+<meta name="description" content="Contact PAC Management support for help and assistance.">
 <meta name="author" content="Samrat">
 
-<!-- Google Search Essentials -->
-<meta name="robots" content="index, follow">
-<meta name="googlebot" content="index, follow">
-
-<!-- Canonical URL -->
-<link rel="canonical" href="https://cscpac.vercel.app/">
-
-<!-- 🌐 Open Graph -->
-<meta property="og:title" content="Contact — PAC Management">
-<meta property="og:description" content="Get support and assistance from the PAC Management team.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://cscpac.vercel.app/">
-<meta property="og:image" content="https://cscpac.vercel.app/assets/fav.png">
-
-<!-- 🐦 Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Contact — PAC Management">
-<meta name="twitter:description" content="Reach out to PAC Management for help or queries.">
-<meta name="twitter:image" content="https://cscpac.vercel.app/assets/fav.png">
-
-<!-- ⭐ Favicon -->
 <link rel="icon" type="image/png" href="assets/fav.png">
 <link rel="apple-touch-icon" href="assets/fav.png">
 
-<!-- 🎨 Fonts & Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-
-/* ---------------- GLOBAL ---------------- */
-*{margin:0;padding:0;box-sizing:border-box;}
+/* ================= GLOBAL ================= */
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-  font-family:'Poppins',sans-serif;
+  font-family:Poppins,Arial,sans-serif;
   background:#f4f7ff;
   color:#333;
+  line-height:1.5;
 }
 
-/* ---------------- HEADER ---------------- */
-header{
-  background:rgba(0,123,255,0.9);
-  backdrop-filter:blur(10px);
-  color:white;
-  padding:18px 40px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  box-shadow:0 4px 20px rgba(0,0,0,0.3);
+/* ================= HEADER ================= */
+header {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: #fff;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-header h1{
-  font-size:26px;
-  display:flex;
-  align-items:center;
-  gap:10px;
+header h1 {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
-header nav{
-  display:flex;
-  gap:25px;
+/* ================= NAV ================= */
+nav {
+  display: flex;
+  gap: 22px;
 }
 
-nav a{
-  color:white;
-  text-decoration:none;
-  font-weight:600;
-  position:relative;
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
 }
 
-nav a:hover{
-  color:#ffeb3b;
+/* ================= MENU TOGGLE ================= */
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
 }
 
-nav a::after{
-  content:"";
-  position:absolute;
-  bottom:-4px;
-  left:0;
-  width:0%;
-  height:2px;
-  background:#ffeb3b;
-  transition:.3s;
-}
+/* ================= MOBILE VIEW ================= */
+@media (max-width: 768px) {
 
-nav a:hover::after{width:100%;}
-
-/* ---------------- RESPONSIVE MENU ---------------- */
-.menu-toggle{
-  display:none;
-}
-
-@media(max-width:768px){
-  .menu-toggle{display:block;color:white;font-size:26px;cursor:pointer;}
-  header nav{
-    position:absolute;
-    top:60px;left:0;
-    width:100%;
-    background:rgba(0,123,255,0.96);
-    flex-direction:column;
-    overflow:hidden;
-    max-height:0;
-    transition:max-height .35s ease;
-    border-radius:0 0 16px 16px;
+  .menu-toggle {
+    display: block;
   }
-  header nav.show{max-height:420px;}
-  header nav a{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.1);}
+
+  nav {
+    position: absolute;
+    top: 58px;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(180deg, #007bff, #0056b3);
+    flex-direction: column;
+    gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    border-radius: 0 0 16px 16px;
+  }
+
+  nav.show {
+    max-height: 500px;
+  }
+
+  nav a {
+    padding: 14px 22px;
+    font-size: 16px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+  }
 }
 
-/* ---------------- CONTACT FORM ---------------- */
+
+/* ================= CONTACT CARD ================= */
 .contact-container{
-  max-width:850px;
-  margin:40px auto;
-  padding:30px;
-  background:white;
+  max-width:820px;
+  margin:30px auto;
+  background:#fff;
+  padding:28px;
   border-radius:16px;
-  box-shadow:0 6px 20px rgba(0,123,255,0.15);
-  animation:fadeIn .5s ease;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
 }
-
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(10px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
 .contact-container h2{
   text-align:center;
-  margin-bottom:20px;
+  margin-bottom:22px;
   color:#007bff;
 }
 
-.form-group{
-  margin-bottom:18px;
-}
+.form-group{margin-bottom:18px}
+label{font-weight:600;margin-bottom:6px;display:block}
 
-label{
-  font-weight:600;
-  margin-bottom:6px;
-  display:block;
-}
-
-input, textarea{
+input,textarea{
   width:100%;
-  padding:12px 15px;
-  border:1px solid #ccc;
+  padding:12px 14px;
   border-radius:10px;
+  border:1px solid #ccc;
   font-size:15px;
-  transition:0.3s;
 }
-
-input:focus,textarea:focus{
-  border-color:#007bff;
-  box-shadow:0 0 6px rgba(0,123,255,0.3);
-}
-
-textarea{
-  min-height:120px;
-  resize:vertical;
-}
+textarea{min-height:120px}
 
 button{
-  background:linear-gradient(90deg,#007bff,#0056b3);
-  color:white;
+  width:100%;
+  padding:14px;
   border:none;
-  padding:12px 20px;
-  border-radius:10px;
-  cursor:pointer;
+  border-radius:12px;
+  background:linear-gradient(90deg,#007bff,#0056b3);
+  color:#fff;
   font-size:16px;
   font-weight:600;
-  width:100%;
-  transition:.2s;
+  cursor:pointer;
 }
+button:hover{opacity:.95}
 
-button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 4px 10px rgba(0,123,255,0.25);
-}
-
-/* ---------------- FOOTER ---------------- */
+/* ================= FOOTER ================= */
 footer{
-  background:rgba(0,123,255,0.9);
-  color:white;
+  margin-top:40px;
+  padding:14px;
   text-align:center;
-  padding:12px;
-  margin-top:50px;
-  font-size:14px;
-}
-
-/* ---------------- TOAST ---------------- */
-#toast{
-  visibility:hidden;
-  opacity:0;
-  min-width:250px;
   background:#007bff;
   color:#fff;
-  border-radius:10px;
-  padding:15px;
+}
+
+/* ================= TOAST ================= */
+#toast{
   position:fixed;
-  left:50%;
   bottom:30px;
+  left:50%;
   transform:translateX(-50%);
-  transition:.4s;
-  text-align:center;
+  background:#007bff;
+  color:#fff;
+  padding:14px 22px;
+  border-radius:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
   z-index:9999;
 }
-
-#toast.show{
-  visibility:visible;
-  opacity:1;
-}
-
+#toast.show{opacity:1}
 </style>
 </head>
 
@@ -230,13 +171,10 @@ footer{
 
 <header>
   <h1><i class="fa-solid fa-database"></i> PAC Management</h1>
-
   <div class="menu-toggle" onclick="toggleMenu()">
     <i class="fa-solid fa-bars"></i>
   </div>
-
-  <nav id="mainMenu">
-  </nav>
+  <nav id="mainMenu"></nav>
 </header>
 
 <div class="contact-container">
@@ -244,12 +182,12 @@ footer{
 
   <div class="form-group">
     <label>Your Name</label>
-    <input type="text" id="name" placeholder="Enter your name">
+    <input id="name" placeholder="Enter your name">
   </div>
 
   <div class="form-group">
     <label>Email Address</label>
-    <input type="email" id="email" placeholder="Enter your email">
+    <input id="email" type="email" placeholder="Enter your email">
   </div>
 
   <div class="form-group">
@@ -257,7 +195,7 @@ footer{
     <textarea id="message" placeholder="Type your message..."></textarea>
   </div>
 
-  <button onclick="sendMessage()">
+  <button id="sendBtn">
     <i class="fa-solid fa-paper-plane"></i> Send Message
   </button>
 </div>
@@ -268,12 +206,19 @@ footer{
 
 <div id="toast"></div>
 
+<!-- 🔐 TEMP ACCESS (LOAD FIRST) -->
+<script src="assets/js/temp-url.js"></script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { 
-  getFirestore, collection, onSnapshot,
-  query, orderBy, addDoc
+import {
+  getFirestore, collection, addDoc,
+  onSnapshot, query, orderBy,
+  doc, getDoc, setDoc, updateDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+/* 🔑 expose helpers for temp-url.js */
+window.__FIREBASE_V9__ = { doc, getDoc, setDoc, updateDoc, deleteDoc };
 
 /* FIREBASE CONFIG */
 const firebaseConfig = {
@@ -288,99 +233,75 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* -------------------------
-   CONTACT FORM SUBMIT
-------------------------- */
-window.sendMessage = async function () {
-  const name = nameInput.value.trim();
-  const email = emailInput.value.trim();
-  const message = messageInput.value.trim();
+/* 🔐 TEMP ACCESS */
+secureTempAccess(db);
 
-  if (!name || !email || !message) {
-    toast("Please fill all fields!", "#dc3545");
+/* ================= UTIL ================= */
+const toast = (msg, color="#007bff") => {
+  const t = document.getElementById("toast");
+  t.style.background=color;
+  t.textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3000);
+};
+
+window.toggleMenu = () =>
+  document.getElementById("mainMenu").classList.toggle("show");
+
+/* TOKEN SAFE NAV */
+window.goSecure = url => {
+  const t = new URLSearchParams(location.search).get("token");
+  location.href = t ? `${url}?token=${t}` : url;
+};
+
+/* ================= SEND MESSAGE ================= */
+function generateMsgToken(){
+  return "MSG-" + crypto.randomUUID().slice(0,8).toUpperCase();
+}
+
+document.getElementById("sendBtn").onclick = async () => {
+  const nameEl = document.getElementById("name");
+  const emailEl = document.getElementById("email");
+  const msgEl = document.getElementById("message");
+
+  const name = nameEl.value.trim();
+  const email = emailEl.value.trim();
+  const message = msgEl.value.trim();
+
+  if(!name || !email || !message){
+    toast("Please fill all fields", "#dc3545");
     return;
   }
 
-  await addDoc(collection(db, "contact_messages"), {
+  const msgToken = generateMsgToken();
+
+  await addDoc(collection(db,"contact_messages"),{
+    token: msgToken,
     name,
     email,
     message,
-    time: new Date().toISOString()
+    createdAt: new Date().toISOString()
   });
 
-  toast("Message Sent!", "#28a745");
+  toast(`Message Sent! Token: ${msgToken}`,"#28a745");
 
-  nameInput.value = "";
-  emailInput.value = "";
-  messageInput.value = "";
+  nameEl.value="";
+  emailEl.value="";
+  msgEl.value="";
 };
 
-/* -------------------------
-   REAL-TIME NAVIGATION MENU
-------------------------- */
-function loadNavMenuLive() {
-  const menu = document.getElementById("mainMenu");
-  if (!menu) return;
-
-  // Get only file name (safe compare)
-  const currentPage = window.location.pathname.split("/").pop();
-
-  const q = query(
-    collection(db, "pacnav"),
-    orderBy("order", "asc")
-  );
-
-  onSnapshot(q, (snapshot) => {
-    let html = "";
-
-    snapshot.forEach((docSnap) => {
-      const v = docSnap.data();
-
-      // ❌ Skip inactive nav
-      if (v.active === false) return;
-
-      // ❌ Skip current page
-      const navUrl = (v.url || "").split("/").pop();
-      if (navUrl === currentPage) return;
-
-      const iconClass =
-        v.icon && v.icon.trim()
-          ? v.icon
-          : "fa-solid fa-circle-question";
-
-      html += `
-        <a href="${v.url}">
-          <i class="${iconClass}"></i> ${v.title || ""}
-        </a>
-      `;
-    });
-
-    menu.innerHTML = html;
+/* ================= LIVE NAV MENU ================= */
+const navQ = query(collection(db,"pacnav"), orderBy("order","asc"));
+onSnapshot(navQ,(snap)=>{
+  const menu=document.getElementById("mainMenu");
+  menu.innerHTML="";
+  snap.forEach(d=>{
+    const v=d.data();
+    if(v.active===false) return;
+    menu.innerHTML += `<a href="#" onclick="goSecure('${v.url}')">${v.title}</a>`;
   });
-}
-
-loadNavMenuLive();
-
-
-/* -------------------------
-   MOBILE MENU TOGGLE
-------------------------- */
-window.toggleMenu = function () {
-  document.getElementById("mainMenu").classList.toggle("show");
-};
-
-/* -------------------------
-   TOAST MESSAGE
-------------------------- */
-window.toast = function (msg, color = "#007bff") {
-  const t = document.getElementById("toast");
-  t.style.background = color;
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2500);
-};
+});
 </script>
-
 
 </body>
 </html>

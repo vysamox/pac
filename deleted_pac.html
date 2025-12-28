@@ -1142,11 +1142,23 @@ footer{
   <br><span id="live-time"></span> |
   <span id="user-ip"></span>
 </footer>
+<!-- 🔐 TEMP ACCESS SYSTEM -->
+<script src="assets/js/temp-url.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, setDoc, getDoc }
+import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, setDoc, getDoc,  updateDoc
+  }
 from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+/* 🔑 expose helpers for temp-url.js */
+window.__FIREBASE_V9__ = {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc
+};
 
 const firebaseConfig = {
   apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
@@ -1159,6 +1171,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// 🔐 TEMP ACCESS CHECK
+secureTempAccess(db);
 
 /* ---------------- Global ---------------- */
 let delRange = null;
