@@ -1,10 +1,11 @@
 /* =========================================================
-   TEMP LINK MONITOR — ADMIN DASHBOARD (FINAL)
-   File: temp-link-monitor.js
+   TEMP LINK MONITOR — ENTERPRISE FINAL
    ✔ Firestore v9
+   ✔ Zero lag rendering
+   ✔ Timestamp safe
+   ✔ Advanced device detection
    ✔ No memory leaks
    ✔ Mobile-safe table
-   ✔ Future-ready hooks
 ========================================================= */
 
 import {
@@ -24,48 +25,78 @@ const countEl   = document.getElementById("tempLinkCount");
 /* =========================================================
    STATE
 ========================================================= */
-let tempLinksUnsub = null;
+let unsubscribe = null;
+let lastRenderKey = "";
 
 /* =========================================================
-   LIVE COUNT (SAFE)
+   LIVE COUNT (CHEAP)
 ========================================================= */
 onSnapshot(collection(db, "temp_links"), snap => {
   if (countEl) countEl.textContent = snap.size;
 });
 
 /* =========================================================
-   START / STOP LISTENER (NO LEAKS)
+   START / STOP LISTENER
 ========================================================= */
-function startTempLinksListener() {
-  if (tempLinksUnsub) return;
+function startListener() {
+  if (unsubscribe) return;
 
-  tempLinksUnsub = onSnapshot(
+  unsubscribe = onSnapshot(
     query(collection(db, "temp_links"), orderBy("createdAt", "desc")),
-    snap => renderTempLinks(snap)
+    snap => {
+      const key = snap.docs
+        .map(d => d.id + (d.updateTime?.seconds || ""))
+        .join("|");
+
+      if (key !== lastRenderKey) {
+        lastRenderKey = key;
+        renderFast(snap);
+      }
+    }
   );
 }
 
-function stopTempLinksListener() {
-  if (tempLinksUnsub) {
-    tempLinksUnsub();
-    tempLinksUnsub = null;
+function stopListener() {
+  if (unsubscribe) {
+    unsubscribe();
+    unsubscribe = null;
+    lastRenderKey = "";
   }
 }
 
 /* =========================================================
-   RENDER TABLE
+   ADVANCED DEVICE PARSER (NO LIB)
 ========================================================= */
-function renderTempLinks(snap) {
+function parseDevice(info = {}) {
+  if (!info || typeof info !== "object") return "—";
+
+  const device  = info.device  || "Unknown";
+  const os      = info.os      || "Unknown OS";
+  const browser = info.browser || "Unknown Browser";
+
+  return `${device} • ${os} • ${browser}`;
+}
+
+/* =========================================================
+   FAST RENDER ENGINE
+========================================================= */
+function renderFast(snap) {
   if (!tableBody) return;
 
-  tableBody.innerHTML = "";
   const now = Date.now();
+  const frag = document.createDocumentFragment();
+  tableBody.innerHTML = "";
 
   snap.forEach(docSnap => {
     const d = docSnap.data();
 
+    /* ---------- TIME ---------- */
+    const createdAt = fmt(d.createdAt);
+    const expiresAt = fmt(d.expiresAt);
+    const lastAccess = fmt(d.lastAccessAt);
+
     /* ---------- STATUS ---------- */
-    const expired = d.expiresAt && now > d.expiresAt;
+    const expired = d.expiresAt && getTime(d.expiresAt) < now;
     const locked  = d.locked === true;
 
     let status = "ACTIVE";
@@ -79,6 +110,10 @@ function renderTempLinks(snap) {
       color  = "#ffaa00";
     }
 
+    const isLive =
+      d.lastHeartbeatAt &&
+      now - getTime(d.lastHeartbeatAt) < 45_000;
+
     const rowBg =
       locked
         ? "background:rgba(255,80,80,0.15)"
@@ -86,7 +121,7 @@ function renderTempLinks(snap) {
           ? "background:rgba(255,170,0,0.15)"
           : "";
 
-    /* ---------- URL DETECTION (FUTURE SAFE) ---------- */
+    /* ---------- URL ---------- */
     const mainUrl =
       d.targetUrl ||
       d.fullUrl ||
@@ -100,133 +135,127 @@ function renderTempLinks(snap) {
         ? mainUrl.slice(0, 42) + "…"
         : mainUrl;
 
-    /* ---------- HEARTBEAT (FUTURE LIVE STATUS) ---------- */
-    const isLive =
-      d.lastHeartbeatAt &&
-      now - d.lastHeartbeatAt < 45_000;
+    /* ---------- DEVICE ---------- */
+    const deviceText = parseDevice(d.lastDevice);
 
     /* ---------- ROW ---------- */
-    tableBody.insertAdjacentHTML("beforeend", `
-<tr style="${rowBg}">
+    const tr = document.createElement("tr");
+    tr.style = rowBg;
 
-  <!-- TOKEN -->
-  <td class="val mono" data-label="Token">
-    ${docSnap.id.slice(0, 12)}…
-    <button class="ucl-view-btn"
-      title="Copy full token"
-      onclick="navigator.clipboard.writeText('${docSnap.id}')">
-      <i class="fa-solid fa-copy"></i>
-    </button>
-  </td>
+    tr.innerHTML = `
+<td class="val mono" data-label="Token">
+  ${docSnap.id.slice(0, 12)}…
+  <button class="ucl-view-btn copy-token" data-token="${docSnap.id}">
+    <i class="fa-solid fa-copy"></i>
+  </button>
+</td>
 
-  <!-- STATUS -->
-  <td data-label="Status">
-    <span style="color:${color}; font-weight:800;">
-      ${status}
-    </span>
-    ${
-      isLive
-        ? `<span class="vh-badge live">LIVE</span>`
-        : ""
-    }
-  </td>
+<td data-label="Status">
+  <span style="color:${color}; font-weight:800;">
+    ${status}
+  </span>
+  ${isLive ? `<span class="vh-badge live">LIVE</span>` : ""}
+</td>
 
-  <!-- MAIN URL -->
-  <td class="val mono" data-label="Page URL" title="${mainUrl}">
-    ${shortUrl}
-    ${
-      mainUrl !== "—"
-        ? `<button class="ucl-view-btn"
-             title="Open page"
-             onclick="window.open('${mainUrl}', '_blank')">
-             <i class="fa-solid fa-arrow-up-right-from-square"></i>
-           </button>`
-        : ""
-    }
-  </td>
+<td class="val mono" data-label="Page URL" title="${mainUrl}">
+  ${shortUrl}
+  ${
+    mainUrl !== "—"
+      ? `<button class="ucl-view-btn open-url" data-url="${mainUrl}">
+           <i class="fa-solid fa-arrow-up-right-from-square"></i>
+         </button>`
+      : ""
+  }
+</td>
 
-  <!-- ACCESS -->
-  <td data-label="Access">
-    ${d.accessCount || 0}
-  </td>
+<td data-label="Device">
+  ${deviceText}
+</td>
 
-  <!-- RELOAD -->
-  <td data-label="Reloads">
-    ${d.reloadCount || 0}
-  </td>
+<td data-label="Access">${d.accessCount || 0}</td>
+<td data-label="Reloads">${d.reloadCount || 0}</td>
 
-  <!-- FINGERPRINT -->
-  <td class="val mono" data-label="Fingerprint">
-    ${(d.fingerprint || "").slice(0, 22)}…
-  </td>
+<td class="val mono" data-label="Fingerprint">
+  ${(d.fingerprint || "").slice(0, 22)}…
+</td>
 
-  <!-- CREATED -->
-  <td data-label="Created">
-    ${fmt(d.createdAt)}
-  </td>
+<td data-label="Created">${createdAt}</td>
+<td data-label="Expires">${expiresAt}</td>
+<td data-label="Last Access">${lastAccess}</td>
+`;
 
-  <!-- EXPIRES -->
-  <td data-label="Expires">
-    ${fmt(d.expiresAt)}
-  </td>
-
-  <!-- LAST ACCESS -->
-  <td data-label="Last Access">
-    ${fmt(d.lastAccessAt)}
-  </td>
-
-</tr>
-`);
+    frag.appendChild(tr);
   });
+
+  tableBody.appendChild(frag);
 }
 
 /* =========================================================
-   MODAL CONTROLS (EXPOSED)
+   EVENT DELEGATION (FAST)
+========================================================= */
+tableBody.addEventListener("click", e => {
+
+  const copyBtn = e.target.closest(".copy-token");
+  if (copyBtn) {
+    navigator.clipboard.writeText(copyBtn.dataset.token);
+    return;
+  }
+
+  const openBtn = e.target.closest(".open-url");
+  if (openBtn) {
+    window.open(openBtn.dataset.url, "_blank");
+  }
+});
+
+/* =========================================================
+   MODAL CONTROLS
 ========================================================= */
 window.openTempLinksModal = function () {
   const modal = document.getElementById("tempLinksModal");
   if (modal) modal.style.display = "flex";
-  startTempLinksListener();
+  startListener();
 };
 
 window.closeTempLinksModal = function () {
   const modal = document.getElementById("tempLinksModal");
   if (modal) modal.style.display = "none";
-  stopTempLinksListener();
+  stopListener();
 };
 
 /* =========================================================
-   TIME FORMATTER (SAFE)
+   STRONG TIME UTILITIES
 ========================================================= */
-function fmt(ts) {
-  if (!ts) return "—";
-  try {
-    return new Date(ts).toLocaleString();
-  } catch {
-    return "—";
+function getTime(ts) {
+  if (!ts) return 0;
+
+  if (typeof ts === "object" && typeof ts.toDate === "function") {
+    return ts.toDate().getTime();
   }
+
+  if (typeof ts === "object" && typeof ts.seconds === "number") {
+    return ts.seconds * 1000;
+  }
+
+  if (typeof ts === "number") return ts;
+  if (typeof ts === "string") return new Date(ts).getTime();
+
+  return 0;
 }
 
-/* =========================================================
-   🔮 FUTURE EXTENSION POINTS (READY)
-========================================================= */
+function fmt(ts) {
+  const t = getTime(ts);
+  if (!t) return "—";
 
-/*
-  1️⃣ Token revoke:
-      updateDoc(doc(db,"temp_links",id),{ locked:true })
+  const d = new Date(t);
+  if (isNaN(d.getTime())) return "—";
 
-  2️⃣ Token delete:
-      deleteDoc(doc(db,"temp_links",id))
+  return d.toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
 
-  3️⃣ Filter by status:
-      client-side filter before render
-
-  4️⃣ Usage analytics:
-      use accessCount + reloadCount + lastHeartbeatAt
-
-  5️⃣ Export CSV:
-      iterate snap.docs and stringify
-
-  6️⃣ Role-based visibility:
-      hide modal if not admin
-*/

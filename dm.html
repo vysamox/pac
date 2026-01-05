@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="./assets/css/duplicate-delete-registry.css">
 <link rel="stylesheet" href="./assets/css/ucl-owner-list-button.css">
 <link rel="stylesheet" href="./assets/css/pacnav-table-body.css">
+<link rel="stylesheet" href="./assets/css/pagination.css">
 
 <style>
 /* RESET */
@@ -218,8 +219,6 @@ nav a:hover {
   opacity: 1;
 }
 
-
-
 /* ===========================================================
    Threat Card Pulse Mode (danger alerts)
    =========================================================== */
@@ -256,97 +255,31 @@ nav a:hover {
   }
 }
 
-
 /* ============================
    SYSTEM STATUS PANEL
 ============================ */
-.status-box {
-  width: 95%;
-  margin: 40px auto;
-  padding: 35px 25px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.15);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 6px 25px rgba(0,0,0,0.35);
-}
-
-.status-box h3 {
-  margin: 0 auto 25px auto;
-  display: inline-block;
-  padding: 8px 20px;
-  background: rgba(0,136,255,0.9);
-  border-radius: 10px;
-  text-shadow: 0 0 10px rgba(0,238,255,0.7);
-}
-
-.status-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.status-item {
-  flex: 1 1 calc(50% - 20px);
-  padding: 15px 20px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.15);
-  font-size: 17px;
-}
-
-@media (max-width: 600px) {
-  .status-item {
-    flex: 1 1 100%;
-  }
-}
+.status-box { width: 95%; margin: 40px auto; padding: 35px 25px; border-radius: 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(14px); box-shadow: 0 6px 25px rgba(0,0,0,0.35); }
+.status-box h3 {margin: 0 auto 25px auto; display: inline-block; padding: 8px 20px; background: rgba(0,136,255,0.9); border-radius: 10px; text-shadow: 0 0 10px rgba(0,238,255,0.7);}
+.status-row  { display: flex; flex-wrap: wrap; gap: 20px;}
+.status-item { flex: 1 1 calc(50% - 20px); padding: 15px 20px; background: rgba(255,255,255,0.08); border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); font-size: 17px; }
+@media (max-width: 600px) { .status-item { flex: 1 1 100%; } }
 
 /* ============================================
    ULTRA MODERN GLASS NEON TABLE DESIGN v2.0
 ============================================ */
-
-/* Wrapper with deeper glow */
 .table-container {
-  width: 95%;
-  margin: 45px auto;
-  padding: 28px;
-  border-radius: 24px;
-
-  background: rgba(0, 12, 32, 0.45);
-  backdrop-filter: blur(18px) saturate(140%);
-
-  border: 1px solid rgba(0, 255, 255, 0.25);
-
-  box-shadow:
-    0 12px 45px rgba(0,0,0,0.55),
-    inset 0 0 35px rgba(0, 238, 255, 0.12),
-    inset 0 0 80px rgba(0, 238, 255, 0.05);
+  width: 95%; margin: 45px auto;  padding: 28px; border-radius: 24px;
+  background: rgba(0, 12, 32, 0.45); backdrop-filter: blur(18px) saturate(140%); border: 1px solid rgba(0, 255, 255, 0.25);
+  box-shadow: 0 12px 45px rgba(0,0,0,0.55), inset 0 0 35px rgba(0, 238, 255, 0.12), inset 0 0 80px rgba(0, 238, 255, 0.05);
 }
 
 /* Table core */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  overflow: hidden;
-  border-radius: 18px;
-}
+table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 18px; }
 
 /* Header - stronger neon + border line */
 th {
-  padding: 14px 10px;
-  font-size: 15px;
-  font-weight: 600;
-
-  color: #baf3ff;
-  letter-spacing: 0.7px;
-
-  background: linear-gradient(
-    135deg,
-    rgba(0, 28, 48, 0.95),
-    rgba(0, 68, 104, 0.95)
-  );
-
-  border-bottom: 2px solid rgba(0, 255, 255, 0.35);
+  padding: 14px 10px; font-size: 15px; font-weight: 600; color: #baf3ff; letter-spacing: 0.7px;
+  background: linear-gradient( 135deg, rgba(0, 28, 48, 0.95), rgba(0, 68, 104, 0.95) ); border-bottom: 2px solid rgba(0, 255, 255, 0.35);
 
   text-shadow:
     0 0 6px rgba(0, 255, 255, 0.4),
@@ -1378,7 +1311,49 @@ tbody tr:hover::after {
   }
 }
 
+/* =========================
+   GLOBAL ALERT SYSTEM
+========================= */
+#globalAlerts {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 340px;
+}
 
+.alert {
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-family: Poppins, sans-serif;
+  font-size: 14px;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  animation: slideIn .25s ease;
+  position: relative;
+}
+
+.alert.success { background: linear-gradient(135deg,#16a34a,#22c55e); }
+.alert.error   { background: linear-gradient(135deg,#dc2626,#ef4444); }
+.alert.warn    { background: linear-gradient(135deg,#d97706,#f59e0b); }
+.alert.info    { background: linear-gradient(135deg,#2563eb,#3b82f6); }
+
+.alert .close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  opacity: .8;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
 
 </style>
 </head>
@@ -1464,6 +1439,70 @@ tbody tr:hover::after {
     onclick="openTempLinksModal()">
     <i class="fa-solid fa-link"></i>
   </button>
+</div>
+
+<div class="card student">
+  <h2 id="studentCount">0</h2>
+  <div class="card-label">Total Students</div>
+
+  <button
+    class="card-icon-btn"
+    title="View Students"
+    onclick="openStudentModal()">
+    <i class="fa-solid fa-user-graduate"></i>
+  </button>
+</div>
+
+<div id="studentModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:1200px;">
+    <h3>Students List</h3>
+
+    <button class="ucl-close-btn" onclick="closeStudentModal()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="ucl-table-container">
+      <table>
+       <thead>
+  <tr>
+    <th>Name</th>
+    <th>Course</th>
+    <th>Year</th>
+    <th>DOB</th>
+    <th style="text-align:center;">Action</th>
+  </tr>
+</thead>
+
+        <tbody id="studentTableBody"></tbody>
+      </table>
+    </div>
+     <!-- ✅ PAGINATION BAR (NOW VISIBLE + WORKING) -->
+    <div class="pagination-bar" style="
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:14px;
+      margin-top:16px;
+    ">
+      <button id="prevStudentsBtn" disabled>⬅ Prev</button>
+      <span id="studentPageInfo">Page 1</span>
+      <button id="nextStudentsBtn">Next ➡</button>
+    </div>
+  </div>
+</div>
+
+<div id="studentViewModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:900px;">
+    <h3>Student Full Details</h3>
+
+    <button class="ucl-close-btn" onclick="closeStudentView()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div id="studentViewBody" class="status-item" style="line-height:1.7;">
+      Loading…
+    </div>
+  </div>
 </div>
 
 
@@ -1923,6 +1962,8 @@ tbody tr:hover::after {
             <th>Token</th>
             <th>Status</th>
             <th>Main URL</th>   <!-- ✅ NEW -->
+            <th>Device</th>
+
             <th>Access</th>
             <th>Reload</th>
             <th>Fingerprint</th>
@@ -1939,12 +1980,17 @@ tbody tr:hover::after {
 </div>
 
 
+<div id="globalAlerts"></div>
+
 <footer class="dashboard-footer">
   <div class="dashboard-version"></div>
   <div class="footer-copy">&copy; 2025 PAC Management System</div>
 </footer>
 
 <script type="module" src="./assets/js/temp-link-monitor.js"></script>
+<script type="module" src="./assets/js/students-monitor.js"></script>
+<script type="module" src="/assets/js/temp-link-access.js"></script>
+
 
 <script type="module">
 
@@ -1984,19 +2030,13 @@ import {
   closeVersionHistory
 } from "./assets/js/version-control.js";
 
-
-
 window.openVersionHistory = openVersionHistory;
 window.closeVersionHistory = closeVersionHistory;
-
-
-
 window.autoUpdateVersion = autoUpdateVersion;
 window.openVersionView = openVersionView;
 window.closeVersionView = closeVersionView;
 
 loadDashboardVersion();
-
 bindVersionCard();
 
 /* ============================================================
@@ -2046,7 +2086,6 @@ loadNav("admin");
 ============================================================ */
 let uclRequestsData = [];
 let currentPacNavEditId = null;
-
 
 /* ============================================================
    LIVE PAC COUNTERS
@@ -2118,7 +2157,6 @@ setInterval(analyzeThreats, 2000);
 document.getElementById("menuToggle").addEventListener("click", () => {
   document.getElementById("mainMenu").classList.toggle("show");
 });
-
 
 
 /* ============================================

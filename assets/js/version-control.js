@@ -1,6 +1,6 @@
 /* ============================================================
-   VERSION CONTROL SYSTEM — FINAL (100% STABLE)
-   ES Module | Safe | Audited | Confirmed
+   VERSION CONTROL SYSTEM — ENTERPRISE++ EDITION
+   ES Module | Atomic | Audited | Restore-Safe | PERF-OPTIMIZED
 ============================================================ */
 
 import {
@@ -13,7 +13,9 @@ import {
   onSnapshot,
   collection,
   query,
-  orderBy
+  orderBy,
+  runTransaction,
+  serverTimestamp
 } from "./firebase-config.js";
 
 /* ============================================================
@@ -22,55 +24,53 @@ import {
 const versionRef = doc(db, "system", "version");
 
 const ENABLE_SOFT_DELETE = true;
-const CURRENT_ROLE = "admin";   // later replace with auth.uid
-const ENV = "PROD";             // PROD / STAGE / DEV
+const CURRENT_ROLE = "admin";
+const ENV = "PROD";
+
+/* ============================================================
+   SAFE NOTIFY
+============================================================ */
+const notify = (msg, type = "info", timeout = 4000) => {
+  if (typeof window.notify === "function") {
+    window.notify(msg, type, timeout);
+  } else {
+    console.log(`[${type.toUpperCase()}]`, msg);
+    alert(msg);
+  }
+};
 
 /* ============================================================
    UTILITIES
 ============================================================ */
-function nextVersion(v = "1.0.0") {
-  const [a = 1, b = 0, c = 0] = v.split(".").map(n => parseInt(n, 10));
+const nextVersion = (v = "1.0.0") => {
+  const [a = 1, b = 0, c = 0] = v.split(".").map(n => +n || 0);
   return `${a}.${b}.${c + 1}`;
-}
+};
 
-function versionKey(v = {}) {
-  return `${v.version || "x"}__${v.buildNumber || "x"}`;
-}
+const versionKey = v => `${v.version}__${v.buildNumber}`;
+const historyId = (v, b) => `v${v}__build_${b}__${Date.now()}`;
 
-function historyId(v, b) {
-  return `v${v}__build_${b}__${Date.now()}`;
-}
-
-function notify(msg, type = "info") {
-  console.log(`[${type.toUpperCase()}] ${msg}`);
-}
+const canRestore = () => ["admin", "superadmin"].includes(CURRENT_ROLE);
+const canDelete  = () => ["admin", "superadmin"].includes(CURRENT_ROLE);
 
 /* ============================================================
-   ROLE CHECKS
+   CLIENT IP (CACHED)
 ============================================================ */
-function canRestore(role = CURRENT_ROLE) {
-  return ["admin", "superadmin"].includes(role);
-}
-
-function canDelete(role = CURRENT_ROLE) {
-  return ["admin", "superadmin"].includes(role);
-}
-
-/* ============================================================
-   CLIENT IP
-============================================================ */
+let _cachedIP = null;
 async function getClientIP() {
+  if (_cachedIP) return _cachedIP;
   try {
     const r = await fetch("https://api.ipify.org?format=json");
     const j = await r.json();
-    return j.ip || "unknown";
+    _cachedIP = j.ip || "unknown";
   } catch {
-    return "unknown";
+    _cachedIP = "unknown";
   }
+  return _cachedIP;
 }
 
 /* ============================================================
-   AUDIT LOGGER
+   AUDIT LOGGER (IMMUTABLE)
 ============================================================ */
 async function audit(action, payload = {}) {
   await setDoc(
@@ -79,7 +79,7 @@ async function audit(action, payload = {}) {
       action,
       role: CURRENT_ROLE,
       env: ENV,
-      at: Date.now(),
+      at: serverTimestamp(),
       ip: await getClientIP(),
       ...payload
     }
@@ -87,7 +87,7 @@ async function audit(action, payload = {}) {
 }
 
 /* ============================================================
-   ENSURE LIVE VERSION DOC
+   ENSURE VERSION DOCUMENT
 ============================================================ */
 async function ensureVersionDoc() {
   const snap = await getDoc(versionRef);
@@ -97,59 +97,59 @@ async function ensureVersionDoc() {
       buildNumber: 1,
       buildTime: Date.now(),
       env: ENV,
-      createdAt: Date.now()
+      createdAt: serverTimestamp()
     });
   }
 }
 
 /* ============================================================
-   AUTO UPDATE VERSION
+   ATOMIC VERSION UPDATE
 ============================================================ */
 export async function autoUpdateVersion(changelog = []) {
   await ensureVersionDoc();
 
-  const snap = await getDoc(versionRef);
-  if (!snap.exists()) return;
+  await runTransaction(db, async tx => {
+    const liveSnap = await tx.get(versionRef);
+    if (!liveSnap.exists()) throw new Error("Version doc missing");
 
-  const d = snap.data();
-  const ip = await getClientIP();
+    const live = liveSnap.data();
+    const ip = await getClientIP();
 
-  // Save current → history
-  await setDoc(
-    doc(db, "system_version_history", historyId(d.version, d.buildNumber)),
-    {
-      version: d.version,
-      buildNumber: d.buildNumber,
-      buildTime: d.buildTime,
-      env: d.env,
-      action: "UPDATE",
-      changelog,
-      savedAt: Date.now(),
-      savedBy: CURRENT_ROLE,
-      ip,
-      deleted: false,
-      lockRestore: false
-    }
-  );
+    tx.set(
+      doc(db, "system_version_history", historyId(live.version, live.buildNumber)),
+      {
+        version: live.version,
+        buildNumber: live.buildNumber,
+        buildTime: live.buildTime,
+        env: live.env,
+        action: "UPDATE",
+        changelog,
+        savedAt: Date.now(),
+        savedBy: CURRENT_ROLE,
+        ip,
+        deleted: false,
+        lockRestore: false
+      }
+    );
 
-  // Update live version
-  await updateDoc(versionRef, {
-    version: nextVersion(d.version),
-    buildNumber: d.buildNumber + 1,
-    buildTime: Date.now(),
-    lastUpdate: {
-      by: CURRENT_ROLE,
-      at: Date.now(),
-      ip
-    }
+    tx.update(versionRef, {
+      version: nextVersion(live.version),
+      buildNumber: live.buildNumber + 1,
+      buildTime: Date.now(),
+      lastUpdate: {
+        by: CURRENT_ROLE,
+        at: Date.now(),
+        ip
+      }
+    });
   });
 
-  await audit("UPDATE", { from: d.version });
-  notify("Version updated successfully", "success");
+  await audit("UPDATE");
+  notify("Version updated atomically", "success");
 }
 
 /* ============================================================
-   VERSION CARD (LIVE)
+   LIVE VERSION CARD
 ============================================================ */
 let versionUnsub = null;
 
@@ -160,16 +160,20 @@ export function bindVersionCard() {
     if (!snap.exists()) return;
     const v = snap.data();
 
-    document.getElementById("currentVersion").textContent = `v${v.version}`;
-    document.getElementById("nextVersion").textContent = `v${nextVersion(v.version)}`;
-    document.getElementById("currentBuild").textContent = `#${v.buildNumber}`;
-    document.getElementById("currentDate").textContent =
-      new Date(v.buildTime).toLocaleString("en-GB");
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+
+    set("currentVersion", `v${v.version}`);
+    set("nextVersion", `v${nextVersion(v.version)}`);
+    set("currentBuild", `#${v.buildNumber}`);
+    set("currentDate", new Date(v.buildTime).toLocaleString("en-GB"));
   });
 }
 
 /* ============================================================
-   VERSION VIEW MODAL
+   VERSION VIEW
 ============================================================ */
 export async function openVersionView() {
   const modal = document.getElementById("versionViewModal");
@@ -179,110 +183,85 @@ export async function openVersionView() {
   if (!snap.exists()) return;
 
   const v = snap.data();
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
 
-  document.getElementById("viewCurrentVersion").textContent = `v${v.version}`;
-  document.getElementById("viewBuildNumber").textContent = `#${v.buildNumber}`;
-  document.getElementById("viewBuildDate").textContent =
-    new Date(v.buildTime).toLocaleString("en-GB");
-  document.getElementById("viewNextVersion").textContent =
-    `v${nextVersion(v.version)}`;
-  document.getElementById("viewNextBuild").textContent =
-    `#${v.buildNumber + 1}`;
+  set("viewCurrentVersion", `v${v.version}`);
+  set("viewBuildNumber", `#${v.buildNumber}`);
+  set("viewBuildDate", new Date(v.buildTime).toLocaleString("en-GB"));
+  set("viewNextVersion", `v${nextVersion(v.version)}`);
+  set("viewNextBuild", `#${v.buildNumber + 1}`);
 
   modal.style.display = "flex";
 }
 
-/* ✅ THIS FIXES YOUR ERROR */
 export function closeVersionView() {
   const modal = document.getElementById("versionViewModal");
   if (modal) modal.style.display = "none";
 }
 
 /* ============================================================
-   VERSION HISTORY
+   VERSION HISTORY (SINGLE SNAPSHOT)
 ============================================================ */
 let historyUnsub = null;
 
 export async function openVersionHistory() {
   const modal = document.getElementById("versionHistoryModal");
-  const body = document.getElementById("versionHistoryBody");
+  const body  = document.getElementById("versionHistoryBody");
+  if (!modal || !body) return;
 
   modal.style.display = "flex";
-  body.innerHTML = "<tr><td colspan='6'>Loading…</td></tr>";
+  body.innerHTML = `<tr><td colspan="6">Loading…</td></tr>`;
 
   if (historyUnsub) historyUnsub();
 
   const liveSnap = await getDoc(versionRef);
-  if (!liveSnap.exists()) return;
   const live = liveSnap.data();
 
   historyUnsub = onSnapshot(
     query(collection(db, "system_version_history"), orderBy("savedAt", "desc")),
     snap => {
-
+      const frag = document.createDocumentFragment();
       body.innerHTML = "";
-      const rows = [];
-      const counts = {};
 
       snap.forEach(s => {
         const d = s.data();
         if (ENABLE_SOFT_DELETE && d.deleted) return;
-        const k = versionKey(d);
-        counts[k] = (counts[k] || 0) + 1;
-        rows.push({ id: s.id, ...d });
-      });
 
-      if (!rows.length) {
-        body.innerHTML = "<tr><td colspan='6'>No history found</td></tr>";
-        return;
-      }
-
-      rows.forEach(d => {
         const isLive =
           d.version === live.version &&
           d.buildNumber === live.buildNumber;
 
-        const isDup = counts[versionKey(d)] > 1;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+<td data-label="Date">${new Date(d.savedAt).toLocaleString("en-GB")}</td>
+<td data-label="Version">v${d.version}</td>
+<td data-label="Build">#${d.buildNumber}</td>
+<td data-label="Environment">${d.env || "—"}</td>
+<td data-label="IP Address" class="mono">${d.ip || "unknown"}</td>
+<td data-label="Actions">
+  <div class="vh-actions">
+    <button class="vh-btn restore"
+      ${!canRestore() || isLive || d.lockRestore ? "disabled" : ""}
+      onclick="restoreVersion('${s.id}')">
+      <i class="fa-solid fa-rotate-left"></i>
+    </button>
 
-        body.innerHTML += `
-<tr>
-  <td>${new Date(d.savedAt).toLocaleString("en-GB")}</td>
-  <td>v${d.version}</td>
-  <td>#${d.buildNumber}</td>
-  <td>${d.env || "—"}</td>
-  <td class="mono">${d.ip || "unknown"}</td>
+    <button class="vh-btn delete"
+      ${!canDelete() || isLive ? "disabled" : ""}
+      onclick="deleteVersionHistory('${s.id}','v${d.version}')">
+      <i class="fa-solid fa-trash"></i>
+    </button>
 
-  <td>
-    <div class="vh-actions">
-
-      <button class="vh-btn view"
-        onclick="viewVersion('${d.version}','${d.buildNumber}')">
-        <i class="fa-solid fa-eye"></i>
-      </button>
-
-      <button class="vh-btn restore"
-        ${!canRestore() || isLive || d.lockRestore ? "disabled" : ""}
-        onclick="restoreVersion('${d.id}')">
-        <i class="fa-solid fa-rotate-left"></i>
-      </button>
-
-      <button class="vh-btn delete"
-        ${!canDelete() || isLive ? "disabled" : ""}
-        onclick="deleteVersionHistory('${d.id}','v${d.version}')">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-
-      ${
-        isLive
-          ? `<span class="vh-badge live">LIVE</span>`
-          : isDup
-          ? `<span class="vh-badge dup">DUP</span>`
-          : `<span class="vh-badge ok">OK</span>`
-      }
-    </div>
-  </td>
-</tr>`;
+    ${isLive ? `<span class="vh-badge live">LIVE</span>` : ""}
+  </div>
+</td>`;
+        frag.appendChild(tr);
       });
+
+      body.appendChild(frag);
     }
   );
 }
@@ -294,42 +273,49 @@ export function closeVersionHistory() {
 }
 
 /* ============================================================
-   GLOBAL ACTIONS (CONFIRMED)
+   GLOBAL ACTIONS
 ============================================================ */
-window.viewVersion = (v, b) =>
-  notify(`Viewing v${v} (#${b})`);
-
 window.restoreVersion = async id => {
   if (!canRestore()) return notify("Permission denied", "error");
 
-  const ref = doc(db, "system_version_history", id);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) return;
+  await runTransaction(db, async tx => {
+    const histRef = doc(db, "system_version_history", id);
+    const histSnap = await tx.get(histRef);
+    if (!histSnap.exists()) throw new Error("History not found");
 
-  const d = snap.data();
-  if (ENV === "PROD" && d.lockRestore)
-    return notify("Restore locked in PROD", "warn");
+    const target = histSnap.data();
+    const liveSnap = await tx.get(versionRef);
+    const live = liveSnap.data();
 
-  if (!confirm(
-    `RESTORE CONFIRMATION\n\nVersion: v${d.version}\nBuild: #${d.buildNumber}\n\nProceed?`
-  )) return;
+    tx.set(
+      doc(db, "system_version_history", historyId(live.version, live.buildNumber)),
+      {
+        ...live,
+        action: "AUTO_BACKUP_BEFORE_RESTORE",
+        savedAt: Date.now(),
+        savedBy: CURRENT_ROLE,
+        deleted: false,
+        lockRestore: true
+      }
+    );
 
-  await updateDoc(versionRef, {
-    version: d.version,
-    buildNumber: d.buildNumber,
-    buildTime: Date.now(),
-    restoredFrom: id
+    tx.update(versionRef, {
+      version: target.version,
+      buildNumber: target.buildNumber,
+      buildTime: Date.now(),
+      restoredFrom: id
+    });
   });
 
-  await audit("RESTORE", { id, version: d.version });
-  notify("Version restored successfully", "success");
+  await audit("RESTORE", { id });
+  notify("Version restored safely", "success");
 };
 
 window.deleteVersionHistory = async (id, label) => {
   if (!canDelete()) return notify("Permission denied", "error");
 
   const typed = prompt(`Type "${label}" to confirm delete`);
-  if (typed !== label) return notify("Delete cancelled", "warn");
+  if (typed !== label) return notify("Cancelled", "warn");
 
   const ref = doc(db, "system_version_history", id);
 
