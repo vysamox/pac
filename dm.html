@@ -1355,6 +1355,37 @@ tbody tr:hover::after {
   to   { transform: translateX(0); opacity: 1; }
 }
 
+.query-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: rgba(255,255,255,.05);
+}
+
+.query-table th,
+.query-table td {
+  border: 1px solid rgba(255,255,255,.15);
+  padding: 6px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.query-table th {
+  background: rgba(0,0,0,.4);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.query-table tr:nth-child(even) {
+  background: rgba(255,255,255,.03);
+}
+
+.query-table td.mono {
+  font-family: monospace;
+}
+
+
 </style>
 </head>
 
@@ -1465,6 +1496,7 @@ tbody tr:hover::after {
       <table>
        <thead>
   <tr>
+    <th>Student UID</th>
     <th>Name</th>
     <th>Course</th>
     <th>Year</th>
@@ -1536,7 +1568,68 @@ tbody tr:hover::after {
   </button>
 
 </div>
+
+<div class="card query">
+  <h2><i class="fa-solid fa-magnifying-glass"></i></h2>
+  <div class="card-label">Query Records</div>
+
+  <button
+    class="card-icon-btn"
+    title="Open Query Panel"
+    onclick="openQueryPanel()">
+    <i class="fa-solid fa-arrow-right"></i>
+  </button>
 </div>
+
+</div>
+
+<div id="queryPanel" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:480px;">
+    <h3>Quick Query</h3>
+
+    <button class="ucl-close-btn" onclick="closeQueryPanel()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <label>Query Type</label>
+    <select id="queryType" class="ucl-input">
+      <option value="pac">PAC Entry</option>
+      <option value="ucl">UCL Account</option>
+      <option value="student">Student</option>
+      <option value="temp">Temp Link</option>
+    </select>
+
+    <label>Enter ID / Code</label>
+    <input
+      id="queryValue"
+      class="ucl-input"
+      placeholder="PAC No / UCL ID / Doc ID">
+
+    <button
+      class="ucl-edit-btn"
+      style="width:100%; margin-top:14px"
+      onclick="runQuery()">
+      Run Query
+    </button>
+  </div>
+</div>
+
+<div id="queryResultModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:900px;">
+    <h3>Query Result</h3>
+
+    <button class="ucl-close-btn" onclick="closeQueryResult()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div id="queryResultBody"
+         class="status-item"
+         style="line-height:1.7; margin-top:12px;">
+      —
+    </div>
+  </div>
+</div>
+
 <!-- ==== SYSTEM HEALTH ==== -->
 <div class="status-box">
   <h3>System Activity Snapshot</h3>
@@ -1582,8 +1675,6 @@ tbody tr:hover::after {
   </button>
 
 </div>
-
-
   </div>
   
 </div>
@@ -1605,11 +1696,9 @@ tbody tr:hover::after {
   </div>
 </div>
 
-
 <!-- ==== DUPLICATE ID TABLE ==== -->
 <div class="table-container">
   <h2 style="text-align:center; margin-bottom:20px;">Duplicate Delete ID Registry</h2>
-
   <table>
 <thead>
 <tr>
@@ -1948,9 +2037,7 @@ tbody tr:hover::after {
 
 <div id="tempLinksModal" class="ucl-modal">
   <div class="ucl-modal-box" style="max-width:1200px;">
-
     <h3>Temporary Access Links</h3>
-
     <button class="ucl-close-btn" onclick="closeTempLinksModal()">
       <i class="fa-solid fa-xmark"></i>
     </button>
@@ -1963,7 +2050,6 @@ tbody tr:hover::after {
             <th>Status</th>
             <th>Main URL</th>   <!-- ✅ NEW -->
             <th>Device</th>
-
             <th>Access</th>
             <th>Reload</th>
             <th>Fingerprint</th>
@@ -1979,7 +2065,6 @@ tbody tr:hover::after {
   </div>
 </div>
 
-
 <div id="globalAlerts"></div>
 
 <footer class="dashboard-footer">
@@ -1990,7 +2075,7 @@ tbody tr:hover::after {
 <script type="module" src="./assets/js/temp-link-monitor.js"></script>
 <script type="module" src="./assets/js/students-monitor.js"></script>
 <script type="module" src="/assets/js/temp-link-access.js"></script>
-
+<script type="module" src="./assets/js/query-engine.js"></script>
 
 <script type="module">
 
@@ -2021,14 +2106,7 @@ import "./assets/js/duplicate-delete-registry.js";
 
 import { initLastDeletedPac } from "./assets/js/last-deleted-pac.js";
 
-import {
-  autoUpdateVersion,
-  bindVersionCard,
-  openVersionView,
-  closeVersionView,
-  openVersionHistory,
-  closeVersionHistory
-} from "./assets/js/version-control.js";
+import { autoUpdateVersion, bindVersionCard, openVersionView, closeVersionView, openVersionHistory, closeVersionHistory } from "./assets/js/version-control.js";
 
 window.openVersionHistory = openVersionHistory;
 window.closeVersionHistory = closeVersionHistory;
@@ -2179,10 +2257,6 @@ onSnapshot(collection(db, "ucl_owners"), snap => {
   console.log("✔ UCL Amount Map:", uclAmountMap);
   uclLoaded = true;
 });
-
-
-
-
 
 /* ============================================
    LOAD PAC ENTRIES AND COMPARE AMOUNTS
@@ -2466,8 +2540,6 @@ function renderUclRow(docId, d, isActive) {
   </div>
 </td>
 
-
-
     </tr>
   `;
 }
@@ -2540,10 +2612,6 @@ window.toggleUclStatus = async function (docId, currentStatus) {
   }
 };
 
-
-
-
-
 document.getElementById("viewUclBtn").addEventListener("click", async () => {
   await loadUclTable();              // ✅ IMPORTANT
   document.getElementById("uclModal").style.display = "flex";
@@ -2603,8 +2671,6 @@ document.getElementById("saveUclEditBtn").addEventListener("click", async () => 
   document.getElementById("uclEditModal").style.display = "none";
 });
 
-
-
 /* ---------------- FETCH UCL REQUEST COUNT ---------------- */
 const uclRequestCountEl = document.getElementById("uclRequestCount");
 
@@ -2621,13 +2687,10 @@ function loadUclRequests() {
 
 loadUclRequests();
 
-
 document.getElementById("viewUclRequestBtn").onclick = function () {
   renderUclRequestTable();
   document.getElementById("uclRequestPopup").style.display = "flex";
 };
-
-
 
 function renderUclRequestTable() {
   let html = `
@@ -3084,7 +3147,6 @@ const roles = Array.from(
   alert("PAC Navigation updated successfully");
   closeEditPacNav();
 };
-
 
 document.addEventListener("DOMContentLoaded", () => {
   initLastDeletedPac();

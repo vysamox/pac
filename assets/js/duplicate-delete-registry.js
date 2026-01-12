@@ -378,14 +378,3 @@ window.rollbackFix = async function (pacNo) {
 
   alert("Rollback completed");
 };
-
-/* ============================================================
-   FUTURE HOOKS (INTENTIONALLY EMPTY)
-============================================================ */
-/*
-  🤖 selfHealDetector(record)
-  🔮 reserveNextIds(count)
-  📤 exportFixReportCSV()
-  📊 timelineGraphUI()
-  🔐 auth.uid replace SYS.ADMIN
-*/

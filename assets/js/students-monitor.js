@@ -101,10 +101,11 @@ async function loadStudentsPage(direction = "init") {
 
       body.innerHTML += `
 <tr>
+<td data-label="ID">${d.studentUID || d.studentUID || "-"}</td>
   <td data-label="Name">${d.name || d.Name || "-"}</td>
   <td data-label="Course">${d.department || d.Course || "-"}</td>
   <td data-label="Year">${d.CourseYear || "-"}</td>
-  <td data-label="DOB">${d.DOB || "-"}</td>
+  <td data-label="DOB">${d.DOB_DMY || "-"}</td>
 
   <td data-label="Action" style="text-align:center;">
     <button class="ucl-view-btn" title="View" onclick="viewStudent('${docItem.id}')">
