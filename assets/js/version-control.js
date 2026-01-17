@@ -18,6 +18,50 @@ import {
   serverTimestamp
 } from "./firebase-config.js";
 
+
+/* ============================================================
+   GITHUB LIVE COMMIT LINK
+============================================================ */
+
+const GITHUB_OWNER  = "vysamox";
+const GITHUB_REPO   = "pac";
+const GITHUB_BRANCH = "main"; // or master
+
+let _cachedCommit = null;
+
+async function getLatestGitCommit() {
+  if (_cachedCommit) return _cachedCommit;
+
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/commits/${GITHUB_BRANCH}`,
+      {
+        headers: {
+          Authorization: `Bearer ${window.GITHUB_TOKEN}`,
+          Accept: "application/vnd.github+json"
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    _cachedCommit = {
+      hash: data.sha.substring(0, 7),
+      fullHash: data.sha,
+      message: data.commit.message,
+      author: data.commit.author.name,
+      date: data.commit.author.date,
+      url: data.html_url
+    };
+
+  } catch (e) {
+    _cachedCommit = { hash: "unknown", message: "GitHub unavailable" };
+  }
+
+  return _cachedCommit;
+}
+
+
 /* ============================================================
    CONFIG
 ============================================================ */
@@ -114,23 +158,30 @@ export async function autoUpdateVersion(changelog = []) {
 
     const live = liveSnap.data();
     const ip = await getClientIP();
+    const git = await getLatestGitCommit();
+
+    
 
     tx.set(
-      doc(db, "system_version_history", historyId(live.version, live.buildNumber)),
-      {
-        version: live.version,
-        buildNumber: live.buildNumber,
-        buildTime: live.buildTime,
-        env: live.env,
-        action: "UPDATE",
-        changelog,
-        savedAt: Date.now(),
-        savedBy: CURRENT_ROLE,
-        ip,
-        deleted: false,
-        lockRestore: false
-      }
-    );
+  doc(db, "system_version_history", historyId(live.version, live.buildNumber)),
+  {
+    version: live.version,
+    buildNumber: live.buildNumber,
+    buildTime: live.buildTime,
+    env: live.env,
+    action: "UPDATE",
+    changelog,
+
+    git, // 🧬 GitHub commit snapshot
+
+    savedAt: Date.now(),
+    savedBy: CURRENT_ROLE,
+    ip,
+    deleted: false,
+    lockRestore: false
+  }
+);
+
 
     tx.update(versionRef, {
       version: nextVersion(live.version),
@@ -287,17 +338,26 @@ window.restoreVersion = async id => {
     const liveSnap = await tx.get(versionRef);
     const live = liveSnap.data();
 
-    tx.set(
-      doc(db, "system_version_history", historyId(live.version, live.buildNumber)),
-      {
-        ...live,
-        action: "AUTO_BACKUP_BEFORE_RESTORE",
-        savedAt: Date.now(),
-        savedBy: CURRENT_ROLE,
-        deleted: false,
-        lockRestore: true
-      }
-    );
+tx.set(
+  doc(db, "system_version_history", historyId(live.version, live.buildNumber)),
+  {
+    version: live.version,
+    buildNumber: live.buildNumber,
+    buildTime: live.buildTime,
+    env: live.env,
+    action: "UPDATE",
+    changelog,
+
+    git, // 🧬 GitHub commit snapshot
+
+    savedAt: Date.now(),
+    savedBy: CURRENT_ROLE,
+    ip,
+    deleted: false,
+    lockRestore: false
+  }
+);
+
 
     tx.update(versionRef, {
       version: target.version,

@@ -1393,13 +1393,14 @@ tbody tr:hover::after {
 
 <header>
   <h1><i class="fa-solid fa-database"></i> Database Control Panel</h1>
-
   <button id="menuToggle" class="menu-dots">&#8942;</button>
-
   <nav id="mainMenu"></nav>
 </header>
+<h2 class="page-title">
+  <i class="fa-solid fa-brain"></i>
+  System Intelligence Dashboard <i class="fa-solid fa-brain"></i>
+</h2>
 
-<h2 class="page-title">System Intelligence Dashboard</h2>
 
 <!-- ==== ADVANCED GRID CARDS ==== -->
 <div class="dashboard-grid">
@@ -1614,6 +1615,8 @@ tbody tr:hover::after {
   </div>
 </div>
 
+
+
 <div id="queryResultModal" class="ucl-modal">
   <div class="ucl-modal-box" style="max-width:900px;">
     <h3>Query Result</h3>
@@ -1628,56 +1631,92 @@ tbody tr:hover::after {
       —
     </div>
   </div>
+
+  
 </div>
+
 
 <!-- ==== SYSTEM HEALTH ==== -->
 <div class="status-box">
-  <h3>System Activity Snapshot</h3>
+<h3>
+  <i class="fa-solid fa-chart-line" style="margin-right:8px;"></i>
+  Live System Insights
+</h3>
+
   <div class="status-row">
-<div class="status-item" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-  <span>
-    Last Deleted PAC:
-    <b id="lastDeletedPac">Loading...</b>
-  </span>
 
-  <button
-    id="viewLastDeletedBtn"
-    class="ucl-view-btn"
-    title="View Last Deleted PAC"
-    disabled
-  >
-    <i class="fa-solid fa-eye"></i>
-  </button>
-</div>
+    <!-- Last Deleted PAC -->
+    <div class="status-item"
+         style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+      <span>
+  <i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>
+  Last Deleted PAC:
+  <b id="lastDeletedPac">Loading...</b>
+</span>
 
-    <div class="status-item">
-      System Uptime: <b id="systemUptime">0s</b>
+      <button
+        id="viewLastDeletedBtn"
+        class="ucl-view-btn"
+        title="View Last Deleted PAC"
+        disabled>
+        <i class="fa-solid fa-eye"></i>
+      </button>
     </div>
-    
+
+    <!-- System Uptime -->
     <div class="status-item">
-  Last Restart Time: <b id="lastRestartTime">—</b>
+  <i class="fa-solid fa-stopwatch" style="margin-right:6px;"></i>
+  System Uptime:
+  <b id="systemUptime">0s</b>
 </div>
 
-<div class="status-item"
-     style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
 
-  <span>
-    Last PAC Copy Code:
-    <b id="lastPacCopyCode">—</b>
-  </span>
-
-  <button
-    id="viewLastPacCopyBtn"
-    class="ucl-view-btn"
-    title="View Last Copied PAC"
-    disabled>
-    <i class="fa-solid fa-eye"></i>
-  </button>
-
+    <!-- Last Restart -->
+   <div class="status-item">
+  <i class="fa-solid fa-power-off"
+     style="margin-right:6px; color:#00eaff; text-shadow:0 0 6px rgba(0,238,255,.8);">
+  </i>
+  Last Restart Time:
+  <b id="lastRestartTime">—</b>
 </div>
+
+    <!-- Last PAC Copy -->
+    <div class="status-item"
+         style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+    <span>
+  <i class="fa-solid fa-clipboard" style="margin-right:6px;"></i>
+  Last PAC Copy Code:
+  <b id="lastPacCopyCode">—</b>
+</span>
+
+
+      <button
+        id="viewLastPacCopyBtn"
+        class="ucl-view-btn"
+        title="View Last Copied PAC"
+        disabled>
+        <i class="fa-solid fa-eye"></i>
+      </button>
+    </div>
+
+    <!-- Firestore Storage Status -->
+    <div class="status-item"
+         style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+     <span>
+  <i class="fa-solid fa-hard-drive" style="margin-right:6px;"></i>
+  Firestore Storage:
+  <b id="storageStatusText">Calculating…</b>
+</span>
+
+
+      <span id="storageBadge" class="status-ok">
+        OK
+      </span>
+    </div>
+
   </div>
-  
 </div>
+
 
 <!-- LAST COPIED PAC MODAL -->
 <div id="lastCopyModal" class="ucl-modal">
@@ -1698,22 +1737,27 @@ tbody tr:hover::after {
 
 <!-- ==== DUPLICATE ID TABLE ==== -->
 <div class="table-container">
-  <h2 style="text-align:center; margin-bottom:20px;">Duplicate Delete ID Registry</h2>
+  <h2 style="text-align:center; margin-bottom:20px;">
+  <i class="fa-solid fa-clone" style="margin-right:8px;"></i>
+  Duplicate Delete ID Registry
+</h2>
+
   <table>
 <thead>
 <tr>
-  <th>Delete ID</th>
-  <th>CSC Ref</th>
-  <th>PAC</th>
-  <th>Amount</th>
-  <th>Date</th>
-  <th>Time</th>
-  <th>Deleted</th>
-  <th>IP</th>
-  <th>New Delete ID</th>
-  <th>Update</th>
+  <th><i class="fa-solid fa-hashtag"></i> Delete ID</th>
+  <th><i class="fa-solid fa-id-card"></i> CSC Ref</th>
+  <th><i class="fa-solid fa-ticket"></i> PAC</th>
+  <th><i class="fa-solid fa-indian-rupee-sign"></i> Amount</th>
+  <th><i class="fa-solid fa-calendar-days"></i> Date</th>
+  <th><i class="fa-solid fa-clock"></i> Time</th>
+  <th><i class="fa-solid fa-trash-can"></i> Deleted</th>
+  <th><i class="fa-solid fa-network-wired"></i> IP</th>
+  <th><i class="fa-solid fa-rotate"></i> New Delete ID</th>
+  <th><i class="fa-solid fa-pen-to-square"></i> Update</th>
 </tr>
 </thead>
+
     <tbody id="duplicateTable"></tbody>
   </table>
 </div>
@@ -1725,18 +1769,19 @@ tbody tr:hover::after {
 <table>
 <thead>
   <tr>
-    <th>PAC No</th>
-    <th>UCL Owner</th>
-    <th>UCL</th>
-    <th>CSC Ref</th>
-    <th>Amount</th>
-    <th>Expected</th>
-    <th>Date</th>
-    <th>Time</th>
-    <th>IP</th>
-    <th>Purpose</th>
+    <th><i class="fa-solid fa-ticket"></i> PAC No</th>
+    <th><i class="fa-solid fa-user"></i> UCL Owner</th>
+    <th><i class="fa-solid fa-id-badge"></i> UCL</th>
+    <th><i class="fa-solid fa-id-card"></i> CSC Ref</th>
+    <th><i class="fa-solid fa-indian-rupee-sign"></i> Amount</th>
+    <th><i class="fa-solid fa-bullseye"></i> Expected</th>
+    <th><i class="fa-solid fa-calendar-days"></i> Date</th>
+    <th><i class="fa-solid fa-clock"></i> Time</th>
+    <th><i class="fa-solid fa-network-wired"></i> IP</th>
+    <th><i class="fa-solid fa-briefcase"></i> Purpose</th>
   </tr>
 </thead>
+
 <tbody id="pacAmountTable"></tbody>
 </table>
 </div>
@@ -1769,7 +1814,6 @@ tbody tr:hover::after {
 <th>Verified At</th>
 <th>Status</th>
 <th>Action</th>
-
   </tr>
 </thead>
     <tbody id="uclTableBody"></tbody>
@@ -2048,7 +2092,7 @@ tbody tr:hover::after {
           <tr>
             <th>Token</th>
             <th>Status</th>
-            <th>Main URL</th>   <!-- ✅ NEW -->
+            <th>Main URL</th>
             <th>Device</th>
             <th>Access</th>
             <th>Reload</th>
@@ -2076,6 +2120,7 @@ tbody tr:hover::after {
 <script type="module" src="./assets/js/students-monitor.js"></script>
 <script type="module" src="/assets/js/temp-link-access.js"></script>
 <script type="module" src="./assets/js/query-engine.js"></script>
+<script type="module" src="./assets/js/firestore-storage-status.js"></script>
 
 <script type="module">
 

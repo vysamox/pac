@@ -19,6 +19,8 @@ const PAGE_SIZE = 15;
 /* ================= STATE ================= */
 let students = [];
 let page = 1;
+let filteredStudents = [];
+
 
 /* ================= DOM ================= */
 const table    = document.getElementById("studentTable");
@@ -90,8 +92,10 @@ async function loadStudents() {
     ...d.data()
   }));
 
-  page = 1;
-  render();
+filteredStudents = students;
+page = 1;
+render();
+
 }
 
 /* ================= PREVIEW ID MAP ================= */
@@ -136,9 +140,11 @@ function render() {
   }
 
   const previewMap = getNextUIDMap();
-  const totalPages = Math.ceil(students.length / PAGE_SIZE);
-  const start = (page - 1) * PAGE_SIZE;
-  const slice = students.slice(start, start + PAGE_SIZE);
+const list = filteredStudents.length ? filteredStudents : students;
+const totalPages = Math.ceil(list.length / PAGE_SIZE);
+const start = (page - 1) * PAGE_SIZE;
+const slice = list.slice(start, start + PAGE_SIZE);
+
 
   slice.forEach((s, i) => {
 
@@ -247,6 +253,27 @@ genBtn.onclick = async () => {
   render();
 };
 
+table.addEventListener("click", e => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+
+  const id = btn.dataset.id;
+  if (!id) return;
+
+  if (btn.classList.contains("view")) {
+    openStudentView(id);
+  }
+
+  if (btn.classList.contains("edit")) {
+    alert("Edit coming soon for " + id);
+  }
+
+  if (btn.classList.contains("delete")) {
+    alert("Delete is disabled for safety");
+  }
+});
+
+
 /* ================= UPDATE DOB BUTTON ================= */
 updateDobBtn.onclick = async () => {
 
@@ -306,19 +333,289 @@ function showLiveOK(studentId) {
   });
 }
 
-// ---------- Attach row action handlers ----------
-document.querySelectorAll(".btn.view").forEach(btn => {
-  btn.onclick = () => openStudentView(btn.dataset.id);
-});
+window.openStudentView = function(studentId) {
+  const s = students.find(x => x.id === studentId);
+  if (!s) return;
 
-document.querySelectorAll(".btn.edit").forEach(btn => {
-  btn.onclick = () => alert("Edit coming soon for " + btn.dataset.id);
-});
+  document.getElementById("viewModal").style.display = "flex";
 
-document.querySelectorAll(".btn.delete").forEach(btn => {
-  btn.onclick = () => alert("Delete is disabled for safety");
-});
+  document.getElementById("viewAvatar").textContent =
+    (s.name || s.studentName || "?").charAt(0).toUpperCase();
 
+  document.getElementById("viewName").textContent =
+    s.name || s.studentName || "Unknown Student";
+
+  document.getElementById("viewUID").textContent =
+    "Student ID: " + (s.studentUID || "Not generated");
+
+const grid = document.getElementById("viewGrid");
+
+grid.innerHTML = `
+<table class="view-table">
+
+
+  <tbody>
+
+  <tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">👤 Personal Info</th>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td>Phone</td>
+        <td>${s.phone || "-"}</td>
+        <td>Email</td>
+        <td>${s.email || "-"}</td>
+      </tr>
+      <tr>
+        <td>DOB</td>
+        <td>${s.DOB_DMY || formatDateDMY(s.DOB)}</td>
+        <td>Gender</td>
+        <td>${s.gender || "-"}</td>
+      </tr>
+      <tr>
+        <td>Blood Group</td>
+        <td>${s.bloodGroup || "-"}</td>
+        <td>Religion</td>
+        <td>${s.religion || "-"}</td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+
+<tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">👪 Family</th>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td>Father</td>
+        <td>${s.father || "-"}</td>
+        <td>Father Contact</td>
+        <td>${s.FatherContact || "-"}</td>
+      </tr>
+      <tr>
+        <td>Mother</td>
+        <td>${s.mother || "-"}</td>
+        <td>Guardian</td>
+        <td>${s.Guardian || "-"}</td>
+      </tr>
+      <tr>
+        <td>Guardian Contact</td>
+        <td>${s.GuardianContact || "-"}</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+
+ <tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🎓 Course</th>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td>Department</td>
+        <td>${s.department || "-"}</td>
+        <td>Session</td>
+        <td>${s.CourseSession || "-"}</td>
+      </tr>
+      <tr>
+        <td>Course Year</td>
+        <td>${s.CourseYear || "-"}</td>
+        <td>Quota</td>
+        <td>${s.Quota || "-"}</td>
+      </tr>
+      <tr>
+        <td>Campus</td>
+        <td>${s.campus || "-"}</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+
+<tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">💰 Fees</th>
+</tr>
+
+<tr>
+  <td>Total Fees</td>
+  <td>₹${s.TotalFees || 0}</td>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td>Admission Fees</td>
+        <td>₹${s.AdmissionFees || "-"}</td>
+        <td>Semester 1</td>
+        <td>₹${s.SemesterFee1 || "-"}</td>
+      </tr>
+      <tr>
+        <td>Semester 2</td>
+        <td>₹${s.SemesterFee2 || "-"}</td>
+        <td>Semester 3</td>
+        <td>₹${s.SemesterFee3 || "-"}</td>
+      </tr>
+      <tr>
+        <td>Semester 4</td>
+        <td>₹${s.SemesterFee4 || "-"}</td>
+        <td>Semester 5</td>
+        <td>₹${s.SemesterFee5 || "-"}</td>
+      </tr>
+      <tr>
+        <td>Semester 6</td>
+        <td>₹${s.SemesterFee6 || "-"}</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+
+<tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🧑‍💼 Agent</th>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td>Agent Name</td>
+        <td>${s.AgentName || "-"}</td>
+        <td>Agent Type</td>
+        <td>${s.AgentType || "-"}</td>
+      </tr>
+      <tr>
+        <td>Agent Contact</td>
+        <td>${s.AgentContact || "-"}</td>
+        <td>Agent Amount</td>
+        <td>₹${s.AgentAmount || "-"}</td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+
+  <tr><th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🏠 Address</th></tr>
+  <tr><td>Permanent</td><td>
+    ${s.PermanentCity || ""}, ${s.PermanentPost || ""}, ${s.PermanentPolice || ""}, ${s.PermanentDistrict || ""}, ${s.PermanentState || ""} - ${s.PermanentPin || ""}
+  </td></tr>
+  <tr><td>Present</td><td>
+    ${s.PresentCity || ""}, ${s.PresentPost || ""}, ${s.PresentPolice || ""}, ${s.PresentDistrict || ""}, ${s.PresentState || ""} - ${s.PresentPin || ""}
+  </td></tr>
+
+ <!-- 🪪 Identity -->
+<tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🪪 Identity</th>
+</tr>
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td>Aadhaar</td>
+        <td>${s.aadhaar || "-"}</td>
+        <td>Nationality</td>
+        <td>${s.Nationality || "-"}</td>
+      </tr>
+      <tr>
+        <td>Caste</td>
+        <td>${s.caste || "-"}</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+<!-- 📚 Academics -->
+<tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">📚 Academics</th>
+</tr>
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td>Secondary</td>
+        <td>${s.SecondaryBoard || "-"} (${s.SecondaryPassingYear || "-"})</td>
+        <td>HS Board</td>
+        <td>${s.HigherSecondaryBoard || "-"}</td>
+      </tr>
+      <tr>
+        <td>Last Institute</td>
+        <td>${s.LastInstitute || "-"}</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+<!-- 🧾 System -->
+<tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🧾 System</th>
+</tr>
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td>Financial Year</td>
+        <td>${s.FinancialYear || "-"}</td>
+        <td>Student UID</td>
+        <td>${s.studentUID || "-"}</td>
+      </tr>
+      <tr>
+        <td>Remarks</td>
+        <td>${s.Remarks || "-"}</td>
+        <td>Student UID Generate</td>
+        <td>${s.uidGeneratedAt}</td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  </tbody>
+</table>
+`;
+
+
+};
+
+window.closeView = function() {
+  document.getElementById("viewModal").style.display = "none";
+};
+
+const searchInput = document.getElementById("searchInput");
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.toLowerCase().trim();
+
+  if (!q) {
+    filteredStudents = students;
+  } else {
+    filteredStudents = students.filter(s =>
+      (s.name || s.studentName || "").toLowerCase().includes(q) ||
+      (s.phone || "").includes(q) ||
+      (s.studentUID || "").includes(q)
+    );
+  }
+
+  page = 1;
+  render();
+});
 
 /* ================= INIT ================= */
 loadStudents();

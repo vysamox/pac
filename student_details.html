@@ -219,30 +219,34 @@ tr:nth-child(even) {
   color:#00ffcc;
 }
 
-.view-grid {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:10px;
+#viewGrid {
+
+  grid-template-columns: 1fr 1fr;   /* two equal columns */
+  gap: 16px;
+  width: 100%;
 }
 
-.view-grid div {
-  background:rgba(255,255,255,.05);
-  padding:10px;
-  border-radius:10px;
-  font-size:13px;
-  display:flex;
-  flex-direction:column;
+
+#viewGrid > div {
+  background: rgba(0,255,255,.06);
+  border: 1px solid rgba(0,255,255,.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  width: 100%;
 }
 
-.view-grid span {
-  font-size:11px;
-  color:#00eaff;
+
+#viewGrid span {
+  display: block;
+  font-size: 11px;
+  color: #00eaff;
+  margin-bottom: 3px;
 }
+
 .view-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.7);
+  background: rgba(0,0,0,.75);
   display: none;
   align-items: center;
   justify-content: center;
@@ -250,12 +254,164 @@ tr:nth-child(even) {
 }
 
 .view-card {
-  background: #001f3f;
+  background: linear-gradient(180deg,#001a33,#001f3f);
   padding: 20px;
   border-radius: 16px;
-  width: 90%;
-  max-width: 420px;
+  width: 92%;
+  max-width: 1100px; 
+  max-height: 90vh;
+  overflow-y: auto;
   border: 1px solid cyan;
+  box-shadow: 0 0 30px rgba(0,255,255,.2);
+}
+
+#viewGrid table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #eaffff;
+}
+
+#viewGrid td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(0,255,255,.15);
+}
+
+#viewGrid td:first-child {
+  color: #00eaff;
+  font-weight: 600;
+  width: 35%;
+}
+
+#viewGrid th {
+  background: rgba(0,255,255,.1);
+  padding: 10px;
+  text-align: left;
+  color: #00ffcc;
+}
+
+#viewGrid table td,
+#viewGrid table th {
+  border: 1px solid rgba(0,255,255,.25);
+  padding: 8px 10px;
+}
+
+.view-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: rgba(0,0,0,.2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.view-table th {
+  background: rgba(0,255,255,.12);
+  color: #00eaff;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0,255,255,.3);
+}
+
+.view-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(0,255,255,.15);
+  color: #eaffff;
+}
+
+.view-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.view-table table td {
+  padding: 6px 8px;
+  border: 1px solid rgba(0,255,255,.15);
+}
+
+@media (max-width: 768px) {
+  .view-card {
+    max-width: 100%;
+    padding: 12px;
+  }
+
+  .view-table td {
+    font-size: 12px;
+  }
+
+  .view-table table td {
+    display: block;
+    width: 100%;
+  }
+}
+
+.search-box {
+  position: relative;
+  max-width: 420px;
+  margin: 14px auto 20px;
+  width: 100%;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 14px 16px 14px 42px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,255,255,.35);
+  outline: none;
+  background: linear-gradient(145deg, rgba(0,0,0,.7), rgba(0,20,40,.9));
+  color: #00eaff;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .4px;
+  box-shadow: 
+    0 0 18px rgba(0,255,255,.25),
+    inset 0 0 8px rgba(0,255,255,.15);
+  transition: .3s ease;
+}
+
+.search-box input::placeholder {
+  color: rgba(0,255,255,.6);
+}
+
+.search-box input:focus {
+  box-shadow:
+    0 0 28px rgba(0,255,255,.5),
+    inset 0 0 12px rgba(0,255,255,.35);
+  border-color: #00ffcc;
+}
+
+/* Icon */
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #00ffcc;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px #00ffcc);
+}
+
+/* Scanning animation */
+.scan-line {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ffcc, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.search-box input:focus ~ .scan-line {
+  animation: scan 1.2s linear infinite;
+  opacity: 1;
+}
+
+@keyframes scan {
+  0%   { top: 20%; opacity: 0; }
+  50%  { opacity: 1; }
+  100% { top: 80%; opacity: 0; }
 }
 
 </style>
@@ -281,6 +437,13 @@ tr:nth-child(even) {
 
 </div>
 
+<div class="search-box">
+  <span class="search-icon">🔍</span>
+  <input id="searchInput" type="text" placeholder="Search by Name, Phone or Student ID">
+  <span class="scan-line"></span>
+</div>
+
+
 <div class="table-box">
 <table>
 <thead>
@@ -301,6 +464,24 @@ tr:nth-child(even) {
 </thead>
 <tbody id="studentTable"></tbody>
 </table>
+</div>
+
+<div class="view-modal" id="viewModal">
+  <div class="view-card">
+    <div class="view-header">
+      <div class="avatar" id="viewAvatar">👤</div>
+      <div>
+        <div id="viewName" style="font-size:18px;font-weight:700"></div>
+        <div class="view-sub" id="viewUID"></div>
+      </div>
+    </div>
+
+    <div class="view-grid" id="viewGrid"></div>
+
+    <div style="text-align:right;margin-top:15px">
+      <button class="btn delete" onclick="closeView()">Close</button>
+    </div>
+  </div>
 </div>
 
 <div class="pagination">
