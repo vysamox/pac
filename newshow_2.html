@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PAC Management Dashboard</title>
+
+<!-- ⭐ Favicon -->
+<link rel="icon" type="image/png" href="assets/fav.png">
+<link rel="apple-touch-icon" href="assets/fav.png">
+
+<!-- 🎨 Styles -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+  /* ---------------- GLOBAL ---------------- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f4f7ff;
+  color: #333;
+  overflow-x: hidden;
+}
+
+/* Always hide toggle on desktop */
+.menu-toggle {
+  display: none;
+}
+
+/* ---------------- HEADER ---------------- */
+header {
+  background: rgba(0, 123, 255, 0.9);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+header h1 {
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Desktop nav */
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+nav a {
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  color: #ffeb3b;
+}
+
+nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background: #ffeb3b;
+  transition: 0.3s;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+    /* 💠 Dashboard Summary */
+    .status-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px auto;
+
+    }
+
+    .status-bar span {
+      background: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .status-bar span:hover {
+      transform: translateY(-2px);
+    }
+
+   /* 💠 Dashboard Summary - Colored Left & Right Borders */
+
+/* Live PAC Count */
+.live-count {
+  border-left: 6px solid #28a745;
+  border-right: 6px solid #28a745;
+}
+
+/* Total Copied */
+.copied-count {
+  border-left: 6px solid #ffc107;
+  border-right: 6px solid #ffc107;
+}
+
+/* Sync Status */
+.sync-status {
+  border-left: 6px solid #17a2b8;
+  border-right: 6px solid #17a2b8;
+  animation: syncGlow 2.4s ease-in-out infinite;
+}
+
+/* Today Copied */
+.today-count {
+  border-left: 6px solid #6f42c1;
+  border-right: 6px solid #6f42c1;
+}
+
+/* Income Total */
+.income-total {
+  border-left: 6px solid #00c853;
+  border-right: 6px solid #00c853;
+}
+.income-total i {
+  color: #00c853;
+}
+
+/* Database Size */
+.db-size {
+  border-left: 6px solid #198754;
+  border-right: 6px solid #198754;
+}
+
+/* Unused PACs */
+.unused-count {
+  border-left: 6px solid #6c757d;
+  border-right: 6px solid #6c757d;
+}
+
+/* Usage Percentage */
+.percent-used {
+  border-left: 6px solid #0dcaf0;
+  border-right: 6px solid #0dcaf0;
+}
+
+
+    /* 🔍 Filter Box */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(8px);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 900px;
+      margin: 0 auto 20px;
+    }
+
+    .filter-bar input, .filter-bar select {
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .filter-bar input:focus, .filter-bar select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0,123,255,0.3);
+    }
+
+    .filter-bar button {
+      background: linear-gradient(90deg, #007bff, #0056b3);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-weight: bold;
+    }
+
+    .filter-bar button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* 🌟 Beautiful Modern Table with Borders */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 🌈 Cute Blue Cloud Table */
+table {
+  width: 95%;
+  margin: 20px auto 40px;
+  border-collapse: collapse;
+  background: linear-gradient(135deg, #e0f7ff, #ffffff, #e0f7ff);
+  background-size: 300% 300%;
+  animation: bgFlow 10s ease infinite;
+  border: 1px solid #b3d8ff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+/* 💫 Subtle animated gradient background */
+@keyframes bgFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+/* 🌈 Animated Table Header */
+thead {
+  background: linear-gradient(270deg, #007bff, #00b4d8, #00c6ff, #007bff);
+  background-size: 400% 400%;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  animation: headerFlow 8s ease infinite;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Header cells */
+thead th {
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ✨ Smooth gradient movement */
+@keyframes headerFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+/* Table Body */
+tbody tr {
+  transition: all 0.2s ease-in-out;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f8faff;
+}
+
+tbody tr:hover {
+  background-color: #e3f2fd;
+  transform: scale(1.005);
+  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.15);
+}
+
+td {
+  padding: 12px;
+  font-size: 15px;
+  color: #333;
+  border: 1px solid #d0d7de; /* inner grid lines */
+}
+
+/* Rounded corners for outermost cells */
+th:first-child, td:first-child {
+  border-left: 1px solid #d0d7de;
+}
+
+th:last-child, td:last-child {
+  border-right: 1px solid #d0d7de;
+}
+
+tbody tr:last-child td {
+  border-bottom: 1px solid #d0d7de;
+}
+
+
+
+  /* 💎 Elegant Animated 'Copied' Row Style */
+.copied-row td {
+  background: linear-gradient(270deg, #007bff, #00c6ff, #007bff);
+  background-size: 400% 400%;
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.15),
+              0 0 12px rgba(0, 123, 255, 0.4);
+  animation: gradientFlow 5s ease infinite, softPulse 3s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+/* 🌈 Smooth flowing gradient animation */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ✨ Subtle glow pulse for a “live” effect */
+@keyframes softPulse {
+  0% { box-shadow: 0 0 10px rgba(0,123,255,0.3), inset 0 0 10px rgba(255,255,255,0.1); }
+  50% { box-shadow: 0 0 20px rgba(0,123,255,0.6), inset 0 0 12px rgba(255,255,255,0.2); }
+  100% { box-shadow: 0 0 10px rgba(0,123,255,0.3), inset 0 0 10px rgba(255,255,255,0.1); }
+}
+
+
+      /* 🎨 Buttons */
+  .copy-btn { background: #007bff; color: white; }
+  .notused-btn { background: #ffc107; color: black; }
+  .delete-btn { background: #dc3545; color: white; }
+  .view-btn {background: #ee36d2; color: rgb(6, 2, 2);}  /* 👁️ View Button */
+  .view-btn:hover {opacity: 0.9;transform: scale(1.05);}
+
+
+
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+    .status-bar span:hover {
+  box-shadow: 0 4px 10px rgba(0,123,255,0.2);
+  transform: translateY(-2px);
+}
+
+    /* 🔔 Toast */
+    #toast {
+      visibility: hidden;
+      opacity: 0;
+      min-width: 250px;
+      background: #007bff;
+      color: #fff;
+      text-align: center;
+      border-radius: 10px;
+      padding: 15px;
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-size: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @keyframes fadein {
+      from { bottom: 0; opacity: 0; }
+      to { bottom: 30px; opacity: 1; }
+    }
+
+    @keyframes fadeout {
+      from { bottom: 30px; opacity: 1; }
+      to { bottom: 0; opacity: 0; }
+    }
+
+    /* 📱 Responsive */
+    @media (max-width: 700px) {
+      th, td { font-size: 13px; padding: 8px; }
+      .filter-bar { flex-direction: column; }
+      .status-bar { flex-direction: column; }
+    }
+
+
+/* 🌟 Modern Pagination Styling */
+.pagination-container {
+  text-align: center;
+  margin: 25px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.25);
+}
+
+.pagination-btn:hover:not(.disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 123, 255, 0.35);
+}
+
+.pagination-btn.disabled {
+  background: #bcd4f7;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.page-info-box {
+  background: white;
+  border: 2px solid #007bff;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  color: #007bff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+/* ---------------- MOBILE HEADER ---------------- */
+@media (max-width: 768px) {
+
+  header {
+    padding: 12px 16px;
+    height: 60px;
+  }
+
+  header h1 {
+    font-size: 18px;
+    gap: 8px;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .menu-toggle {
+    display: block !important;
+    font-size: 26px;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  /* Mobile nav dropdown */
+  header nav {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,123,255,0.96);
+    max-height: 0;
+    overflow: hidden;
+    border-radius: 0 0 16px 16px;
+    transition: max-height 0.35s ease;
+    padding: 0;
+    gap: 0;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  }
+
+  header nav.show {
+    max-height: 420px;
+  }
+
+  header nav a {
+    padding: 14px 22px;
+    margin: 0;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  header nav a:last-child {
+    border-bottom: none;
+  }
+}
+
+/* 📱 MOBILE TABLE VIEW — Show ONLY UCL NO + PAC Code + Entry Date + Action */
+@media (max-width: 768px) {
+
+  /* Hide unwanted columns */
+  #pacTable th:nth-child(1),
+  #pacTable td:nth-child(1),   /* SL */
+
+  #pacTable th:nth-child(2),
+  #pacTable td:nth-child(2),   /* Checkbox */
+
+  #pacTable th:nth-child(4),
+  #pacTable td:nth-child(4),   /* CSC Ref */
+
+  #pacTable th:nth-child(6),
+  #pacTable td:nth-child(6),   /* Order Date */
+
+  #pacTable th:nth-child(7),
+  #pacTable td:nth-child(7),   /* Amount */
+
+  #pacTable th:nth-child(9),
+  #pacTable td:nth-child(9),   /* Entry IP */
+
+  #pacTable th:nth-child(10),
+  #pacTable td:nth-child(10),  /* Copy Date */
+
+  #pacTable th:nth-child(11),
+  #pacTable td:nth-child(11),  /* Copy Time */
+
+  #pacTable th:nth-child(12),
+  #pacTable td:nth-child(12)   /* IP Address */
+  {
+    display: none !important;
+  }
+
+  /* Compact remaining columns */
+  #pacTable th,
+  #pacTable td {
+    font-size: 11px !important;
+    padding: 6px !important;
+    white-space: nowrap;
+  }
+
+  /* UCL No */
+  #pacTable th:nth-child(3),
+  #pacTable td:nth-child(3) {
+    width: 110px !important;
+  }
+
+  /* PAC Code */
+  #pacTable th:nth-child(5),
+  #pacTable td:nth-child(5) {
+    width: 80px !important;
+  }
+
+  /* Entry Date */
+  #pacTable th:nth-child(8),
+  #pacTable td:nth-child(8) {
+    width: 85px !important;
+  }
+
+  /* Action buttons */
+  #pacTable td:nth-child(13) button {
+    transform: scale(0.75);
+  }
+
+  #pacTable th:nth-child(13),
+  #pacTable td:nth-child(13) {
+    width: 60px !important;
+    text-align: center;
+  }
+}
+
+
+/* 📱 MOBILE — Show ONLY Live PACs */
+@media (max-width: 768px) {
+
+  /* hide ALL items */
+  .status-bar span {
+    display: none !important;
+  }
+
+  /* show ONLY Live PAC */
+  .status-bar .live-count {
+    display: flex !important;
+    width: 90%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    margin: 10px auto;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    border-left: 6px solid #28a745 !important; 
+    font-size: 16px;
+  }
+
+  /* Live PAC icon styling */
+  .status-bar .live-count i {
+    font-size: 20px;
+    color: #28a745;
+    background: rgba(40,167,69,0.12);
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .status-bar strong {
+    font-weight: 700;
+    font-size: 17px;
+    color: #222;
+  }
+}
+
+/* ----- Modal Styling ----- */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 5000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 750px;
+  margin: 70px auto;
+  padding: 20px;
+  border-radius: 12px;
+  animation: zoomIn 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+@keyframes zoomIn {
+  0% { transform: scale(0.75); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.close {
+  float: right;
+  font-size: 26px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* 🌟 Clean, Soft, Modern PAC Details Table */
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  background: #f8fbff;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #d7e6ff;
+}
+
+/* Each row */
+.modal-table tr {
+  border-bottom: 1px solid #e3edff;
+}
+
+.modal-table tr:last-child {
+  border-bottom: none;
+}
+
+/* Cells */
+.modal-table td {
+  padding: 12px 15px;
+  font-size: 15px;
+  color: #28313f;
+}
+
+/* LEFT TITLE COLUMN */
+.modal-table td:first-child {
+  width: 190px;
+  background: #eef5ff;
+  font-weight: 600;
+  color: #0051c9;
+  border-right: 1px solid #d7e6ff;
+}
+
+/* HOVER EFFECT */
+.modal-table tr:hover td {
+  background: #e9f2ff;
+}
+
+/* Mobile Better Fit */
+@media (max-width: 600px) {
+  .modal-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+  .modal-table td:first-child {
+    width: 140px;
+  }
+}
+
+
+.modal-footer {
+  margin-top: 18px;
+  padding-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #444;
+  border-top: 1px solid rgba(0, 123, 255, 0.25);
+  letter-spacing: 0.5px;
+
+  /* small glow */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.modal-footer strong {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.amount-wrong {
+  background: #f8d7da !important;       /* light red */
+  border-left: 5px solid #dc3545 !important;
+}
+
+* {
+  animation: none !important;
+  transition: none !important;
+}
+
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1><i class="fa-solid fa-database"></i> PAC Management</h1>
+  <!-- Mobile Menu Toggle -->
+  <div class="menu-toggle" onclick="toggleMenu()">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+  <nav id="mainMenu">
+  </nav>
+</header>
+
+<!-- 🔢 Dashboard Counters -->
+<div class="status-bar">
+  <span class="live-count"><i class="fa-solid fa-database"></i> Live PACs: <strong id="totalCount">0</strong></span>
+  <span class="copied-count"><i class="fa-solid fa-copy"></i> Total Copied: <strong id="copiedCount">0</strong></span>
+  <span class="today-count"><i class="fa-solid fa-calendar-day"></i> Today Copied: <strong id="todayCopiedCount">0</strong></span>
+  <span class="sync-status"><i class="fa-solid fa-sync-alt"></i> <span id="syncStatus">Synced</span></span>
+  <span class="unused-count"><i class="fa-solid fa-box-open"></i> Unused PACs: <strong id="unusedCount">0</strong></span>
+  <!---<span class="percent-used"><i class="fa-solid fa-chart-pie"></i> Usage: <strong id="pacPercent">0%</strong></span>-->
+  <span class="db-size"><i class="fa-solid fa-database"></i> DB Size:<strong id="dbSize">--</strong></span>
+  <span class="income-total"><i class="fa-solid fa-money-bill-wave"></i> Income (Unused): ₹<strong id="incomeTotal">0</strong></span>
+
+
+</div>
+<!-- 🔍 Filters -->
+<div class="filter-bar">
+  <input type="text" id="searchBox" placeholder="🔍 Search PAC / UCL / IP" oninput="filterTable()">
+  <input type="date" id="filterDate" onchange="filterTable()">
+  <select id="filterStatus" onchange="filterTable()">
+    <option value="">All Status</option>
+    <option value="copied">Copied</option>
+    <option value="unused">Not Used</option>
+  </select>
+  <button onclick="exportCSV()"><i class="fa-solid fa-file-export"></i> Export CSV</button>
+</div>
+
+<!-- 📋 PAC Data Table -->
+<div class="table-container">
+<table id="pacTable">
+  <thead>
+  <tr>
+    <th style="width:50px">SL</th>
+    <th style="width:40px">
+      <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+    </th>
+
+    <th onclick="sortTable(0)"><i class="fa-solid fa-id-card"></i> UCL No</th>
+    <th onclick="sortTable(1)"><i class="fa-solid fa-building"></i> CSC Ref</th>
+    <th onclick="sortTable(2)"><i class="fa-solid fa-key"></i> PAC Code</th>
+    <th onclick="sortTable(3)"><i class="fa-solid fa-calendar"></i> Order Date</th>
+    <th onclick="sortTable(4)"><i class="fa-solid fa-indian-rupee-sign"></i> Amount</th>
+    <th onclick="sortTable(5)"><i class="fa-solid fa-clock"></i> Entry Date</th>
+    <th onclick="sortTable(6)"><i class="fa-solid fa-network-wired"></i> Entry IP</th>
+    <th onclick="sortTable(7)"><i class="fa-solid fa-calendar-check"></i> Copy Date</th>
+    <th onclick="sortTable(8)"><i class="fa-solid fa-stopwatch"></i> Copy Time</th>
+    <th onclick="sortTable(9)"><i class="fa-solid fa-globe"></i> IP Address</th>
+    <th><i class="fa-solid fa-bolt"></i> Action</th>
+  </tr>
+</thead>
+
+  <tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<div class="pagination-container">
+  <button class="pagination-btn" id="prevBtn" onclick="prevPage()">⟵ Prev</button>
+  <span class="page-info-box" id="pageInfo">Page 1 of 1</span>
+  <button class="pagination-btn" id="nextBtn" onclick="nextPage()">Next ⟶</button>
+</div>
+
+<!-- 🔍 PAC View Modal -->
+<div id="pacModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2><i class="fa-solid fa-info-circle"></i> PAC Details</h2>
+    <table class="modal-table" id="modalTable"></table>
+    <!-- ❤️ Beautiful Footer -->
+    <div class="modal-footer"> Made with ❤️ by <strong>Samrat</strong> · Thank you for using this system 🙏✨</div>
+  </div>
+</div>
+
+
+<!-- 🔔 Toast -->
+<div id="toast"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="assets/js/temp-url.js"></script>
+<script src="assets/js/delete-manager.js"></script>
+
+
+
+
+<!-- 📜 Script Logic -->
+<script>
+// ---------------------- FIREBASE CONFIG ----------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain: "mrsamrat08.firebaseapp.com",
+  projectId: "mrsamrat08",
+  storageBucket: "mrsamrat08.firebasestorage.app",
+  messagingSenderId: "525481767881",
+  appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+(async () => {
+  await secureTempAccess(db);   // ✅ NOW IT EXISTS
+})();
+
+// Global
+let allEntries = [];
+let lastCopiedId = localStorage.getItem("lastCopiedId") || null;
+let todayCount = 0;
+let copyLock = false;
+let currentPage = 1;
+let rowsPerPage = 10;   // You can change to 50, 100 etc.
+let filteredTableData = [];
+
+
+
+
+// ---------------------- REAL-TIME LISTENER FOR PAC ----------------------
+db.collection("pac_entries").onSnapshot(snapshot => {
+  allEntries = [];
+snapshot.forEach(doc => {
+  const data = doc.data();
+
+  allEntries.push({
+    fsId: doc.id,          // Firestore Document ID
+    id: data.id || doc.id, // PAC Code
+    ...data
+  });
+});
+
+// 🔥 Normalize old data for perfect compatibility
+allEntries = allEntries.map(e => ({
+  fsId: e.fsId || e.firestoreId,      // fix old firestoreId fields
+  id: e.id || e.pacCode || "",        // fix old pacCode/id mismatch
+  ...e
+}));
+
+
+
+  updateCounters();
+  filterTable();
+   setTimeout(() => calculateDBSize(), 100); // 🔥 ensures DOM + data are ready
+  document.getElementById("syncStatus").innerText = "Synced";
+});
+
+
+function getLocalISTDate() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = ("0" + (d.getMonth() + 1)).slice(-2);
+  const day = ("0" + d.getDate()).slice(-2);
+  return `${year}-${month}-${day}`;
+}
+
+
+// ---------------------- TODAY USED COUNT ----------------------
+db.collection("today_used_pac").onSnapshot(snapshot => {
+
+  const todayDate = getLocalISTDate(); // 🔥 correct IST date
+
+  todayCount = 0;
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+
+    if (data.copyDate === todayDate) {
+      todayCount++;
+    }
+  });
+
+  document.getElementById("todayCopiedCount").innerText = todayCount;
+});
+
+
+// ---------------------- TOAST ----------------------
+function showToast(msg, color = "#007bff") {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.style.background = color;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+// ---------------------- FINAL MERGED updateCounters() ----------------------
+function updateCounters() {
+  const total = allEntries.length;
+  const copied = allEntries.filter(e => Boolean(e.copied)).length;
+  const unused = total - copied;
+  const percent = total ? Math.round((copied / total) * 100) : 0;
+
+  document.getElementById("totalCount").innerText = total;
+  document.getElementById("copiedCount").innerText = copied;
+  document.getElementById("unusedCount").innerText = unused;
+  //document.getElementById("pacPercent").innerText = percent + "%";
+
+  // 🔥 NEW → Income Total for UNUSED PACs
+  let income = 0;
+  allEntries.forEach(e => {
+    if (!e.copied) {
+      let amt = parseFloat(e.amount);
+      if (!isNaN(amt)) income += amt;
+    }
+  });
+  document.getElementById("incomeTotal").innerText = income.toLocaleString("en-IN");
+
+  const todayEl = document.getElementById("todayCopiedCount").parentElement;
+  todayEl.style.borderLeft = todayCount > 0 ? "6px solid #6f42c1" : "6px solid #ccc";
+}
+
+
+// ---------------------- FILTER TABLE ----------------------
+function filterTable() {
+  const search = document.getElementById("searchBox").value.trim().toLowerCase();
+  const date = document.getElementById("filterDate").value;
+  const status = document.getElementById("filterStatus").value;
+
+  // Filter PACs
+  filteredTableData = allEntries.filter(e => {
+    const id = (e.id || "").toLowerCase();
+    const uclNo = (e.uclNo || "").toLowerCase();
+    const copyIP = (e.copyIP || "").toLowerCase();
+    const entryDate = e.entryDate || "";
+
+    const matchSearch = !search ||
+      id.includes(search) || uclNo.includes(search) || copyIP.includes(search);
+
+    const matchDate = !date || entryDate === date;
+
+    const matchStatus =
+      status === "copied" ? Boolean(e.copied) :
+      status === "unused" ? !e.copied : true;
+
+    return matchSearch && matchDate && matchStatus;
+  });
+
+  currentPage = 1;   // reset to first page  
+  renderTablePage();
+  updatePaginationControls();
+}
+
+function renderTablePage() {
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  if (filteredTableData.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='11'>No PACs found.</td></tr>";
+    return;
+  }
+
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const pageData = filteredTableData.slice(start, end);
+
+pageData.forEach((e, index) => {
+  const slNo = (currentPage - 1) * rowsPerPage + index + 1;
+
+
+  const tr = document.createElement("tr");
+
+  // 🔥 Highlight if amount is NOT exactly 75
+  const amt = parseFloat(e.amount);
+  if (!isNaN(amt) && amt !== 75) {
+    tr.classList.add("amount-wrong");
+  }
+
+  // Keep copied style
+  if (e.copied) tr.classList.add("copied-row");
+
+
+let buttons = "";
+
+// If PAC is copied
+// If PAC is copied
+if (e.copied) {
+  buttons = `
+    <button class="view-btn" onclick="viewPAC('${e.fsId}', '${e.id}')">
+      <i class="fa-solid fa-eye"></i>
+    </button>
+
+    <button class="notused-btn" onclick="resetCopy('${e.fsId}')">
+      <i class="fa-solid fa-undo"></i>
+    </button>
+
+    <button class="delete-btn"
+  onclick="deletePACAdvanced({
+    db,
+    docId: '${e.fsId}',
+    pacCode: '${e.id}',
+    showToast
+  })">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+`;
+}
+
+// If PAC is NOT copied
+else {
+  buttons = `
+    <button class="copy-btn" onclick="copyCode('${e.fsId}')">
+      <i class="fa-solid fa-copy"></i>
+    </button>
+
+    <button class="view-btn" onclick="viewPAC('${e.fsId}', '${e.id}')">
+      <i class="fa-solid fa-eye"></i>
+    </button>
+
+    <button class="delete-btn"
+  onclick="deletePACAdvanced({
+    db,
+    docId: '${e.fsId}',
+    pacCode: '${e.id}',
+    showToast
+  })">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+`;
+}
+
+   tr.innerHTML = `
+  <td>${slNo}</td>
+  <td>
+    <input type="checkbox" class="row-select" data-id="${e.fsId}">
+  </td>
+
+  <td>${e.uclNo || ""}</td>
+  <td>${e.cscRef || ""}</td>
+  <td>${e.id || ""}</td>
+  <td>${e.orderDate || ""}</td>
+  <td>${e.amount || ""}</td>
+  <td>${e.entryDate || ""}</td>
+  <td>${e.savedFromIp || ""}</td>
+  <td>${e.copyDate || "-"}</td>
+  <td>${e.copyTime || "-"}</td>
+  <td>${e.copyIP || "-"}</td>
+  <td>${buttons}</td>
+`;
+
+
+    tbody.appendChild(tr);
+  });
+}
+
+function updatePaginationControls() {
+  const totalPages = Math.ceil(filteredTableData.length / rowsPerPage);
+
+  document.getElementById("pageInfo").innerText =
+    `Page ${currentPage} of ${totalPages}`;
+
+  document.getElementById("prevBtn").disabled = currentPage === 1;
+  document.getElementById("nextBtn").disabled = currentPage === totalPages;
+}
+
+function nextPage() {
+  const totalPages = Math.ceil(filteredTableData.length / rowsPerPage);
+
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderTablePage();
+    updatePaginationControls();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderTablePage();
+    updatePaginationControls();
+  }
+}
+
+function getIST() {
+  const d = new Date();
+
+  // Correct IST Date (YYYY-MM-DD)
+  const date =
+    d.getFullYear() + "-" +
+    ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
+    ("0" + d.getDate()).slice(-2);
+
+  // Correct 12-hour time with AM/PM
+  const time = d.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  return { date, time };
+}
+
+// ---------------------- COPY PAC ----------------------
+async function copyCode(id) {
+
+   // FIX: if id is undefined, stop early
+  if (!id) return showToast("Invalid PAC ID!", "#dc3545");
+
+  if (copyLock) {
+    showToast("⏳ Please wait 2 seconds!", "#ff9800");
+    return;
+  }
+
+  copyLock = true;
+  setTimeout(() => copyLock = false, 2000);
+
+  // Read current PAC
+  const doc = await db.collection("pac_entries").doc(id).get();
+  if (!doc.exists) return showToast("PAC not found!", "#dc3545");
+
+  await navigator.clipboard.writeText(id);
+
+  // ✅ Get Correct IST Date & Time (NO +5.5 hours)
+  const { date, time } = getIST();
+
+  // Get IP
+  const ip = await fetch("https://api.ipify.org?format=json")
+    .then(r => r.json())
+    .then(r => r.ip);
+
+  // 🔥 ALWAYS MOVE PREVIOUS PAC AFTER NEW COPY
+  if (lastCopiedId && lastCopiedId !== id) {
+    const prev = await db.collection("pac_entries").doc(lastCopiedId).get();
+
+    if (prev.exists) {
+      const prevData = prev.data();
+
+      // Move old PAC to used_pac
+      await db.collection("used_pac").doc(lastCopiedId).set(prevData);
+
+      // Delete from pac_entries
+      await db.collection("pac_entries").doc(lastCopiedId).delete();
+    }
+  }
+
+  // Update current PAC
+  await db.collection("pac_entries").doc(id).update({
+    copied: true,
+      pacCode: id,        // ✅ ADD THIS
+    copyDate: date,   // ✅ Correct IST date
+    copyTime: time,   // ✅ Correct 12-hour IST time
+    copyIP: ip
+  });
+
+  // Add today record
+  await db.collection("today_used_pac").add({
+    pacId: id,
+    copyDate: date,
+    copyTime: time,
+    copyIP: ip
+  });
+
+  lastCopiedId = id;
+  localStorage.setItem("lastCopiedId", id);
+
+  showToast("✅ PAC Copied!", "#28a745");
+}
+
+// ---------------------- RESET PAC ----------------------
+async function resetCopy(id) {
+  try {
+    await db.collection("pac_entries").doc(id).update({
+      copied: false,
+      copyDate: "",
+      copyTime: "",
+      copyIP: ""
+    });
+
+    if (lastCopiedId === id) {
+      lastCopiedId = null;
+      localStorage.removeItem("lastCopiedId");
+    }
+
+    const now = new Date();
+    const istNow = new Date(now.getTime() + 5.5 * 3600 * 1000);
+    const todayDate = istNow.toISOString().split("T")[0];
+
+    const snapshot = await db.collection("today_used_pac")
+      .where("pacId", "==", id)
+      .where("copyDate", "==", todayDate)
+      .get();
+
+    const batch = db.batch();
+    snapshot.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+
+    showToast("♻️ PAC Reset!", "#17a2b8");
+  } catch (err) {
+    showToast("Error resetting!", "#dc3545");
+  }
+}
+// ---------------------- DELETE Devuce ID Generator ----------------------
+function getDeviceId() {
+  let id = localStorage.getItem("deviceId");
+
+  if (!id) {
+    // Generate random 8-digit hex ID
+    id = "DEVICE-" + Math.random().toString(16).substring(2, 10).toUpperCase();
+    localStorage.setItem("deviceId", id);
+  }
+
+  return id;
+}
+
+async function generateDeleteViewId() {
+  const counterRef = db.collection("system_counters").doc("delete_counter");
+  const doc = await counterRef.get();
+
+  let newNumber = 1;
+  if (doc.exists) newNumber = doc.data().count + 1;
+
+  await counterRef.set({ count: newNumber });
+
+  return "DEL-" + String(newNumber).padStart(5, "0");
+}
+
+
+function getDeviceInfo() {
+  const ua = navigator.userAgent;
+
+  let device = "Unknown Device";
+  if (/Android/i.test(ua)) device = "Android Phone";
+  else if (/iPhone/i.test(ua)) device = "iPhone";
+  else if (/iPad/i.test(ua)) device = "iPad";
+  else if (/Windows/i.test(ua)) device = "Windows PC";
+  else if (/Mac/i.test(ua)) device = "Mac OS";
+  else if (/Linux/i.test(ua)) device = "Linux";
+
+  return device + " | Browser: " + navigator.userAgent;
+}
+
+
+// ---------------------- CSV EXPORT ----------------------
+function exportCSV() {
+  if (!allEntries.length) return showToast("No Data!", "#ffc107");
+
+  // Generate date + time in your format: DD-YY-MM MM-HH-SS
+  const now = new Date();
+
+  const dd = String(now.getDate()).padStart(2, "0");
+  const yy = String(now.getFullYear()).slice(2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+
+  const HH = String(now.getHours()).padStart(2, "0");
+  const MM = String(now.getMinutes()).padStart(2, "0");
+  const SS = String(now.getSeconds()).padStart(2, "0");
+
+  const fileName = `PAC ${dd}-${yy}-${mm} ${MM}-${HH}-${SS}.csv`;
+
+  // Extract all unique keys
+  const keys = Array.from(
+    new Set(allEntries.flatMap(entry => Object.keys(entry)))
+  );
+
+  const headers = keys.join(",");
+
+  const rows = allEntries.map(entry =>
+    keys.map(key => (entry[key] !== undefined ? `"${entry[key]}"` : "")).join(",")
+  );
+
+  const csv = [headers, ...rows].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = fileName;
+  link.click();
+
+  showToast("📁 Full CSV Exported!", "#17a2b8");
+}
+
+// ---------------------- DB SIZE CALCULATOR ----------------------
+function getFirestoreFieldSize(value) {
+    if (value === null || value === undefined) return 1;
+
+    switch (typeof value) {
+        case "string":
+            return value.length + 1;  // UTF-8 length + 1 byte
+        case "number":
+            return 8;                // Firestore always uses 8 bytes
+        case "boolean":
+            return 1;
+        case "object":
+            if (value instanceof Array) {
+                let arrSize = 1; // array metadata
+                value.forEach(v => arrSize += getFirestoreFieldSize(v));
+                return arrSize;
+            } else if (value instanceof Date) {
+                return 8; // Firestore stores timestamp as 64-bit
+            } else {
+                // nested document
+                let objSize = 0;
+                for (let key in value) {
+                    objSize += key.length + 1;        // field name + metadata
+                    objSize += getFirestoreFieldSize(value[key]);
+                }
+                return objSize;
+            }
+        default:
+            return 0;
+    }
+}
+
+function getUTF8Size(value) {
+  if (value === null || value === undefined) return 1;
+
+  if (typeof value === "string") {
+    return value.length + 1;
+  }
+
+  if (typeof value === "number") {
+    return 8; // Firestore stores numbers as 8 bytes
+  }
+
+  if (typeof value === "boolean") {
+    return 1;
+  }
+
+  if (Array.isArray(value)) {
+    let arrSize = 1;
+    value.forEach(v => arrSize += getUTF8Size(v));
+    return arrSize;
+  }
+
+  if (value instanceof Object) {
+    let objSize = 0;
+    for (let key in value) {
+      objSize += key.length + 1;
+      objSize += getUTF8Size(value[key]);
+    }
+    return objSize;
+  }
+
+  return 0;
+}
+
+function calculateFieldSize(value) {
+  if (value === null || value === undefined) return 1; // null = 1 byte
+
+  if (typeof value === "string") {
+    return getUTF8Size(value) + 1; // +1 byte metadata
+  }
+
+  if (typeof value === "number") return 8; // Firestore always 8 bytes (double)
+  if (typeof value === "boolean") return 1;
+
+  if (value instanceof Date) return 16; // timestamp = 16 bytes
+
+  if (Array.isArray(value)) {
+    let size = 1; // array type metadata
+    value.forEach(v => size += calculateFieldSize(v));
+    return size;
+  }
+
+  if (typeof value === "object") {
+    let size = 1; // object metadata
+    for (let key in value) {
+      size += getUTF8Size(key) + 1;   // field name + metadata
+      size += calculateFieldSize(value[key]);
+    }
+    return size;
+  }
+
+  return 0;
+}
+
+function calculateDBSize() {
+  let totalBytes = 0;
+
+  allEntries.forEach(doc => {
+    let docSize = 32; // base Firestore document overhead (fixed)
+
+    // add document ID size (UTF-8)
+    docSize += getUTF8Size(doc.id || doc.fsId || "");
+
+
+    for (let key in doc) {
+      docSize += getUTF8Size(key) + 1; // field name
+      docSize += calculateFieldSize(doc[key]); // field value
+      docSize += 32; // index entry cost (approx)
+    }
+
+    totalBytes += docSize;
+  });
+
+  let sizeText = "";
+  if (totalBytes < 1024) sizeText = totalBytes + " B";
+  else if (totalBytes < 1024 * 1024) sizeText = (totalBytes / 1024).toFixed(1) + " KB";
+  else sizeText = (totalBytes / (1024 * 1024)).toFixed(2) + " MB";
+
+  document.getElementById("dbSize").innerText = sizeText;
+}
+
+
+// ---------------------- COLUMN SORTING ----------------------
+let sortDirection = {};
+function sortTable(columnIndex) {
+  const table = document.getElementById("pacTable");
+  const tbody = table.querySelector("tbody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+
+  // Toggle ascending/descending
+  sortDirection[columnIndex] = !sortDirection[columnIndex];
+  const isAsc = sortDirection[columnIndex];
+
+  rows.sort((a, b) => {
+    let aText = a.children[columnIndex].innerText.trim();
+    let bText = b.children[columnIndex].innerText.trim();
+
+    // convert numbers
+    if (!isNaN(parseFloat(aText)) && !isNaN(parseFloat(bText))) {
+      return isAsc ? aText - bText : bText - aText;
+    }
+
+    return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+  });
+
+  // Re-attach sorted rows
+  rows.forEach(row => tbody.appendChild(row));
+}
+
+
+
+function loadNavMenuLive() {
+  const menu = document.getElementById("mainMenu");
+  if (!menu) return;
+
+  // Current page filename only
+  const currentPage = window.location.pathname.split("/").pop();
+
+  db.collection("pacnav")
+    .orderBy("order", "asc")
+    .onSnapshot((snapshot) => {
+      let html = "";
+
+      snapshot.forEach((doc) => {
+        const v = doc.data();
+
+        // ❌ Skip inactive
+        if (v.active === false) return;
+
+        // ❌ Skip current page
+        const navUrl = (v.url || "").split("/").pop();
+        if (navUrl === currentPage) return;
+
+        const iconClass =
+          v.icon && v.icon.trim()
+            ? v.icon
+            : "fa-solid fa-circle-question";
+
+        html += `
+          <a href="${v.url}">
+            <i class="${iconClass}"></i> ${v.title || ""}
+          </a>
+        `;
+      });
+
+      menu.innerHTML = html;
+    });
+}
+
+
+loadNavMenuLive();
+
+
+
+function viewPAC(docId, pacCode) {
+
+  const pac = allEntries.find(x => x.fsId === docId);
+
+  if (!pac) return showToast("PAC Not Found!", "#dc3545");
+
+  let html = `
+    <tr><td>UCl Owner Name</td><td>${pac.uclOwnerName || "-"}</td></tr>
+    <tr><td>UCL ID</td><td>${pac.uclNo || "-"}</td></tr>
+    <tr><td>CSC Ref</td><td>${pac.cscRef || "-"}</td></tr>
+    <tr><td>PAC Code</td><td>${pac.id}</td></tr>
+    <tr><td>PAC Order Date</td><td>${pac.orderDate || "-"}</td></tr>
+    <tr><td>Amount</td><td>${pac.amount || "-"}</td></tr>
+    <tr><td>Entry Date</td><td>${pac.entryDate || "-"}</td></tr>
+    <tr><td>UCL IP</td><td>${pac.uclOwnerIp || "-"}</td></tr>
+    <tr><td>Entry IP</td><td>${pac.savedFromIp || "-"}</td></tr>
+    <tr><td>Copy Date</td><td>${pac.copyDate || "-"}</td></tr>
+    <tr><td>Copy Time</td><td>${pac.copyTime || "-"}</td></tr>
+    <tr><td>Copy IP</td><td>${pac.copyIP || "-"}</td></tr>
+    <tr><td>Purpose</td><td>${pac.purpose || "-"}</td></tr>
+    <tr><td>Status</td><td>${pac.copied ? "Copied" : "Unused"}</td></tr>
+  `;
+
+  document.getElementById("modalTable").innerHTML = html;
+  document.getElementById("pacModal").style.display = "block";
+}
+
+
+function closeModal() {
+  document.getElementById("pacModal").style.display = "none";
+}
+
+
+window.onclick = function(e) {
+  const modal = document.getElementById("pacModal");
+  if (e.target === modal) modal.style.display = "none";
+};
+
+loadNavMenuLive();
+
+function startHeartbeat(ref) {
+  setInterval(() => {
+    ref.update({
+      lastHeartbeatAt: Date.now()
+    }).catch(() => {});
+  }, HEARTBEAT_INTERVAL);
+}
+
+function toggleSelectAll(master) {
+  document.querySelectorAll(".row-select").forEach(cb => {
+    cb.checked = master.checked;
+  });
+}
+
+</script>
+<script>
+function toggleMenu() {
+  document.getElementById("mainMenu").classList.toggle("show");
+}
+</script>
+</body>
+</html>

@@ -569,7 +569,6 @@ tbody tr:hover::after {
 /* Popup box */
 .ucl-modal-box {
   width: 90%;
-  max-width: 1300px;
   background: rgba(0,15,40,0.8);
   border: 1px solid #00eaff;
   border-radius: 16px;
@@ -587,7 +586,7 @@ tbody tr:hover::after {
   to   { opacity: 1; transform: scale(1); }
 }
 
-.ucl-modal-box h3 {
+.ucl-modal-box h3 { 
   text-align: center;
   color: #00eaff;
   margin-bottom: 15px;
@@ -636,7 +635,7 @@ tbody tr:hover::after {
 .ucl-edit-btn {
   background: #00eaff;
   border: none;
-  padding: 6px 10px;
+  padding: 12px 10px;
   border-radius: 8px;
   cursor: pointer;
   color: black;
@@ -1473,6 +1472,19 @@ tbody tr:hover::after {
   </button>
 </div>
 
+<div class="card audit">
+  <h2><i class="fa-solid fa-shield-halved"></i></h2>
+  <div class="card-label">Admin Audit Logs</div>
+
+  <button
+    class="card-icon-btn"
+    title="View Admin Logs"
+    onclick="openAuditLogs()">
+    <i class="fa-solid fa-eye"></i>
+  </button>
+</div>
+
+
 <div class="card student">
   <h2 id="studentCount">0</h2>
   <div class="card-label">Total Students</div>
@@ -1574,6 +1586,14 @@ tbody tr:hover::after {
   <h2><i class="fa-solid fa-magnifying-glass"></i></h2>
   <div class="card-label">Query Records</div>
 
+  <p style="
+    margin-top:12px;
+    font-size:14px;
+    opacity:0.85;
+  ">
+    Run quick searches across PAC, UCL, student, and temporary access records.
+  </p>
+
   <button
     class="card-icon-btn"
     title="Open Query Panel"
@@ -1615,6 +1635,35 @@ tbody tr:hover::after {
   </div>
 </div>
 
+<div id="auditLogModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:1300px;">
+
+    <h3>Admin Audit Logs</h3>
+
+    <button class="ucl-close-btn" onclick="closeAuditLogs()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="ucl-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Action</th>
+            <th>Module</th>
+            <th>Target</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>IP</th>
+            <th>Page</th>
+          </tr>
+        </thead>
+        <tbody id="auditLogBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
 
 
 <div id="queryResultModal" class="ucl-modal">
@@ -1741,6 +1790,27 @@ tbody tr:hover::after {
   <i class="fa-solid fa-clone" style="margin-right:8px;"></i>
   Duplicate Delete ID Registry
 </h2>
+<div style="
+  display:flex;
+  justify-content:flex-end;
+  margin:15px 2.5%;
+">
+  <button
+    id="fixAllDuplicatesBtn"
+    style="
+      padding:10px 20px;
+      background:#ff4444;
+      color:white;
+      border:none;
+      border-radius:10px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 0 12px rgba(255,68,68,.6);
+    "
+    onclick="fixAllDuplicates()">
+    🚨 FIX ALL DUPLICATE DELETE IDs
+  </button>
+</div>
 
   <table>
 <thead>
@@ -1754,7 +1824,6 @@ tbody tr:hover::after {
   <th><i class="fa-solid fa-trash-can"></i> Deleted</th>
   <th><i class="fa-solid fa-network-wired"></i> IP</th>
   <th><i class="fa-solid fa-rotate"></i> New Delete ID</th>
-  <th><i class="fa-solid fa-pen-to-square"></i> Update</th>
 </tr>
 </thead>
 
@@ -1779,6 +1848,8 @@ tbody tr:hover::after {
     <th><i class="fa-solid fa-clock"></i> Time</th>
     <th><i class="fa-solid fa-network-wired"></i> IP</th>
     <th><i class="fa-solid fa-briefcase"></i> Purpose</th>
+    <th><i class="fa-solid fa-gear"></i> Action</th>
+
   </tr>
 </thead>
 
@@ -2080,7 +2151,7 @@ tbody tr:hover::after {
 </div>
 
 <div id="tempLinksModal" class="ucl-modal">
-  <div class="ucl-modal-box" style="max-width:1200px;">
+  <div class="ucl-modal-box">
     <h3>Temporary Access Links</h3>
     <button class="ucl-close-btn" onclick="closeTempLinksModal()">
       <i class="fa-solid fa-xmark"></i>
@@ -2088,20 +2159,21 @@ tbody tr:hover::after {
 
     <div class="ucl-table-container">
       <table>
-        <thead>
-          <tr>
-            <th>Token</th>
-            <th>Status</th>
-            <th>Main URL</th>
-            <th>Device</th>
-            <th>Access</th>
-            <th>Reload</th>
-            <th>Fingerprint</th>
-            <th>Created</th>
-            <th>Expires</th>
-            <th>Last Access</th>
-          </tr>
-        </thead>
+    <thead>
+  <tr>
+    <th><i class="fa-solid fa-key"></i> Token</th>
+    <th><i class="fa-solid fa-circle-info"></i> Status</th>
+    <th><i class="fa-solid fa-link"></i> Main URL</th>
+    <th><i class="fa-solid fa-desktop"></i> Device</th>
+    <th><i class="fa-solid fa-door-open"></i> Access</th>
+    <th><i class="fa-solid fa-rotate-right"></i> Reload</th>
+    <th><i class="fa-solid fa-fingerprint"></i> Fingerprint</th>
+    <th><i class="fa-solid fa-calendar-plus"></i> Created</th>
+    <th><i class="fa-solid fa-hourglass-end"></i> Expires</th>
+    <th><i class="fa-solid fa-clock-rotate-left"></i> Last Access</th>
+  </tr>
+</thead>
+
         <tbody id="tempLinksTable"></tbody>
       </table>
     </div>
@@ -2110,6 +2182,33 @@ tbody tr:hover::after {
 </div>
 
 <div id="globalAlerts"></div>
+
+<div id="pacEditModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:420px;">
+
+    <h3>Edit PAC Amount</h3>
+
+    <button class="ucl-close-btn" onclick="closePacAmountEditor()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <p><b>PAC:</b> <span id="editPacNo"></span></p>
+    <p><b>Current Amount:</b> ₹<span id="editPacCurrentAmount"></span></p>
+
+    <label>New Amount</label>
+    <input id="editPacNewAmount" type="number" class="ucl-input">
+
+    <label>Correction Reason</label>
+    <input id="editPacReason" class="ucl-input" placeholder="Mandatory">
+
+    <button class="ucl-edit-btn" style="width:100%; margin-top:14px"
+            onclick="savePacAmountEdit()">
+      Save Correction
+    </button>
+
+  </div>
+</div>
+
 
 <footer class="dashboard-footer">
   <div class="dashboard-version"></div>
@@ -2121,6 +2220,9 @@ tbody tr:hover::after {
 <script type="module" src="/assets/js/temp-link-access.js"></script>
 <script type="module" src="./assets/js/query-engine.js"></script>
 <script type="module" src="./assets/js/firestore-storage-status.js"></script>
+<script type="module" src="./assets/js/pac-amount-edit.js"></script>
+
+
 
 <script type="module">
 
@@ -2140,18 +2242,21 @@ import {
   orderBy,
   limit,
   addDoc,
+   where,
   getDoc
 } from "./assets/js/firebase-config.js";
 
 import "./assets/js/system-uptime.js";
-import "./assets/js/last-pac-copy-code.js";   // ✅ ADDED HERE
+import "./assets/js/last-pac-copy-code.js"; 
 
 import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
 import "./assets/js/duplicate-delete-registry.js";
 
 import { initLastDeletedPac } from "./assets/js/last-deleted-pac.js";
+import { logAdminAction } from "./assets/js/admin-audit-log.js";
 
-import { autoUpdateVersion, bindVersionCard, openVersionView, closeVersionView, openVersionHistory, closeVersionHistory } from "./assets/js/version-control.js";
+
+import { bindVersionCard, openVersionView, closeVersionView, openVersionHistory, closeVersionHistory, autoUpdateVersion  } from "./assets/js/version-control.js";
 
 window.openVersionHistory = openVersionHistory;
 window.closeVersionHistory = closeVersionHistory;
@@ -2350,31 +2455,54 @@ const wait = setInterval(() => {
 
     tableBox.style.display = "block";
 
-    alertList.forEach(r => {
-      const bg = r.amount > r.expectedAmount
-        ? "rgba(255,80,80,0.3)"
-        : "rgba(255,255,0,0.3)";
+alertList.forEach(r => {
 
-      table.innerHTML += `
-  <tr style="background:${bg}">
-    
-    <td data-label="PAC No">${r.pacNo || "-"}</td>
-    <td data-label="UCL Owner">${r.uclOwnerName || "-"}</td>
-    <td data-label="UCL">${r.uclNo || "-"}</td>
-    <td data-label="CSC Ref">${r.cscRef || "-"}</td>
+  const bg = r.amount > r.expectedAmount
+    ? "rgba(255,80,80,0.3)"
+    : "rgba(255,255,0,0.3)";
 
-    <td data-label="Amount"><b>${r.amount}</b></td>
-    <td data-label="Expected" style="color:#00eaff;"><b>${r.expectedAmount}</b></td>
+  table.innerHTML += `
+    <tr style="background:${bg}">
 
-    <td data-label="Date">${r.entryDate || "-"}</td>
-    <td data-label="Time">${r.entryTime || "-"}</td>
-    <td data-label="IP">${r.savedFromIp || r.copyIP || "-"}</td>
-    <td data-label="Purpose">${r.purpose || "-"}</td>
+      <td data-label="PAC No">${r.pacNo || "-"}</td>
+      <td data-label="UCL Owner">${r.uclOwnerName || "-"}</td>
+      <td data-label="UCL">${r.uclNo || "-"}</td>
+      <td data-label="CSC Ref">${r.cscRef || "-"}</td>
 
-  </tr>
-`;
+      <td data-label="Amount"><b>${r.amount}</b></td>
+      <td data-label="Expected" style="color:#00eaff;"><b>${r.expectedAmount}</b></td>
 
-    });
+      <td data-label="Date">${r.entryDate || "-"}</td>
+      <td data-label="Time">${r.entryTime || "-"}</td>
+      <td data-label="IP">${r.savedFromIp || r.copyIP || "-"}</td>
+      <td data-label="Purpose">${r.purpose || "-"}</td>
+
+      <!-- ✅ ACTION -->
+      <td data-label="Action">
+  <div class="ucl-action-row">
+
+    <!-- EDIT -->
+    <button
+      class="ucl-action-btn edit"
+      title="Edit PAC Amount"
+      onclick="openPacAmountEditor('${r.id}')">
+      <i class="fa-solid fa-pen-to-square"></i>
+    </button>
+
+    <!-- DELETE -->
+    <button
+      class="ucl-action-btn danger"
+      title="Delete PAC Entry"
+      onclick="deletePacEntry('${r.id}')">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+
+  </div>
+</td>
+
+  `;
+});
+
 
   });
 
@@ -2394,18 +2522,31 @@ document.getElementById("closePacAmountBtn").addEventListener("click", () => {
 });
 
 document.getElementById("savePacAmountBtn").addEventListener("click", async () => {
-  const newAmount = Number(document.getElementById("newPacAmountInput").value);
 
+  /* ✅ 1. DEFINE VARIABLES FIRST */
+  const newAmount = Number(
+    document.getElementById("newPacAmountInput").value
+  );
+
+  const oldAmount = Number(
+    document.getElementById("uclPacAmount").textContent
+  );
+
+  const start = performance.now();
+
+  /* ✅ 2. VALIDATION */
   if (!newAmount || newAmount <= 0) {
     alert("Enter a valid amount!");
     return;
   }
 
-  if (!confirm("This will update PAC Amount for ALL UCL owners (Active + Deactive). Continue?")) {
+  if (!confirm(
+    "This will update PAC Amount for ALL UCL owners (Active + Deactive). Continue?"
+  )) {
     return;
   }
 
-  // Fetch both collections
+  /* ✅ 3. FETCH DATA */
   const activeSnap = await getDocs(collection(db, "ucl_owners"));
   const deactiveSnap = await getDocs(collection(db, "ucl_owners_deactive"));
 
@@ -2414,7 +2555,7 @@ document.getElementById("savePacAmountBtn").addEventListener("click", async () =
     return;
   }
 
-  // 🔥 Update ALL in parallel (fast & safe)
+  /* ✅ 4. UPDATE */
   await Promise.all([
     ...activeSnap.docs.map(docItem =>
       updateDoc(doc(db, "ucl_owners", docItem.id), {
@@ -2430,6 +2571,18 @@ document.getElementById("savePacAmountBtn").addEventListener("click", async () =
     )
   ]);
 
+  /* 🔐 5. AUDIT LOG (NOW SAFE) */
+  await logAdminAction({
+    action: "UPDATE_PAC_AMOUNT",
+    module: "UCL",
+    targetId: "ALL",
+    description: "Updated PAC amount for all UCL owners",
+    before: { pacAmount: oldAmount },
+    after: { pacAmount: newAmount },
+    severity: "CRITICAL",
+    durationMs: Math.round(performance.now() - start)
+  });
+
   alert(
     `PAC Amount updated successfully.\n` +
     `Active: ${activeSnap.size}, Deactive: ${deactiveSnap.size}`
@@ -2437,6 +2590,7 @@ document.getElementById("savePacAmountBtn").addEventListener("click", async () =
 
   document.getElementById("pacAmountModal").style.display = "none";
 });
+
 
 
 onSnapshot(collection(db, "ucl_owners"), snap => {
@@ -2589,33 +2743,71 @@ function renderUclRow(docId, d, isActive) {
   `;
 }
 
-
 window.toggleUclStatus = async function (docId, currentStatus) {
 
+  /* ============================
+     HELPER: MOVE PAC BY UCL
+  ============================ */
+  async function movePacByUcl(uclId, fromCol, toCol, reason) {
+    const q = query(
+      collection(db, fromCol),
+      where("uclNo", "==", uclId)
+    );
+
+    const snap = await getDocs(q);
+    if (snap.empty) return 0;
+
+    let moved = 0;
+
+    for (const docItem of snap.docs) {
+      await setDoc(
+        doc(db, toCol, docItem.id),
+        {
+          ...docItem.data(),
+          movedReason: reason,
+          movedAt: Date.now()
+        }
+      );
+
+      await deleteDoc(docItem.ref);
+      moved++;
+    }
+
+    return moved;
+  }
+
+  /* ============================
+     CONFIRM ACTION
+  ============================ */
   const action = currentStatus ? "Deactivate" : "Activate";
 
-  if (!confirm(`${action} this UCL account?`)) return;
+  if (!confirm(`${action} this UCL account?\nAll related PACs will be moved.`)) {
+    return;
+  }
 
   try {
 
-    // 🔒 Prevent double-click
-    const buttons = document.querySelectorAll(
-      `[onclick*="${docId}"]`
-    );
-    buttons.forEach(btn => btn.disabled = true);
-
-    // ============================
-    // DEACTIVATE → MOVE OUT
-    // ============================
+    /* ============================
+       DEACTIVATE UCL
+    ============================ */
     if (currentStatus === true) {
 
       const ref = doc(db, "ucl_owners", docId);
       const snap = await getDoc(ref);
-
       if (!snap.exists()) throw new Error("UCL not found");
 
       const data = snap.data();
+      const uclId = data.uclId;
 
+      // 🔴 MOVE PACs OUT
+      const movedPacCount = await movePacByUcl(
+        uclId,
+        "pac_entries",
+        "inactive_pac_entries",
+        "UCL_DEACTIVATED"
+      );
+
+      // 🔴 MOVE UCL → DEACTIVE
       await setDoc(doc(db, "ucl_owners_deactive", docId), {
         ...data,
         deactivatedAt: Date.now(),
@@ -2623,39 +2815,56 @@ window.toggleUclStatus = async function (docId, currentStatus) {
       });
 
       await deleteDoc(ref);
+
+      alert(
+        `UCL deactivated successfully.\n` +
+        `PACs moved: ${movedPacCount}`
+      );
     }
 
-    // ============================
-    // ACTIVATE → MOVE BACK
-    // ============================
+    /* ============================
+       ACTIVATE UCL
+    ============================ */
     else {
 
       const ref = doc(db, "ucl_owners_deactive", docId);
       const snap = await getDoc(ref);
-
-      if (!snap.exists()) throw new Error("Deactive UCL not found");
+      if (!snap.exists()) throw new Error("Deactivated UCL not found");
 
       const data = snap.data();
+      const uclId = data.uclId;
 
+      // 🟢 MOVE PACs BACK
+      const restoredPacCount = await movePacByUcl(
+        uclId,
+        "inactive_pac_entries",
+        "pac_entries",
+        "UCL_REACTIVATED"
+      );
+
+      // 🟢 MOVE UCL → ACTIVE
       await setDoc(doc(db, "ucl_owners", docId), {
         ...data,
         restoredAt: Date.now()
       });
 
       await deleteDoc(ref);
+
+      alert(
+        `UCL activated successfully.\n` +
+        `PACs restored: ${restoredPacCount}`
+      );
     }
 
-    // ⚡ INSTANT UI REFRESH
+    // ⚡ Refresh UI
     await loadUclTable();
 
-    // ✅ Single clean message
-    alert(`UCL ${action}d successfully`);
-
   } catch (err) {
-    console.error(err);
-    alert("Operation failed. Please try again.");
+    console.error("UCL toggle failed:", err);
+    alert("Operation failed. Please check console.");
   }
 };
+
 
 document.getElementById("viewUclBtn").addEventListener("click", async () => {
   await loadUclTable();              // ✅ IMPORTANT
@@ -3196,6 +3405,51 @@ const roles = Array.from(
 document.addEventListener("DOMContentLoaded", () => {
   initLastDeletedPac();
 });
+
+window.openAuditLogs = function () {
+  document.getElementById("auditLogModal").style.display = "flex";
+
+  const q = query(
+    collection(db, "admin_logs"),
+    orderBy("createdAt", "desc"),
+    limit(200)
+  );
+
+  onSnapshot(q, snap => {
+    const body = document.getElementById("auditLogBody");
+    body.innerHTML = "";
+
+    snap.forEach(docItem => {
+      const d = docItem.data();
+
+      body.innerHTML += `
+        <tr>
+          <td>${d.createdAt?.toDate().toLocaleString() || "-"}</td>
+          <td><b>${d.action}</b></td>
+          <td>${d.module}</td>
+          <td class="mono">${d.targetId}</td>
+          <td>
+            <span style="color:${
+              d.severity === "CRITICAL" ? "#ff4444" :
+              d.severity === "HIGH" ? "#ff9900" :
+              d.severity === "MEDIUM" ? "#ffee55" : "#00ffcc"
+            }">
+              ${d.severity}
+            </span>
+          </td>
+          <td>${d.status || "SUCCESS"}</td>
+          <td class="mono">${d.ip || "-"}</td>
+          <td class="mono">${d.page || "-"}</td>
+        </tr>
+      `;
+    });
+  });
+};
+
+window.closeAuditLogs = function () {
+  document.getElementById("auditLogModal").style.display = "none";
+};
+
 </script>
 </body>
 </html>
