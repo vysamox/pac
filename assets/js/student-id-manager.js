@@ -12,6 +12,10 @@ import {
 } from "./firebase-config.js";
 
 
+import { getCourseShortName } from "./course-utils.js";
+import { writeBatch } from "./firebase-config.js";
+
+
 
 /* ================= CONFIG ================= */
 const PAGE_SIZE = 15;
@@ -158,11 +162,13 @@ const slice = list.slice(start, start + PAGE_SIZE);
         <td>${start + i + 1}</td>
         <td>${s.name || s.studentName || "-"}</td>
 
-        <td>${s.DOB || "-"}</td>
-        <td>${dobDisplay}</td>
+        <td>${s.DOB_DMY || "-"}</td>
+
 
         <td>${s.phone || "-"}</td>
-        <td>${s.department || s.course || "-"}</td>
+        <td class="short-course">
+  ${s.courseShort || getCourseShortName(s.department || s.course || "")}
+</td>
         <td>${s.CourseYear || s.year || "-"}</td>
 
         <td>${formatDateDMY(s.DateofAdmission)}</td>
@@ -171,9 +177,6 @@ const slice = list.slice(start, start + PAGE_SIZE);
           ${s.studentUID || "-"}
         </td>
 
-        <td class="uid-preview">
-          ${s.studentUID ? "—" : previewMap[s.id]}
-        </td>
         <td class="actions">
   <button class="btn view" data-id="${s.id}">View</button>
   <button class="btn edit" data-id="${s.id}">Edit</button>
@@ -615,6 +618,244 @@ searchInput.addEventListener("input", () => {
 
   page = 1;
   render();
+});
+
+genBtn.onclick = () => {
+  const tbody = document.getElementById("idFixTable");
+  tbody.innerHTML = "";
+
+  const previewMap = getNextUIDMap();
+
+  students.forEach(s => {
+    if (s.studentUID) return;
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${s.name || s.studentName}</td>
+        <td class="missing">—</td>
+        <td class="uid">${previewMap[s.id]}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("idFixModal").style.display = "flex";
+};
+
+
+updateDobBtn.onclick = () => {
+  const tbody = document.getElementById("dobFixTable");
+  tbody.innerHTML = "";
+
+  students.forEach(s => {
+    if (!s.DOB || isAlreadyDMY(s.DOB_DMY)) return;
+
+    const fixed = formatDateDMY(s.DOB);
+    if (fixed === "-") return;
+
+    tbody.innerHTML += `
+      <tr>
+      <td>${s.studentUID}</td>
+        <td>${s.name || s.studentName}</td>
+        <td>${s.DOB}</td>
+        <td class="uid">${fixed}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("dobFixModal").style.display = "flex";
+};
+
+window.closeFixModals = function () {
+  document.getElementById("idFixModal").style.display = "none";
+  document.getElementById("dobFixModal").style.display = "none";
+};
+
+
+
+function renderMobileCards(list) {
+  const container = document.getElementById("mobileStudentList");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  list.forEach((s, i) => {
+    container.innerHTML += `
+      <div class="mobile-card">
+        <div class="mobile-header">
+          <div class="mobile-name">
+            ${startIndexName(i)} ${s.name || s.studentName || "Unknown"}
+          </div>
+          <div class="mobile-uid">
+            ${s.studentUID || "—"}
+          </div>
+        </div>
+
+        <div class="mobile-row">
+          <span>DOB</span>
+          <span>${s.DOB_DMY || formatDateDMY(s.DOB) || "-"}</span>
+        </div>
+
+        <div class="mobile-row">
+          <span>Phone</span>
+          <span>${s.phone || "-"}</span>
+        </div>
+
+        <div class="mobile-row">
+          <span>Course</span>
+          <span>${s.department || s.course || "-"}</span>
+        </div>
+
+        <div class="mobile-row">
+          <span>Year</span>
+          <span>${s.CourseYear || s.year || "-"}</span>
+        </div>
+
+        <div class="mobile-actions">
+          <button onclick="openStudentView('${s.id}')">👁 View</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+/* helper for numbering */
+function startIndexName(i) {
+  return `<span style="opacity:.6;font-size:12px">#${i + 1}</span>`;
+}
+
+
+  // 📱 Mobile cards (render together with table)
+  const mobileList = filteredStudents.length ? filteredStudents : students;
+  renderMobileCards(mobileList);
+
+async function getUserIP() {
+  try {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const data = await res.json();
+    return data.ip || "UNKNOWN";
+  } catch {
+    return "UNKNOWN";
+  }
+}
+
+function getNowDateTime() {
+  const d = new Date();
+  return d.toISOString().replace("T", " ").substring(0, 19);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const courseFixBtn = document.getElementById("courseFixBtn");
+  const courseGenStatus = document.getElementById("courseGenStatus");
+  const courseAlreadyEl = document.getElementById("courseAlready");
+  const courseDoneEl = document.getElementById("courseDone");
+  const coursePendingEl = document.getElementById("coursePending");
+
+  // 🔐 Safety: page without course UI
+  if (!courseFixBtn || !courseGenStatus || !courseAlreadyEl || !courseDoneEl || !coursePendingEl) {
+    console.warn("Course ID UI not found – skipping course generator");
+    return;
+  }
+
+  let isRunning = false; // ⛔ prevent double click
+  const BATCH_LIMIT = 400; // Firestore safe limit (<500)
+
+  courseFixBtn.onclick = async () => {
+
+    if (isRunning) return;
+
+    if (!confirm(
+      "Generate Course IDs?\n\n• Only pending students will be updated\n• Existing Course IDs will NOT be touched"
+    )) return;
+
+    isRunning = true;
+    courseFixBtn.disabled = true;
+    courseFixBtn.textContent = "Initializing...";
+
+    // ✅ Already generated
+    const alreadyDone = students.filter(s => s.courseShort);
+
+    // ✅ Pending students (sorted: latest admission first)
+    const pendingStudents = students
+      .filter(s => !s.courseShort && (s.department || s.course))
+      .sort((a, b) => {
+        return new Date(b.DateofAdmission || 0) - new Date(a.DateofAdmission || 0);
+      });
+
+    const totalPending = pendingStudents.length;
+
+    courseGenStatus.style.display = "block";
+    courseAlreadyEl.textContent = `Already Done: ${alreadyDone.length}`;
+    courseDoneEl.textContent = `Prepared: 0 / ${totalPending}`;
+    coursePendingEl.textContent = `Pending: ${totalPending}`;
+
+    if (totalPending === 0) {
+      alert("✅ All students already have Course IDs");
+      courseFixBtn.disabled = false;
+      courseFixBtn.textContent = "🎓 Generate Course IDs";
+      isRunning = false;
+      return;
+    }
+
+    courseFixBtn.textContent = "Preparing Course IDs...";
+
+    const ip = await getUserIP();
+    const dateTime = getNowDateTime();
+    const ts = Date.now();
+
+    let doneNow = 0;
+    let pending = totalPending;
+
+    // 🔥 BATCH + CHUNK PROCESSING
+    for (let i = 0; i < pendingStudents.length; i += BATCH_LIMIT) {
+
+      const batch = writeBatch(db);
+      const chunk = pendingStudents.slice(i, i + BATCH_LIMIT);
+
+      for (const s of chunk) {
+
+        const short = getCourseShortName(s.department || s.course);
+        if (!short) {
+          pending--;
+          continue;
+        }
+
+        batch.update(doc(db, "StudentsDetails", s.id), {
+          courseShort: short,
+          courseShortGeneratedAt: ts,
+          courseShortGeneratedDate: dateTime,
+          courseShortGeneratedIP: ip
+        });
+
+        // update local cache
+        s.courseShort = short;
+        s.courseShortGeneratedAt = ts;
+        s.courseShortGeneratedDate = dateTime;
+        s.courseShortGeneratedIP = ip;
+
+        doneNow++;
+        pending--;
+      }
+
+      // 🔥 LIVE UI UPDATE (per batch)
+      courseDoneEl.textContent = `Prepared: ${doneNow} / ${totalPending}`;
+      coursePendingEl.textContent = `Pending: ${pending}`;
+
+      // ⚡ ONE NETWORK CALL
+      await batch.commit();
+    }
+
+    // ✅ FINISH
+    courseFixBtn.disabled = false;
+    courseFixBtn.textContent = "🎓 Generate Course IDs";
+    isRunning = false;
+
+    courseDoneEl.textContent = `Done: ${doneNow} / ${totalPending}`;
+    coursePendingEl.textContent = `Pending: 0`;
+
+    alert(`✅ Course IDs generated for ${doneNow} students`);
+    render();
+  };
 });
 
 /* ================= INIT ================= */

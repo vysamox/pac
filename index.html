@@ -818,6 +818,148 @@ footer .social a:hover {
   }
 }
 
+/* ---------------- SYSTEM STATUS BAR ---------------- */
+.system-status-bar {
+  background: linear-gradient(90deg, #004aad, #007bff, #00b7ff);
+  color: #fff;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  position: sticky;
+  top: 60px;
+  z-index: 999;
+}
+
+.system-status-bar span {
+  background: rgba(255,255,255,0.15);
+  padding: 6px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+  animation: pulseStatus 3s infinite ease-in-out;
+}
+
+.status-title {
+  background: transparent !important;
+  box-shadow: none !important;
+  animation: none !important;
+  font-weight: 600;
+}
+
+/* Soft pulse */
+@keyframes pulseStatus {
+  0% { opacity: 0.85; }
+  50% { opacity: 1; }
+  100% { opacity: 0.85; }
+}
+
+/* Mobile tweak */
+@media (max-width: 768px) {
+  .system-status-bar {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+
+/* ---------------- FOOTER SYSTEM STATUS ---------------- */
+.footer-system-status {
+  margin: 14px auto 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.footer-system-status span {
+  background: rgba(255,255,255,0.15);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+  animation: pulseStatus 3s infinite ease-in-out;
+}
+
+.footer-system-status .status-title {
+  background: transparent !important;
+  box-shadow: none !important;
+  animation: none !important;
+  font-weight: 600;
+}
+
+/* Mobile spacing */
+@media (max-width: 600px) {
+  .footer-system-status {
+    font-size: 12px;
+    gap: 8px;
+    margin-top: 10px;
+  }
+}
+
+/* ---------------- UCL OWNERS SECTION ---------------- */
+.ucl-section {
+  padding: 100px 30px;
+  background: linear-gradient(90deg, #004aad, #007bff);
+  color: #fff;
+  text-align: center;
+}
+
+.ucl-section h2 {
+  font-size: 30px;
+  margin-bottom: 40px;
+}
+
+.ucl-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.ucl-card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  padding: 30px 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  transition: 0.4s ease;
+}
+
+.ucl-card:hover {
+  transform: translateY(-10px) scale(1.03);
+}
+
+.ucl-card i {
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #ffeb3b;
+}
+
+.ucl-card h3 {
+  font-size: 36px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.ucl-card p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Status colors */
+.ucl-card.active i { color: #4eff75; }
+.ucl-card.verified i { color: #00e5ff; }
+.ucl-card.pending i { color: #ff9800; }
+
 
 </style>
 </head>
@@ -827,10 +969,12 @@ footer .social a:hover {
 
   <!-- Mobile Menu Toggle -->
   <div class="menu-toggle" onclick="toggleMenu()">
-    <i class="fa-solid fa-bars"></i>
+    <i class="fa-solid fa-bars"></i> 
   </div>
 
   <nav id="mainMenu"></nav>
+
+
 </header>
 
 
@@ -880,25 +1024,8 @@ footer .social a:hover {
         </div>
       </div>
     </div>
-    <!-- 2 -->
-    <!--<div class="agent-card">
-      <div class="flip-inner">
-        <div class="flip-front">
-          <img src="/assets/anjali.jpg" alt="">
-          <h3>Anjali Sharma</h3>
-          <p>Front-End Designer</p>
-        </div>
-        <div class="flip-back">
-          <h3>More Info</h3>
-          <p><strong>Role:</strong> Designer</p>
-          <p><strong>Location:</strong>Bolpur, Birbhum, West Bengal-731204</p>
-          <p><strong>Contact:</strong>+91 8710090805</p>
-          <p><strong>Status:</strong> Active Today</p>
-        </div>
-      </div>
-    </div>-->
-
-    <!-- 3 -->
+ 
+   <!-- 3 -->
     <div class="agent-card">
       <div class="flip-inner">
         <div class="flip-front">
@@ -936,17 +1063,36 @@ footer .social a:hover {
   </div>
 </section>
 
+<section class="ucl-section">
+  <h2>UCL Owners Overview</h2>
 
+  <div class="ucl-cards">
+    <div class="ucl-card">
+      <i class="fa-solid fa-users"></i>
+      <h3 id="ucl-total">0</h3>
+      <p>Total UCL Owners</p>
+    </div>
 
-<!--<section class="live-activity">
-  <h2>Recent Activity</h2>
-  <div class="activity-list">
-    <div class="activity"><i class="fa-solid fa-circle-dot"></i><span>Chowdhury Saddam Hossain added PAC Entry #15 – 2 mins ago</span></div>
-    <div class="activity"><i class="fa-solid fa-circle-dot"></i><span>Priya Sharma updated Aadhaar Center #512 – 10 mins ago</span></div>
-    <div class="activity"><i class="fa-solid fa-circle-dot"></i><span>New Agent registered: Arun Singh (Lucknow)</span></div>
-    <div class="activity"><i class="fa-solid fa-circle-dot"></i><span>System backup completed successfully.</span></div>
+    <div class="ucl-card active">
+      <i class="fa-solid fa-user-check"></i>
+      <h3 id="ucl-active">0</h3>
+      <p>Active UCL Owners</p>
+    </div>
+
+    <div class="ucl-card verified">
+      <i class="fa-solid fa-shield-check"></i>
+      <h3 id="ucl-verified">0</h3>
+      <p>Verified UCL Owners</p>
+    </div>
+
+    <div class="ucl-card pending">
+      <i class="fa-solid fa-user-clock"></i>
+      <h3 id="ucl-pending">0</h3>
+      <p>Pending / Inactive</p>
+    </div>
   </div>
-</section>-->
+</section>
+
 
 <section class="why">
   <h2>Why Choose PAC?</h2>
@@ -995,6 +1141,15 @@ footer .social a:hover {
     <span id="live-time"></span> |
     <span id="user-ip"></span>
   </div>
+
+  <!-- SYSTEM STATUS (FOOTER) -->
+<div class="footer-system-status">
+  <span class="status-title">🛡️ System Status:</span>
+  <span id="db-status">🟢 Database Online</span>
+  <span id="sync-status">🔵 Sync: 0s ago</span>
+  <span id="latency-status">🟡 Latency: -- ms</span>
+</div>
+
 </footer>
 
 
@@ -1172,6 +1327,86 @@ observer.observe(document.querySelector(".stats"));
 <script type="module">
   import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
   loadDashboardVersion();
+</script>
+
+<script>
+/* ---------------- SYSTEM STATUS LOGIC ---------------- */
+
+let lastSyncTime = Date.now();
+
+function updateSyncTimer() {
+  const seconds = Math.floor((Date.now() - lastSyncTime) / 1000);
+  const el = document.getElementById("sync-status");
+  if (el) el.textContent = `🔵 Sync: ${seconds}s ago`;
+}
+
+function updateLatency() {
+  const latency = Math.floor(Math.random() * 120) + 80; // 80–200ms
+  const el = document.getElementById("latency-status");
+  if (!el) return;
+
+  if (latency > 250) {
+    el.textContent = `🔴 Latency: ${latency}ms`;
+  } else {
+    el.textContent = `🟡 Latency: ${latency}ms`;
+  }
+}
+
+function updateDbStatus() {
+  const el = document.getElementById("db-status");
+  if (!el) return;
+
+  if (navigator.onLine) {
+    el.textContent = "🟢 Database Online";
+  } else {
+    el.textContent = "🔴 Database Offline";
+  }
+}
+
+// Initial
+updateDbStatus();
+updateLatency();
+updateSyncTimer();
+
+// Timers
+setInterval(updateSyncTimer, 1000);
+setInterval(updateLatency, 4000);
+
+// Online / Offline listener
+window.addEventListener("online", updateDbStatus);
+window.addEventListener("offline", updateDbStatus);
+</script>
+
+<script>
+/* ---------------- UCL OWNER COUNT (DEMO) ---------------- */
+
+// Temporary demo values
+const UCL_DATA = {
+  total: 12,
+  active: 9,
+  verified: 8,
+  pending: 3
+};
+
+// Animate numbers
+function animateCount(id, value) {
+  const el = document.getElementById(id);
+  let start = 0;
+  const duration = 1500;
+  const startTime = performance.now();
+
+  function update(time) {
+    const progress = Math.min((time - startTime) / duration, 1);
+    el.textContent = Math.floor(progress * value);
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+animateCount("ucl-total", UCL_DATA.total);
+animateCount("ucl-active", UCL_DATA.active);
+animateCount("ucl-verified", UCL_DATA.verified);
+animateCount("ucl-pending", UCL_DATA.pending);
 </script>
 
 </body>

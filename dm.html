@@ -1782,6 +1782,8 @@ tbody tr:hover::after {
       Loading…
     </div>
   </div>
+
+  
 </div>
 
 <!-- ==== DUPLICATE ID TABLE ==== -->
@@ -2135,6 +2137,7 @@ tbody tr:hover::after {
   </div>
 </div>
 
+
 <div id="lastDeleteModal" class="ucl-modal">
   <div class="ucl-modal-box">
     <h3>Last Deleted PAC Details</h3>
@@ -2209,7 +2212,6 @@ tbody tr:hover::after {
   </div>
 </div>
 
-
 <footer class="dashboard-footer">
   <div class="dashboard-version"></div>
   <div class="footer-copy">&copy; 2025 PAC Management System</div>
@@ -2221,8 +2223,6 @@ tbody tr:hover::after {
 <script type="module" src="./assets/js/query-engine.js"></script>
 <script type="module" src="./assets/js/firestore-storage-status.js"></script>
 <script type="module" src="./assets/js/pac-amount-edit.js"></script>
-
-
 
 <script type="module">
 
@@ -2256,13 +2256,20 @@ import { initLastDeletedPac } from "./assets/js/last-deleted-pac.js";
 import { logAdminAction } from "./assets/js/admin-audit-log.js";
 
 
-import { bindVersionCard, openVersionView, closeVersionView, openVersionHistory, closeVersionHistory, autoUpdateVersion  } from "./assets/js/version-control.js";
+import {
+  bindVersionCard,
+  openVersionView,
+  closeVersionView,
+  openVersionHistory,
+  closeVersionHistory,
+  autoUpdateVersion
+} from "./assets/js/version-control.js";
 
 window.openVersionHistory = openVersionHistory;
 window.closeVersionHistory = closeVersionHistory;
 window.autoUpdateVersion = autoUpdateVersion;
-window.openVersionView = openVersionView;
-window.closeVersionView = closeVersionView;
+window.openVersionView = openVersionView;     // ✅ FIX
+window.closeVersionView = closeVersionView;   // ✅ FIX
 
 loadDashboardVersion();
 bindVersionCard();
