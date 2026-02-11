@@ -117,18 +117,34 @@ table {
   border-collapse:collapse;
 }
 
-th,td {
-  padding:12px;
-  font-size:14px;
+/* ================= TABLE BORDERS ================= */
+
+/* Add borders to table headers and cells */
+th, td {
+  padding: 12px;
+  font-size: 14px;
+  /* Horizontal Divider */
+  border-bottom: 1px solid rgba(0, 255, 255, 0.15); 
+  /* Vertical Divider */
+  border-right: 1px solid rgba(0, 255, 255, 0.05);  
 }
 
-th {
-  background:rgba(0,40,80,.9);
-  color:#00eaff;
+/* Remove the border from the last column so it looks clean */
+th:last-child, 
+td:last-child {
+  border-right: none;
 }
 
-tr:nth-child(even) {
-  background:rgba(255,255,255,.04);
+/* Make the bottom border of the last row disappear (optional, fits the box) */
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Add a cool hover effect to highlight the row and borders */
+tr:hover {
+  background: rgba(0, 255, 255, 0.1) !important; /* Overrides even/odd color */
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
 }
 
 .uid {
@@ -697,14 +713,13 @@ tr:nth-child(even) {
 <tr>
   <th>#</th>
   <th>Name</th>
-   <th>DOB (Original)</th>
+   <th>Date of Birth</th>
   <th>Phone</th>
   <th>Course ID</th>  
   <th>Year</th>
   <th>Admission</th>
   <th>Student ID</th>
   <th>Actions</th>
-
 </tr>
 </thead>
 <tbody id="studentTable"></tbody>
@@ -712,8 +727,6 @@ tr:nth-child(even) {
 </div>
 <!-- ================= MOBILE STUDENT LIST ================= -->
 <div class="mobile-list" id="mobileStudentList"></div>
-
-
 
 <div class="view-modal" id="viewModal">
   <div class="view-card">
