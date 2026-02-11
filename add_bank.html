@@ -40,7 +40,6 @@ h1{
 }
 
 .container{
-  max-width:1000px;
   margin:auto;
   background:var(--card);
   padding:28px;
@@ -155,19 +154,82 @@ button{
 }
 
 .bank-card{
-  background:linear-gradient(145deg,#ffffff,#f1f5f9);
-  padding:22px;
-  border-radius:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
-  transition:all .3s ease;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  padding:24px;
+  border-radius:24px;
   position:relative;
   overflow:hidden;
+  transition:all .35s ease;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.6);
+  border:1px solid rgba(255,255,255,0.4);
 }
 
-.bank-card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 20px 40px rgba(0,0,0,.12);
+/* Soft gradient border glow */
+.bank-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:24px;
+  padding:1px;
+  background:linear-gradient(
+    135deg,
+    rgba(37,99,235,.4),
+    rgba(124,58,237,.4),
+    rgba(16,185,129,.4)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
 }
+
+/* Light reflection effect */
+.bank-card::after{
+  content:"";
+  position:absolute;
+  top:-50%;
+  left:-50%;
+  width:200%;
+  height:200%;
+  background:linear-gradient(
+    120deg,
+    transparent 40%,
+    rgba(255,255,255,.4) 50%,
+    transparent 60%
+  );
+  transform:rotate(25deg);
+  transition:all .6s ease;
+  opacity:0;
+}
+
+/* Hover Animation */
+.bank-card:hover{
+  transform:translateY(-10px) scale(1.02);
+  box-shadow:
+    0 25px 50px rgba(0,0,0,.15),
+    0 10px 20px rgba(37,99,235,.2);
+}
+
+.bank-card:hover::after{
+  opacity:1;
+  animation:shine 1.2s ease forwards;
+}
+
+@keyframes shine{
+  from{
+    transform:translateX(-100%) rotate(25deg);
+  }
+  to{
+    transform:translateX(100%) rotate(25deg);
+  }
+}
+
 
 .card-header{
   display:flex;
@@ -192,11 +254,12 @@ button{
 }
 
 .account-number{
-  font-size:20px;
+  font-size:22px;
   font-weight:700;
-  margin:8px 0;
-  letter-spacing:1px;
+  letter-spacing:3px;
+  color:#111827;
 }
+
 
 .holder-name{
   font-weight:600;
@@ -313,6 +376,32 @@ button{
   color:#fff;
   transform:translateY(-3px);
   box-shadow:0 10px 18px rgba(124,58,237,.35);
+}
+
+/* DELETE - Red */
+.card-actions span:nth-child(5){
+  color:#dc2626;
+  border-color:#dc2626;
+}
+
+.card-actions span:nth-child(5):hover{
+  background:#dc2626;
+  color:#fff;
+  transform:translateY(-3px);
+  box-shadow:0 10px 18px rgba(220,38,38,.35);
+}
+
+/* COPY - Teal */
+.card-actions span:nth-child(6){
+  color:#0ea5e9;
+  border-color:#0ea5e9;
+}
+
+.card-actions span:nth-child(6):hover{
+  background:#0ea5e9;
+  color:#fff;
+  transform:translateY(-3px);
+  box-shadow:0 10px 18px rgba(14,165,233,.35);
 }
 
 
@@ -469,7 +558,10 @@ container.innerHTML += `
       <div class="account-type">${b.type}</div>
     </div>
 
-    <div class="account-number">•••• ${b.account.slice(-4)}</div>
+    <div class="account-number" id="acc-${doc.id}">
+  •••• ${b.account.slice(-4)}
+</div>
+
 
     <div class="holder-name">${b.holder}</div>
 
@@ -489,13 +581,14 @@ container.innerHTML += `
     </svg>
   </span>
 
-  <span onclick="viewAccount('${doc.id}')">
-    <!-- View Icon -->
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-      <circle cx="12" cy="12" r="3"/>
-    </svg>
-  </span>
+<span onclick="viewAccount('${doc.id}', this)">
+  <svg id="eye-${doc.id}" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+</span>
+
+
 
   <span onclick="editAccount('${doc.id}')">
     <!-- Edit Icon -->
@@ -514,6 +607,27 @@ container.innerHTML += `
     <path d="M16 16h5v5h-5z"/>
   </svg>
 </span>
+
+<span onclick="deleteAccount('${doc.id}')">
+  <!-- Delete Icon -->
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="3 6 5 6 21 6"/>
+    <path d="M19 6l-2 14H7L5 6"/>
+    <path d="M10 11v6"/>
+    <path d="M14 11v6"/>
+    <path d="M9 6V4h6v2"/>
+  </svg>
+</span>
+
+<span onclick="copyAccount('${doc.id}', this)">
+  <svg id="copy-${doc.id}" viewBox="0 0 24 24" width="18" height="18"
+       fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2"/>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+  </svg>
+</span>
+
 
 
 </div>
@@ -536,16 +650,23 @@ window.shareSingle = async (id) => {
 
   const b = snap.data();
 
-  let text = 
-`🏦 Bank Account Details
+let text = 
+`BANK ACCOUNT INFORMATION
 
 Customer ID: ${b.customerId || '-'}
 Account Holder: ${b.holder}
+
 Bank: ${b.bank}
 Branch: ${b.branch}
-Account Number: XXXX${b.account.slice(-4)}
+
+Account Number: ${b.account}
 IFSC: ${b.ifsc}
-Type: ${b.type}`;
+Account Type: ${b.type}
+
+This information is confidential and intended for authorized use only.
+Generated by Bank Account Manager System.`;
+;
+
 
   if(navigator.share){
     try{
@@ -560,9 +681,53 @@ Type: ${b.type}`;
   }
 };
 
-window.viewAccount = (id)=>{
-  alert("View feature coming next...");
+window.viewAccount = async (id, el)=>{
+
+  const snap = await getDoc(doc(db,"bankAccounts",id));
+  if(!snap.exists()) return;
+
+  const b = snap.data();
+  const accElement = document.getElementById(`acc-${id}`);
+  const eyeIcon = document.getElementById(`eye-${id}`);
+
+  if(accElement.dataset.visible === "true"){
+    hideAccount(id, b.account);
+    return;
+  }
+
+  // Show full account
+  accElement.innerHTML = b.account;
+  accElement.dataset.visible = "true";
+
+  // Change icon to eye-off
+ eyeIcon.innerHTML = `
+  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12a21.77 21.77 0 0 1 5.06-7.94"/>
+  <path d="M9.9 4.24A9.77 9.77 0 0 1 12 4c7 0 11 8 11 8a21.94 21.94 0 0 1-2.06 3.19"/>
+  <line x1="1" y1="1" x2="23" y2="23"/>
+`;
+
+
+  // Auto hide after 5 seconds
+  setTimeout(()=>{
+    hideAccount(id, b.account);
+  }, 5000);
 };
+
+function hideAccount(id, fullAccount){
+  const accElement = document.getElementById(`acc-${id}`);
+  const eyeIcon = document.getElementById(`eye-${id}`);
+
+  accElement.innerHTML = `•••• ${fullAccount.slice(-4)}`;
+  accElement.dataset.visible = "false";
+
+  // Restore normal eye icon
+  eyeIcon.innerHTML = `
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  `;
+}
+
+
 
 window.editAccount = (id)=>{
   alert("Edit feature coming next...");
@@ -571,6 +736,52 @@ window.editAccount = (id)=>{
 window.generateQR = (id)=>{
   alert("QR feature coming later...");
 };
+
+
+window.copyAccount = async (id, el)=>{
+
+  const snap = await getDoc(doc(db,"bankAccounts",id));
+  if(!snap.exists()) return;
+
+  const b = snap.data();
+  const copyIcon = document.getElementById(`copy-${id}`);
+
+  // Same professional format as share
+  let text = 
+`BANK ACCOUNT INFORMATION
+
+Customer ID: ${b.customerId || '-'}
+Account Holder: ${b.holder}
+
+Bank: ${b.bank}
+Branch: ${b.branch}
+
+Account Number: ${b.account}
+IFSC: ${b.ifsc}
+Account Type: ${b.type}
+
+This information is confidential and intended for authorized use only.
+Generated by Bank Account Manager System.`;
+
+  await navigator.clipboard.writeText(text);
+
+  // Change icon to checkmark
+  copyIcon.innerHTML = `<polyline points="20 6 9 17 4 12"/>`;
+
+  el.style.color = "#16a34a";
+  el.style.borderColor = "#16a34a";
+
+  // Auto revert after 2 sec
+  setTimeout(()=>{
+    copyIcon.innerHTML = `
+      <rect x="9" y="9" width="13" height="13" rx="2"/>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+    `;
+    el.style.color = "";
+    el.style.borderColor = "";
+  }, 2000);
+};
+
 
 loadBanks();
 </script>
