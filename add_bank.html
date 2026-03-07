@@ -27,6 +27,226 @@ body{
   padding:24px;
 }
 
+
+/* ========================= */
+/* PREMIUM GLASS HEADER */
+/* ========================= */
+
+.main-header{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:28px 36px;
+  margin-bottom:50px;
+  border-radius:28px;
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  overflow:hidden;
+  transition:all .4s ease;
+}
+
+/* Gradient border glow */
+.main-header::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:28px;
+  padding:1px;
+  background:linear-gradient(
+    135deg,
+    rgba(37,99,235,.4),
+    rgba(124,58,237,.4),
+    rgba(16,185,129,.4)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+}
+
+/* Floating animation */
+.main-header{
+  animation:floatHeader 6s ease-in-out infinite;
+}
+
+@keyframes floatHeader{
+  0%{ transform:translateY(0px); }
+  50%{ transform:translateY(-6px); }
+  100%{ transform:translateY(0px); }
+}
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.logo-circle{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  color:#fff;
+  box-shadow:
+    0 15px 35px rgba(37,99,235,0.35);
+  transition:all .4s ease;
+}
+
+.logo-circle:hover{
+  transform:rotate(12deg) scale(1.05);
+}
+
+.brand-title{
+  font-weight:700;
+  font-size:22px;
+  letter-spacing:.5px;
+}
+
+.brand-subtitle{
+  font-size:13px;
+  color:#64748b;
+  margin-top:4px;
+}
+
+.header-badge{
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  color:#fff;
+  padding:8px 18px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  box-shadow:0 8px 20px rgba(124,58,237,.35);
+  transition:all .3s ease;
+}
+
+.header-badge:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 30px rgba(124,58,237,.45);
+}
+
+
+/* ========================= */
+/* PREMIUM FOOTER */
+/* ========================= */
+
+.main-footer{
+  margin-top:80px;
+  padding:40px 36px;
+  border-radius:28px;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:#f1f5f9;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,0.25);
+}
+
+/* Soft top glow line */
+.main-footer::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:2px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #2563eb,
+    #7c3aed,
+    transparent
+  );
+}
+
+.footer-content{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:30px;
+}
+
+.footer-left{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.footer-logo{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#2563eb,#16a34a);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  box-shadow:0 10px 25px rgba(16,185,129,.35);
+}
+
+.footer-title{
+  font-weight:600;
+  font-size:15px;
+}
+
+.footer-sub{
+  font-size:12px;
+  opacity:0.7;
+  margin-top:4px;
+}
+
+.footer-center{
+  font-size:13px;
+  opacity:0.8;
+}
+
+.footer-right .footer-badge{
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  padding:8px 18px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  box-shadow:0 8px 20px rgba(16,185,129,.35);
+  transition:all .3s ease;
+}
+
+.footer-right .footer-badge:hover{
+  transform:translateY(-3px);
+}
+
+
+/* ========================= */
+/* RESPONSIVE IMPROVEMENT */
+/* ========================= */
+
+@media(max-width:768px){
+
+  .main-header{
+    flex-direction:column;
+    text-align:center;
+    gap:20px;
+  }
+
+  .header-left{
+    flex-direction:column;
+  }
+
+  .footer-content{
+    flex-direction:column;
+    text-align:center;
+  }
+
+}
 h1{
   text-align:center;
   margin-bottom:6px;
@@ -480,8 +700,19 @@ button{
 
 <body>
 
-<h1>🏦 Bank Account Manager</h1>
-<div class="subtitle">Secure & Simple Bank Account Maintenance</div>
+  <header class="main-header">
+  <div class="header-left">
+    <div class="logo-circle">🏦</div>
+    <div>
+      <div class="brand-title">Bank Account Manager</div>
+      <div class="brand-subtitle">Secure • Organized • Professional</div>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <span class="header-badge">Admin Panel</span>
+  </div>
+</header>
 
 <div class="container">
 
@@ -588,6 +819,7 @@ import {
   doc, 
   getDoc, 
   updateDoc,
+  deleteDoc,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -1023,9 +1255,46 @@ searchInput.addEventListener("input", ()=>{
   });
 });
 
+window.deleteAccount = async (id) => {
 
+  const confirmDelete = confirm("Are you sure you want to delete this account?");
+  if(!confirmDelete) return;
+
+  try {
+    await deleteDoc(doc(db,"bankAccounts",id));
+    loadBanks();
+  } catch(err){
+    alert("Failed to delete");
+  }
+};
 loadBanks();
 </script>
+
+<footer class="main-footer">
+  <div class="footer-content">
+
+    <div class="footer-left">
+      <div class="footer-logo">🏦</div>
+      <div>
+        <div class="footer-title">Bank Account Manager</div>
+        <div class="footer-sub">
+          Secure Bank Record Maintenance System
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-center">
+      <span>© 2026 All Rights Reserved</span>
+      <span> | </span>
+      <span>Designed by Samrat</span>
+    </div>
+
+    <div class="footer-right">
+      <span class="footer-badge">Secure System</span>
+    </div>
+
+  </div>
+</footer>
 
 </body>
 </html>

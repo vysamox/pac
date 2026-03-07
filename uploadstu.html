@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bulk Student Upload</title>
+  <link rel="stylesheet" href="/assets/css/uploadstu.css">
+  
+</head>
+<body>
+  <div class="container">
+    <h2>Bulk Student Information Upload</h2>
+
+    <div id="campusStats" class="stats-box"></div>
+
+    <div class="progress-box">
+  <div id="uploadProgressBar" class="progress-bar"></div>
+</div>
+
+<div id="uploadProgressText" class="progress-text"></div>
+
+    <input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" />
+
+    <!-- Upload Button -->
+    <button id="uploadBtn" disabled>Upload All to Firestore</button>
+
+    <!-- Status Message -->
+    <div class="status" id="statusMsg"></div>
+
+    <!-- Preview Table (Always Visible) -->
+    <div class="table-box">
+  <table id="previewTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Campus</th>
+          <th>Financial Year</th>
+          <th>Course Year</th>
+          <th>Department</th>
+          <th>Course Session</th>
+          <th>Date of Admission</th>
+          <th>Quota</th>
+          <th>Date of Birth</th>
+          <th>Agent Type</th>
+          <th>Agent Contact</th>
+          <th>Agent Name</th>
+          <th>Agent Amount</th>
+          <th>Admission Fees</th>
+          <th>Semester Fee 1</th>
+          <th>Semester Fee 2</th>
+          <th>Semester Fee 3</th>
+          <th>Semester Fee 4</th>
+          <th>Semester Fee 5</th>
+          <th>Semester Fee 6</th>
+          <th>Total Fees</th>
+          <th>Father's Name</th>
+          <th>Mother's Name</th>
+          <th>Father's Contact</th>
+          <th>Permanent City</th>
+          <th>Present City</th>
+          <th>Present Post Office</th>
+          <th>Permanent Post Office</th>
+          <th>Present Police</th>
+          <th>Permanent Police</th>
+          <th>Present District</th>
+          <th>Permanent District</th>
+          <th>Present Pin Code</th>
+          <th>Permanent Pin Code</th>
+          <th>Present State</th>
+          <th>Permanent State</th>
+          <th>Guardian Name</th>
+          <th>Guardian Contact</th>
+          <th>Caste</th>
+          <th>Last Institute</th>
+          <th>Nationality</th>
+          <th>Firestore ID (if exists)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data rows go here -->
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      query,
+      where,
+      setDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+    import { generateStudentId } from "/assets/js/studentIdGenerator.js";
+    import { getUploadMeta } from "/assets/js/uploadMeta.js";
+    import { cleanEmail, cleanPhone } from "/assets/js/dataCleaner.js";
+    import { initProgress, updateProgress, finishProgress } from "/assets/js/uploadProgress.js";
+
+    // Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain: "mrsamrat08.firebaseapp.com",
+  projectId: "mrsamrat08",
+  storageBucket: "mrsamrat08.appspot.com",
+  messagingSenderId: "525481767881",
+  appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+
+
+    // Initialize Firebase app and Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // DOM elements
+    const fileInput = document.getElementById('csvFileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const previewTableBody = document.querySelector('#previewTable tbody');
+
+   let studentData = [];
+
+
+    fileInput.addEventListener('change', async (e) => {
+
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const fileName = file.name.toLowerCase();
+
+  statusMsg.textContent = 'Reading file and checking Firestore...';
+
+  try {
+
+    if (fileName.endsWith('.csv')) {
+
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: async (res) => {
+          await processRows(res.data);
+        }
+      });
+
+    }
+
+    else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+
+      const reader = new FileReader();
+
+      reader.onload = async (event) => {
+
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        const firstSheet = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheet];
+
+        const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+        await processRows(rows);
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+  } catch (err) {
+    console.error(err);
+    statusMsg.textContent = "File processing failed.";
+  }
+
+});
+
+
+function numberToWords(num){
+
+  const a = [
+    '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six',
+    'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve',
+    'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
+    'Seventeen', 'Eighteen', 'Nineteen'
+  ];
+
+  const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+  if(num === 0) return "Zero Rupees";
+
+  function inWords(n){
+    if(n < 20) return a[n];
+    if(n < 100) return b[Math.floor(n/10)] + " " + a[n%10];
+    if(n < 1000) return a[Math.floor(n/100)] + " Hundred " + inWords(n%100);
+    if(n < 100000) return inWords(Math.floor(n/1000)) + " Thousand " + inWords(n%1000);
+    if(n < 10000000) return inWords(Math.floor(n/100000)) + " Lakh " + inWords(n%100000);
+    return inWords(Math.floor(n/10000000)) + " Crore " + inWords(n%10000000);
+  }
+
+  return inWords(num).trim() + " Rupees Only";
+}
+
+async function processRows(rows) {
+
+  statusMsg.textContent = 'Checking duplicates in Firestore...';
+
+const querySnapshot = await getDocs(collection(db, "Students"));
+
+  const keyToIdMap = {};
+
+querySnapshot.forEach(doc => {
+  const data = doc.data();
+  const key = `${String(data.phone || '').trim().toLowerCase()}_${String(data.email || '').trim().toLowerCase()}`;
+  if (key !== '_') keyToIdMap[key] = doc.id;
+});
+
+  // 🔥 IMPORTANT: Normalize every row first
+studentData = rows.map(row => {
+
+  const cleanRow = normalizeRow(row);
+
+  const key = `${String(cleanRow.phone || '').trim().toLowerCase()}_${String(cleanRow.email || '').trim().toLowerCase()}`;
+
+  return {
+    ...cleanRow,
+    firestoreId: keyToIdMap[key] || ''
+  };
+});
+
+renderPreview(studentData);
+uploadBtn.disabled = !studentData.length;
+statusMsg.textContent = `${studentData.length} records ready to upload.`;
+}
+    // Render preview function
+   function renderPreview(data) {
+  previewTableBody.innerHTML = '';
+  if (!data.length) return;
+
+  data.forEach(row => {
+    const toNumber = val => parseFloat(val) || 0;
+
+const admissionFees = toNumber(row.AdmissionFees);
+const semester1 = toNumber(row.SemesterFee1);
+const semester2 = toNumber(row.SemesterFee2);
+const semester3 = toNumber(row.SemesterFee3);
+const semester4 = toNumber(row.SemesterFee4);
+const semester5 = toNumber(row.SemesterFee5);
+const semester6 = toNumber(row.SemesterFee6);
+
+const calculatedTotal = admissionFees + semester1 + semester2 + semester3 + semester4 + semester5 + semester6;
+  const displayTotal = calculatedTotal;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${row.name || ''}</td>
+      <td>${row.phone || ''}</td>
+      <td>${row.email || ''}</td>
+      <td>${row.campus || ''}</td>
+      <td>${row.FinancialYear || ''}</td>
+      <td>${row.CourseYear || ''}</td>
+      <td>${row.department || ''}</td>
+      <td>${row.CourseSession || ''}</td>
+      <td>${formatDate(row.DateofAdmission)}</td>
+      <td>${row.Quota || ''}</td>
+      <td>${formatDate(row.DOB)}</td>
+      <td>${row.AgentType || ''}</td>
+      <td>${row.AgentContact || ''}</td>
+      <td>${row.AgentName || ''}</td>
+      <td>${row.AgentAmount || ''}</td>
+      <td>${parseFloat(row.AdmissionFees) || 0}</td>
+      <td>${parseFloat(row.SemesterFee1) || 0}</td>
+      <td>${parseFloat(row.SemesterFee2) || 0}</td>
+      <td>${parseFloat(row.SemesterFee3) || 0}</td>
+      <td>${parseFloat(row.SemesterFee4) || 0}</td>
+      <td>${parseFloat(row.SemesterFee5) || 0}</td>
+      <td>${parseFloat(row.SemesterFee6) || 0}</td>
+      <td>${displayTotal}</td>
+      <td>${row.father || ''}</td>
+      <td>${row.mother || ''}</td>
+      <td>${row.FatherContact || ''}</td>
+      <td>${row.PermanentCity || ''}</td>
+      <td>${row.PresentCity || ''}</td>
+      <td>${row.PresentPost || ''}</td>
+      <td>${row.PermanentPost || ''}</td>
+      <td>${row.PresentPolice || ''}</td>
+      <td>${row.PermanentPolice || ''}</td>
+      <td>${row.PresentDistrict || ''}</td>
+      <td>${row.PermanentDistrict || ''}</td>
+      <td>${row.PresentPin || ''}</td>
+      <td>${row.PermanentPin || ''}</td>
+      <td>${row.PresentState || ''}</td>
+      <td>${row.PermanentState || ''}</td>  
+      <td>${row.Guardian || ''}</td>
+      <td>${row.GuardianContact || ''}</td>
+      <td>${row.Category || ''}</td>
+      <td>${row.LastInstitute || ''}</td>
+      <td>${row.Nationality || ''}</td>
+      <td style="color: ${row.firestoreId ? 'green' : 'red'}; font-weight: bold;">
+        ${row.firestoreId || 'New Entry'}
+      </td>
+    `;
+    previewTableBody.appendChild(tr);
+  });
+}
+
+function formatDate(value){
+  if(!value) return "";
+  // If Excel sends numeric serial date
+  if(typeof value === "number"){
+
+    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+    const date = new Date(excelEpoch.getTime() + value * 86400000);
+
+    const day = String(date.getDate()).padStart(2,'0');
+    const month = String(date.getMonth()+1).padStart(2,'0');
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  }
+
+  // If string date
+  const parsed = new Date(value);
+  if(!isNaN(parsed)){
+    const day = String(parsed.getDate()).padStart(2,'0');
+    const month = String(parsed.getMonth()+1).padStart(2,'0');
+    const year = parsed.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  }
+
+  return value;
+}
+
+function cleanValue(val){
+  if(
+    val === undefined ||
+    val === null ||
+    val === "" ||
+    val === "NA" ||
+    val === "N/A"
+  ){
+    return "Not Available";
+  }
+  return String(val).trim();
+}
+
+function normalizeRow(row) {
+  return {
+    campus: row["Campus"] || "",
+    name: row["Student Name"] || "",
+    phone: cleanPhone(row["Phone Number"]),
+    email: cleanEmail(row["Email Address"]),
+    FinancialYear: row["Financial Year"] || "",
+    department: row["Course"] || "",
+    CourseSession: row["Course Session"] || "",
+    Quota: row["Quota"] || "",
+    DateofAdmission: formatDate(row["Date Of Admission"]),
+    RollNo: row["Roll No"] || "",
+    DOB: formatDate(row["DOB"]),
+    CourseYear: row["Course Year"] || "",
+    AgentType: cleanValue(row["Agent Type"]),
+    AgentContact: cleanValue(row["Agent Contact"]),
+    AgentName: cleanValue(row["Agent Name"]),
+    AgentRoll: cleanValue(row["Agent Roll"]),
+    AgentAddress: cleanValue(row["Agent Address"]),
+    AgentAmount: cleanValue(row["Agent Amount"]),
+    AdmissionFees: row["Admission Fees"] || 0,
+    SemesterFee1: row["Semester Fee 1"] || 0,
+    SemesterFee2: row["Semester Fee 2"] || 0,
+    SemesterFee3: row["Semester Fee 3"] || 0,
+    SemesterFee4: row["Semester Fee 4"] || 0,
+    SemesterFee5: row["Semester Fee 5"] || 0,
+    SemesterFee6: row["Semester Fee 6"] || 0,
+    father: row["Father Name"] || "",
+    FatherContact: cleanPhone(row["Father Contact"]),
+    FatherEmail: cleanEmail(row["Father Email"]),
+    FatherOccupation: row["Father Occupation"] || "",
+    mother: row["Mother Name"] || "",
+    MotherContact: cleanPhone(row["Mother Contact"]),
+    PresentCity: row["Present City"] || "",
+    PermanentCity: row["Permanent City"] || "",
+    PresentPost: row["Present Post"] || "",
+    PermanentPost: row["Permanent Post"] || "",
+    PresentPolice: row["Present Police"] || "",
+    PermanentPolice: row["Permanent Police"] || "",
+    PresentDistrict: row["Present District"] || "",
+    PermanentDistrict: row["Permanent District"] || "",
+    PresentPin: row["Present Pin"] || "",
+    PermanentPin: row["Permanent Pin"] || "",
+    PresentState: row["Present State"] || "",
+    PermanentState: row["Permanent State"] || "",
+    Guardian: row["Guardian's Name"] || "",
+    GuardianContact: cleanPhone(row["Guardian's Contact"]),
+    Category: row["Category"] || "",
+    Sex: row["Sex"] || "",
+    Religion: row["Religion"] || "",
+    Nationality: row["Nationality"] || "",
+    AdharNo: row["Adhar No"] || "",
+    BloodGroup: row["Blood Group"] || "",
+    LastInstitute: row["Last Institute"] || "",
+    Status: row["Status"] || "",
+     // ===== Secondary =====
+    SecondaryBoard: cleanValue(row["Secondary Board"]),
+    SecondaryYOP: cleanValue(row["Secondary YOP"]),
+    SecondaryFullMarks: cleanValue(row["Secondary Full Marks"]),
+    SecondaryGrandTotal: cleanValue(row["Secondary Grand Total"]),
+    SecondaryPercentage: cleanValue(row["Secondary Percentage"]),
+    SecondaryPhysics: cleanValue(row["Secondary Physics"]),
+    SecondaryMath: cleanValue(row["Secondary Math"]),
+    SecondarySciTotal: cleanValue(row["Secondary Sci Total"]),
+    SecondarySciPercentage: cleanValue(row["Secondary Sci Percentage"]),
+
+    // ===== Higher Secondary =====
+    HigherSecondaryBoard: cleanValue(row["Higher Secondary Board"]),
+    HigherSecondaryYOP: cleanValue(row["Higher Secondary YOP"]),
+    HigherSecondaryFullMarks: cleanValue(row["Higher Secondary Full Marks"]),
+    HigherSecondaryGrandTotal: cleanValue(row["Higher Secondary Grand Total"]),
+    HigherSecondaryPercentage: cleanValue(row["Higher Secondary Percentage"]),
+    HigherSecondaryPhysics: cleanValue(row["Higher Secondary Physics"]),
+    HigherSecondaryMath: cleanValue(row["Higher Secondary Math"]),
+    HigherSecondarySciTotal: cleanValue(row["Higher Secondary Sci Total"]),
+    HigherSecondarySciPercentage: cleanValue(row["Higher Secondary Sci Percentage"]),
+
+    // ===== Student Status =====
+    StudentStatus: cleanValue(row["Student Status"]),
+    IMarks: cleanValue(row["I Marks"]),
+    Handicap: cleanValue(row["Handicap"]),
+    MartialStatus: cleanValue(row["Martial Status"]),
+
+    // ===== Remarks =====
+    Remarks: cleanValue(row["Remarks"]),
+  };
+}
+
+   // ===== FAST PARALLEL UPLOAD SYSTEM =====
+
+uploadBtn.addEventListener('click', async () => {
+
+  uploadBtn.disabled = true;
+  statusMsg.textContent = "Uploading students...";
+
+  initProgress("uploadProgressBar", "uploadProgressText", studentData.length);
+
+  let ok = 0;
+  let skipped = 0;
+  let errCount = 0;
+    const uploadMeta = await getUploadMeta(); // ✔ CALL ONLY ONCE
+
+
+  const BATCH_SIZE = 10; // parallel uploads (safe limit)
+
+  const toNum = v => parseFloat(v) || 0;
+
+  for (let i = 0; i < studentData.length; i += BATCH_SIZE) {
+
+    const batch = studentData.slice(i, i + BATCH_SIZE);
+
+    await Promise.all(batch.map(async (r) => {
+
+      try {
+
+        // ===== DUPLICATE CHECK =====
+        if (r.firestoreId) {
+          skipped++;
+          updateProgress();
+          return;
+        }
+
+        // ===== FEES CALCULATION =====
+        const admission = toNum(r.AdmissionFees);
+        const sem1 = toNum(r.SemesterFee1);
+        const sem2 = toNum(r.SemesterFee2);
+        const sem3 = toNum(r.SemesterFee3);
+        const sem4 = toNum(r.SemesterFee4);
+        const sem5 = toNum(r.SemesterFee5);
+        const sem6 = toNum(r.SemesterFee6);
+
+        const computedTotal =
+          admission + sem1 + sem2 + sem3 + sem4 + sem5 + sem6;
+
+        const totalWords = numberToWords(computedTotal);
+
+        // ===== REMOVE TEMP FIELDS =====
+        const {
+          firestoreId,
+          TotalFees,
+          ...restOfRecord
+        } = r;
+
+        // ===== GENERATE META =====
+const studentId = await generateStudentId(db);
+
+const dataToUpload = {
+  ...restOfRecord,
+
+  studentId: studentId,
+  campus: r.campus,
+
+  TotalFees: computedTotal,
+  TotalFeesInWords: totalWords,
+
+  ...uploadMeta, // shared metadata
+
+  addedOn: new Date().toISOString()
+};
+        // ===== UNIQUE DOC ID =====
+        const now = new Date();
+
+        const datePart =
+          now.toLocaleDateString("en-CA");
+
+        const timePart =
+          now.toLocaleTimeString("en-GB").replace(/:/g, "-");
+
+        const safeName =
+          (r.name || "Student")
+          .replace(/\s+/g, "");
+
+        const random =
+          Math.random()
+          .toString(36)
+          .substring(2,6);
+
+        const customDocId =
+          `${safeName}_${datePart}_${timePart}_${random}`;
+
+        // ===== FIRESTORE WRITE =====
+        await setDoc(
+          doc(db, "Students", customDocId),
+          dataToUpload
+        );
+
+        ok++;
+
+      } catch (error) {
+
+        console.error("Upload error:", error);
+        errCount++;
+
+      }
+
+      updateProgress();
+
+    }));
+
+  }
+
+  finishProgress(ok, skipped, errCount);
+
+  statusMsg.textContent =
+    `Upload complete ✓  | Added: ${ok}  | Skipped: ${skipped}  | Errors: ${errCount}`;
+
+  uploadBtn.disabled = false;
+
+});
+
+function sanitizeAndFormat(r, campus) {
+
+  const toNumber = (val) => {
+    if (val === undefined || val === null || val === "" || val === "NA")
+      return 0;
+    return Number(String(val).replace(/[^0-9.]/g, "")) || 0;
+  };
+
+  const toString = (val) => {
+    if (!val || val === "NA") return "";
+    return String(val).trim();
+  };
+
+  return {
+
+    // BASIC
+    name: toString(r.name),
+    phone: toString(r.phone),
+    email: toString(r.email),
+    campus: campus,
+
+    // COURSE
+    department: toString(r.department),
+    CourseYear: toString(r.CourseYear),
+    CourseSession: toString(r.CourseSession),
+    FinancialYear: toString(r.FinancialYear),
+    Quota: toString(r.Quota),
+
+    // FEES
+    AdmissionFees: toNumber(r.AdmissionFees),
+    SemesterFee1: toNumber(r.SemesterFee1),
+    SemesterFee2: toNumber(r.SemesterFee2),
+    SemesterFee3: toNumber(r.SemesterFee3),
+    SemesterFee4: toNumber(r.SemesterFee4),
+    SemesterFee5: toNumber(r.SemesterFee5),
+    SemesterFee6: toNumber(r.SemesterFee6),
+
+    TotalFees:
+      toNumber(r.AdmissionFees) +
+      toNumber(r.SemesterFee1) +
+      toNumber(r.SemesterFee2) +
+      toNumber(r.SemesterFee3) +
+      toNumber(r.SemesterFee4) +
+      toNumber(r.SemesterFee5) +
+      toNumber(r.SemesterFee6),
+
+    // PERSONAL
+    DOB: toString(r.DOB),
+    father: toString(r.father),
+    mother: toString(r.mother),
+    FatherContact: toString(r.FatherContact),
+    Guardian: toString(r.Guardian),
+    GuardianContact: toString(r.GuardianContact),
+    religion: toString(r.Religion || r.religion),
+    gender: toString(r.Sex || r.gender),
+    caste: toString(r.Category || r.caste),
+    aadhaar: toString(r.AdharNo || r.aadhaar),
+    bloodGroup: toString(r.BloodGroup || r.bloodGroup),
+    relationship: toString(r["Martial Status"] || r.relationship),
+
+    // ADDRESS
+    PresentCity: toString(r.PresentCity),
+    PermanentCity: toString(r.PermanentCity),
+    PresentDistrict: toString(r.PresentDistrict),
+    PermanentDistrict: toString(r.PermanentDistrict),
+    PresentState: toString(r.PresentState),
+    PermanentState: toString(r.PermanentState),
+    PresentPin: toString(r.PresentPin),
+    PermanentPin: toString(r.PermanentPin),
+
+    // OTHER
+    LastInstitute: toString(r.LastInstitute),
+    Remarks: toString(r.Remarks),
+
+    addedOn: new Date().toISOString()
+  };
+}
+
+async function loadCampusStats() {
+
+  const snapshot = await getDocs(collection(db, "Students"));
+
+  const campusMap = {};
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const campus = data.campus || "Unknown";
+
+    if (!campusMap[campus]) {
+      campusMap[campus] = 0;
+    }
+    campusMap[campus]++;
+  });
+
+  const totalCampuses = Object.keys(campusMap).length;
+
+  let html = `
+    <div class="stat-card">
+      <div class="stat-title">Total Campuses</div>
+      <div class="stat-number">${totalCampuses}</div>
+    </div>
+  `;
+
+  Object.keys(campusMap).forEach(campus => {
+    html += `
+      <div class="stat-card">
+        <div class="stat-title">${campus}</div>
+        <div class="stat-number">${campusMap[campus]} Students</div>
+      </div>
+    `;
+  });
+
+  document.getElementById("campusStats").innerHTML = html;
+}
+    // Load campuses on page load
+    window.onload = () => {
+      loadCampusStats();
+  
+      document.getElementById("previewTable").style.display = "table"; // Ensure table visible
+    };
+
+    
+  </script>
+</body>
+</html>

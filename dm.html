@@ -1384,7 +1384,63 @@ tbody tr:hover::after {
   font-family: monospace;
 }
 
+/* ===============================
+   STUDENT INSIGHTS ADVANCED UI
+================================ */
 
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.insight-card {
+  background: rgba(0,255,255,0.08);
+  border: 1px solid rgba(0,255,255,0.25);
+  padding: 18px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 0 18px rgba(0,238,255,0.15);
+}
+
+.insight-card h4 {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+
+.insight-card h2 {
+  font-size: 28px;
+  color: #00eaff;
+  text-shadow: 0 0 8px rgba(0,238,255,0.6);
+}
+
+/* Campus progress bar */
+.campus-row {
+  margin-bottom: 14px;
+}
+
+.campus-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg,#00eaff,#008cff);
+  box-shadow: 0 0 10px rgba(0,238,255,0.6);
+  transition: width 0.6s ease;
+}
 </style>
 </head>
 
@@ -1489,12 +1545,29 @@ tbody tr:hover::after {
   <h2 id="studentCount">0</h2>
   <div class="card-label">Total Students</div>
 
-  <button
-    class="card-icon-btn"
-    title="View Students"
-    onclick="openStudentModal()">
-    <i class="fa-solid fa-user-graduate"></i>
-  </button>
+<button
+  class="card-icon-btn"
+  title="View Student Insights"
+  onclick="openStudentInsights()">
+  <i class="fa-solid fa-chart-pie"></i>
+</button>
+</div>
+
+
+<div id="studentInsightsModal" class="ucl-modal">
+  <div class="ucl-modal-box" style="max-width:900px;">
+
+    <h3>Student Insights Dashboard</h3>
+
+    <button class="ucl-close-btn" onclick="closeStudentInsights()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div id="studentInsightsContent" style="margin-top:20px;">
+      Loading...
+    </div>
+
+  </div>
 </div>
 
 <div id="studentModal" class="ucl-modal">
@@ -3451,6 +3524,81 @@ window.openAuditLogs = function () {
       `;
     });
   });
+};
+
+window.openStudentInsights = async function () {
+
+  document.getElementById("studentInsightsModal").style.display = "flex";
+
+  const snap = await getDocs(collection(db, "StudentsDetails"));
+
+  let campusMap = {};
+  let latestDate = null;
+
+  snap.forEach(doc => {
+    const d = doc.data();
+
+    const campus = d.campus || "Unknown";
+    campusMap[campus] = (campusMap[campus] || 0) + 1;
+
+    if (d.createdAt) {
+      const date = new Date(d.createdAt);
+      if (!latestDate || date > latestDate) {
+        latestDate = date;
+      }
+    }
+  });
+
+  const totalCampus = Object.keys(campusMap).length;
+  const totalStudents = snap.size;
+
+  let html = `
+    <div class="insight-grid">
+      <div class="insight-card">
+        <h4>Total Campuses</h4>
+        <h2>${totalCampus}</h2>
+      </div>
+
+      <div class="insight-card">
+        <h4>Total Students</h4>
+        <h2>${totalStudents}</h2>
+      </div>
+
+      <div class="insight-card">
+        <h4>Last Student Added</h4>
+        <h2 style="font-size:16px;">
+          ${latestDate ? latestDate.toLocaleDateString() : "No data"}
+        </h2>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <h4 style="margin-bottom:15px;">Campus Distribution</h4>
+  `;
+
+  Object.entries(campusMap).forEach(([campus, count]) => {
+
+    const percent = ((count / totalStudents) * 100).toFixed(1);
+
+    html += `
+      <div class="campus-row">
+        <div class="campus-label">
+          <span>${campus}</span>
+          <span>${count} (${percent}%)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${percent}%"></div>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById("studentInsightsContent").innerHTML = html;
+};
+
+window.closeStudentInsights = function () {
+  document.getElementById("studentInsightsModal").style.display = "none";
 };
 
 window.closeAuditLogs = function () {

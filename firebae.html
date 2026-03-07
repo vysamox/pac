@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Firebase Auto Collection Viewer</title>
+</head>
+<body style="font-family: Arial; padding:20px; background:#f4f4f9;">
+
+<h2>🔥 Firebase Auto Collection Viewer</h2>
+
+<h3>🔹 Source Firebase Config</h3>
+<textarea id="sourceConfig" rows="8" style="width:100%;"></textarea>
+
+<br><br>
+<button onclick="loadCollections()">Load Collections</button>
+
+<h3>📂 Select Collection</h3>
+<select id="collectionList" style="width:100%; padding:10px;"></select>
+
+<br><br>
+<button onclick="loadData()">Show Data</button>
+
+<h3>📊 Data Preview</h3>
+<pre id="output" style="background:#fff; padding:15px; border:1px solid #ccc;"></pre>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+let sourceDB;
+
+window.loadCollections = async function() {
+
+ let raw = document.getElementById("sourceConfig").value;
+
+// Remove "const firebaseConfig =" if pasted
+raw = raw.replace(/const\s+\w+\s*=\s*/, '').trim();
+
+// Remove ending semicolon
+if (raw.endsWith(";")) {
+  raw = raw.slice(0, -1);
+}
+
+const sourceConfig = JSON.parse(raw);
+
+  const app = initializeApp(sourceConfig);
+  sourceDB = getFirestore(app);
+
+  const snapshot = await getDocs(collection(sourceDB, "collections"));
+
+  const select = document.getElementById("collectionList");
+  select.innerHTML = "";
+
+  snapshot.forEach(doc => {
+    const option = document.createElement("option");
+    option.value = doc.id;
+    option.textContent = doc.id;
+    select.appendChild(option);
+  });
+
+  alert("✅ Collections Loaded!");
+};
+
+window.loadData = async function() {
+
+  const collectionName = document.getElementById("collectionList").value;
+  const snapshot = await getDocs(collection(sourceDB, collectionName));
+
+  let data = [];
+
+  snapshot.forEach(doc => {
+    data.push({ id: doc.id, ...doc.data() });
+  });
+
+  document.getElementById("output").textContent =
+    JSON.stringify(data, null, 2);
+};
+
+</script>
+
+</body>
+</html>

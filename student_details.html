@@ -656,6 +656,59 @@ tr:hover {
   color: #002b3d;
 }
 
+.campus-summary {
+  margin-top: 18px;
+  padding: 14px;
+  background: rgba(0,255,255,.06);
+  border: 1px solid rgba(0,255,255,.25);
+  border-radius: 14px;
+}
+
+.campus-summary-title {
+  font-weight: 700;
+  color: #00eaff;
+  margin-bottom: 10px;
+}
+
+.campus-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px dashed rgba(0,255,255,.2);
+}
+
+.campus-row:last-child {
+  border-bottom: none;
+}
+
+.campus-name {
+  color: #00ffcc;
+  font-weight: 600;
+}
+
+.campus-count {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Hide mobile cards on desktop */
+.mobile-list {
+  display: none;
+}
+
+/* Show mobile cards only on small screens */
+@media (max-width: 768px) {
+
+  .table-box {
+    display: none;
+  }
+
+  .mobile-list {
+    display: block;
+  }
+
+}
 </style>
 </head>
 
@@ -679,25 +732,60 @@ tr:hover {
   </div>
 
   <div class="action-buttons">
+    <button id="generateBtn" class="action-btn primary">🆔 Generate IDs</button>
+    <button id="updateDobBtn" class="action-btn secondary">📅 Update DOB</button>
+    <button id="courseFixBtn" class="action-btn info">🎓 Generate Course IDs</button>
+    <button id="exportExcelBtn" class="action-btn primary">📊 Export Full Excel</button>
+   <button id="schemaScanBtn" class="action-btn info">
+  🔎 Scan Schema
+</button>
+  </div>
 
-  <button id="generateBtn" class="action-btn primary">🆔 Generate IDs</button>
+  <!-- 🔥 Campus Overview Panel -->
+  <div class="campus-summary" id="campusSummary"></div>
 
-  <button id="updateDobBtn" class="action-btn secondary">📅 Update DOB</button>
-
-  <!-- ✅ ADD HERE -->
-  <button id="courseFixBtn" class="action-btn info">
-    🎓 Generate Course IDs
-  </button>
-
-  <div id="courseGenStatus" style="display:none">
+  <!-- Course Status -->
+  <div id="courseGenStatus" style="display:none;margin-top:12px">
     <div id="courseAlready">Already Done: 0</div>
     <div id="courseDone">Done Now: 0</div>
     <div id="coursePending">Pending: 0</div>
   </div>
-
-</div>
 </div>
 
+
+
+
+
+
+<div class="fix-modal" id="schemaModal">
+  <div class="fix-card">
+    <h2>🔎 Field Mismatch Report</h2>
+    <p class="fix-desc">
+      The system detected inconsistent field names. You can auto-normalize them safely.
+    </p>
+
+    <table class="fix-table">
+      <thead>
+        <tr>
+           <th>Student</th>
+  <th>Issue Type</th>
+  <th>Field</th>
+  <th>Recommended</th>
+        </tr>
+      </thead>
+      <tbody id="schemaTable"></tbody>
+    </table>
+
+    <div class="fix-actions">
+      <button id="fixSchemaBtn" class="action-btn primary">
+        🛠 Fix All
+      </button>
+      <button onclick="closeFixModals()" class="action-btn warning">
+        ❌ Cancel
+      </button>
+    </div>
+  </div>
+</div>
 
 
 <div class="search-box">
@@ -713,6 +801,7 @@ tr:hover {
 <tr>
   <th>#</th>
   <th>Name</th>
+  <th>Campus</th>
    <th>Date of Birth</th>
   <th>Phone</th>
   <th>Course ID</th>  
@@ -770,6 +859,22 @@ tr:hover {
       <tbody id="idFixTable"></tbody>
     </table>
 
+    <!-- ✅ Progress Bar -->
+    <div id="idGenProgress" style="margin-top:12px;display:none">
+      <div style="font-size:13px;color:#00eaff">
+        Progress:
+        <span id="idGenCount">0</span> /
+        <span id="idGenTotal">0</span>
+        (<span id="idGenPercent">0%</span>)
+      </div>
+      <div style="height:6px;background:rgba(0,255,255,.2);border-radius:6px;margin-top:6px">
+        <div id="idGenBar"
+             style="height:6px;width:0%;background:#00ffcc;border-radius:6px;transition:.2s">
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Only ONE Action Block -->
     <div class="fix-actions">
       <button id="confirmIdGen" class="action-btn primary">
         🚀 Generate IDs
@@ -811,7 +916,7 @@ tr:hover {
   </div>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script type="module" src="./assets/js/student-id-manager.js"></script>
 <footer class="app-footer">
   <div>
