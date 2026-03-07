@@ -186,7 +186,7 @@ import { initSmartInspector } from "./smart-schema-inspector.js";
             }
           </td>
 
-          <td>${s.DOB_DMY}</td>
+          <td>${dobDisplay}</td>
           <td>${s.phone || "-"}</td>
 
           <td class="short-course">
@@ -196,9 +196,9 @@ import { initSmartInspector } from "./smart-schema-inspector.js";
           <td>${s.CourseYear || s.year || "-"}</td>
           <td>${formatDateDMY(s.DateofAdmission)}</td>
 
-          <td class="${s.studentUID ? "uid" : "missing"}">
-            ${s.studentUID || "-"}
-          </td>
+         <td class="${s.studentId ? "uid" : "missing"}">
+  ${s.studentId || "-"}
+</td>
 
           <td class="actions">
             <button class="btn view" data-id="${s.id}">View</button>
@@ -409,7 +409,7 @@ prevBtn.onclick = () => {
       s.name || s.studentName || "Unknown Student";
 
     document.getElementById("viewUID").textContent =
-      "Student ID: " + (s.studentUID || "Not generated");
+      "Student ID: " + (s.studentId || "Not generated");
 
   const grid = document.getElementById("viewGrid");
 
@@ -436,13 +436,13 @@ prevBtn.onclick = () => {
           <td>DOB</td>
           <td>${s.DOB_DMY || formatDateDMY(s.DOB)}</td>
           <td>Gender</td>
-          <td>${s.gender || "-"}</td>
+          <td>${s.Sex || "-"}</td>
         </tr>
         <tr>
           <td>Blood Group</td>
-          <td>${s.bloodGroup || "-"}</td>
+          <td>${s.BloodGroup || "-"}</td>
           <td>Religion</td>
-          <td>${s.religion || "-"}</td>
+          <td>${s.Religion || "-"}</td>
         </tr>
       </table>
     </td>
@@ -450,128 +450,184 @@ prevBtn.onclick = () => {
 
 
   <tr>
-    <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">👪 Family</th>
-  </tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">👪 Family</th>
+</tr>
 
-  <tr>
-    <td colspan="2">
-      <table style="width:100%;border-collapse:collapse">
-        <tr>
-          <td>Father</td>
-          <td>${s.father || "-"}</td>
-          <td>Father Contact</td>
-          <td>${s.FatherContact || "-"}</td>
-        </tr>
-        <tr>
-          <td>Mother</td>
-          <td>${s.mother || "-"}</td>
-          <td>Guardian</td>
-          <td>${s.Guardian || "-"}</td>
-        </tr>
-        <tr>
-          <td>Guardian Contact</td>
-          <td>${s.GuardianContact || "-"}</td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
 
+      <tr>
+        <td>Father</td>
+        <td>${s.father || "-"}</td>
 
-  <tr>
-    <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🎓 Course</th>
-  </tr>
+        <td>Father Contact</td>
+        <td>${s.FatherContact || "-"}</td>
+      </tr>
 
-  <tr>
-    <td colspan="2">
-      <table style="width:100%;border-collapse:collapse">
-        <tr>
-          <td>Department</td>
-          <td>${s.department || "-"}</td>
-          <td>Session</td>
-          <td>${s.CourseSession || "-"}</td>
-        </tr>
-        <tr>
-          <td>Course Year</td>
-          <td>${s.CourseYear || "-"}</td>
-          <td>Quota</td>
-          <td>${s.Quota || "-"}</td>
-        </tr>
-        <tr>
-          <td>Campus</td>
-          <td>${s.campus || "-"}</td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+      <tr>
+        <td>Father Email</td>
+        <td>${s.FatherEmail || "-"}</td>
+
+        <td>Father Occupation</td>
+        <td>${s.FatherOccupation || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Mother</td>
+        <td>${s.mother || "-"}</td>
+
+        <td>Mother Contact</td>
+        <td>${s.MotherContact || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Guardian</td>
+        <td>${s.Guardian || "-"}</td>
+
+        <td>Guardian Contact</td>
+        <td>${s.GuardianContact || "-"}</td>
+      </tr>
+
+    </table>
+  </td>
+</tr>
 
 
   <tr>
-    <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">💰 Fees</th>
-  </tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🎓 Course</th>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+
+      <tr>
+        <td>Department</td>
+        <td>${s.department || "-"}</td>
+
+        <td>Session</td>
+        <td>${s.CourseSession || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Course Year</td>
+        <td>${s.CourseYear || "-"}</td>
+
+        <td>Quota</td>
+        <td>${s.Quota || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Campus</td>
+        <td>${s.campus || "-"}</td>
+
+        <td>Roll No</td>
+        <td>${s.RollNo || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Student Status</td>
+        <td>${s.StudentStatus || "-"}</td>
+
+        <td>Admission Status</td>
+        <td>${s.Status || "-"}</td>
+      </tr>
+
+    </table>
+  </td>
+</tr>
+
 
   <tr>
-    <td>Total Fees</td>
-    <td>₹${s.TotalFees || 0}</td>
-  </tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">💰 Fees</th>
+</tr>
 
-  <tr>
-    <td colspan="2">
-      <table style="width:100%;border-collapse:collapse">
-        <tr>
-          <td>Admission Fees</td>
-          <td>₹${s.AdmissionFees || "-"}</td>
-          <td>Semester 1</td>
-          <td>₹${s.SemesterFee1 || "-"}</td>
-        </tr>
-        <tr>
-          <td>Semester 2</td>
-          <td>₹${s.SemesterFee2 || "-"}</td>
-          <td>Semester 3</td>
-          <td>₹${s.SemesterFee3 || "-"}</td>
-        </tr>
-        <tr>
-          <td>Semester 4</td>
-          <td>₹${s.SemesterFee4 || "-"}</td>
-          <td>Semester 5</td>
-          <td>₹${s.SemesterFee5 || "-"}</td>
-        </tr>
-        <tr>
-          <td>Semester 6</td>
-          <td>₹${s.SemesterFee6 || "-"}</td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<tr>
+  <td>Total Fees</td>
+  <td>
+    <span style="font-weight:600;font-size:16px;color:#00eaff;">
+      ₹${(s.TotalFees || 0).toLocaleString()}
+    </span>
+    <span style="margin-left:10px;font-size:15px;font-style:italic;color:#9ca3af;">
+      ${s.TotalFeesInWords || ""}
+    </span>
+  </td>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+
+      <tr>
+        <td>Admission Fees</td>
+        <td>₹${s.AdmissionFees || "-"}</td>
+
+        <td>Semester 1</td>
+        <td>₹${s.SemesterFee1 || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Semester 2</td>
+        <td>₹${s.SemesterFee2 || "-"}</td>
+
+        <td>Semester 3</td>
+        <td>₹${s.SemesterFee3 || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Semester 4</td>
+        <td>₹${s.SemesterFee4 || "-"}</td>
+
+        <td>Semester 5</td>
+        <td>₹${s.SemesterFee5 || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Semester 6</td>
+        <td>₹${s.SemesterFee6 || 0}</td>
+
+        <td>Agent Commission</td>
+        <td>₹${s.AgentAmount || "-"}</td>
+      </tr>
+
+    </table>
+  </td>
+</tr>
 
 
   <tr>
     <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🧑‍💼 Agent</th>
   </tr>
 
-  <tr>
-    <td colspan="2">
-      <table style="width:100%;border-collapse:collapse">
-        <tr>
-          <td>Agent Name</td>
-          <td>${s.AgentName || "-"}</td>
-          <td>Agent Type</td>
-          <td>${s.AgentType || "-"}</td>
-        </tr>
-        <tr>
-          <td>Agent Contact</td>
-          <td>${s.AgentContact || "-"}</td>
-          <td>Agent Amount</td>
-          <td>₹${s.AgentAmount || "-"}</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+
+      <tr>
+        <td>Agent Name</td>
+        <td>${s.AgentName || "-"}</td>
+        <td>Agent Type</td>
+        <td>${s.AgentType || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Agent Contact</td>
+        <td>${s.AgentContact || "-"}</td>
+        <td>Agent Amount</td>
+        <td>₹${s.AgentAmount || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Agent Address</td>
+        <td>${s.AgentAddress || "-"}</td>
+        <td>Agent Role</td>
+        <td>${s.AgentRoll || "-"}</td>
+      </tr>
+
+    </table>
+  </td>
+</tr>
 
 
     <tr><th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🏠 Address</th></tr>
@@ -583,73 +639,156 @@ prevBtn.onclick = () => {
     </td></tr>
 
   <!-- 🪪 Identity -->
-  <tr>
-    <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🪪 Identity</th>
-  </tr>
-  <tr>
-    <td colspan="2">
-      <table style="width:100%;border-collapse:collapse">
-        <tr>
-          <td>Aadhaar</td>
-          <td>${s.aadhaar || "-"}</td>
-          <td>Nationality</td>
-          <td>${s.Nationality || "-"}</td>
-        </tr>
-        <tr>
-          <td>Caste</td>
-          <td>${s.caste || "-"}</td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🪪 Identity</th>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+
+      <tr>
+        <td>Aadhaar</td>
+        <td>${s.AdharNo || "-"}</td>
+
+        <td>Nationality</td>
+        <td>${s.Nationality || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Category</td>
+        <td>${s.Category || "-"}</td>
+
+        <td>Religion</td>
+        <td>${s.Religion || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Marital Status</td>
+        <td>${s.MartialStatus || "-"}</td>
+
+        <td>Handicap</td>
+        <td>${s.Handicap || "-"}</td>
+      </tr>
+
+    </table>
+  </td>
+</tr>
 
   <!-- 📚 Academics -->
-  <tr>
-    <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">📚 Academics</th>
-  </tr>
-  <tr>
-    <td colspan="2">
-      <table style="width:100%;border-collapse:collapse">
-        <tr>
-          <td>Secondary</td>
-          <td>${s.SecondaryBoard || "-"} (${s.SecondaryPassingYear || "-"})</td>
-          <td>HS Board</td>
-          <td>${s.HigherSecondaryBoard || "-"}</td>
-        </tr>
-        <tr>
-          <td>Last Institute</td>
-          <td>${s.LastInstitute || "-"}</td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+ <tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">📚 Academics</th>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+
+      <tr>
+        <td>Secondary Board</td>
+        <td>${s.SecondaryBoard || "-"}</td>
+        <td>Year of Passing</td>
+        <td>${s.SecondaryYOP || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Secondary Total Marks</td>
+        <td>${s.SecondaryFullMarks || "-"}</td>
+        <td>Marks Obtained</td>
+        <td>${s.SecondaryGrandTotal || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Secondary Percentage</td>
+        <td>${s.SecondaryPercentage || "-"}</td>
+        <td>Math Marks</td>
+        <td>${s.SecondaryMath || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Physics Marks</td>
+        <td>${s.SecondaryPhysics || "-"}</td>
+        <td></td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td>Higher Secondary Board</td>
+        <td>${s.HigherSecondaryBoard || "-"}</td>
+        <td>HS Year of Passing</td>
+        <td>${s.HigherSecondaryYOP || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>HS Percentage</td>
+        <td>${s.HigherSecondaryPercentage || "-"}</td>
+        <td></td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td>Last Institute</td>
+        <td>${s.LastInstitute || "-"}</td>
+        <td></td>
+        <td></td>
+      </tr>
+
+    </table>
+  </td>
+</tr>
 
   <!-- 🧾 System -->
-  <tr>
-    <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🧾 System</th>
-  </tr>
-  <tr>
-    <td colspan="2">
-      <table style="width:100%;border-collapse:collapse">
-        <tr>
-          <td>Financial Year</td>
-          <td>${s.FinancialYear || "-"}</td>
-          <td>Student UID</td>
-          <td>${s.studentUID || "-"}</td>
-        </tr>
-        <tr>
-          <td>Remarks</td>
-          <td>${s.Remarks || "-"}</td>
-          <td>Student UID Generate</td>
-          <td>${s.uidGeneratedAt}</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<tr>
+  <th colspan="2" style="color:#00eaff;padding:8px;text-align:left">🧾 System</th>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <table style="width:100%;border-collapse:collapse">
+
+      <tr>
+        <td>Student ID</td>
+        <td>${s.studentId || "-"}</td>
+
+        <td>Financial Year</td>
+        <td>${s.FinancialYear || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Upload Date</td>
+        <td>${s.uploadedDate || "-"} ${s.uploadedTime || ""}</td>
+
+        <td>Device OS</td>
+        <td>${s.operatingSystem || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Upload City</td>
+        <td>${s.uploadedCity || "-"}</td>
+
+        <td>Region</td>
+        <td>${s.uploadedRegion || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>Country</td>
+        <td>${s.uploadedCountry || "-"}</td>
+
+        <td>IPv4</td>
+        <td>${s.uploadedIPv4 || "-"}</td>
+      </tr>
+
+      <tr>
+        <td>IPv6</td>
+        <td>${s.uploadedIPv6 || "-"}</td>
+
+        <td>Remarks</td>
+        <td>${s.Remarks || "-"}</td>
+      </tr>
+
+    </table>
+  </td>
+</tr>
     </tbody>
   </table>
   `;
