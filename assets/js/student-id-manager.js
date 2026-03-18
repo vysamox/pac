@@ -1,6 +1,6 @@
   /* ============================================================
     STUDENT ID MANAGER — ADVANCED FINAL (SAFE)
-    Collection: StudentsDetails, ✔ No delete, ✔ No overwrite, ✔ Preview ID before generate, ✔ DOB update SAFE, ✔ Already formatted DOB → OK
+     ✔ No delete, ✔ No overwrite, ✔ Preview ID before generate, ✔ DOB update SAFE, ✔ Already formatted DOB → OK
   ============================================================ */
 
   import {
@@ -15,7 +15,6 @@
 import { exportStudentsToExcel } from "./export-students.js";
 import { getCourseShortName } from "./course-utils.js";
 import { writeBatch } from "./firebase-config.js";
-import { initSmartInspector } from "./smart-schema-inspector.js";
 
 
 
@@ -34,8 +33,6 @@ import { initSmartInspector } from "./smart-schema-inspector.js";
   const pageInfo = document.getElementById("pageInfo");
   const prevBtn  = document.getElementById("prevBtn");
   const nextBtn  = document.getElementById("nextBtn");
-  const genBtn   = document.getElementById("generateBtn");
-  const updateDobBtn = document.getElementById("updateDobBtn");
 
   /* ================= UTIL ================= */
   function formatUID(num) {
@@ -110,29 +107,6 @@ import { initSmartInspector } from "./smart-schema-inspector.js";
     renderCampusSummary(); // ✅ CALL HERE (after data ready)
   }
 
-  /* ================= PREVIEW ID MAP ================= */
-  function getNextUIDMap() {
-    let max = 0;
-
-    students.forEach(s => {
-      if (s.studentUID && /^\d{6}$/.test(s.studentUID)) {
-        max = Math.max(max, Number(s.studentUID));
-      }
-    });
-
-    const map = {};
-    let counter = max;
-
-    students.forEach(s => {
-      if (!s.studentUID) {
-        counter++;
-        map[s.id] = formatUID(counter);
-      }
-    });
-
-    return map;
-  }
-
   /* ================= RENDER ================= */
   function render() {
 
@@ -158,7 +132,7 @@ import { initSmartInspector } from "./smart-schema-inspector.js";
       return;
     }
 
-    const previewMap = getNextUIDMap();
+
     const totalPages = Math.ceil(list.length / PAGE_SIZE);
     const start = (page - 1) * PAGE_SIZE;
     const slice = list.slice(start, start + PAGE_SIZE);
@@ -231,7 +205,7 @@ import { initSmartInspector } from "./smart-schema-inspector.js";
 
   if (!confirm("Are you sure you want to delete this student?")) return;
 
-  await updateDoc(doc(db, "StudentsDetails", id), {
+ await updateDoc(doc(db, "Students", id), {
     deleted: true
   });
 
@@ -268,119 +242,6 @@ prevBtn.onclick = () => {
   }
 };
 
-  /* ================= GENERATE UNIQUE IDS ================= */
-  genBtn.onclick = async () => {
-
-    if (!confirm(
-      "Generate UNIQUE 6-digit IDs for students without ID?\nExisting data will NOT be modified."
-    )) return;
-
-    genBtn.disabled = true;
-    genBtn.textContent = "Generating...";
-
-    let max = 0;
-
-    students.forEach(s => {
-      if (s.studentUID && /^\d{6}$/.test(s.studentUID)) {
-        max = Math.max(max, Number(s.studentUID));
-      }
-    });
-
-    const pendingStudents = students.filter(s => !s.studentUID);
-
-    if (!pendingStudents.length) {
-      alert("✅ All students already have IDs");
-      genBtn.disabled = false;
-      genBtn.textContent = "Generate Missing IDs";
-      return;
-    }
-
-    const BATCH_LIMIT = 400; // safe limit
-    let generated = 0;
-
-    for (let i = 0; i < pendingStudents.length; i += BATCH_LIMIT) {
-
-      const batch = writeBatch(db);
-      const chunk = pendingStudents.slice(i, i + BATCH_LIMIT);
-
-      for (const s of chunk) {
-
-        max++;
-
-        const updates = {
-          studentUID: formatUID(max),
-          uidGeneratedAt: Date.now()
-        };
-
-        if (!isAlreadyDMY(s.DOB_DMY)) {
-          const formattedDOB = formatDateDMY(s.DOB);
-          if (formattedDOB !== "-") {
-            updates.DOB_DMY = formattedDOB;
-            updates.dobUpdatedAt = Date.now();
-          }
-        }
-
-        batch.update(doc(db, "StudentsDetails", s.id), updates);
-
-        Object.assign(s, updates);
-        generated++;
-      }
-
-      await batch.commit(); // ⚡ one network call per chunk
-    }
-
-    genBtn.disabled = false;
-    genBtn.textContent = "Generate Missing IDs";
-
-    alert(`✅ ${generated} Student IDs generated`);
-    render();
-  };
-
-
-  /* ================= UPDATE DOB BUTTON ================= */
-  updateDobBtn.onclick = async () => {
-
-    if (!confirm(
-      "Update DOB to DD-MM-YYYY format?\nExisting formatted DOB will NOT be changed."
-    )) return;
-
-    updateDobBtn.disabled = true;
-    updateDobBtn.textContent = "Updating DOB...";
-
-    let updated = 0;
-
-    for (const s of students) {
-
-      if (!s.DOB) continue;
-
-      // 🔥 NEW: skip if already correct
-      if (isAlreadyDMY(s.DOB_DMY)) continue;
-
-      const formattedDOB = formatDateDMY(s.DOB);
-      if (formattedDOB === "-") continue;
-
-      await updateDoc(
-        doc(db, "StudentsDetails", s.id),
-        {
-          DOB_DMY: formattedDOB,
-          dobUpdatedAt: Date.now()
-        }
-      );
-
-      s.DOB_DMY = formattedDOB;
-  updated++;
-
-  /* 🔥 LIVE OK badge */
-  showLiveOK(s.id);
-
-    }
-
-    updateDobBtn.disabled = false;
-    updateDobBtn.textContent = "Update DOB (DD-MM-YYYY)";
-
-    alert(`✅ DOB updated for ${updated} students`);
-    render();
-  };
 
   function showLiveOK(studentId) {
     const rows = table.querySelectorAll("tr");
@@ -801,91 +662,74 @@ prevBtn.onclick = () => {
   };
 
   const searchInput = document.getElementById("searchInput");
+searchInput.addEventListener("input", () => {
 
-  searchInput.addEventListener("input", () => {
+  const query = searchInput.value.trim().toLowerCase();
 
-    const q = searchInput.value.trim().toLowerCase();
-    isSearching = q.length > 0;
+  isSearching = query.length > 0;
 
-    if (!q) {
-      filteredStudents = students;
-    } else {
+  if (!query) {
+    filteredStudents = students;
+  } else {
 
-      filteredStudents = students.filter(s => {
+    const tokens = query.split(/\s+/);
 
-        const name   = String(s.name || s.studentName || "").toLowerCase();
-        const phone  = String(s.phone || "");
-        const uid    = String(s.studentUID || "");
-        const campus = String(s.campus || "").toLowerCase();
-        const dept   = String(s.department || s.course || "").toLowerCase();
-        const year   = String(s.CourseYear || s.year || "");
+    filteredStudents = students.filter(s => {
 
-        return (
-          name.includes(q) ||
-          phone.includes(q) ||
-          uid.includes(q) ||
-          campus.includes(q) ||
-          dept.includes(q) ||
-          year.includes(q)
-        );
+      const name   = (s.name || s.studentName || "").toLowerCase();
+      const phone  = String(s.phone || "");
+      const sid    = String(s.studentId || "").toLowerCase();
+      const campus = (s.campus || "").toLowerCase();
+      const dept   = (s.department || s.course || "").toLowerCase();
+      const year   = String(s.CourseYear || s.year || "");
+      const fees   = Number(s.TotalFees || 0);
+
+      const searchable = `${name} ${phone} ${sid} ${campus} ${dept} ${year}`;
+
+      return tokens.every(token => {
+
+        /* FIELD SEARCH */
+        if (token.startsWith("campus:"))
+          return campus.includes(token.replace("campus:", ""));
+
+        if (token.startsWith("dept:"))
+          return dept.includes(token.replace("dept:", ""));
+
+        if (token.startsWith("year:"))
+          return year === token.replace("year:", "");
+
+        if (token.startsWith("id:"))
+          return sid.includes(token.replace("id:", ""));
+
+        if (token.startsWith("phone:"))
+          return phone.includes(token.replace("phone:", ""));
+
+        /* FEES FILTER */
+        if (token.startsWith("fees>"))
+          return fees > Number(token.replace("fees>", ""));
+
+        if (token.startsWith("fees<"))
+          return fees < Number(token.replace("fees<", ""));
+
+        /* NORMAL SEARCH */
+        return searchable.includes(token);
 
       });
 
-    }
-
-    page = 1;
-    render();
-  });
-
-  genBtn.onclick = () => {
-    const tbody = document.getElementById("idFixTable");
-    tbody.innerHTML = "";
-
-    const previewMap = getNextUIDMap();
-
-    students.forEach(s => {
-      if (s.studentUID) return;
-
-      tbody.innerHTML += `
-        <tr>
-          <td>${s.name || s.studentName}</td>
-          <td class="missing">—</td>
-          <td class="uid">${previewMap[s.id]}</td>
-        </tr>
-      `;
     });
 
-    document.getElementById("idFixModal").style.display = "flex";
-  };
+  }
+
+  page = 1;
+  render();
+
+});
 
 
-  updateDobBtn.onclick = () => {
-    const tbody = document.getElementById("dobFixTable");
-    tbody.innerHTML = "";
-
-    students.forEach(s => {
-      if (!s.DOB || isAlreadyDMY(s.DOB_DMY)) return;
-
-      const fixed = formatDateDMY(s.DOB);
-      if (fixed === "-") return;
-
-      tbody.innerHTML += `
-        <tr>
-        <td>${s.studentUID}</td>
-          <td>${s.name || s.studentName}</td>
-          <td>${s.DOB}</td>
-          <td class="uid">${fixed}</td>
-        </tr>
-      `;
-    });
-
-    document.getElementById("dobFixModal").style.display = "flex";
-  };
 
   window.closeFixModals = function () {
     document.getElementById("idFixModal").style.display = "none";
     document.getElementById("dobFixModal").style.display = "none";
-      document.getElementById("schemaModal").style.display = "none"; // ADD THIS
 
   };
 
@@ -905,7 +749,7 @@ prevBtn.onclick = () => {
               ${startIndexName(i)} ${s.name || s.studentName || "Unknown"}
             </div>
             <div class="mobile-uid">
-              ${s.studentUID || "—"}
+             ${s.studentId || "—"}
             </div>
           </div>
 
@@ -1035,7 +879,7 @@ prevBtn.onclick = () => {
             continue;
           }
 
-          batch.update(doc(db, "StudentsDetails", s.id), {
+          batch.update(doc(db, "Students", s.id), {
             courseShort: short,
             courseShortGeneratedAt: ts,
             courseShortGeneratedDate: dateTime,
@@ -1111,57 +955,6 @@ prevBtn.onclick = () => {
       });
   }
 
-  const confirmIdGen = document.getElementById("confirmIdGen");
-
-  confirmIdGen.onclick = async () => {
-
-    confirmIdGen.disabled = true;
-    confirmIdGen.textContent = "Generating...";
-
-    let max = 0;
-
-    students.forEach(s => {
-      if (s.studentUID && /^\d{6}$/.test(s.studentUID)) {
-        max = Math.max(max, Number(s.studentUID));
-      }
-    });
-
-    const pendingStudents = students.filter(s => !s.studentUID);
-
-    const BATCH_LIMIT = 400;
-    let generated = 0;
-
-    for (let i = 0; i < pendingStudents.length; i += BATCH_LIMIT) {
-
-      const batch = writeBatch(db);
-      const chunk = pendingStudents.slice(i, i + BATCH_LIMIT);
-
-      for (const s of chunk) {
-
-        max++;
-
-        const updates = {
-          studentUID: formatUID(max),
-          uidGeneratedAt: Date.now()
-        };
-
-        batch.update(doc(db, "StudentsDetails", s.id), updates);
-        Object.assign(s, updates);
-        generated++;
-      }
-
-      await batch.commit();
-    }
-
-    confirmIdGen.disabled = false;
-    confirmIdGen.textContent = "🚀 Generate IDs";
-
-    document.getElementById("idFixModal").style.display = "none";
-
-    alert(`✅ ${generated} Student IDs generated`);
-
-    render();
-  };
 
 
   const exportBtn = document.getElementById("exportExcelBtn");
@@ -1172,4 +965,3 @@ exportBtn.onclick = () => {
 
   /* ================= INIT ================= */
   loadStudents();
-  initSmartInspector();

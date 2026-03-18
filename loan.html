@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FinanceHub — Loan &amp; Card Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════
+   VARIABLES
+══════════════════════════════ */
+:root{
+  --bg:#07090f;--s1:#0d1018;--s2:#131720;--s3:#191e2a;--s4:#1f2535;--s5:#252c40;
+  --bd:rgba(255,255,255,.06);--bd2:rgba(255,255,255,.11);--bd3:rgba(255,255,255,.18);
+  --t1:#eef0ff;--t2:#8890b0;--t3:#454e6e;
+  --ac:#7366ff;--ac2:#9b6dff;--ac3:#c56bff;
+  --ag:rgba(115,102,255,.22);--ag2:rgba(115,102,255,.4);
+  --gr:#1edd8a;--gr-s:rgba(30,221,138,.09);--gr-b:rgba(30,221,138,.22);
+  --rd:#ff5a68;--rd-s:rgba(255,90,104,.09);--rd-b:rgba(255,90,104,.22);
+  --yw:#ffb830;--yw-s:rgba(255,184,48,.09);--yw-b:rgba(255,184,48,.22);
+  --bl:#4db0ff;--bl-s:rgba(77,176,255,.09);--bl-b:rgba(77,176,255,.22);
+  --or:#ff8642;--or-s:rgba(255,134,66,.09);
+  --pu:#be72ff;--pu-s:rgba(190,114,255,.09);--pu-b:rgba(190,114,255,.22);
+  --r:14px;--r2:10px;--r3:8px;
+  --fh:'Syne',sans-serif;--fb:'Plus Jakarta Sans',sans-serif;
+  --sh:0 8px 32px rgba(0,0,0,.5);--sh2:0 24px 72px rgba(0,0,0,.8);
+  --tr:all .18s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--t1);font-family:var(--fb);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--s5);border-radius:4px}
+::selection{background:var(--ag2)}
+
+/* ═══ LAYOUT ═══ */
+.shell{display:flex;min-height:100vh}
+.sidebar{width:260px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.main{margin-left:260px;flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:64px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:150;gap:12px}
+.page-content{padding:22px 24px 80px;flex:1}
+
+/* ═══ SIDEBAR ═══ */
+.logo{padding:20px 16px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bd)}
+.logo-icon{width:40px;height:40px;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,var(--ac),var(--ac3));display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px var(--ag)}
+.logo-text{font-family:var(--fh);font-weight:800;font-size:15px}
+.logo-sub{font-size:10px;color:var(--t3);letter-spacing:.09em;text-transform:uppercase}
+.nav{padding:8px;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);padding:14px 10px 5px}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r3);cursor:pointer;font-size:13px;font-weight:500;color:var(--t2);transition:var(--tr);margin-bottom:1px;position:relative;user-select:none}
+.ni i{width:16px;text-align:center;font-size:13px;flex-shrink:0}
+.ni:hover{background:var(--s2);color:var(--t1)}
+.ni.active{background:var(--s3);color:var(--t1);font-weight:600}
+.ni.active::before{content:'';position:absolute;left:0;top:18%;height:64%;width:3px;background:linear-gradient(180deg,var(--ac),var(--ac3));border-radius:0 3px 3px 0;box-shadow:0 0 10px var(--ag)}
+.nbadge{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;line-height:1.6;background:var(--s4);color:var(--t3)}
+.s-foot{padding:10px 8px;border-top:1px solid var(--bd)}
+.user-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:var(--r2);border:1px solid var(--bd);transition:var(--tr);cursor:pointer}
+.user-row:hover{background:var(--s3);border-color:var(--bd2)}
+.uavatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--ac),#ff6bab);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.uname{font-size:13px;font-weight:600}
+.urole{font-size:11px;color:var(--t3)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--gr);margin-left:auto;box-shadow:0 0 6px var(--gr);animation:livepulse 2s ease-in-out infinite}
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:none}
+.sb-overlay.open{display:block}
+
+/* ═══ TOPBAR ═══ */
+.tb-left{display:flex;align-items:center;gap:12px;min-width:0}
+.hamburger{display:none;background:none;border:none;color:var(--t1);font-size:18px;cursor:pointer;padding:6px;flex-shrink:0}
+.page-heading{font-family:var(--fh);font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:0 13px;height:38px;min-width:200px;transition:var(--tr)}
+.tb-search:focus-within{border-color:var(--ac);box-shadow:0 0 0 3px var(--ag)}
+.tb-search input{background:none;border:none;outline:none;color:var(--t1);font-family:var(--fb);font-size:13px;flex:1;min-width:0}
+.tb-search input::placeholder{color:var(--t3)}
+.tb-search i{color:var(--t3);font-size:12px;flex-shrink:0}
+.ib{width:38px;height:38px;border-radius:var(--r2);background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);transition:var(--tr);position:relative;flex-shrink:0}
+.ib:hover{color:var(--t1);background:var(--s3);border-color:var(--bd2)}
+.ib .dot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:var(--rd);border-radius:50%;border:2px solid var(--s1)}
+.add-btn{display:flex;align-items:center;gap:7px;padding:0 16px;height:38px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:none;border-radius:var(--r2);font-family:var(--fb);font-weight:600;font-size:13px;cursor:pointer;transition:var(--tr);box-shadow:0 4px 14px var(--ag);white-space:nowrap;flex-shrink:0}
+.add-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px var(--ag2)}
+
+/* ═══ VIEWS ═══ */
+.view{display:none}.view.active{display:block}
+
+/* ═══ SUMMARY CARDS ═══ */
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.sc{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;transition:var(--tr)}
+.sc:hover{transform:translateY(-2px);border-color:var(--bd2);box-shadow:var(--sh)}
+.sc-glow{position:absolute;top:-40px;right:-30px;width:120px;height:120px;border-radius:50%;opacity:.05;pointer-events:none}
+.sc-icon{position:absolute;top:16px;right:18px;font-size:20px;opacity:.15}
+.sc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:10px}
+.sc-val{font-family:var(--fh);font-size:24px;font-weight:800;line-height:1;margin-bottom:8px}
+.sc-meta{font-size:11px;color:var(--t3)}
+.sc-bar{height:3px;background:var(--s4);border-radius:3px;margin-top:10px;overflow:hidden}
+.sc-bar-fill{height:100%;border-radius:3px;transition:width .7s ease}
+
+/* ═══ FILTER STRIP ═══ */
+.filter-strip{display:flex;align-items:center;gap:5px;margin-bottom:16px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:5px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+.filter-strip::-webkit-scrollbar{display:none}
+.ft{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--r3);cursor:pointer;font-size:12px;font-weight:600;color:var(--t2);transition:var(--tr);white-space:nowrap;flex-shrink:0}
+.ft:hover{color:var(--t1);background:var(--s2)}
+.ft.on{background:var(--ac);color:#fff;box-shadow:0 3px 12px var(--ag)}
+.ft .cnt{font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;line-height:1.5;background:rgba(255,255,255,.22);color:inherit}
+.ft:not(.on) .cnt{background:var(--s4);color:var(--t3)}
+
+/* ═══ TABLE ═══ */
+.table-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+.section-title{font-family:var(--fh);font-size:14px;font-weight:700}
+.hd-right{display:flex;gap:8px;align-items:center}
+.sort-sel{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);color:var(--t2);font-family:var(--fb);font-size:12px;padding:7px 11px;outline:none;cursor:pointer;transition:var(--tr)}
+.sort-sel:hover{border-color:var(--bd2);color:var(--t1)}
+.icon-btn-sm{display:flex;align-items:center;gap:6px;padding:7px 13px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);color:var(--t2);font-family:var(--fb);font-size:12px;font-weight:600;cursor:pointer;transition:var(--tr)}
+.icon-btn-sm:hover{color:var(--t1);background:var(--s3);border-color:var(--bd2)}
+.tw{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--s2)}
+th{padding:11px 15px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:13px 15px;border-bottom:1px solid var(--bd);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .1s}
+tbody tr:hover td{background:var(--s2)}
+.empty-st{text-align:center;padding:56px 20px;color:var(--t3)}
+.empty-st i{font-size:36px;display:block;margin-bottom:12px;opacity:.25}
+.empty-st .et{font-size:15px;font-weight:600;color:var(--t2);margin-bottom:6px}
+
+/* ═══ TABLE CELLS ═══ */
+.pc{display:flex;align-items:center;gap:11px}
+.pavatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;border:2px solid var(--bd2)}
+.pname{font-weight:600;font-size:13px;line-height:1.3}
+.psub{font-size:11px;color:var(--t3);margin-top:1px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.amt-main{font-family:var(--fh);font-size:14px;font-weight:700}
+.amt-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.prog-wrap{display:flex;align-items:center;gap:7px}
+.prog{height:4px;background:var(--s4);border-radius:4px;overflow:hidden;width:65px}
+.prog-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.prog-pct{font-size:10px;color:var(--t3);font-weight:600}
+
+/* ═══ BADGES ═══ */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.b-active{background:var(--gr-s);color:var(--gr)}
+.b-overdue{background:var(--rd-s);color:var(--rd)}
+.b-partial{background:var(--yw-s);color:var(--yw)}
+.b-paid{background:var(--bl-s);color:var(--bl)}
+.b-borrowed{background:var(--rd-s);color:var(--rd)}
+.b-lent{background:var(--gr-s);color:var(--gr)}
+.b-credit{background:rgba(115,102,255,.12);color:var(--ac)}
+.b-personal{background:var(--or-s);color:var(--or)}
+.b-inactive{background:var(--s4);color:var(--t3)}
+.b-blocked{background:var(--rd-s);color:var(--rd)}
+.b-expired{background:var(--s4);color:var(--t3)}
+
+/* ═══ ROW ACTIONS ═══ */
+.rac{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.rb{width:29px;height:29px;border-radius:7px;border:1px solid var(--bd);background:var(--s2);cursor:pointer;color:var(--t2);display:flex;align-items:center;justify-content:center;font-size:12px;transition:var(--tr)}
+.rb:hover{color:var(--t1);background:var(--s3);border-color:var(--bd2)}
+.rb.pay:hover{color:var(--gr);border-color:var(--gr-b);background:var(--gr-s)}
+.rb.edit:hover{color:var(--bl);border-color:var(--bl-b);background:var(--bl-s)}
+.rb.hist:hover{color:var(--pu);border-color:var(--pu-b);background:var(--pu-s)}
+.rb.del:hover{color:var(--rd);border-color:var(--rd-b);background:var(--rd-s)}
+
+/* ═══ MODALS ═══ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--bd2);border-radius:20px;width:100%;max-width:620px;animation:popIn .22s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--sh2);margin:auto}
+.modal.sm{max-width:430px}
+.modal.md{max-width:510px}
+.modal.xl{max-width:680px}
+@keyframes popIn{from{transform:scale(.93) translateY(16px);opacity:0}to{transform:scale(1);opacity:1}}
+.mh{padding:20px 24px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;background:var(--s1);z-index:2;border-radius:20px 20px 0 0}
+.mt{font-family:var(--fh);font-weight:700;font-size:16px}
+.mclose{width:30px;height:30px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);cursor:pointer;color:var(--t2);display:flex;align-items:center;justify-content:center;transition:var(--tr);flex-shrink:0}
+.mclose:hover{color:var(--t1)}
+.mb{padding:20px 24px}
+.mf{padding:14px 24px 20px;border-top:1px solid var(--bd);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+/* ═══ FORM ═══ */
+.fg{display:flex;flex-direction:column;gap:5px}
+label{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em}
+.field{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 13px;color:var(--t1);font-family:var(--fb);font-size:13px;outline:none;transition:var(--tr);width:100%}
+.field:focus{border-color:var(--ac);background:var(--s3);box-shadow:0 0 0 3px var(--ag)}
+.field::placeholder{color:var(--t3)}
+select.field option{background:var(--s2);color:var(--t1)}
+textarea.field{resize:vertical;min-height:70px;line-height:1.5}
+.has-pfx{position:relative}
+.has-pfx .field{padding-left:30px}
+.pfx{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;font-weight:600;pointer-events:none}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+.full{grid-column:1/-1}
+.hint{font-size:11px;color:var(--t3);margin-top:3px}
+.field-err{border-color:var(--rd)!important;box-shadow:0 0 0 3px var(--rd-s)!important}
+.err-msg{font-size:11px;color:var(--rd);margin-top:3px;display:flex;align-items:center;gap:4px;display:none}
+
+/* Form section header */
+.fsec{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--ac);padding:14px 0 10px;border-bottom:1px solid rgba(115,102,255,.15);margin-bottom:14px}
+.fsec:first-of-type{padding-top:0}
+.fsec i{font-size:11px;width:14px;text-align:center}
+
+/* Type grid */
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.to{padding:12px 6px;border:1px solid var(--bd);border-radius:var(--r2);cursor:pointer;text-align:center;transition:var(--tr);user-select:none}
+.to:hover{border-color:var(--bd2);background:var(--s2)}
+.to.sel{border-color:var(--ac);background:rgba(115,102,255,.08);box-shadow:0 0 0 3px var(--ag)}
+.to-icon{font-size:20px;display:block;margin-bottom:5px}
+.to-lbl{font-size:11px;font-weight:700;color:var(--t2)}
+.to.sel .to-lbl{color:var(--ac)}
+
+/* ═══ BUTTONS ═══ */
+.btn{display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--r2);font-family:var(--fb);font-weight:600;font-size:13px;cursor:pointer;transition:var(--tr);border:none;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;box-shadow:0 4px 14px var(--ag)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--ag2)}
+.btn-ghost{background:var(--s2);color:var(--t2);border:1px solid var(--bd)}
+.btn-ghost:hover{color:var(--t1);background:var(--s3);border-color:var(--bd2)}
+.btn-danger{background:var(--rd-s);color:var(--rd);border:1px solid var(--rd-b)}
+.btn-danger:hover{background:rgba(255,90,104,.18)}
+.btn-success{background:var(--gr-s);color:var(--gr);border:1px solid var(--gr-b)}
+.btn-success:hover{background:rgba(30,221,138,.18)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══ OVERDUE BANNER ═══ */
+.ov-banner{display:flex;align-items:center;gap:14px;padding:13px 18px;background:var(--rd-s);border:1px solid var(--rd-b);border-radius:var(--r2);margin-bottom:18px;animation:pAlert 3s ease-in-out infinite}
+@keyframes pAlert{0%,100%{box-shadow:0 0 0 0 rgba(255,90,104,.1)}50%{box-shadow:0 0 0 8px rgba(255,90,104,0)}}
+.ov-banner i{color:var(--rd);font-size:15px;flex-shrink:0}
+.ov-text{flex:1}
+.ov-bold{font-weight:600;color:var(--rd);font-size:13px}
+.ov-sub{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* ═══ MINI STATS ═══ */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.sm{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:13px 15px;display:flex;align-items:center;gap:11px}
+.sm-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sm-val{font-family:var(--fh);font-size:17px;font-weight:800;line-height:1.2}
+.sm-lbl{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* ═══ INTEREST CALC BOX ═══ */
+.calc-box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:13px 15px;margin-top:10px}
+.calc-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.calc-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+.calc-row:last-child{margin-bottom:0;font-weight:700;font-size:13px;padding-top:8px;border-top:1px solid var(--bd)}
+.calc-row .cv{color:var(--yw);font-weight:600}
+.calc-row:last-child .cv{color:var(--gr)}
+
+/* ═══ PAYMENT HISTORY ═══ */
+.ph-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
+.ph-sum-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:11px 13px;text-align:center}
+.ph-sum-val{font-family:var(--fh);font-size:15px;font-weight:700}
+.ph-sum-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.ph-empty{text-align:center;padding:30px;color:var(--t3);font-size:13px}
+.ph-empty i{font-size:26px;display:block;margin-bottom:8px;opacity:.3}
+.ph-list{display:flex;flex-direction:column;gap:7px}
+.ph-item{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--s2);border-radius:var(--r2);border:1px solid var(--bd)}
+.ph-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ph-info{flex:1;min-width:0}
+.ph-amt{font-weight:700;font-size:13px;font-family:var(--fh)}
+.ph-meta{font-size:11px;color:var(--t3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ph-date{font-size:11px;color:var(--t3);white-space:nowrap}
+
+/* ═══ INFO CARD ═══ */
+.info-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:13px 15px;margin-bottom:16px}
+.ic-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.ic-row:last-child{margin-bottom:0}
+.ic-lbl{font-size:11px;color:var(--t3)}
+.ic-val{font-size:13px;font-weight:600}
+.ic-bar{height:4px;background:var(--s4);border-radius:4px;overflow:hidden;margin-top:9px}
+.ic-bar-fill{height:100%;border-radius:4px;background:var(--ac);transition:width .5s ease}
+
+/* ═══ TOAST ═══ */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:3000;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--s2);border:1px solid var(--bd2);border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:var(--sh);pointer-events:auto;animation:tIn .28s cubic-bezier(.34,1.56,.64,1);max-width:310px}
+@keyframes tIn{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+@keyframes tOut{to{transform:translateX(24px);opacity:0}}
+.toast.out{animation:tOut .2s ease forwards}
+.toast.success{border-left:3px solid var(--gr)}.toast.error{border-left:3px solid var(--rd)}
+.toast.info{border-left:3px solid var(--ac)}.toast.warn{border-left:3px solid var(--yw)}
+.ti{font-size:13px;flex-shrink:0}
+.toast.success .ti{color:var(--gr)}.toast.error .ti{color:var(--rd)}.toast.info .ti{color:var(--ac)}.toast.warn .ti{color:var(--yw)}
+
+/* ════════════════════════════════════
+   CREDIT CARD MANAGER
+════════════════════════════════════ */
+
+/* Card grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+
+/* Card tile */
+.cc-tile{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:var(--tr)}
+.cc-tile:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(0,0,0,.6);border-color:var(--bd2)}
+
+/* Physical card face */
+.cc-face-wrap{padding:15px 15px 10px}
+.cc-face{width:100%;aspect-ratio:1.586;border-radius:14px;padding:16px 18px;position:relative;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 10px 36px rgba(0,0,0,.55)}
+.cc-face-deco1,.cc-face-deco2{position:absolute;border-radius:50%;background:#fff;opacity:.08;pointer-events:none}
+.cc-face-deco1{width:220px;height:220px;top:-80px;right:-60px}
+.cc-face-deco2{width:160px;height:160px;bottom:-60px;left:-40px}
+.cc-face-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.cc-face-mid{position:relative;z-index:1;font-family:var(--fh);font-size:15px;font-weight:600;letter-spacing:3.5px;text-shadow:0 1px 4px rgba(0,0,0,.3);margin:auto 0}
+.cc-face-bot{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:1}
+.cc-fl{display:flex;flex-direction:column}
+.cc-fl-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;opacity:.65;text-transform:uppercase;margin-bottom:3px}
+.cc-fl-val{font-size:11px;font-weight:700;letter-spacing:.04em;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.cc-bank-nm{font-size:9px;font-weight:800;opacity:.9;letter-spacing:.08em;text-transform:uppercase}
+.cc-net{font-size:13px;font-weight:900;line-height:1}
+
+/* Chip SVG */
+.chip-svg{width:36px;height:28px}
+
+/* Card body */
+.cc-body{padding:12px 15px 15px}
+.cc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.cc-nick{font-family:var(--fh);font-weight:700;font-size:14px;line-height:1.3}
+.cc-variant{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* Utilization */
+.util-wrap{margin-bottom:11px}
+.util-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
+.util-used{font-weight:600}
+.util-pct{font-weight:700}
+.util-bar{height:6px;background:var(--s4);border-radius:6px;overflow:hidden;margin-bottom:5px}
+.util-fill{height:100%;border-radius:6px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.util-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--t3)}
+
+/* Info rows */
+.cc-ir{display:flex;align-items:flex-start;gap:8px;padding:8px 11px;background:var(--s2);border-radius:var(--r3);border:1px solid var(--bd);font-size:12px;margin-bottom:7px}
+.cc-ir i{font-size:11px;flex-shrink:0;margin-top:2px}
+.cc-ir-main{font-weight:600;color:var(--t1);line-height:1.4}
+.cc-ir-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.cc-ir-right{margin-left:auto;flex-shrink:0;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;line-height:1.6;align-self:center}
+.pill-green{background:var(--gr-s);color:var(--gr)}
+.pill-blue{background:var(--bl-s);color:var(--bl)}
+.pill-gray{background:var(--s4);color:var(--t3)}
+.pill-ac{background:rgba(115,102,255,.12);color:var(--ac)}
+.pill-yw{background:var(--yw-s);color:var(--yw)}
+.pill-rd{background:var(--rd-s);color:var(--rd)}
+
+/* Card actions */
+.cc-acts{display:flex;gap:6px;margin-top:12px}
+.cc-pay-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:36px;background:var(--gr-s);border:1px solid var(--gr-b);border-radius:var(--r3);color:var(--gr);font-family:var(--fb);font-size:12px;font-weight:600;cursor:pointer;transition:var(--tr)}
+.cc-pay-btn:hover{background:rgba(30,221,138,.17);transform:translateY(-1px)}
+.cc-ib{width:36px;height:36px;border-radius:var(--r3);background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:13px;transition:var(--tr)}
+.cc-ib:hover{background:var(--s3);border-color:var(--bd2);color:var(--t1)}
+.cc-ib.edit:hover{background:var(--bl-s);border-color:var(--bl-b);color:var(--bl)}
+.cc-ib.hist:hover{background:var(--pu-s);border-color:var(--pu-b);color:var(--pu)}
+.cc-ib.del:hover{background:var(--rd-s);border-color:var(--rd-b);color:var(--rd)}
+
+/* Empty cards */
+.cards-empty{text-align:center;padding:64px 20px;grid-column:1/-1}
+.cards-empty i{font-size:54px;opacity:.1;display:block;margin-bottom:14px}
+.ce-title{font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:7px}
+.ce-sub{color:var(--t3);font-size:13px;margin-bottom:22px;line-height:1.6}
+
+/* Card form live preview */
+.cc-prev-wrap{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:14px;margin-bottom:16px}
+.cc-prev-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:11px;text-align:center}
+.cc-prev{max-width:260px;margin:0 auto;aspect-ratio:1.586;border-radius:12px;padding:14px 16px;position:relative;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 8px 28px rgba(0,0,0,.5);transition:background .4s ease}
+.cc-prev .cc-face-deco1,.cc-prev .cc-face-deco2{opacity:.07}
+.cc-prev .cc-face-top,.cc-prev .cc-face-mid,.cc-prev .cc-face-bot{position:relative;z-index:1}
+.cc-prev .cc-face-mid{font-family:var(--fh);font-size:12px;font-weight:600;letter-spacing:3px}
+.cc-prev .cc-fl-lbl{font-size:7px}
+.cc-prev .cc-fl-val{font-size:10px;font-weight:700}
+.cc-prev .cc-bank-nm{font-size:8px}
+.cc-prev .cc-net{font-size:11px}
+.cc-prev .chip-svg{width:28px;height:22px}
+
+/* Linked account highlight box */
+.linked-box{background:rgba(115,102,255,.06);border:1px solid rgba(115,102,255,.18);border-radius:var(--r2);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--t2);display:flex;gap:10px;align-items:flex-start}
+.linked-box i{color:var(--ac);flex-shrink:0;margin-top:1px}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1100px){.summary-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--sh2)}
+  .main{margin-left:0}
+  .hamburger{display:flex}
+  .tb-search{display:none}
+  th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .card-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .summary-row{grid-template-columns:1fr 1fr}
+  .page-content{padding:14px 14px 80px}
+  .topbar{padding:0 14px}
+  .g2{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr 1fr}
+  .type-grid{grid-template-columns:repeat(2,1fr)}
+  th:nth-child(5),td:nth-child(5){display:none}
+  .stats-row{display:none}
+  .sc-val{font-size:20px}
+  .card-grid{grid-template-columns:1fr}
+  .mh,.mb,.mf{padding-left:16px;padding-right:16px}
+  .ph-sum{grid-template-columns:1fr 1fr}
+}
+@media(max-width:420px){
+  .summary-row{grid-template-columns:1fr}
+  th:nth-child(4),td:nth-child(4){display:none}
+  .ph-sum{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ FIREBASE ════ -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,orderBy,serverTimestamp,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyDsMgJjQmbWuJEbHbPCn7SlsPCrpnCYJvg",authDomain:"bloggershortener.firebaseapp.com",projectId:"bloggershortener",storageBucket:"bloggershortener.firebasestorage.app",messagingSenderId:"956739137776",appId:"1:956739137776:web:ef162f86eaf2f600ea9235"});
+const db=getFirestore(app);
+window.__DB=db;window.__FS={collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,orderBy,serverTimestamp,onSnapshot};
+document.dispatchEvent(new Event('fb-ready'));
+</script>
+
+<div class="shell">
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">💸</div>
+    <div><div class="logo-text">FinanceHub</div><div class="logo-sub">Loan &amp; Card Manager</div></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-sec">Loan Manager</div>
+    <div class="ni active" id="ni-all" onclick="gotoFilter('all',this)"><i class="fa fa-list-ul"></i>All Records<span class="nbadge" id="nb-all">0</span></div>
+    <div class="ni" id="ni-bor" onclick="gotoFilter('borrowed',this)"><i class="fa fa-hand-holding-dollar"></i>I Borrowed<span class="nbadge" style="background:var(--rd-s);color:var(--rd)" id="nb-bor">0</span></div>
+    <div class="ni" id="ni-len" onclick="gotoFilter('lent',this)"><i class="fa fa-money-bill-transfer"></i>I Lent Out<span class="nbadge" style="background:var(--gr-s);color:var(--gr)" id="nb-len">0</span></div>
+    <div class="ni" id="ni-per" onclick="gotoFilter('personal',this)"><i class="fa fa-wallet"></i>Personal</div>
+    <div class="nav-sec">Card Manager</div>
+    <div class="ni" id="ni-cards" onclick="switchView('cards',this)"><i class="fa fa-credit-card" style="color:var(--ac)"></i>My Credit Cards<span class="nbadge" style="background:rgba(115,102,255,.12);color:var(--ac)" id="nb-cards">0</span></div>
+    <div class="nav-sec">Alerts</div>
+    <div class="ni" id="ni-ov" onclick="gotoFilter('overdue',this)"><i class="fa fa-circle-exclamation" style="color:var(--rd)"></i>Overdue<span class="nbadge" style="background:var(--rd-s);color:var(--rd)" id="nb-ov">0</span></div>
+    <div class="ni" id="ni-d7" onclick="gotoFilter('due7',this)"><i class="fa fa-clock" style="color:var(--yw)"></i>Due in 7 Days<span class="nbadge" style="background:var(--yw-s);color:var(--yw)" id="nb-d7">0</span></div>
+    <div class="ni" onclick="showAllPay()"><i class="fa fa-clock-rotate-left" style="color:var(--pu)"></i>All Payments</div>
+  </nav>
+  <div class="s-foot">
+    <div class="user-row">
+      <div class="uavatar">F</div>
+      <div><div class="uname">FinanceHub</div><div class="urole">Live · Synced</div></div>
+      <div class="live-dot"></div>
+    </div>
+  </div>
+</aside>
+<div class="sb-overlay" id="sbOv" onclick="closeSb()"></div>
+
+<!-- ════ MAIN ════ -->
+<main class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <button class="hamburger" onclick="toggleSb()"><i class="fa fa-bars"></i></button>
+      <div class="page-heading" id="pgHead">Loan &amp; Lending Tracker</div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-search"><i class="fa fa-magnifying-glass"></i><input type="text" id="searchQ" placeholder="Search name, bank, note…" oninput="renderTable()"></div>
+      <div class="ib" title="Refresh" onclick="loadAll()"><i class="fa fa-arrows-rotate"></i></div>
+      <div class="ib" id="alertBtn" title="Overdue Alerts" onclick="gotoFilter('overdue',document.getElementById('ni-ov'))">
+        <i class="fa fa-bell"></i><span class="dot" id="alertDot" style="display:none"></span>
+      </div>
+      <div class="ib" title="Export CSV" onclick="exportCSV()"><i class="fa fa-download"></i></div>
+      <button class="add-btn" onclick="mainAdd()"><i class="fa fa-plus"></i><span id="addLbl">Add Record</span></button>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- ════ LOANS VIEW ════ -->
+    <div id="loanView" class="view active">
+      <div class="ov-banner" id="ovBanner" style="display:none">
+        <i class="fa fa-triangle-exclamation"></i>
+        <div class="ov-text"><div class="ov-bold"><span id="ovCnt">0</span> overdue payment(s) need your attention!</div><div class="ov-sub">Pay now to avoid interest accumulation.</div></div>
+        <button class="btn btn-danger" style="padding:7px 13px;font-size:12px;flex-shrink:0" onclick="gotoFilter('overdue',document.getElementById('ni-ov'))">View All</button>
+      </div>
+      <div class="summary-row">
+        <div class="sc"><div class="sc-glow" style="background:var(--rd)"></div><i class="fa fa-hand-holding-dollar sc-icon" style="color:var(--rd)"></i><div class="sc-label">Total I Owe</div><div class="sc-val" id="sc-bor" style="color:var(--rd)">₹0</div><div class="sc-meta" id="sc-bor-m"></div><div class="sc-bar"><div class="sc-bar-fill" id="sb-bor" style="background:var(--rd)"></div></div></div>
+        <div class="sc"><div class="sc-glow" style="background:var(--gr)"></div><i class="fa fa-money-bill-transfer sc-icon" style="color:var(--gr)"></i><div class="sc-label">Owed to Me</div><div class="sc-val" id="sc-len" style="color:var(--gr)">₹0</div><div class="sc-meta" id="sc-len-m"></div><div class="sc-bar"><div class="sc-bar-fill" id="sb-len" style="background:var(--gr)"></div></div></div>
+        <div class="sc"><div class="sc-glow" style="background:var(--yw)"></div><i class="fa fa-triangle-exclamation sc-icon" style="color:var(--yw)"></i><div class="sc-label">Overdue</div><div class="sc-val" id="sc-ov" style="color:var(--yw)">₹0</div><div class="sc-meta" id="sc-ov-m"></div><div class="sc-bar"><div class="sc-bar-fill" id="sb-ov" style="background:var(--yw)"></div></div></div>
+        <div class="sc"><div class="sc-glow" style="background:var(--bl)"></div><i class="fa fa-check-circle sc-icon" style="color:var(--bl)"></i><div class="sc-label">Total Paid</div><div class="sc-val" id="sc-paid" style="color:var(--bl)">₹0</div><div class="sc-meta" id="sc-paid-m"></div><div class="sc-bar"><div class="sc-bar-fill" id="sb-paid" style="background:var(--bl)"></div></div></div>
+      </div>
+      <div class="stats-row">
+        <div class="sm"><div class="sm-icon" style="background:var(--gr-s)"><i class="fa fa-circle-check" style="color:var(--gr)"></i></div><div><div class="sm-val" id="sm-paid">₹0</div><div class="sm-lbl">Paid / Received</div></div></div>
+        <div class="sm"><div class="sm-icon" style="background:rgba(115,102,255,.09)"><i class="fa fa-percent" style="color:var(--ac)"></i></div><div><div class="sm-val" id="sm-int">₹0</div><div class="sm-lbl">Interest Accrued</div></div></div>
+        <div class="sm"><div class="sm-icon" style="background:var(--bl-s)"><i class="fa fa-calendar-check" style="color:var(--bl)"></i></div><div><div class="sm-val" id="sm-d7">0</div><div class="sm-lbl">Due in 7 Days</div></div></div>
+      </div>
+      <div class="filter-strip">
+        <div class="ft on" id="ft-all" onclick="setFt('all',this)"><i class="fa fa-list-ul"></i> All <span class="cnt" id="ftc-all">0</span></div>
+        <div class="ft" id="ft-borrowed" onclick="setFt('borrowed',this)"><i class="fa fa-arrow-down"></i> Borrowed <span class="cnt" id="ftc-bor">0</span></div>
+        <div class="ft" id="ft-lent" onclick="setFt('lent',this)"><i class="fa fa-arrow-up"></i> Lent <span class="cnt" id="ftc-len">0</span></div>
+        <div class="ft" id="ft-personal" onclick="setFt('personal',this)"><i class="fa fa-wallet"></i> Personal <span class="cnt" id="ftc-per">0</span></div>
+        <div class="ft" id="ft-overdue" onclick="setFt('overdue',this)"><i class="fa fa-exclamation-circle" style="color:var(--rd)"></i> Overdue <span class="cnt" id="ftc-ov">0</span></div>
+        <div class="ft" id="ft-due7" onclick="setFt('due7',this)"><i class="fa fa-clock" style="color:var(--yw)"></i> Due Soon <span class="cnt" id="ftc-d7">0</span></div>
+        <div class="ft" id="ft-paid" onclick="setFt('paid',this)"><i class="fa fa-circle-check" style="color:var(--bl)"></i> Paid <span class="cnt" id="ftc-paid">0</span></div>
+      </div>
+      <div class="table-hd">
+        <div class="section-title" id="secLbl">All Records</div>
+        <div class="hd-right">
+          <select class="sort-sel" id="sortSel" onchange="renderTable()">
+            <option value="date-desc">Newest First</option><option value="date-asc">Oldest First</option>
+            <option value="amount-desc">Amount ↓</option><option value="amount-asc">Amount ↑</option>
+            <option value="due-asc">Due Date ↑</option><option value="name-asc">Name A–Z</option>
+          </select>
+          <button class="icon-btn-sm" onclick="exportCSV()"><i class="fa fa-file-csv"></i> Export</button>
+        </div>
+      </div>
+      <div class="tw"><table>
+        <thead><tr>
+          <th>Person / Source</th><th>Type</th><th>Remaining / Total</th><th>Progress</th>
+          <th>Due Date</th><th>Via / Bank</th><th>Status</th><th style="text-align:center">Actions</th>
+        </tr></thead>
+        <tbody id="loanBody"><tr><td colspan="8" style="text-align:center;padding:48px;color:var(--t3)"><i class="fa fa-circle-notch fa-spin" style="font-size:20px;display:block;margin-bottom:10px"></i>Connecting to Firebase…</td></tr></tbody>
+      </table></div>
+      <div style="margin-top:9px;font-size:11px;color:var(--t3);text-align:right" id="rowCnt"></div>
+    </div>
+
+    <!-- ════ CARDS VIEW ════ -->
+    <div id="cardView" class="view">
+      <div class="summary-row" id="cSumRow">
+        <div class="sc"><div class="sc-glow" style="background:var(--ac)"></div><i class="fa fa-credit-card sc-icon" style="color:var(--ac)"></i><div class="sc-label">Total Credit Limit</div><div class="sc-val" id="csc-lim" style="color:var(--ac)">₹0</div><div class="sc-meta" id="csc-lim-m">0 cards</div><div class="sc-bar"><div class="sc-bar-fill" id="csb-lim" style="background:var(--ac)"></div></div></div>
+        <div class="sc"><div class="sc-glow" style="background:var(--rd)"></div><i class="fa fa-fire sc-icon" style="color:var(--rd)"></i><div class="sc-label">Total Outstanding</div><div class="sc-val" id="csc-out" style="color:var(--rd)">₹0</div><div class="sc-meta" id="csc-out-m">0% utilized</div><div class="sc-bar"><div class="sc-bar-fill" id="csb-out" style="background:var(--rd)"></div></div></div>
+        <div class="sc"><div class="sc-glow" style="background:var(--yw)"></div><i class="fa fa-calendar-exclamation sc-icon" style="color:var(--yw)"></i><div class="sc-label">Total Bill Due</div><div class="sc-val" id="csc-due" style="color:var(--yw)">₹0</div><div class="sc-meta" id="csc-due-m"></div><div class="sc-bar"><div class="sc-bar-fill" id="csb-due" style="background:var(--yw)"></div></div></div>
+        <div class="sc"><div class="sc-glow" style="background:var(--gr)"></div><i class="fa fa-arrow-trend-up sc-icon" style="color:var(--gr)"></i><div class="sc-label">Available Credit</div><div class="sc-val" id="csc-avail" style="color:var(--gr)">₹0</div><div class="sc-meta" id="csc-avail-m"></div><div class="sc-bar"><div class="sc-bar-fill" id="csb-avail" style="background:var(--gr)"></div></div></div>
+      </div>
+      <div class="table-hd">
+        <div class="section-title">My Credit Cards</div>
+        <div class="hd-right">
+          <select class="sort-sel" id="cSortSel" onchange="renderCards()">
+            <option value="name">Name A–Z</option><option value="limit">Limit ↓</option>
+            <option value="due">Next Due ↑</option><option value="util">Utilization ↓</option>
+          </select>
+          <button class="icon-btn-sm" onclick="exportCSV()"><i class="fa fa-file-csv"></i> Export</button>
+        </div>
+      </div>
+      <div class="card-grid" id="cardGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--t3)"><i class="fa fa-circle-notch fa-spin" style="font-size:20px;display:block;margin-bottom:10px"></i>Loading cards…</div>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</main>
+</div><!-- /shell -->
+
+<!-- ════════════════════════════════════
+     LOAN ADD / EDIT MODAL
+════════════════════════════════════ -->
+<div class="overlay" id="addModal">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="addTitle">Add New Record</div><button class="mclose" onclick="closeM('addModal')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mb">
+      <div class="fsec"><i class="fa fa-tag"></i>Record Type</div>
+      <div class="type-grid" style="margin-bottom:16px">
+        <div class="to sel" data-t="borrowed" onclick="pickType(this)"><span class="to-icon">🙏</span><div class="to-lbl">Borrowed</div></div>
+        <div class="to" data-t="lent" onclick="pickType(this)"><span class="to-icon">🤝</span><div class="to-lbl">Lent</div></div>
+        <div class="to" data-t="credit" onclick="pickType(this)"><span class="to-icon">💳</span><div class="to-lbl">Credit</div></div>
+        <div class="to" data-t="personal" onclick="pickType(this)"><span class="to-icon">💼</span><div class="to-lbl">Personal</div></div>
+      </div>
+      <div class="g2">
+        <div class="fg full"><label>Person / Source *</label><input class="field" type="text" id="l-name" placeholder="e.g. Rahul Sharma"/><div class="err-msg" id="el-name"><i class="fa fa-circle-exclamation"></i> Required</div></div>
+        <div class="fg"><label>Amount (₹) *</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="l-amount" placeholder="0" min="0" step="0.01" oninput="calcInt()"/></div><div class="err-msg" id="el-amount"><i class="fa fa-circle-exclamation"></i> Required</div></div>
+        <div class="fg"><label>Paid So Far (₹)</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="l-paid" placeholder="0" min="0" value="0"/></div></div>
+        <div class="fg"><label>Date Issued</label><input class="field" type="date" id="l-date" oninput="calcInt()"/></div>
+        <div class="fg"><label>Due Date</label><input class="field" type="date" id="l-due" oninput="calcInt()"/></div>
+        <div class="fg"><label>Payment Method</label>
+          <select class="field" id="l-method">
+            <option value="">— Select —</option><option>Cash</option><option>UPI</option>
+            <option>NEFT / IMPS</option><option>Credit Card</option><option>Debit Card</option><option>Cheque</option><option>Crypto</option>
+          </select>
+        </div>
+        <div class="fg"><label>Bank / Wallet</label>
+          <select class="field" id="l-bank">
+            <option value="">— Select —</option>
+            <option>SBI</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option>
+            <option>Kotak Bank</option><option>PNB</option><option>Bank of Baroda</option><option>Yes Bank</option>
+            <option>IndusInd Bank</option><option>Paytm</option><option>Cash</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label>Card Last 4</label><input class="field" type="text" id="l-card" placeholder="4521" maxlength="4"/></div>
+        <div class="fg"><label>Interest % p.a.</label><div class="has-pfx"><span class="pfx">%</span><input class="field" type="number" id="l-interest" placeholder="0" min="0" max="200" step="0.1" oninput="calcInt()"/></div></div>
+        <div class="fg full"><label>Note / Purpose</label><textarea class="field" id="l-note" placeholder="e.g. Medical emergency, Wedding, Phone purchase…"></textarea></div>
+      </div>
+      <div id="intBox" class="calc-box" style="display:none">
+        <div class="calc-title"><i class="fa fa-calculator"></i> Simple Interest Preview</div>
+        <div class="calc-row"><span>Principal</span><span class="cv" id="ci-p">₹0</span></div>
+        <div class="calc-row"><span>Days (start → due)</span><span class="cv" id="ci-d">0 days</span></div>
+        <div class="calc-row"><span>Rate</span><span class="cv" id="ci-r">0%</span></div>
+        <div class="calc-row"><span>Interest</span><span class="cv" id="ci-i">₹0</span></div>
+        <div class="calc-row"><span>Total Payable</span><span class="cv" id="ci-t">₹0</span></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeM('addModal')">Cancel</button><button class="btn btn-primary" id="saveLoanBtn" onclick="saveLoan()"><i class="fa fa-floppy-disk"></i> Save</button></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     CREDIT CARD ADD / EDIT MODAL
+════════════════════════════════════ -->
+<div class="overlay" id="cardModal">
+  <div class="modal xl">
+    <div class="mh"><div class="mt" id="cardModalTitle">Add Credit Card</div><button class="mclose" onclick="closeM('cardModal')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mb">
+
+      <!-- LIVE PREVIEW -->
+      <div class="cc-prev-wrap">
+        <div class="cc-prev-lbl">✨ Live Card Preview</div>
+        <div class="cc-prev" id="cardPrev" style="background:linear-gradient(135deg,#1a237e,#283593)">
+          <div class="cc-face-deco1"></div><div class="cc-face-deco2"></div>
+          <div class="cc-face-top">
+            <svg class="chip-svg" viewBox="0 0 38 30"><rect width="38" height="30" rx="4" fill="rgba(255,215,0,.88)"/><rect x="13" y="0" width="12" height="30" fill="rgba(0,0,0,.12)"/><rect x="0" y="10" width="38" height="10" fill="rgba(0,0,0,.12)"/></svg>
+            <div class="cc-net" id="pv-net">VISA</div>
+          </div>
+          <div class="cc-face-mid" id="pv-num">•••• &nbsp;•••• &nbsp;•••• &nbsp;####</div>
+          <div class="cc-face-bot">
+            <div class="cc-fl"><div class="cc-fl-lbl">Card Holder</div><div class="cc-fl-val" id="pv-name">YOUR NAME</div></div>
+            <div class="cc-fl" style="text-align:center"><div class="cc-fl-lbl">Expires</div><div class="cc-fl-val" id="pv-exp">MM/YY</div></div>
+            <div class="cc-fl" style="text-align:right"><div class="cc-fl-lbl">Bank</div><div class="cc-bank-nm" id="pv-bank">BANK</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 1 — CARD IDENTITY -->
+      <div class="fsec"><i class="fa fa-id-card"></i>Card Identity</div>
+      <div class="g2">
+        <div class="fg"><label>Card Nickname *</label><input class="field" type="text" id="cc-nick" placeholder="e.g. HDFC Millennia Gold" oninput="updatePrev()"/><div class="err-msg" id="e-cc-nick"><i class="fa fa-circle-exclamation"></i> Required</div></div>
+        <div class="fg"><label>Card Holder Name *</label><input class="field" type="text" id="cc-holder" placeholder="Name as on card" oninput="updatePrev()"/><div class="err-msg" id="e-cc-holder"><i class="fa fa-circle-exclamation"></i> Required</div></div>
+        <div class="fg"><label>Issuing Bank *</label>
+          <select class="field" id="cc-bank" onchange="updatePrev()">
+            <option value="">— Select Issuing Bank —</option>
+            <optgroup label="Private Banks">
+              <option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option><option>Kotak Bank</option>
+              <option>Yes Bank</option><option>IndusInd Bank</option><option>IDFC First</option><option>Federal Bank</option><option>RBL Bank</option>
+            </optgroup>
+            <optgroup label="Public Banks">
+              <option>SBI</option><option>PNB</option><option>Bank of Baroda</option><option>Canara Bank</option><option>Union Bank</option><option>Indian Bank</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option>Amex</option><option>Citibank</option><option>DBS</option><option>Other</option>
+            </optgroup>
+          </select>
+          <div class="err-msg" id="e-cc-bank"><i class="fa fa-circle-exclamation"></i> Required</div>
+        </div>
+        <div class="fg"><label>Card Network</label>
+          <select class="field" id="cc-network" onchange="updatePrev()">
+            <option value="Visa">Visa</option><option value="Mastercard">Mastercard</option>
+            <option value="RuPay">RuPay</option><option value="Amex">American Express</option>
+            <option value="Diners">Diners Club</option><option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="fg"><label>Card Variant</label>
+          <select class="field" id="cc-variant">
+            <option>Standard</option><option>Classic</option><option>Silver</option><option>Gold</option>
+            <option>Platinum</option><option>Signature</option><option>Infinite</option><option>Elite</option><option>Business</option>
+          </select>
+        </div>
+        <div class="fg"><label>Last 4 Digits</label><input class="field" type="text" id="cc-last4" placeholder="4521" maxlength="4" pattern="\d{4}" oninput="updatePrev()"/></div>
+        <div class="fg"><label>Expiry Month</label>
+          <select class="field" id="cc-exp-mm" onchange="updatePrev()">
+            <option value="">MM</option>
+            <option value="01">01 — Jan</option><option value="02">02 — Feb</option><option value="03">03 — Mar</option>
+            <option value="04">04 — Apr</option><option value="05">05 — May</option><option value="06">06 — Jun</option>
+            <option value="07">07 — Jul</option><option value="08">08 — Aug</option><option value="09">09 — Sep</option>
+            <option value="10">10 — Oct</option><option value="11">11 — Nov</option><option value="12">12 — Dec</option>
+          </select>
+        </div>
+        <div class="fg"><label>Expiry Year</label>
+          <select class="field" id="cc-exp-yy" onchange="updatePrev()">
+            <option value="">YY</option>
+            <option value="25">2025</option><option value="26">2026</option><option value="27">2027</option>
+            <option value="28">2028</option><option value="29">2029</option><option value="30">2030</option>
+            <option value="31">2031</option><option value="32">2032</option><option value="33">2033</option><option value="34">2034</option>
+          </select>
+        </div>
+        <div class="fg"><label>Card Status</label>
+          <select class="field" id="cc-status">
+            <option value="active">✅ Active</option><option value="inactive">⏸ Inactive</option>
+            <option value="blocked">🚫 Blocked</option><option value="expired">❌ Expired</option>
+          </select>
+        </div>
+        <div class="fg"><label>Rewards Type</label>
+          <select class="field" id="cc-rewards">
+            <option value="Cashback">💵 Cashback</option><option value="Points">⭐ Reward Points</option>
+            <option value="Miles">✈ Air Miles</option><option value="Lounge">🛋 Lounge Access</option><option value="None">None</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SECTION 2 — CREDIT LIMIT & DUES -->
+      <div class="fsec"><i class="fa fa-indian-rupee-sign"></i>Credit Limit &amp; Current Dues</div>
+      <div class="g2">
+        <div class="fg"><label>Credit Limit (₹) *</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="cc-limit" placeholder="100000" min="0" oninput="calcUtil()"/></div><div class="err-msg" id="e-cc-limit"><i class="fa fa-circle-exclamation"></i> Required</div></div>
+        <div class="fg"><label>Current Outstanding (₹) *</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="cc-out" placeholder="0" min="0" oninput="calcUtil()"/></div><div class="hint">Total balance owed on this card right now</div></div>
+        <div class="fg"><label>Total Bill Due This Month (₹)</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="cc-total-due" placeholder="0" min="0"/></div><div class="hint">Statement amount you must pay</div></div>
+        <div class="fg"><label>Minimum Due (₹)</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="cc-min-due" placeholder="0" min="0"/></div><div class="hint">Minimum required to avoid default</div></div>
+        <div class="fg"><label>Annual Percentage Rate (APR %)</label><div class="has-pfx"><span class="pfx">%</span><input class="field" type="number" id="cc-apr" placeholder="e.g. 42" min="0" max="200" step="0.1"/></div><div class="hint">Interest charged on unpaid balance</div></div>
+        <div class="fg"><label>Annual Fee (₹)</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="cc-ann-fee" placeholder="0" min="0"/></div></div>
+      </div>
+      <!-- Live Utilization Bar -->
+      <div id="utilBox" class="calc-box" style="display:none">
+        <div class="calc-title"><i class="fa fa-chart-bar"></i> Credit Utilization Preview</div>
+        <div style="height:8px;background:var(--s3);border-radius:8px;overflow:hidden;margin-bottom:9px">
+          <div id="utilBarFill" style="height:100%;border-radius:8px;background:var(--gr);transition:width .4s ease"></div>
+        </div>
+        <div class="calc-row"><span>Credit Limit</span><span class="cv" id="cu-lim">₹0</span></div>
+        <div class="calc-row"><span>Outstanding</span><span class="cv" id="cu-out">₹0</span></div>
+        <div class="calc-row"><span>Available Credit</span><span class="cv" id="cu-avail">₹0</span></div>
+        <div class="calc-row"><span>Utilization %</span><span class="cv" id="cu-pct">0%</span></div>
+      </div>
+
+      <!-- SECTION 3 — BILLING CYCLE -->
+      <div class="fsec"><i class="fa fa-calendar-alt"></i>Billing Cycle</div>
+      <div class="g3">
+        <div class="fg"><label>Statement Day</label><input class="field" type="number" id="cc-stmt-day" placeholder="e.g. 5" min="1" max="31"/><div class="hint">Day of month statement is generated</div></div>
+        <div class="fg"><label>Due Day</label><input class="field" type="number" id="cc-due-day" placeholder="e.g. 25" min="1" max="31"/><div class="hint">Day payment is due each month</div></div>
+        <div class="fg"><label>Grace Period (Days)</label><input class="field" type="number" id="cc-grace" placeholder="e.g. 20" min="0" max="60"/><div class="hint">Days after stmt to pay without interest</div></div>
+        <div class="fg full"><label>Next Payment Due Date</label><input class="field" type="date" id="cc-next-due"/><div class="hint">Exact date the upcoming bill must be paid</div></div>
+      </div>
+
+      <!-- SECTION 4 — LINKED BANK ACCOUNT (BENEFICIARY) -->
+      <div class="fsec"><i class="fa fa-building-columns"></i>Linked Bank Account — Beneficiary (Who Pays This Card)</div>
+      <div class="linked-box">
+        <i class="fa fa-circle-info"></i>
+        <span>This is the <strong>savings / current bank account</strong> from which your credit card bill gets paid. It is the beneficiary account registered to this card for auto-debit or manual payment.</span>
+      </div>
+      <div class="g2">
+        <div class="fg"><label>Payment Bank Name *</label>
+          <select class="field" id="cc-pay-bank" onchange="updatePayBankPreview()">
+            <option value="">— Select Payment Bank —</option>
+            <option>SBI</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option>
+            <option>Kotak Bank</option><option>PNB</option><option>Bank of Baroda</option><option>Canara Bank</option>
+            <option>Yes Bank</option><option>IndusInd Bank</option><option>IDFC First</option><option>Union Bank</option>
+            <option>Federal Bank</option><option>Paytm Payments Bank</option><option>Other</option>
+          </select>
+          <div class="err-msg" id="e-cc-pay-bank"><i class="fa fa-circle-exclamation"></i> Required</div>
+        </div>
+        <div class="fg"><label>Account Number (Last 4)</label><input class="field" type="text" id="cc-pay-acct" placeholder="e.g. 7892" maxlength="4"/><div class="hint">Last 4 digits for identification</div></div>
+        <div class="fg full"><label>Account Holder Name</label><input class="field" type="text" id="cc-pay-holder" placeholder="Name on bank account"/><div class="hint">Full name as on savings account</div></div>
+        <div class="fg"><label>Account Type</label>
+          <select class="field" id="cc-acct-type">
+            <option value="Savings">Savings Account</option><option value="Current">Current Account</option>
+            <option value="Salary">Salary Account</option><option value="OD">OD / CC Account</option>
+          </select>
+        </div>
+        <div class="fg"><label>IFSC Code</label><input class="field" type="text" id="cc-ifsc" placeholder="e.g. HDFC0001234" maxlength="11" style="text-transform:uppercase"/><div class="hint">Branch IFSC for NEFT / NACH</div></div>
+      </div>
+
+      <!-- SECTION 5 — AUTO PAY -->
+      <div class="fsec"><i class="fa fa-robot"></i>Auto-Pay / Standing Instruction</div>
+      <div class="g2">
+        <div class="fg"><label>Payment Mode</label>
+          <select class="field" id="cc-pay-mode">
+            <option value="Auto-debit">🤖 Auto-debit (NACH Mandate)</option>
+            <option value="Standing Instruction">📋 Standing Instruction (SI)</option>
+            <option value="Manual UPI">📱 Manual — UPI / GPay</option>
+            <option value="Manual NEFT">🏦 Manual — NEFT / IMPS</option>
+            <option value="Manual Cash">💵 Manual — Cash / Cheque</option>
+            <option value="None">— Not Set —</option>
+          </select>
+        </div>
+        <div class="fg"><label>Auto-Pay Instruction</label>
+          <select class="field" id="cc-autopay-type">
+            <option value="None">— None / Manual —</option>
+            <option value="Minimum Due">Minimum Due only</option>
+            <option value="Total Due">Total Due (Full Payment)</option>
+            <option value="Fixed Amount">Fixed Amount</option>
+          </select>
+        </div>
+        <div class="fg"><label>Fixed Auto-Pay Amount (₹)</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="cc-autopay-amt" placeholder="0" min="0"/></div><div class="hint">Only if Auto-Pay = Fixed Amount</div></div>
+        <div class="fg"><label>NACH / Mandate ID</label><input class="field" type="text" id="cc-mandate-id" placeholder="e.g. NACH00123456"/><div class="hint">Mandate reference number if applicable</div></div>
+      </div>
+
+      <!-- SECTION 6 — NOTES -->
+      <div class="fsec"><i class="fa fa-note-sticky"></i>Notes &amp; Remarks</div>
+      <div class="fg"><label>Notes</label><textarea class="field" id="cc-notes" placeholder="e.g. Primary online shopping card · Linked to SBI salary account · 5% cashback on fuel…"></textarea></div>
+
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost" onclick="closeM('cardModal')">Cancel</button>
+      <button class="btn btn-primary" id="saveCardBtn" onclick="saveCard()"><i class="fa fa-floppy-disk"></i> Save Card</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PAYMENT MODAL ════ -->
+<div class="overlay" id="payModal">
+  <div class="modal md">
+    <div class="mh"><div class="mt" id="payTitle">💸 Record Payment</div><button class="mclose" onclick="closeM('payModal')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mb">
+      <div class="info-card" id="payInfoCard"></div>
+      <div class="g2">
+        <div class="fg full"><label>Payment Amount (₹) *</label><div class="has-pfx"><span class="pfx">₹</span><input class="field" type="number" id="pay-amt" placeholder="0.00" min="1"/></div><div class="hint" id="pay-hint"></div></div>
+        <div class="fg"><label>Payment Date</label><input class="field" type="date" id="pay-date"/></div>
+        <div class="fg"><label>Payment Method</label>
+          <select class="field" id="pay-method">
+            <option>Cash</option><option>UPI / GPay</option><option>NEFT / IMPS</option>
+            <option>Debit Card</option><option>Cheque / DD</option>
+          </select>
+        </div>
+        <div class="fg full"><label>From Bank Account</label>
+          <select class="field" id="pay-bank">
+            <option>Cash</option><option>SBI</option><option>HDFC Bank</option><option>ICICI Bank</option>
+            <option>Axis Bank</option><option>Kotak Bank</option><option>PNB</option>
+            <option>Bank of Baroda</option><option>Canara Bank</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg full"><label>Reference / Note</label><input class="field" type="text" id="pay-note" placeholder="e.g. 1st instalment, Full settlement, UTR 123456…"/></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeM('payModal')">Cancel</button><button class="btn btn-success" id="payBtn" onclick="doPayment()"><i class="fa fa-check-circle"></i> Confirm Payment</button></div>
+  </div>
+</div>
+
+<!-- ════ HISTORY MODAL ════ -->
+<div class="overlay" id="histModal">
+  <div class="modal md"><div class="mh"><div class="mt" id="histTitle">Payment History</div><button class="mclose" onclick="closeM('histModal')"><i class="fa fa-xmark"></i></button></div><div class="mb" id="histBody"></div></div>
+</div>
+
+<!-- ════ DELETE CONFIRM ════ -->
+<div class="overlay" id="delModal">
+  <div class="modal sm">
+    <div class="mh"><div class="mt">Confirm Delete</div><button class="mclose" onclick="closeM('delModal')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mb" style="text-align:center">
+      <div style="width:56px;height:56px;border-radius:16px;background:var(--rd-s);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:24px"><i class="fa fa-trash" style="color:var(--rd)"></i></div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:8px" id="delName">Delete this record?</div>
+      <div style="font-size:13px;color:var(--t3);line-height:1.6">This <strong style="color:var(--rd)">permanently</strong> deletes the record and all payment history. Cannot be undone.</div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeM('delModal')">Cancel</button><button class="btn btn-danger" id="delBtn" onclick="doDelete()"><i class="fa fa-trash"></i> Delete</button></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+/* ══ STATE ══ */
+let LOANS=[], CARDS=[];
+let CUR_FILTER='all', CUR_VIEW='loans';
+let EDIT_ID=null, PAY_ID=null, DEL_ID=null;
+let LOAN_TYPE='borrowed', PAYING_CARD=false, DEL_CARD=false;
+let db=null, fs=null;
+
+/* ══ BANK GRADIENTS ══ */
+const BGRAD={
+  'HDFC Bank':'linear-gradient(135deg,#1a237e 0%,#283593 100%)',
+  'ICICI Bank':'linear-gradient(135deg,#b71c1c 0%,#e53935 100%)',
+  'SBI':'linear-gradient(135deg,#0d47a1 0%,#1976d2 100%)',
+  'Axis Bank':'linear-gradient(135deg,#4a148c 0%,#7b1fa2 100%)',
+  'Kotak Bank':'linear-gradient(135deg,#880e4f 0%,#c2185b 100%)',
+  'Yes Bank':'linear-gradient(135deg,#1b5e20 0%,#388e3c 100%)',
+  'IndusInd Bank':'linear-gradient(135deg,#004d40 0%,#00796b 100%)',
+  'PNB':'linear-gradient(135deg,#e65100 0%,#f57c00 100%)',
+  'Bank of Baroda':'linear-gradient(135deg,#bf360c 0%,#e64a19 100%)',
+  'Canara Bank':'linear-gradient(135deg,#006064 0%,#00838f 100%)',
+  'Union Bank':'linear-gradient(135deg,#1a237e 0%,#3949ab 100%)',
+  'Amex':'linear-gradient(135deg,#37474f 0%,#546e7a 100%)',
+  'Citibank':'linear-gradient(135deg,#1565c0 0%,#1e88e5 100%)',
+  'IDFC First':'linear-gradient(135deg,#4e342e 0%,#6d4c41 100%)',
+  'Federal Bank':'linear-gradient(135deg,#283593 0%,#3949ab 100%)',
+  'RBL Bank':'linear-gradient(135deg,#880e4f 0%,#ad1457 100%)',
+  'DBS':'linear-gradient(135deg,#c62828 0%,#ef5350 100%)',
+  '__default':'linear-gradient(135deg,#3730a3 0%,#7c3aed 100%)'
+};
+
+/* ══ NETWORK LOGOS ══ */
+const NLOGO={
+  'Visa':'<em style="font-style:italic;font-weight:900;letter-spacing:-1px">VISA</em>',
+  'Mastercard':'<svg width="34" height="20" viewBox="0 0 34 20"><circle cx="12" cy="10" r="10" fill="#eb001b" opacity=".92"/><circle cx="22" cy="10" r="10" fill="#f79e1b" opacity=".92"/><path d="M17 2.7A10 10 0 0 1 22 10a10 10 0 0 1-5 7.3A10 10 0 0 0 12 10a10 10 0 0 0 5-7.3Z" fill="#ff5f00" opacity=".92"/></svg>',
+  'RuPay':'<span style="font-weight:900;letter-spacing:.02em">RuPay</span>',
+  'Amex':'<span style="font-weight:900;letter-spacing:.04em">AMEX</span>',
+  'Diners':'<span style="font-weight:700;font-size:10px">DINERS</span>',
+  'Other':'<span style="font-weight:700">CARD</span>'
+};
+
+/* ══ UTILS ══ */
+const ACOLS=['#7366ff','#ff5a68','#1edd8a','#ffb830','#4db0ff','#ff8642','#be72ff','#f472b6'];
+const aCol=n=>ACOLS[((n||'?').toUpperCase().charCodeAt(0)||65)%ACOLS.length];
+const fmt=n=>Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fmtD=n=>Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const today=()=>new Date().toISOString().split('T')[0];
+const dUntil=d=>{if(!d)return null;return Math.ceil((new Date(d)-new Date(today()))/86400000);};
+const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.innerText=v;};
+const setHTML=(id,h)=>{const e=document.getElementById(id);if(e)e.innerHTML=h;};
+const setPct=(id,v)=>{const e=document.getElementById(id);if(e)e.style.width=Math.min(100,Math.max(0,v))+'%';};
+
+/* ══ INTEREST (single formula) ══ */
+function calcInterestAmt(l){
+  if(!(l.interest>0)||!l.date||!l.due)return 0;
+  const days=Math.max(0,Math.ceil((new Date(l.due)-new Date(l.date))/86400000));
+  return(l.amount||0)*(l.interest/100)*days/365;
+}
+function remaining(l){return Math.max(0,(l.amount||0)+calcInterestAmt(l)-(l.paid||0));}
+
+/* ══ FIREBASE INIT ══ */
+document.addEventListener('fb-ready',()=>{db=window.__DB;fs=window.__FS;loadAll();setupListeners();});
+setTimeout(()=>{if(!db&&window.__DB){db=window.__DB;fs=window.__FS;loadAll();setupListeners();}},2500);
+
+function setupListeners(){
+  if(!db||!fs)return;
+  const qL=fs.query(fs.collection(db,'loans'),fs.orderBy('createdAt','desc'));
+  fs.onSnapshot(qL,snap=>{LOANS=snap.docs.map(d=>({id:d.id,...d.data()}));renderLoans();},e=>console.warn(e));
+  const qC=fs.query(fs.collection(db,'credit_cards'),fs.orderBy('createdAt','desc'));
+  fs.onSnapshot(qC,snap=>{CARDS=snap.docs.map(d=>({id:d.id,...d.data()}));renderCards();},e=>console.warn(e));
+}
+
+async function loadAll(){
+  if(!db||!fs){setHTML('loanBody',`<tr><td colspan="8" class="empty-st"><i class="fa fa-wifi-slash"></i><div class="et">Connection Error</div><div>Cannot reach Firebase.</div><button class="btn btn-ghost" style="margin:14px auto 0;font-size:12px" onclick="loadAll()"><i class="fa fa-arrows-rotate"></i> Retry</button></td></tr>`);return;}
+  try{
+    const[sL,sC]=await Promise.all([fs.getDocs(fs.query(fs.collection(db,'loans'),fs.orderBy('createdAt','desc'))),fs.getDocs(fs.query(fs.collection(db,'credit_cards'),fs.orderBy('createdAt','desc')))]);
+    LOANS=sL.docs.map(d=>({id:d.id,...d.data()}));
+    CARDS=sC.docs.map(d=>({id:d.id,...d.data()}));
+    renderLoans();renderCards();
+  }catch(e){toast('Load error: '+e.message,'error');}
+}
+
+/* ══ VIEW SWITCH ══ */
+function switchView(v,niEl){
+  CUR_VIEW=v;
+  document.getElementById('loanView').classList.toggle('active',v==='loans');
+  document.getElementById('cardView').classList.toggle('active',v==='cards');
+  if(niEl){document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));niEl.classList.add('active');}
+  setEl('pgHead',v==='cards'?'Credit Card Manager':'Loan & Lending Tracker');
+  setEl('addLbl',v==='cards'?'Add Card':'Add Record');
+  closeSb();
+}
+function gotoFilter(f,niEl){
+  switchView('loans',niEl);
+  setFt(f,document.getElementById('ft-'+f));
+}
+function mainAdd(){CUR_VIEW==='cards'?openAddCard():openAddLoan();}
+
+/* ══ LOANS — RENDER ══ */
+function renderLoans(){updateLoanSum();updateCounts();renderTable();}
+
+function updateLoanSum(){
+  const now=new Date(today());
+  const bor=LOANS.filter(l=>l.type==='borrowed'),len=LOANS.filter(l=>l.type==='lent');
+  const ovr=LOANS.filter(l=>l.due&&new Date(l.due)<now&&remaining(l)>0);
+  const d7=LOANS.filter(l=>{const d=dUntil(l.due);return d!==null&&d>=0&&d<=7&&remaining(l)>0;});
+  const rS=arr=>arr.reduce((s,l)=>s+remaining(l),0);
+  const tS=arr=>arr.reduce((s,l)=>s+(l.amount||0),0);
+  const borR=rS(bor),borT=tS(bor),lenR=rS(len),lenT=tS(len),ovrR=rS(ovr);
+  const allPaid=LOANS.reduce((s,l)=>s+(l.paid||0),0);
+  const totInt=LOANS.reduce((s,l)=>s+calcInterestAmt(l),0);
+  const fullPaid=LOANS.filter(l=>remaining(l)<=0);
+
+  setEl('sc-bor','₹'+fmt(borR));setEl('sc-bor-m',(bor.length)+' records · ₹'+fmt(borT-borR)+' paid');setPct('sb-bor',borT>0?(borT-borR)/borT*100:0);
+  setEl('sc-len','₹'+fmt(lenR));setEl('sc-len-m',(len.length)+' records · ₹'+fmt(lenT-lenR)+' received');setPct('sb-len',lenT>0?(lenT-lenR)/lenT*100:0);
+  setEl('sc-ov','₹'+fmt(ovrR));setEl('sc-ov-m',ovr.length+(ovr.length===1?' item':' items'));setPct('sb-ov',borT>0?ovrR/borT*100:0);
+  setEl('sc-paid','₹'+fmt(allPaid));setEl('sc-paid-m',fullPaid.length+' fully paid');setPct('sb-paid',LOANS.length>0?fullPaid.length/LOANS.length*100:0);
+  document.getElementById('ovBanner').style.display=ovr.length>0?'flex':'none';
+  document.getElementById('alertDot').style.display=ovr.length>0?'block':'none';
+  setEl('ovCnt',ovr.length);
+  setEl('sm-paid','₹'+fmt(allPaid));setEl('sm-int','₹'+fmt(totInt));setEl('sm-d7',d7.length);
+  setEl('nb-all',LOANS.length);setEl('nb-bor',bor.filter(l=>remaining(l)>0).length);
+  setEl('nb-len',len.filter(l=>remaining(l)>0).length);setEl('nb-ov',ovr.length);setEl('nb-d7',d7.length);
+}
+
+function updateCounts(){
+  const now=new Date(today());
+  const c={all:LOANS.length,borrowed:LOANS.filter(l=>l.type==='borrowed').length,lent:LOANS.filter(l=>l.type==='lent').length,personal:LOANS.filter(l=>l.type==='personal').length,overdue:LOANS.filter(l=>l.due&&new Date(l.due)<now&&remaining(l)>0).length,due7:LOANS.filter(l=>{const d=dUntil(l.due);return d!==null&&d>=0&&d<=7&&remaining(l)>0;}).length,paid:LOANS.filter(l=>remaining(l)<=0).length};
+  const m={all:'all',borrowed:'bor',lent:'len',personal:'per',overdue:'ov',due7:'d7',paid:'paid'};
+  Object.entries(m).forEach(([k,v])=>setEl('ftc-'+v,c[k]||0));
+}
+
+function setFt(f,ftEl){
+  CUR_FILTER=f;
+  document.querySelectorAll('.ft').forEach(x=>x.classList.remove('on'));
+  if(ftEl)ftEl.classList.add('on');
+  const labels={all:'All Records',borrowed:'Money I Borrowed',lent:'Money I Lent Out',personal:'Personal Expenses',overdue:'⚠️ Overdue Payments',due7:'⏰ Due in 7 Days',paid:'✅ Fully Paid'};
+  setEl('secLbl',labels[f]||'Records');
+  closeSb();renderTable();
+}
+
+function getFiltered(){
+  const now=new Date(today());
+  const q=(document.getElementById('searchQ')?.value||'').toLowerCase();
+  let rows=[...LOANS];
+  switch(CUR_FILTER){
+    case'borrowed':rows=rows.filter(l=>l.type==='borrowed');break;
+    case'lent':rows=rows.filter(l=>l.type==='lent');break;
+    case'personal':rows=rows.filter(l=>l.type==='personal');break;
+    case'overdue':rows=rows.filter(l=>l.due&&new Date(l.due)<now&&remaining(l)>0);break;
+    case'due7':rows=rows.filter(l=>{const d=dUntil(l.due);return d!==null&&d>=0&&d<=7&&remaining(l)>0;});break;
+    case'paid':rows=rows.filter(l=>remaining(l)<=0);break;
+  }
+  if(q)rows=rows.filter(l=>(l.name||'').toLowerCase().includes(q)||(l.bank||'').toLowerCase().includes(q)||(l.note||'').toLowerCase().includes(q));
+  const s=document.getElementById('sortSel')?.value||'date-desc';
+  rows.sort((a,b)=>{switch(s){case'date-desc':return(b.date||'')>(a.date||'')?1:-1;case'date-asc':return(a.date||'')>(b.date||'')?1:-1;case'amount-desc':return(b.amount||0)-(a.amount||0);case'amount-asc':return(a.amount||0)-(b.amount||0);case'due-asc':return(a.due||'9999')<(b.due||'9999')?-1:1;case'name-asc':return(a.name||'').localeCompare(b.name||'');}return 0;});
+  return rows;
+}
+
+function renderTable(){
+  const rows=getFiltered(),now=new Date(today()),tbody=document.getElementById('loanBody');
+  const rc=document.getElementById('rowCnt');
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="8" class="empty-st"><i class="fa fa-folder-open"></i><div class="et">No Records Found</div><div>${LOANS.length===0?'Click "Add Record" to get started.':'No records match the current filter.'}</div></td></tr>`;if(rc)rc.innerText='';return;}
+  if(rc)rc.innerText=`Showing ${rows.length} of ${LOANS.length} records`;
+  const tL={borrowed:'Borrowed',lent:'Lent',credit:'Credit',personal:'Personal'};
+  const tB={borrowed:'b-borrowed',lent:'b-lent',credit:'b-credit',personal:'b-personal'};
+  const mI={'Cash':'💵','UPI':'📱','NEFT / IMPS':'🏦','Credit Card':'💳','Debit Card':'🪙','Cheque':'📝','Crypto':'₿'};
+  const tE={borrowed:'🙏',lent:'🤝',credit:'💳',personal:'💼'};
+  tbody.innerHTML=rows.map(l=>{
+    const rem=remaining(l),int=calcInterestAmt(l),tot=(l.amount||0)+int;
+    const pp=tot>0?Math.min(100,Math.round(((l.paid||0)/tot)*100)):0;
+    const isOv=l.due&&new Date(l.due)<now&&rem>0,isPd=rem<=0,isPt=!isPd&&(l.paid||0)>0;
+    const d=dUntil(l.due),isSn=!isOv&&!isPd&&d!==null&&d<=7&&d>=0;
+    const sC=isPd?'b-paid':isOv?'b-overdue':isPt?'b-partial':'b-active';
+    const sT=isPd?'Paid':isOv?'Overdue':isPt?'Partial':'Active';
+    const dLbl=!l.due?'<span style="color:var(--t3)">—</span>':isOv?`<span style="color:var(--rd);font-weight:600"><i class="fa fa-exclamation-circle"></i> ${Math.abs(d)}d overdue</span>`:isSn?`<span style="color:var(--yw);font-weight:600"><i class="fa fa-clock"></i> ${d}d left</span>`:`<span style="color:var(--t3)">${l.due}</span>`;
+    return`<tr><td><div class="pc"><div class="pavatar" style="background:${aCol(l.name)}1a;color:${aCol(l.name)}">${(l.name||'?')[0].toUpperCase()}</div><div><div class="pname">${tE[l.type]||'💰'} ${esc(l.name||'—')}</div><div class="psub">${esc(l.note||'—')}</div></div></div></td><td><span class="badge ${tB[l.type]}">${tL[l.type]||'—'}</span></td><td><div class="amt-main">₹${fmt(rem)}</div><div class="amt-sub">₹${fmt(l.amount)}+₹${fmt(int)} int.</div></td><td><div class="prog-wrap"><div class="prog"><div class="prog-fill" style="width:${pp}%;background:${isPd?'var(--gr)':isOv?'var(--rd)':'var(--ac)'}"></div></div><span class="prog-pct">${pp}%</span></div></td><td style="font-size:12px">${dLbl}</td><td><div class="pname">${mI[l.method]||'—'} ${esc(l.method||'—')}</div><div class="psub">${esc(l.bank||'')}${l.card?' ••••'+esc(l.card):''}</div></td><td><span class="badge ${sC}">${sT}</span>${l.interest>0?`<div style="font-size:10px;color:var(--or);background:var(--or-s);padding:2px 7px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-top:3px"><i class="fa fa-percent" style="font-size:9px"></i>${l.interest}% p.a.</div>`:''}</td><td style="text-align:center"><div class="rac"><button class="rb pay" title="Record Payment" onclick="openPay('${l.id}',false)"><i class="fa fa-coins"></i></button><button class="rb edit" title="Edit" onclick="editLoan('${l.id}')"><i class="fa fa-pen"></i></button><button class="rb hist" title="History" onclick="openHist('${l.id}',false)"><i class="fa fa-clock-rotate-left"></i></button><button class="rb del" title="Delete" onclick="confirmDel('${l.id}','${esc(l.name)}',false)"><i class="fa fa-trash"></i></button></div></td></tr>`;
+  }).join('');
+}
+
+/* ══ LOAN CRUD ══ */
+function resetLoanForm(){
+  ['l-name','l-amount','l-date','l-due','l-card','l-note'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('l-paid').value='0';document.getElementById('l-interest').value='';
+  document.getElementById('l-method').value='';document.getElementById('l-bank').value='';
+  document.querySelectorAll('.to').forEach(t=>t.classList.remove('sel'));
+  document.querySelector('[data-t="borrowed"]').classList.add('sel');LOAN_TYPE='borrowed';
+  ['el-name','el-amount'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
+  ['l-name','l-amount'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('field-err');});
+  document.getElementById('intBox').style.display='none';
+  document.getElementById('l-date').value=today();
+}
+
+function openAddLoan(){EDIT_ID=null;resetLoanForm();setEl('addTitle','Add New Record');document.getElementById('saveLoanBtn').innerHTML='<i class="fa fa-floppy-disk"></i> Save';openM('addModal');}
+
+function editLoan(id){
+  const l=LOANS.find(x=>x.id===id);if(!l)return toast('Not found','error');
+  EDIT_ID=id;resetLoanForm();setEl('addTitle','Edit Record');document.getElementById('saveLoanBtn').innerHTML='<i class="fa fa-floppy-disk"></i> Update';
+  document.getElementById('l-name').value=l.name||'';document.getElementById('l-amount').value=l.amount||'';
+  document.getElementById('l-paid').value=l.paid||0;document.getElementById('l-date').value=l.date||'';
+  document.getElementById('l-due').value=l.due||'';document.getElementById('l-method').value=l.method||'';
+  document.getElementById('l-bank').value=l.bank||'';document.getElementById('l-card').value=l.card||'';
+  document.getElementById('l-interest').value=l.interest||'';document.getElementById('l-note').value=l.note||'';
+  document.querySelectorAll('.to').forEach(t=>t.classList.remove('sel'));
+  const tel=document.querySelector(`[data-t="${l.type}"]`);if(tel)tel.classList.add('sel');LOAN_TYPE=l.type||'borrowed';
+  calcInt();openM('addModal');
+}
+
+async function saveLoan(){
+  const name=document.getElementById('l-name').value.trim();
+  const amount=parseFloat(document.getElementById('l-amount').value||0);
+  let ok=true;
+  if(!name){document.getElementById('el-name').style.display='flex';document.getElementById('l-name').classList.add('field-err');ok=false;}
+  else{document.getElementById('el-name').style.display='none';document.getElementById('l-name').classList.remove('field-err');}
+  if(amount<=0){document.getElementById('el-amount').style.display='flex';document.getElementById('l-amount').classList.add('field-err');ok=false;}
+  else{document.getElementById('el-amount').style.display='none';document.getElementById('l-amount').classList.remove('field-err');}
+  if(!ok)return;
+  const btn=document.getElementById('saveLoanBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Saving…';
+  const d={name,amount,paid:parseFloat(document.getElementById('l-paid').value||0),date:document.getElementById('l-date').value||'',due:document.getElementById('l-due').value||'',method:document.getElementById('l-method').value||'',bank:document.getElementById('l-bank').value||'',card:document.getElementById('l-card').value||'',interest:parseFloat(document.getElementById('l-interest').value||0),note:document.getElementById('l-note').value||'',type:LOAN_TYPE,updatedAt:fs.serverTimestamp()};
+  try{
+    if(EDIT_ID){await fs.updateDoc(fs.doc(db,'loans',EDIT_ID),d);toast('Updated ✓','success');}
+    else{d.createdAt=fs.serverTimestamp();d.payments=[];await fs.addDoc(fs.collection(db,'loans'),d);toast('Saved ✓','success');}
+    closeM('addModal');EDIT_ID=null;
+  }catch(e){toast('Error: '+e.message,'error');}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fa fa-floppy-disk"></i> '+(EDIT_ID?'Update':'Save');}
+}
+
+function pickType(el){
+  document.querySelectorAll('.to').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');LOAN_TYPE=el.dataset.t;
+  if(LOAN_TYPE==='credit'){document.getElementById('l-method').value='Credit Card';const d=document.getElementById('l-date').value;if(d){const dt=new Date(d);dt.setDate(dt.getDate()+20);document.getElementById('l-due').value=dt.toISOString().split('T')[0];}}
+  calcInt();
+}
+
+function calcInt(){
+  const a=parseFloat(document.getElementById('l-amount').value||0);
+  const r=parseFloat(document.getElementById('l-interest').value||0);
+  const due=document.getElementById('l-due').value,date=document.getElementById('l-date').value;
+  const box=document.getElementById('intBox');
+  if(!a||!r||!due||!date){box.style.display='none';return;}
+  const days=Math.max(0,Math.ceil((new Date(due)-new Date(date))/86400000));
+  const int=a*(r/100)*days/365,tot=a+int;
+  box.style.display='block';
+  setEl('ci-p','₹'+fmt(a));setEl('ci-d',days+' days');setEl('ci-r',r+'%');setEl('ci-i','₹'+fmtD(int));setEl('ci-t','₹'+fmtD(tot));
+}
+
+/* ══ CARDS — RENDER ══ */
+function renderCards(){updateCardSum();renderCardGrid();}
+
+function updateCardSum(){
+  const totLim=CARDS.reduce((s,c)=>s+(c.creditLimit||0),0);
+  const totOut=CARDS.reduce((s,c)=>s+(c.currentOutstanding||0),0);
+  const totDue=CARDS.reduce((s,c)=>s+(c.totalDue||0),0);
+  const totMin=CARDS.reduce((s,c)=>s+(c.minimumDue||0),0);
+  const avail=Math.max(0,totLim-totOut);
+  const util=totLim>0?Math.round(totOut/totLim*100):0;
+  const now=new Date(today());
+  const ovCards=CARDS.filter(c=>c.nextDueDate&&new Date(c.nextDueDate)<now&&(c.totalDue||0)>0);
+  setEl('csc-lim','₹'+fmt(totLim));setEl('csc-lim-m',CARDS.length+' cards');setPct('csb-lim',util);
+  setEl('csc-out','₹'+fmt(totOut));setEl('csc-out-m',util+'% utilized');setPct('csb-out',util);
+  setEl('csc-due','₹'+fmt(totDue));setEl('csc-due-m',ovCards.length>0?'⚡ '+ovCards.length+' overdue':'Min due: ₹'+fmt(totMin));setPct('csb-due',totLim>0?totDue/totLim*100:0);
+  setEl('csc-avail','₹'+fmt(avail));setEl('csc-avail-m',totLim>0?Math.round(avail/totLim*100)+'% available':'');setPct('csb-avail',totLim>0?avail/totLim*100:0);
+  setEl('nb-cards',CARDS.length);
+}
+
+function renderCardGrid(){
+  const grid=document.getElementById('cardGrid');
+  const sort=document.getElementById('cSortSel')?.value||'name';
+  let cards=[...CARDS];
+  cards.sort((a,b)=>{switch(sort){
+    case'name':return(a.nickname||'').localeCompare(b.nickname||'');
+    case'limit':return(b.creditLimit||0)-(a.creditLimit||0);
+    case'due':return(a.nextDueDate||'9999')<(b.nextDueDate||'9999')?-1:1;
+    case'util':const ua=(b.creditLimit||1)>0?(b.currentOutstanding||0)/(b.creditLimit||1):0;const ub=(a.creditLimit||1)>0?(a.currentOutstanding||0)/(a.creditLimit||1):0;return ua-ub;
+  }return 0;});
+
+  if(!cards.length){
+    grid.innerHTML=`<div class="cards-empty"><i class="fa fa-credit-card"></i><div class="ce-title">No Credit Cards Yet</div><div class="ce-sub">Track your cards, limits, dues, and see exactly<br>which bank account pays each card bill.</div><button class="add-btn" onclick="openAddCard()" style="margin:0 auto"><i class="fa fa-plus"></i> Add Your First Card</button></div>`;
+    return;
+  }
+
+  const now=new Date(today());
+  grid.innerHTML=cards.map(c=>buildCard(c,now)).join('');
+}
+
+/* ══ BUILD CARD HTML ══ */
+function buildCard(c,now){
+  const lim=c.creditLimit||0,out=c.currentOutstanding||0,due=c.totalDue||0,minD=c.minimumDue||0;
+  const avail=Math.max(0,lim-out);
+  const util=lim>0?Math.min(100,Math.round(out/lim*100)):0;
+  const uColor=util>=80?'var(--rd)':util>=50?'var(--yw)':'var(--gr)';
+  const d=dUntil(c.nextDueDate);
+  const isOv=c.nextDueDate&&new Date(c.nextDueDate)<now&&due>0;
+  const isSn=!isOv&&d!==null&&d<=7&&d>=0;
+  const dLabel=!c.nextDueDate?'<span style="color:var(--t3)">No due date set</span>':isOv?`<span style="color:var(--rd);font-weight:600">Overdue — ${Math.abs(d)} day(s) ago</span>`:isSn?`<span style="color:var(--yw);font-weight:600">Due in ${d} day(s)</span>`:`<span>Due: ${c.nextDueDate}</span>`;
+  const grad=BGRAD[c.issuingBank]||BGRAD['__default'];
+  const netHtml=NLOGO[c.network]||NLOGO['Other'];
+  const stMap={active:'b-active',inactive:'b-inactive',blocked:'b-blocked',expired:'b-expired'};
+  const stLbl={active:'Active',inactive:'Inactive',blocked:'Blocked',expired:'Expired'};
+
+  // Payment mode pill
+  const pm=c.paymentMode||'None';
+  const pmClass=pm==='Auto-debit'?'pill-green':pm==='Standing Instruction'?'pill-blue':pm==='None'?'pill-gray':'pill-ac';
+  const pmLabel=pm==='Auto-debit'?'Auto-debit':pm==='Standing Instruction'?'SI':pm==='None'?'Manual':pm.replace('Manual ','');
+  // Auto-pay type
+  const apType=c.autoPayType&&c.autoPayType!=='None'?c.autoPayType:'';
+
+  return`<div class="cc-tile">
+  <div class="cc-face-wrap">
+    <div class="cc-face" style="background:${grad}">
+      <div class="cc-face-deco1"></div><div class="cc-face-deco2"></div>
+      <div class="cc-face-top">
+        <svg class="chip-svg" viewBox="0 0 38 30"><rect width="38" height="30" rx="4" fill="rgba(255,215,0,.88)"/><rect x="13" y="0" width="12" height="30" fill="rgba(0,0,0,.12)"/><rect x="0" y="10" width="38" height="10" fill="rgba(0,0,0,.12)"/></svg>
+        <div class="cc-net">${netHtml}</div>
+      </div>
+      <div class="cc-face-mid">•••• &nbsp;•••• &nbsp;•••• &nbsp;${esc(c.lastFour||'####')}</div>
+      <div class="cc-face-bot">
+        <div class="cc-fl"><div class="cc-fl-lbl">Card Holder</div><div class="cc-fl-val">${esc((c.holderName||'CARD HOLDER').toUpperCase())}</div></div>
+        <div class="cc-fl" style="text-align:center"><div class="cc-fl-lbl">Expires</div><div class="cc-fl-val">${esc(c.expiryMM||'MM')}/${esc(c.expiryYY||'YY')}</div></div>
+        <div class="cc-fl" style="text-align:right"><div class="cc-fl-lbl">Issued by</div><div class="cc-bank-nm">${esc((c.issuingBank||'BANK').toUpperCase().slice(0,10))}</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="cc-body">
+    <div class="cc-head">
+      <div>
+        <div class="cc-nick">${esc(c.nickname||'—')}</div>
+        <div class="cc-variant">${esc(c.cardVariant||'Standard')} · ${esc(c.network||'Card')}${c.rewardsType&&c.rewardsType!=='None'?' · '+esc(c.rewardsType):''}</div>
+      </div>
+      <span class="badge ${stMap[c.status]||'b-active'}">${stLbl[c.status]||'Active'}</span>
+    </div>
+
+    <div class="util-wrap">
+      <div class="util-top">
+        <span class="util-used">₹${fmt(out)} <span style="color:var(--t3);font-weight:400">of ₹${fmt(lim)}</span></span>
+        <span class="util-pct" style="color:${uColor}">${util}% used</span>
+      </div>
+      <div class="util-bar"><div class="util-fill" style="width:${util}%;background:${uColor}"></div></div>
+      <div class="util-foot"><span>Available ₹${fmt(avail)}</span><span style="color:${due>0?'var(--rd)':'var(--t3)'}">Bill: ₹${fmt(due)}</span></div>
+    </div>
+
+    <div class="cc-ir">
+      <i class="fa fa-calendar-alt" style="color:${isOv?'var(--rd)':isSn?'var(--yw)':'var(--t3)'}"></i>
+      <div>
+        <div class="cc-ir-main">${dLabel}</div>
+        ${minD>0?`<div class="cc-ir-sub">Min due: ₹${fmt(minD)}${c.interestRate>0?' · APR '+c.interestRate+'%':''}</div>`:''}
+      </div>
+    </div>
+
+    <div class="cc-ir">
+      <i class="fa fa-building-columns" style="color:var(--ac)"></i>
+      <div style="flex:1;min-width:0">
+        <div class="cc-ir-main">Pays via <strong>${esc(c.linkedBank||'Not set')}</strong>${c.linkedAccountLast4?' ••••'+esc(c.linkedAccountLast4):''}</div>
+        ${c.linkedAccountHolder?`<div class="cc-ir-sub">A/c holder: ${esc(c.linkedAccountHolder)}${c.accountType?' · '+esc(c.accountType):''}</div>`:''}
+        ${apType?`<div class="cc-ir-sub" style="color:var(--gr)"><i class="fa fa-robot" style="font-size:9px"></i> Auto-pay: ${esc(apType)}${c.autoPayAmount>0?' · ₹'+fmt(c.autoPayAmount):''}</div>`:''}
+      </div>
+      <span class="cc-ir-right ${pmClass}">${pmLabel}</span>
+    </div>
+
+    <div class="cc-acts">
+      <button class="cc-pay-btn" onclick="openPay('${c.id}',true)"><i class="fa fa-coins"></i> Pay Bill</button>
+      <button class="cc-ib edit" title="Edit Card" onclick="editCard('${c.id}')"><i class="fa fa-pen"></i></button>
+      <button class="cc-ib hist" title="Payment History" onclick="openHist('${c.id}',true)"><i class="fa fa-clock-rotate-left"></i></button>
+      <button class="cc-ib del" title="Delete Card" onclick="confirmDel('${c.id}','${esc(c.nickname)}',true)"><i class="fa fa-trash"></i></button>
+    </div>
+  </div>
+</div>`;
+}
+
+/* ══ CARD CRUD ══ */
+const CC_IDS=['nick','holder','bank','network','variant','last4','exp-mm','exp-yy','status','rewards','limit','out','total-due','min-due','apr','ann-fee','stmt-day','due-day','grace','next-due','pay-bank','pay-acct','pay-holder','acct-type','ifsc','pay-mode','autopay-type','autopay-amt','mandate-id','notes'];
+
+function resetCardForm(){
+  CC_IDS.forEach(k=>{const e=document.getElementById('cc-'+k);if(!e)return;if(e.tagName==='SELECT')e.selectedIndex=0;else e.value='';});
+  document.getElementById('cc-network').value='Visa';
+  document.getElementById('cc-variant').value='Standard';
+  document.getElementById('cc-status').value='active';
+  document.getElementById('cc-rewards').value='Cashback';
+  document.getElementById('cc-pay-mode').value='Auto-debit';
+  document.getElementById('cc-autopay-type').value='None';
+  document.getElementById('cc-acct-type').value='Savings';
+  ['e-cc-nick','e-cc-holder','e-cc-bank','e-cc-limit','e-cc-pay-bank'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
+  ['cc-nick','cc-holder','cc-bank','cc-limit','cc-pay-bank'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('field-err');});
+  document.getElementById('utilBox').style.display='none';
+  updatePrev();
+}
+
+function openAddCard(){EDIT_ID=null;resetCardForm();setEl('cardModalTitle','Add Credit Card');document.getElementById('saveCardBtn').innerHTML='<i class="fa fa-floppy-disk"></i> Save Card';openM('cardModal');}
+
+function editCard(id){
+  const c=CARDS.find(x=>x.id===id);if(!c)return toast('Not found','error');
+  EDIT_ID=id;resetCardForm();setEl('cardModalTitle','Edit Credit Card');document.getElementById('saveCardBtn').innerHTML='<i class="fa fa-floppy-disk"></i> Update Card';
+  const map={nick:c.nickname,holder:c.holderName,bank:c.issuingBank,network:c.network,variant:c.cardVariant,last4:c.lastFour,'exp-mm':c.expiryMM,'exp-yy':c.expiryYY,status:c.status,rewards:c.rewardsType,limit:c.creditLimit,out:c.currentOutstanding,'total-due':c.totalDue,'min-due':c.minimumDue,apr:c.interestRate,'ann-fee':c.annualFee,'stmt-day':c.statementDay,'due-day':c.dueDay,grace:c.gracePeriod,'next-due':c.nextDueDate,'pay-bank':c.linkedBank,'pay-acct':c.linkedAccountLast4,'pay-holder':c.linkedAccountHolder,'acct-type':c.accountType,ifsc:c.ifscCode,'pay-mode':c.paymentMode,'autopay-type':c.autoPayType,'autopay-amt':c.autoPayAmount,'mandate-id':c.mandateId,notes:c.notes};
+  Object.entries(map).forEach(([k,v])=>{const e=document.getElementById('cc-'+k);if(e&&v!=null)e.value=v;});
+  calcUtil();updatePrev();openM('cardModal');
+}
+
+async function saveCard(){
+  const nick=document.getElementById('cc-nick').value.trim();
+  const holder=document.getElementById('cc-holder').value.trim();
+  const bank=document.getElementById('cc-bank').value;
+  const limit=parseFloat(document.getElementById('cc-limit').value||0);
+  const payBank=document.getElementById('cc-pay-bank').value;
+  let ok=true;
+  const ve=(id,show)=>{const e=document.getElementById(id);if(e)e.style.display=show?'flex':'none';};
+  const vf=(id,err)=>{const e=document.getElementById(id);if(e)e.classList.toggle('field-err',err);};
+  if(!nick){ve('e-cc-nick',true);vf('cc-nick',true);ok=false;}else{ve('e-cc-nick',false);vf('cc-nick',false);}
+  if(!holder){ve('e-cc-holder',true);vf('cc-holder',true);ok=false;}else{ve('e-cc-holder',false);vf('cc-holder',false);}
+  if(!bank){ve('e-cc-bank',true);vf('cc-bank',true);ok=false;}else{ve('e-cc-bank',false);vf('cc-bank',false);}
+  if(limit<=0){ve('e-cc-limit',true);vf('cc-limit',true);ok=false;}else{ve('e-cc-limit',false);vf('cc-limit',false);}
+  if(!payBank){ve('e-cc-pay-bank',true);vf('cc-pay-bank',true);ok=false;}else{ve('e-cc-pay-bank',false);vf('cc-pay-bank',false);}
+  if(!ok)return;
+
+  const btn=document.getElementById('saveCardBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Saving…';
+  const gv=id=>document.getElementById('cc-'+id)?.value||'';
+  const gn=id=>parseFloat(document.getElementById('cc-'+id)?.value||0)||0;
+  const data={
+    nickname:nick,holderName:holder,issuingBank:bank,
+    network:gv('network'),cardVariant:gv('variant'),lastFour:gv('last4'),
+    expiryMM:gv('exp-mm'),expiryYY:gv('exp-yy'),status:gv('status'),rewardsType:gv('rewards'),
+    creditLimit:gn('limit'),currentOutstanding:gn('out'),totalDue:gn('total-due'),
+    minimumDue:gn('min-due'),interestRate:gn('apr'),annualFee:gn('ann-fee'),
+    statementDay:gn('stmt-day'),dueDay:gn('due-day'),gracePeriod:gn('grace'),nextDueDate:gv('next-due'),
+    linkedBank:payBank,linkedAccountLast4:gv('pay-acct'),linkedAccountHolder:gv('pay-holder'),
+    accountType:gv('acct-type'),ifscCode:gv('ifsc').toUpperCase(),
+    paymentMode:gv('pay-mode'),autoPayType:gv('autopay-type'),autoPayAmount:gn('autopay-amt'),mandateId:gv('mandate-id'),
+    notes:gv('notes'),updatedAt:fs.serverTimestamp()
+  };
+  try{
+    if(EDIT_ID){await fs.updateDoc(fs.doc(db,'credit_cards',EDIT_ID),data);toast('Card updated ✓','success');}
+    else{data.createdAt=fs.serverTimestamp();data.payments=[];await fs.addDoc(fs.collection(db,'credit_cards'),data);toast('Card saved ✓','success');}
+    closeM('cardModal');EDIT_ID=null;
+  }catch(e){toast('Error: '+e.message,'error');}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fa fa-floppy-disk"></i> '+(EDIT_ID?'Update':'Save')+' Card';}
+}
+
+/* ══ LIVE CARD PREVIEW ══ */
+function updatePrev(){
+  const bank=document.getElementById('cc-bank')?.value||'';
+  const holder=(document.getElementById('cc-holder')?.value||'YOUR NAME').toUpperCase().slice(0,22)||'YOUR NAME';
+  const last4=document.getElementById('cc-last4')?.value||'####';
+  const mm=document.getElementById('cc-exp-mm')?.value||'MM';
+  const yy=document.getElementById('cc-exp-yy')?.value||'YY';
+  const network=document.getElementById('cc-network')?.value||'Visa';
+  const prev=document.getElementById('cardPrev');if(!prev)return;
+  prev.style.background=BGRAD[bank]||BGRAD['__default'];
+  setEl('pv-name',holder);
+  setHTML('pv-num',`•••• &nbsp;•••• &nbsp;•••• &nbsp;${esc(last4)}`);
+  setEl('pv-exp',mm+'/'+yy);
+  setEl('pv-bank',(bank||'BANK').toUpperCase().slice(0,10));
+  setHTML('pv-net',NLOGO[network]||NLOGO['Other']);
+}
+
+function calcUtil(){
+  const lim=parseFloat(document.getElementById('cc-limit')?.value||0);
+  const out=parseFloat(document.getElementById('cc-out')?.value||0);
+  const box=document.getElementById('utilBox');if(!box)return;
+  if(!lim&&!out){box.style.display='none';return;}
+  box.style.display='block';
+  const avail=Math.max(0,lim-out),util=lim>0?Math.min(100,Math.round(out/lim*100)):0;
+  const bar=document.getElementById('utilBarFill');
+  if(bar){bar.style.width=util+'%';bar.style.background=util>=80?'var(--rd)':util>=50?'var(--yw)':'var(--gr)';}
+  setEl('cu-lim','₹'+fmt(lim));setEl('cu-out','₹'+fmt(out));setEl('cu-avail','₹'+fmt(avail));setEl('cu-pct',util+'%');
+}
+
+function updatePayBankPreview(){}// hook for future
+
+/* ══ PAYMENT ══ */
+function openPay(id,isCard){
+  PAYING_CARD=isCard;PAY_ID=id;
+  const src=isCard?CARDS:LOANS;
+  const item=src.find(x=>x.id===id);if(!item)return toast('Not found','error');
+  setEl('payTitle',isCard?'💳 Pay Credit Card Bill':'💸 Record Payment');
+  if(isCard){
+    const out=item.currentOutstanding||0,due=item.totalDue||0,minD=item.minimumDue||0;
+    const util=item.creditLimit>0?Math.round(out/item.creditLimit*100):0;
+    setHTML('payInfoCard',`
+      <div class="ic-row"><span class="ic-lbl">Card</span><span class="ic-val">${esc(item.nickname)} ••••${esc(item.lastFour||'')}</span></div>
+      <div class="ic-row"><span class="ic-lbl">Issuing Bank</span><span class="ic-val">${esc(item.issuingBank||'—')}</span></div>
+      <div class="ic-row"><span class="ic-lbl">🏦 Payment Account</span><span class="ic-val" style="color:var(--ac)">${esc(item.linkedBank||'—')}${item.linkedAccountLast4?' ••••'+esc(item.linkedAccountLast4):''}${item.accountType?' ('+esc(item.accountType)+')':''}</span></div>
+      ${item.linkedAccountHolder?`<div class="ic-row"><span class="ic-lbl">A/c Holder</span><span class="ic-val">${esc(item.linkedAccountHolder)}</span></div>`:''}
+      <div class="ic-row"><span class="ic-lbl">Total Bill Due</span><span class="ic-val" style="color:var(--rd)">₹${fmt(due)}</span></div>
+      <div class="ic-row"><span class="ic-lbl">Minimum Due</span><span class="ic-val" style="color:var(--yw)">₹${fmt(minD)}</span></div>
+      <div class="ic-row"><span class="ic-lbl">Outstanding</span><span class="ic-val">₹${fmt(out)} (${util}% utilized)</span></div>
+      <div class="ic-bar"><div class="ic-bar-fill" style="width:${util}%;background:${util>80?'var(--rd)':util>50?'var(--yw)':'var(--gr)'}"></div></div>`);
+    setEl('pay-hint',`Min: ₹${fmtD(minD)} · Total: ₹${fmtD(due)}`);
+    // pre-fill bank from linked account
+    const pb=document.getElementById('pay-bank');
+    for(let i=0;i<pb.options.length;i++){if(pb.options[i].text===item.linkedBank||pb.options[i].value===item.linkedBank){pb.selectedIndex=i;break;}}
+  } else {
+    const int=calcInterestAmt(item),tot=(item.amount||0)+int,rem=Math.max(0,tot-(item.paid||0));
+    if(rem<=0)return toast('Already fully paid','info');
+    const p=tot>0?Math.round(((item.paid||0)/tot)*100):0;
+    setHTML('payInfoCard',`<div class="ic-row"><span class="ic-lbl">Person</span><span class="ic-val">${esc(item.name)}</span></div><div class="ic-row"><span class="ic-lbl">Principal</span><span class="ic-val">₹${fmt(item.amount)}</span></div>${int>0?`<div class="ic-row"><span class="ic-lbl">Interest</span><span class="ic-val">₹${fmt(int)}</span></div>`:''}<div class="ic-row"><span class="ic-lbl">Remaining</span><span class="ic-val" style="color:var(--rd)">₹${fmt(rem)}</span></div><div class="ic-bar"><div class="ic-bar-fill" style="width:${p}%"></div></div>`);
+    setEl('pay-hint','Remaining: ₹'+fmtD(rem));
+  }
+  document.getElementById('pay-date').value=today();
+  document.getElementById('pay-amt').value='';
+  document.getElementById('pay-note').value='';
+  openM('payModal');
+}
+
+async function doPayment(){
+  const amt=parseFloat(document.getElementById('pay-amt').value||0);
+  if(amt<=0)return toast('Enter a valid amount','error');
+  const btn=document.getElementById('payBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Processing…';
+  const entry={amount:amt,date:document.getElementById('pay-date').value||today(),method:document.getElementById('pay-method').value||'Cash',bank:document.getElementById('pay-bank').value||'',note:document.getElementById('pay-note').value||'',ts:new Date().toISOString()};
+  try{
+    if(PAYING_CARD){
+      const c=CARDS.find(x=>x.id===PAY_ID);if(!c)throw new Error('Card not found');
+      const newOut=Math.max(0,(c.currentOutstanding||0)-amt);
+      const newDue=Math.max(0,(c.totalDue||0)-amt);
+      const newMin=Math.max(0,(c.minimumDue||0)-amt);
+      await fs.updateDoc(fs.doc(db,'credit_cards',c.id),{currentOutstanding:newOut,totalDue:newDue,minimumDue:newMin,payments:[...(c.payments||[]),entry],updatedAt:fs.serverTimestamp()});
+      toast('₹'+fmt(amt)+' card payment recorded ✓','success');
+    } else {
+      const l=LOANS.find(x=>x.id===PAY_ID);if(!l)throw new Error('Loan not found');
+      const int=calcInterestAmt(l),tot=(l.amount||0)+int,rem=Math.max(0,tot-(l.paid||0));
+      if(amt>rem+0.01){toast('Amount exceeds balance','warn');return;}
+      await fs.updateDoc(fs.doc(db,'loans',l.id),{paid:Math.min(tot,(l.paid||0)+amt),payments:[...(l.payments||[]),entry],updatedAt:fs.serverTimestamp()});
+      toast('₹'+fmt(amt)+' payment recorded ✓','success');
+    }
+    closeM('payModal');
+  }catch(e){toast('Failed: '+e.message,'error');}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fa fa-check-circle"></i> Confirm Payment';}
+}
+
+/* ══ HISTORY ══ */
+function showAllPay(){openHist('all',false);}
+function openHist(id,isCard){
+  const hT=document.getElementById('histTitle'),hB=document.getElementById('histBody');
+  if(id==='all'){
+    hT.innerText='All Payment History';
+    const all=[];
+    LOANS.forEach(l=>(l.payments||[]).forEach(p=>all.push({...p,_src:l.name})));
+    CARDS.forEach(c=>(c.payments||[]).forEach(p=>all.push({...p,_src:c.nickname})));
+    all.sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+    const tot=all.reduce((s,p)=>s+(p.amount||0),0);
+    hB.innerHTML=!all.length?`<div class="ph-empty"><i class="fa fa-clock-rotate-left"></i>No payments recorded yet.</div>`:
+      `<div class="ph-sum"><div class="ph-sum-card"><div class="ph-sum-val" style="color:var(--gr)">₹${fmt(tot)}</div><div class="ph-sum-lbl">Total</div></div><div class="ph-sum-card"><div class="ph-sum-val">${all.length}</div><div class="ph-sum-lbl">Transactions</div></div><div class="ph-sum-card"><div class="ph-sum-val">${LOANS.length+CARDS.length}</div><div class="ph-sum-lbl">Records</div></div></div><div class="ph-list">${all.map(p=>phRow(p,p._src)).join('')}</div>`;
+    return openM('histModal');
+  }
+  if(isCard){
+    const c=CARDS.find(x=>x.id===id);if(!c)return;
+    hT.innerText=c.nickname;
+    const pays=[...(c.payments||[])].sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+    const tot=pays.reduce((s,p)=>s+(p.amount||0),0);
+    hB.innerHTML=!pays.length?`<div class="ph-empty"><i class="fa fa-credit-card"></i>No payments yet.</div>`:
+      `<div class="ph-sum"><div class="ph-sum-card"><div class="ph-sum-val" style="color:var(--gr)">₹${fmt(tot)}</div><div class="ph-sum-lbl">Paid</div></div><div class="ph-sum-card"><div class="ph-sum-val" style="color:var(--rd)">₹${fmt(c.totalDue||0)}</div><div class="ph-sum-lbl">Current Due</div></div><div class="ph-sum-card"><div class="ph-sum-val">${pays.length}</div><div class="ph-sum-lbl">Transactions</div></div></div><div class="ph-list">${pays.map(p=>phRow(p)).join('')}</div>`;
+  } else {
+    const l=LOANS.find(x=>x.id===id);if(!l)return;
+    hT.innerText=l.name;
+    const pays=[...(l.payments||[])].sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+    const tot=pays.reduce((s,p)=>s+(p.amount||0),0),rem=remaining(l);
+    hB.innerHTML=!pays.length?`<div class="ph-empty"><i class="fa fa-clock-rotate-left"></i>No payments yet.</div>`:
+      `<div class="ph-sum"><div class="ph-sum-card"><div class="ph-sum-val" style="color:var(--gr)">₹${fmt(tot)}</div><div class="ph-sum-lbl">Paid</div></div><div class="ph-sum-card"><div class="ph-sum-val" style="color:var(--rd)">₹${fmt(rem)}</div><div class="ph-sum-lbl">Remaining</div></div><div class="ph-sum-card"><div class="ph-sum-val">${pays.length}</div><div class="ph-sum-lbl">Transactions</div></div></div><div class="ph-list">${pays.map(p=>phRow(p)).join('')}</div>`;
+  }
+  openM('histModal');
+}
+function phRow(p,src){
+  const mI={'Cash':'💵','UPI / GPay':'📱','NEFT / IMPS':'🏦','Debit Card':'🪙','Cheque / DD':'📝'};
+  return`<div class="ph-item"><div class="ph-dot" style="background:var(--gr)"></div><div class="ph-info"><div class="ph-amt" style="color:var(--gr)">₹${fmt(p.amount)}</div><div class="ph-meta">${mI[p.method]||'💳'} ${esc(p.method||'—')} · ${esc(p.bank||'')}${src?' · <strong>'+esc(src)+'</strong>':''}${p.note?' · '+esc(p.note):''}</div></div><div class="ph-date">${p.date||'—'}</div></div>`;
+}
+
+/* ══ DELETE ══ */
+function confirmDel(id,name,isCard){DEL_ID=id;DEL_CARD=isCard;setEl('delName','Delete "'+name+'"?');openM('delModal');}
+async function doDelete(){
+  if(!DEL_ID)return;
+  const btn=document.getElementById('delBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
+  try{
+    await fs.deleteDoc(fs.doc(db,DEL_CARD?'credit_cards':'loans',DEL_ID));
+    toast('Deleted ✓','success');closeM('delModal');DEL_ID=null;
+  }catch(e){toast('Delete failed: '+e.message,'error');}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fa fa-trash"></i> Delete';}
+}
+
+/* ══ EXPORT CSV ══ */
+function exportCSV(){
+  if(CUR_VIEW==='cards'){
+    if(!CARDS.length)return toast('No cards to export','warn');
+    const h=['Nickname','Holder','Issuing Bank','Network','Variant','Last4','Expiry','Status','Credit Limit','Outstanding','Total Due','Min Due','APR%','Annual Fee','Statement Day','Due Day','Grace Period','Next Due Date','Payment Bank','Account Last4','Account Holder','Account Type','IFSC','Payment Mode','AutoPay Type','AutoPay Amount','Mandate ID','Rewards','Notes'];
+    const rows=CARDS.map(c=>[c.nickname,c.holderName,c.issuingBank,c.network,c.cardVariant,c.lastFour,`${c.expiryMM||''}/${c.expiryYY||''}`,c.status,c.creditLimit,c.currentOutstanding,c.totalDue,c.minimumDue,c.interestRate,c.annualFee,c.statementDay,c.dueDay,c.gracePeriod,c.nextDueDate,c.linkedBank,c.linkedAccountLast4,c.linkedAccountHolder,c.accountType,c.ifscCode,c.paymentMode,c.autoPayType,c.autoPayAmount,c.mandateId,c.rewardsType,c.notes].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','));
+    dlCSV([h.map(x=>`"${x}"`).join(','),...rows].join('\n'),`cards_${today()}.csv`);
+  } else {
+    const rows=getFiltered();if(!rows.length)return toast('Nothing to export','warn');
+    const h=['Name','Type','Amount','Paid','Remaining','Interest%','InterestAmt','Total','Date','Due','Method','Bank','Status','Note'];
+    const data=rows.map(l=>{const int=calcInterestAmt(l),rem=remaining(l),now=new Date(today()),st=rem<=0?'Paid':l.due&&new Date(l.due)<now?'Overdue':(l.paid||0)>0?'Partial':'Active';return[l.name,l.type,l.amount,l.paid||0,rem.toFixed(2),l.interest||0,int.toFixed(2),((l.amount||0)+int).toFixed(2),l.date||'',l.due||'',l.method||'',l.bank||'',st,l.note||''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');});
+    dlCSV([h.map(x=>`"${x}"`).join(','),...data].join('\n'),`loans_${today()}.csv`);
+  }
+  toast('Exported ✓','success');
+}
+function dlCSV(csv,fn){const b=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=fn;a.click();URL.revokeObjectURL(u);}
+
+/* ══ HELPERS ══ */
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+function toggleSb(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOv').classList.toggle('open');}
+function closeSb(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOv').classList.remove('open');}
+
+/* ══ TOAST ══ */
+const TICO={success:'fa-circle-check',error:'fa-circle-xmark',info:'fa-circle-info',warn:'fa-triangle-exclamation'};
+function toast(msg,type='info',dur=3200){
+  const wrap=document.getElementById('toastWrap'),d=document.createElement('div');
+  d.className=`toast ${type}`;d.innerHTML=`<i class="fa ${TICO[type]||'fa-circle-info'} ti"></i><span>${msg}</span>`;
+  wrap.appendChild(d);setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),220);},dur);
+}
+
+/* ══ KEYBOARD ══ */
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();document.getElementById('searchQ').focus();}
+  if(e.key==='Escape'){document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));closeSb();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='n'&&!document.querySelector('.overlay.open')){e.preventDefault();mainAdd();}
+});
+</script>
+</body>
+</html>

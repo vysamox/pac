@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Loan & Lending Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #161921;
+  --surface2: #1e2230;
+  --surface3: #252a3a;
+  --border: #2a2f42;
+  --text: #eef0f8;
+  --muted: #7a8099;
+  --accent: #6c63ff;
+  --accent2: #ff6584;
+  --green: #34d399;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --blue: #60a5fa;
+  --orange: #fb923c;
+  --card-r: 16px;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+/* ── LAYOUT ── */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:.3s}
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50}
+.content{padding:24px;flex:1}
+
+/* ── SIDEBAR ── */
+.logo{padding:20px 20px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.logo-text{font-family:var(--font-head);font-weight:800;font-size:15px;line-height:1.2}
+.logo-text span{color:var(--accent);display:block;font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.nav{padding:12px 10px;flex:1;overflow-y:auto}
+.nav-section{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:.15s;margin-bottom:2px;position:relative}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--surface3);color:var(--text)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-item i{width:16px;text-align:center;font-size:13px}
+.nav-badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
+.sidebar-footer{padding:14px;border-top:1px solid var(--border)}
+.user-chip{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--surface2)}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+
+/* ── TOPBAR ── */
+.topbar-left{display:flex;align-items:center;gap:12px}
+.page-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;color:var(--muted)}
+.icon-btn:hover{color:var(--text);background:var(--surface3)}
+.add-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:var(--font-body);font-weight:600;font-size:13px;cursor:pointer;transition:.15s}
+.add-btn:hover{background:#5a52e0;transform:translateY(-1px)}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:18px;cursor:pointer}
+
+/* ── SUMMARY CARDS ── */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-r);padding:18px;position:relative;overflow:hidden;transition:.2s}
+.sum-card::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.08}
+.sum-card.red::after{background:var(--red)}
+.sum-card.green::after{background:var(--green)}
+.sum-card.blue::after{background:var(--blue)}
+.sum-card.yellow::after{background:var(--yellow)}
+.sum-card:hover{transform:translateY(-2px);border-color:var(--surface3)}
+.sum-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.sum-amount{font-family:var(--font-head);font-size:22px;font-weight:800;margin-bottom:4px}
+.sum-amount.red{color:var(--red)}
+.sum-amount.green{color:var(--green)}
+.sum-amount.blue{color:var(--blue)}
+.sum-amount.yellow{color:var(--yellow)}
+.sum-sub{font-size:12px;color:var(--muted)}
+.sum-icon{position:absolute;top:18px;right:18px;font-size:18px;opacity:.5}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:6px;margin-bottom:20px;background:var(--surface);padding:6px;border-radius:12px;border:1px solid var(--border);overflow-x:auto}
+.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);transition:.15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--accent);color:#fff}
+.tab-count{background:rgba(255,255,255,.2);padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700}
+
+/* ── TABLE AREA ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-family:var(--font-head);font-size:15px;font-weight:700}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;min-width:220px}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:13px;flex:1}
+.search-bar i{color:var(--muted);font-size:13px}
+
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:13px 16px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.empty-row td{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.badge.active{background:rgba(52,211,153,.15);color:var(--green)}
+.badge.overdue{background:rgba(248,113,113,.15);color:var(--red)}
+.badge.partial{background:rgba(251,191,36,.15);color:var(--yellow)}
+.badge.paid{background:rgba(96,165,250,.15);color:var(--blue)}
+.badge.type-borrowed{background:rgba(248,113,113,.12);color:var(--red)}
+.badge.type-lent{background:rgba(52,211,153,.12);color:var(--green)}
+.badge.type-credit{background:rgba(108,99,255,.12);color:var(--accent)}
+.badge.type-personal{background:rgba(251,146,60,.12);color:var(--orange)}
+
+/* ── PERSON / AMOUNT ── */
+.person-cell{display:flex;align-items:center;gap:10px}
+.person-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.person-name{font-weight:600;font-size:13px}
+.person-note{font-size:11px;color:var(--muted)}
+.amount-cell{font-family:var(--font-head);font-weight:700;font-size:15px}
+.amount-cell.red{color:var(--red)}
+.amount-cell.green{color:var(--green)}
+.progress-bar{height:4px;background:var(--surface3);border-radius:3px;margin-top:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:.3s}
+
+/* ── ACTION BTNS ── */
+.row-actions{display:flex;gap:6px}
+.row-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:12px;transition:.15s}
+.row-btn:hover{color:var(--text);background:var(--surface3)}
+.row-btn.pay{border-color:rgba(52,211,153,.3);color:var(--green)}
+.row-btn.pay:hover{background:rgba(52,211,153,.1)}
+.row-btn.del{border-color:rgba(248,113,113,.3);color:var(--red)}
+.row-btn.del:hover{background:rgba(248,113,113,.1)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:popIn .25s ease}
+@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:.15s}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:.15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:var(--surface3)}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:60px}
+.input-prefix{position:relative}
+.input-prefix input{padding-left:34px}
+.input-prefix .prefix{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;font-weight:600}
+.type-selector{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.type-option{padding:10px;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:var(--muted);transition:.15s}
+.type-option:hover{border-color:var(--accent);color:var(--text)}
+.type-option.selected{border-color:var(--accent);background:rgba(108,99,255,.12);color:var(--accent)}
+.type-option i{display:block;font-size:18px;margin-bottom:4px}
+
+/* ── SAVE/CANCEL BTNS ── */
+.btn{padding:10px 20px;border-radius:10px;font-family:var(--font-body);font-weight:600;font-size:13px;cursor:pointer;transition:.15s;border:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#5a52e0}
+.btn-secondary{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.btn-secondary:hover{color:var(--text);background:var(--surface3)}
+.btn-danger{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.btn-danger:hover{background:rgba(248,113,113,.25)}
+
+/* ── PAYMENT HISTORY PANEL ── */
+.payment-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.payment-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:10px;font-size:13px}
+.payment-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+.payment-date{color:var(--muted);font-size:12px;margin-left:auto}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;animation:slideUp .3s ease;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--accent)}
+
+/* ── LOADING ── */
+.loading-spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-loading{position:relative;pointer-events:none;opacity:.7}
+
+/* ── MOBILE ── */
+@media(max-width:900px){
+  .summary-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger{display:block}
+  .form-grid{grid-template-columns:1fr}
+  .type-selector{grid-template-columns:repeat(4,1fr)}
+  th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none}
+}
+@media(max-width:480px){
+  .summary-grid{grid-template-columns:1fr 1fr}
+  .sum-card{padding:14px}
+  .sum-amount{font-size:18px}
+  .content{padding:16px}
+  th:nth-child(4),td:nth-child(4){display:none}
+  .type-selector{grid-template-columns:repeat(2,1fr)}
+  .tabs{gap:4px}
+  .tab{padding:7px 12px;font-size:12px}
+}
+.overlay-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;display:none}
+.overlay-bg.open{display:block}
+</style>
+</head>
+<body>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── CONFIG (same as your existing app) ──
+const firebaseConfig = {
+  apiKey: "AIzaSyDsMgJjQmbWuJEbHbPCn7SlsPCrpnCYJvg",
+  authDomain: "bloggershortener.firebaseapp.com",
+  projectId: "bloggershortener",
+  storageBucket: "bloggershortener.firebasestorage.app",
+  messagingSenderId: "956739137776",
+  appId: "1:956739137776:web:ef162f86eaf2f600ea9235",
+  measurementId: "G-JZETDCBFHS"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ── EXPOSE GLOBALLY ──
+window._db = db;
+window._fs = { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp };
+
+// Load on ready
+document.addEventListener('DOMContentLoaded', () => { if(window.initApp) window.initApp(); });
+</script>
+
+<div class="app-shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">💸</div>
+    <div class="logo-text">FinanceHub<span>Loan Tracker</span></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item" onclick="goPage('dashboard')"><i class="fa fa-chart-pie"></i> Dashboard</div>
+    <div class="nav-item" onclick="goPage('income')"><i class="fa fa-arrow-trend-up"></i> Income</div>
+    <div class="nav-item" onclick="goPage('expense')"><i class="fa fa-arrow-trend-down"></i> Expense</div>
+    <div class="nav-section" style="margin-top:8px">Loans</div>
+    <div class="nav-item active" onclick="setTab('all')"><i class="fa fa-handshake"></i> All Loans</div>
+    <div class="nav-item" onclick="setTab('borrowed')"><i class="fa fa-hand-holding-dollar"></i> I Borrowed <span class="nav-badge" id="nb-borrowed">0</span></div>
+    <div class="nav-item" onclick="setTab('lent')"><i class="fa fa-money-bill-transfer"></i> I Lent <span class="nav-badge" id="nb-lent">0</span></div>
+    <div class="nav-item" onclick="setTab('credit')"><i class="fa fa-credit-card"></i> Credit Cards</div>
+    <div class="nav-item" onclick="setTab('personal')"><i class="fa fa-wallet"></i> Personal Expense</div>
+    <div class="nav-section" style="margin-top:8px">Payments</div>
+    <div class="nav-item" onclick="setTab('overdue')"><i class="fa fa-triangle-exclamation"></i> Overdue <span class="nav-badge" id="nb-overdue" style="background:var(--red)">0</span></div>
+    <div class="nav-item" onclick="openPaymentHistory()"><i class="fa fa-clock-rotate-left"></i> Payment History</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar">U</div>
+      <div>
+        <div style="font-size:13px;font-weight:600">User</div>
+        <div style="font-size:11px;color:var(--muted)">Loan Manager</div>
+      </div>
+    </div>
+  </div>
+</aside>
+<div class="overlay-bg" id="overlayBg" onclick="closeSidebar()"></div>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
+      <div class="page-title">Loan & Lending Tracker</div>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn" title="Refresh" onclick="loadLoans()"><i class="fa fa-rotate-right"></i></div>
+      <div class="icon-btn" title="Search" onclick="focusSearch()"><i class="fa fa-magnifying-glass"></i></div>
+      <button class="add-btn" onclick="openAddModal()"><i class="fa fa-plus"></i> Add Record</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary-grid">
+      <div class="sum-card red">
+        <div class="sum-label">I Owe (Borrowed)</div>
+        <div class="sum-amount red" id="s-borrowed">₹0</div>
+        <div class="sum-sub" id="s-borrowed-count">0 active loans</div>
+        <i class="fa fa-hand-holding-dollar sum-icon" style="color:var(--red)"></i>
+      </div>
+      <div class="sum-card green">
+        <div class="sum-label">Owed to Me (Lent)</div>
+        <div class="sum-amount green" id="s-lent">₹0</div>
+        <div class="sum-sub" id="s-lent-count">0 pending</div>
+        <i class="fa fa-money-bill-transfer sum-icon" style="color:var(--green)"></i>
+      </div>
+      <div class="sum-card blue">
+        <div class="sum-label">Credit Card Due</div>
+        <div class="sum-amount blue" id="s-credit">₹0</div>
+        <div class="sum-sub" id="s-credit-count">0 cards tracked</div>
+        <i class="fa fa-credit-card sum-icon" style="color:var(--blue)"></i>
+      </div>
+      <div class="sum-card yellow">
+        <div class="sum-label">Overdue</div>
+        <div class="sum-amount yellow" id="s-overdue">₹0</div>
+        <div class="sum-sub" id="s-overdue-count">0 overdue items</div>
+        <i class="fa fa-triangle-exclamation sum-icon" style="color:var(--yellow)"></i>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" id="tab-all" onclick="setTab('all')"><i class="fa fa-list"></i> All <span class="tab-count" id="tc-all">0</span></div>
+      <div class="tab" id="tab-borrowed" onclick="setTab('borrowed')"><i class="fa fa-arrow-down"></i> Borrowed <span class="tab-count" id="tc-borrowed">0</span></div>
+      <div class="tab" id="tab-lent" onclick="setTab('lent')"><i class="fa fa-arrow-up"></i> Lent <span class="tab-count" id="tc-lent">0</span></div>
+      <div class="tab" id="tab-credit" onclick="setTab('credit')"><i class="fa fa-credit-card"></i> Credit <span class="tab-count" id="tc-credit">0</span></div>
+      <div class="tab" id="tab-personal" onclick="setTab('personal')"><i class="fa fa-wallet"></i> Personal <span class="tab-count" id="tc-personal">0</span></div>
+      <div class="tab" id="tab-overdue" onclick="setTab('overdue')"><i class="fa fa-exclamation-circle"></i> Overdue <span class="tab-count" id="tc-overdue">0</span></div>
+    </div>
+
+    <!-- TABLE SECTION -->
+    <div class="section-header">
+      <div class="section-title" id="sectionTitle">All Records</div>
+      <div class="search-bar">
+        <i class="fa fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search name, bank, note..." oninput="renderTable()"/>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Person / Source</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Paid</th>
+            <th>Due Date</th>
+            <th>Payment Via</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="loanTable">
+          <tr class="empty-row"><td colspan="8"><i class="fa fa-spinner fa-spin"></i> Loading records…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- ═══ ADD / EDIT MODAL ═══ -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add New Record</div>
+      <button class="modal-close" onclick="closeModal('addModal')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:16px">
+        <label style="display:block;margin-bottom:8px">Record Type</label>
+        <div class="type-selector">
+          <div class="type-option selected" data-type="borrowed" onclick="selectType(this)">
+            <i class="fa fa-hand-holding-dollar" style="color:var(--red)"></i> Borrowed
+          </div>
+          <div class="type-option" data-type="lent" onclick="selectType(this)">
+            <i class="fa fa-money-bill-transfer" style="color:var(--green)"></i> Lent
+          </div>
+          <div class="type-option" data-type="credit" onclick="selectType(this)">
+            <i class="fa fa-credit-card" style="color:var(--accent)"></i> Credit Card
+          </div>
+          <div class="type-option" data-type="personal" onclick="selectType(this)">
+            <i class="fa fa-wallet" style="color:var(--orange)"></i> Personal
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>Person / Source Name</label>
+          <input type="text" id="f-name" placeholder="e.g. Rahul, HDFC Card, Self"/>
+        </div>
+        <div class="form-group">
+          <label>Total Amount (₹)</label>
+          <div class="input-prefix">
+            <span class="prefix">₹</span>
+            <input type="number" id="f-amount" placeholder="0.00" min="0"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Amount Paid (₹)</label>
+          <div class="input-prefix">
+            <span class="prefix">₹</span>
+            <input type="number" id="f-paid" placeholder="0.00" min="0" value="0"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Date Taken</label>
+          <input type="date" id="f-date"/>
+        </div>
+        <div class="form-group">
+          <label>Due Date</label>
+          <input type="date" id="f-due"/>
+        </div>
+        <div class="form-group">
+          <label>Payment Method</label>
+          <select id="f-method">
+            <option value="">Select method</option>
+            <option value="cash">💵 Cash</option>
+            <option value="upi">📱 UPI</option>
+            <option value="bank_transfer">🏦 Bank Transfer</option>
+            <option value="credit_card">💳 Credit Card</option>
+            <option value="debit_card">🪙 Debit Card</option>
+            <option value="cheque">📝 Cheque</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bank / Account</label>
+          <select id="f-bank">
+            <option value="">Select bank</option>
+            <option value="SBI">SBI</option>
+            <option value="HDFC">HDFC Bank</option>
+            <option value="ICICI">ICICI Bank</option>
+            <option value="Axis">Axis Bank</option>
+            <option value="Kotak">Kotak Bank</option>
+            <option value="PNB">PNB</option>
+            <option value="BOB">Bank of Baroda</option>
+            <option value="Canara">Canara Bank</option>
+            <option value="Cash">Cash (No Bank)</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group" id="cardGroup">
+          <label>Card / Account No. (Last 4)</label>
+          <input type="text" id="f-card" placeholder="e.g. 4521" maxlength="4"/>
+        </div>
+        <div class="form-group">
+          <label>Interest Rate (% p.a.)</label>
+          <div class="input-prefix">
+            <span class="prefix">%</span>
+            <input type="number" id="f-interest" placeholder="0" min="0" max="100" step="0.1"/>
+          </div>
+        </div>
+        <div class="form-group form-full">
+          <label>Linked To (Income/Expense Record ID)</label>
+          <input type="text" id="f-linked" placeholder="Optional: link to expense or income"/>
+        </div>
+        <div class="form-group form-full">
+          <label>Note / Purpose</label>
+          <textarea id="f-note" placeholder="e.g. Emergency medical, Phone purchase, Salary advance…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
+      <button class="btn btn-primary" id="saveBtn" onclick="saveRecord()"><i class="fa fa-floppy-disk"></i> Save Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAKE PAYMENT MODAL ═══ -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <div class="modal-title">Record Payment</div>
+      <button class="modal-close" onclick="closeModal('payModal')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="payInfo" style="background:var(--surface2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--muted)"></div>
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>Payment Amount (₹)</label>
+          <div class="input-prefix">
+            <span class="prefix">₹</span>
+            <input type="number" id="pay-amount" placeholder="0.00" min="0"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Payment Date</label>
+          <input type="date" id="pay-date"/>
+        </div>
+        <div class="form-group">
+          <label>Payment Method</label>
+          <select id="pay-method">
+            <option value="cash">💵 Cash</option>
+            <option value="upi">📱 UPI</option>
+            <option value="bank_transfer">🏦 Bank Transfer</option>
+            <option value="credit_card">💳 Credit Card</option>
+            <option value="debit_card">🪙 Debit Card</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>From Bank</label>
+          <select id="pay-bank">
+            <option value="Cash">Cash</option>
+            <option value="SBI">SBI</option>
+            <option value="HDFC">HDFC Bank</option>
+            <option value="ICICI">ICICI Bank</option>
+            <option value="Axis">Axis Bank</option>
+            <option value="Kotak">Kotak Bank</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label>Note</label>
+          <input type="text" id="pay-note" placeholder="Optional note for this payment"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('payModal')">Cancel</button>
+      <button class="btn btn-primary" id="payBtn" onclick="submitPayment()"><i class="fa fa-check"></i> Confirm Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAYMENT HISTORY MODAL ═══ -->
+<div class="modal-overlay" id="histModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">Payment History</div>
+      <button class="modal-close" onclick="closeModal('histModal')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="histContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let loans = [];
+let currentTab = 'all';
+let editingId = null;
+let payingId = null;
+let selectedType = 'borrowed';
+
+const COLORS = ['#6c63ff','#f87171','#34d399','#fbbf24','#60a5fa','#fb923c','#a78bfa','#f472b6'];
+const avatarColor = (name) => COLORS[(name?.charCodeAt(0)||0) % COLORS.length];
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+window.initApp = function() {
+  // Set today as default dates
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('f-date').value = today;
+  document.getElementById('pay-date').value = today;
+  loadLoans();
+};
+
+// Fallback if Firebase not ready
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  if(document.getElementById('f-date')) document.getElementById('f-date').value = today;
+  if(document.getElementById('pay-date')) document.getElementById('pay-date').value = today;
+  if(window._db) loadLoans();
+  else setTimeout(() => { if(window._db) loadLoans(); }, 1500);
+});
+
+// ═══════════════════════════════════════
+// FIREBASE CRUD
+// ═══════════════════════════════════════
+async function loadLoans() {
+  if(!window._db) { showDemo(); return; }
+  const { collection, getDocs, query, orderBy } = window._fs;
+  try {
+    const q = query(collection(window._db, 'loans'), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    loans = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {
+    showDemo();
+    return;
+  }
+  renderAll();
+}
+
+function showDemo() {
+  // Demo data so UI looks good without Firebase
+  loans = [
+    { id:'demo1', name:'Rahul Sharma', type:'borrowed', amount:15000, paid:5000, date:'2025-12-01', due:'2026-03-01', method:'upi', bank:'SBI', card:'', interest:0, note:'Emergency loan', payments:[{amount:5000,date:'2025-12-20',method:'upi',bank:'SBI',note:'First installment'}], createdAt:{toDate:()=>new Date()} },
+    { id:'demo2', name:'Priya Mehta', type:'lent', amount:8000, paid:8000, date:'2025-11-15', due:'2026-01-15', method:'bank_transfer', bank:'HDFC', card:'', interest:0, note:'Helped with rent', payments:[], createdAt:{toDate:()=>new Date()} },
+    { id:'demo3', name:'HDFC Millenia', type:'credit', amount:32000, paid:12000, date:'2025-12-10', due:'2026-01-10', method:'credit_card', bank:'HDFC', card:'4521', interest:36, note:'Shopping + dining', payments:[], createdAt:{toDate:()=>new Date()} },
+    { id:'demo4', name:'Amit Verma', type:'borrowed', amount:5000, paid:0, date:'2025-10-05', due:'2025-12-05', method:'cash', bank:'Cash', card:'', interest:0, note:'Travel money', payments:[], createdAt:{toDate:()=>new Date()} },
+  ];
+  showToast('Demo mode — connect Firebase for live data','info');
+  renderAll();
+}
+
+async function saveToFirebase(data, id=null) {
+  if(!window._db) {
+    // Demo mode save
+    if(id) { const i=loans.findIndex(l=>l.id===id); if(i>-1) loans[i]={...loans[i],...data}; }
+    else loans.unshift({id:'local_'+Date.now(),...data,payments:[],createdAt:{toDate:()=>new Date()}});
+    return true;
+  }
+  const { collection, addDoc, updateDoc, doc, serverTimestamp } = window._fs;
+  if(id) {
+    await updateDoc(doc(window._db,'loans',id), data);
+  } else {
+    await addDoc(collection(window._db,'loans'), {...data, payments:[], createdAt:serverTimestamp()});
+  }
+  return true;
+}
+
+async function deleteFromFirebase(id) {
+  if(!window._db) { loans = loans.filter(l=>l.id!==id); return; }
+  const { deleteDoc, doc } = window._fs;
+  await deleteDoc(doc(window._db,'loans',id));
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function renderAll() {
+  updateSummary();
+  updateTabCounts();
+  renderTable();
+}
+
+function updateSummary() {
+  const today = new Date();
+  const borrowed = loans.filter(l=>l.type==='borrowed');
+  const lent     = loans.filter(l=>l.type==='lent');
+  const credit   = loans.filter(l=>l.type==='credit');
+  const overdue  = loans.filter(l=> l.due && new Date(l.due)<today && (l.amount-(l.paid||0))>0);
+
+  const sum = arr => arr.reduce((s,l)=>s+(l.amount-(l.paid||0)),0);
+
+  document.getElementById('s-borrowed').textContent = '₹'+fmt(sum(borrowed));
+  document.getElementById('s-borrowed-count').textContent = borrowed.length+' active loans';
+  document.getElementById('s-lent').textContent = '₹'+fmt(sum(lent));
+  document.getElementById('s-lent-count').textContent = lent.length+' pending';
+  document.getElementById('s-credit').textContent = '₹'+fmt(sum(credit));
+  document.getElementById('s-credit-count').textContent = credit.length+' cards tracked';
+  document.getElementById('s-overdue').textContent = '₹'+fmt(sum(overdue));
+  document.getElementById('s-overdue-count').textContent = overdue.length+' overdue items';
+
+  // nav badges
+  document.getElementById('nb-borrowed').textContent = borrowed.filter(l=>(l.amount-(l.paid||0))>0).length;
+  document.getElementById('nb-lent').textContent = lent.filter(l=>(l.amount-(l.paid||0))>0).length;
+  document.getElementById('nb-overdue').textContent = overdue.length;
+}
+
+function updateTabCounts() {
+  const today = new Date();
+  const counts = {
+    all: loans.length,
+    borrowed: loans.filter(l=>l.type==='borrowed').length,
+    lent: loans.filter(l=>l.type==='lent').length,
+    credit: loans.filter(l=>l.type==='credit').length,
+    personal: loans.filter(l=>l.type==='personal').length,
+    overdue: loans.filter(l=>l.due&&new Date(l.due)<today&&(l.amount-(l.paid||0))>0).length,
+  };
+  Object.entries(counts).forEach(([k,v])=>{
+    const el = document.getElementById('tc-'+k);
+    if(el) el.textContent = v;
+  });
+}
+
+function setTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const el = document.getElementById('tab-'+tab);
+  if(el) el.classList.add('active');
+
+  // Also highlight sidebar
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+
+  const titles = {all:'All Records',borrowed:'Money I Borrowed',lent:'Money I Lent',credit:'Credit Cards',personal:'Personal Expenses',overdue:'Overdue Payments'};
+  document.getElementById('sectionTitle').textContent = titles[tab]||'Records';
+  renderTable();
+}
+
+function getFilteredLoans() {
+  const today = new Date();
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let filtered = loans;
+  if(currentTab==='borrowed') filtered = loans.filter(l=>l.type==='borrowed');
+  else if(currentTab==='lent') filtered = loans.filter(l=>l.type==='lent');
+  else if(currentTab==='credit') filtered = loans.filter(l=>l.type==='credit');
+  else if(currentTab==='personal') filtered = loans.filter(l=>l.type==='personal');
+  else if(currentTab==='overdue') filtered = loans.filter(l=>l.due&&new Date(l.due)<today&&(l.amount-(l.paid||0))>0);
+  if(q) filtered = filtered.filter(l=>
+    (l.name||'').toLowerCase().includes(q)||
+    (l.bank||'').toLowerCase().includes(q)||
+    (l.note||'').toLowerCase().includes(q)||
+    (l.method||'').toLowerCase().includes(q)
+  );
+  return filtered;
+}
+
+function renderTable() {
+  const data = getFilteredLoans();
+  const tbody = document.getElementById('loanTable');
+  const today = new Date();
+
+  if(!data.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8"><i class="fa fa-inbox" style="font-size:24px;display:block;margin-bottom:8px;color:var(--muted)"></i>No records found</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(l => {
+    const remaining = (l.amount||0) - (l.paid||0);
+    const pct = l.amount ? Math.min(100, Math.round(((l.paid||0)/l.amount)*100)) : 0;
+    const isOverdue = l.due && new Date(l.due) < today && remaining > 0;
+    const isPaid = remaining <= 0;
+    const isPartial = !isPaid && (l.paid||0) > 0;
+
+    let status = isPaid ? 'paid' : isOverdue ? 'overdue' : isPartial ? 'partial' : 'active';
+    let statusLabel = isPaid ? 'Paid' : isOverdue ? 'Overdue' : isPartial ? 'Partial' : 'Active';
+
+    const typeLabels = {borrowed:'Borrowed',lent:'Lent',credit:'Credit',personal:'Personal'};
+    const typeClass = 'type-'+l.type;
+
+    const methodIcon = {cash:'💵',upi:'📱',bank_transfer:'🏦',credit_card:'💳',debit_card:'🪙',cheque:'📝'}[l.method]||'💰';
+    const amColor = l.type==='lent'?'green':'red';
+
+    return `<tr>
+      <td>
+        <div class="person-cell">
+          <div class="person-avatar" style="background:${avatarColor(l.name)}">${(l.name||'?')[0].toUpperCase()}</div>
+          <div>
+            <div class="person-name">${esc(l.name||'-')}</div>
+            <div class="person-note">${l.note?esc(l.note.substring(0,30))+(l.note.length>30?'…':''):''}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="badge ${typeClass}">${typeLabels[l.type]||l.type}</span></td>
+      <td>
+        <div class="amount-cell ${amColor}">₹${fmt(remaining)}</div>
+        <div style="font-size:11px;color:var(--muted)">of ₹${fmt(l.amount)}</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${isPaid?'var(--blue)':isOverdue?'var(--red)':'var(--green)'}"></div></div>
+      </td>
+      <td style="color:var(--muted);font-size:12px">₹${fmt(l.paid||0)} <span style="opacity:.5">(${pct}%)</span></td>
+      <td style="font-size:12px;color:${isOverdue?'var(--red)':'var(--muted)'}">${l.due||'-'} ${isOverdue?'<i class="fa fa-circle-exclamation" style="color:var(--red)"></i>':''}</td>
+      <td style="font-size:13px">${methodIcon} ${l.bank||''} ${l.card?'••••'+l.card:''}</td>
+      <td><span class="badge ${status}">${statusLabel}</span></td>
+      <td>
+        <div class="row-actions">
+          ${!isPaid?`<button class="row-btn pay" title="Make Payment" onclick="openPayModal('${l.id}')"><i class="fa fa-check"></i></button>`:''}
+          <button class="row-btn" title="Edit" onclick="openEditModal('${l.id}')"><i class="fa fa-pen"></i></button>
+          <button class="row-btn" title="History" onclick="viewHistory('${l.id}')"><i class="fa fa-clock-rotate-left"></i></button>
+          <button class="row-btn del" title="Delete" onclick="confirmDelete('${l.id}')"><i class="fa fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// ADD / EDIT MODAL
+// ═══════════════════════════════════════
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Add New Record';
+  clearForm();
+  document.getElementById('addModal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const l = loans.find(x=>x.id===id);
+  if(!l) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Record';
+  // Fill form
+  document.getElementById('f-name').value = l.name||'';
+  document.getElementById('f-amount').value = l.amount||'';
+  document.getElementById('f-paid').value = l.paid||0;
+  document.getElementById('f-date').value = l.date||'';
+  document.getElementById('f-due').value = l.due||'';
+  document.getElementById('f-method').value = l.method||'';
+  document.getElementById('f-bank').value = l.bank||'';
+  document.getElementById('f-card').value = l.card||'';
+  document.getElementById('f-interest').value = l.interest||'';
+  document.getElementById('f-note').value = l.note||'';
+  document.getElementById('f-linked').value = l.linked||'';
+  // type
+  selectedType = l.type||'borrowed';
+  document.querySelectorAll('.type-option').forEach(o=>{
+    o.classList.toggle('selected', o.dataset.type===selectedType);
+  });
+  document.getElementById('addModal').classList.add('open');
+}
+
+function clearForm() {
+  const today = new Date().toISOString().split('T')[0];
+  ['f-name','f-amount','f-paid','f-due','f-card','f-interest','f-note','f-linked'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('f-date').value = today;
+  document.getElementById('f-method').value='';
+  document.getElementById('f-bank').value='';
+  document.getElementById('f-paid').value='0';
+  selectedType = 'borrowed';
+  document.querySelectorAll('.type-option').forEach(o=>o.classList.toggle('selected',o.dataset.type==='borrowed'));
+}
+
+function selectType(el) {
+  document.querySelectorAll('.type-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedType = el.dataset.type;
+}
+
+async function saveRecord() {
+  const name = document.getElementById('f-name').value.trim();
+  const amount = parseFloat(document.getElementById('f-amount').value)||0;
+  if(!name) { showToast('Please enter a name','error'); return; }
+  if(!amount) { showToast('Please enter an amount','error'); return; }
+
+  const btn = document.getElementById('saveBtn');
+  btn.classList.add('btn-loading');
+  btn.innerHTML='<span class="loading-spinner"></span> Saving…';
+
+  const data = {
+    name, type:selectedType,
+    amount, paid: parseFloat(document.getElementById('f-paid').value)||0,
+    date: document.getElementById('f-date').value,
+    due: document.getElementById('f-due').value,
+    method: document.getElementById('f-method').value,
+    bank: document.getElementById('f-bank').value,
+    card: document.getElementById('f-card').value,
+    interest: parseFloat(document.getElementById('f-interest').value)||0,
+    note: document.getElementById('f-note').value.trim(),
+    linked: document.getElementById('f-linked').value.trim(),
+  };
+
+  try {
+    await saveToFirebase(data, editingId);
+    if(!editingId) { /* new */ } else { await loadLoans(); }
+    await loadLoans();
+    closeModal('addModal');
+    showToast(editingId?'Record updated!':'Record added!','success');
+  } catch(e) {
+    showToast('Error: '+e.message,'error');
+  }
+  btn.classList.remove('btn-loading');
+  btn.innerHTML='<i class="fa fa-floppy-disk"></i> Save Record';
+}
+
+// ═══════════════════════════════════════
+// PAYMENT MODAL
+// ═══════════════════════════════════════
+function openPayModal(id) {
+  const l = loans.find(x=>x.id===id);
+  if(!l) return;
+  payingId = id;
+  const rem = (l.amount||0)-(l.paid||0);
+  document.getElementById('payInfo').innerHTML =
+    `<b>${esc(l.name)}</b> &nbsp;·&nbsp; Remaining: <b style="color:var(--yellow)">₹${fmt(rem)}</b> &nbsp;·&nbsp; Total: ₹${fmt(l.amount)}`;
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-amount').max = rem;
+  document.getElementById('pay-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('payModal').classList.add('open');
+}
+
+async function submitPayment() {
+  const amt = parseFloat(document.getElementById('pay-amount').value)||0;
+  if(!amt || amt<=0) { showToast('Enter valid payment amount','error'); return; }
+  const l = loans.find(x=>x.id===payingId);
+  if(!l) return;
+  const rem = (l.amount||0)-(l.paid||0);
+  if(amt > rem) { showToast('Amount exceeds remaining balance','error'); return; }
+
+  const btn = document.getElementById('payBtn');
+  btn.classList.add('btn-loading');
+  btn.innerHTML='<span class="loading-spinner"></span>';
+
+  const payment = {
+    amount: amt,
+    date: document.getElementById('pay-date').value,
+    method: document.getElementById('pay-method').value,
+    bank: document.getElementById('pay-bank').value,
+    note: document.getElementById('pay-note').value,
+  };
+
+  const newPaid = (l.paid||0)+amt;
+  const payments = [...(l.payments||[]), payment];
+
+  try {
+    await saveToFirebase({ paid:newPaid, payments }, payingId);
+    await loadLoans();
+    closeModal('payModal');
+    showToast(`₹${fmt(amt)} payment recorded!`,'success');
+  } catch(e) {
+    showToast('Error: '+e.message,'error');
+  }
+  btn.classList.remove('btn-loading');
+  btn.innerHTML='<i class="fa fa-check"></i> Confirm Payment';
+}
+
+// ═══════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════
+function viewHistory(id) {
+  const l = loans.find(x=>x.id===id);
+  if(!l) return;
+  const payments = l.payments||[];
+  const html = payments.length
+    ? `<div class="payment-list">${payments.map(p=>`
+        <div class="payment-item">
+          <div class="payment-dot"></div>
+          <div>
+            <div style="font-weight:600">₹${fmt(p.amount)} via ${p.method||'?'}</div>
+            <div style="font-size:11px;color:var(--muted)">${p.bank||''} ${p.note?'· '+p.note:''}</div>
+          </div>
+          <div class="payment-date">${p.date||''}</div>
+        </div>`).join('')}
+      </div>`
+    : `<div style="text-align:center;padding:30px;color:var(--muted)"><i class="fa fa-inbox" style="font-size:24px;display:block;margin-bottom:8px"></i>No payments yet</div>`;
+
+  document.getElementById('histContent').innerHTML = `
+    <div style="margin-bottom:12px;padding:12px;background:var(--surface2);border-radius:10px">
+      <b>${esc(l.name)}</b> · Total: ₹${fmt(l.amount)} · Paid: ₹${fmt(l.paid||0)} · Remaining: <span style="color:var(--yellow)">₹${fmt((l.amount||0)-(l.paid||0))}</span>
+    </div>
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">Payment History (${payments.length})</div>
+    ${html}`;
+  document.getElementById('histModal').classList.add('open');
+}
+
+function openPaymentHistory() {
+  const all = loans.flatMap(l=>(l.payments||[]).map(p=>({...p,loanName:l.name,loanType:l.type})));
+  all.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const html = all.length
+    ? `<div class="payment-list">${all.map(p=>`
+        <div class="payment-item">
+          <div class="payment-dot" style="background:${p.loanType==='lent'?'var(--green)':'var(--red)'}"></div>
+          <div>
+            <div style="font-weight:600">₹${fmt(p.amount)} — ${esc(p.loanName)}</div>
+            <div style="font-size:11px;color:var(--muted)">${p.method||''} · ${p.bank||''} ${p.note?'· '+p.note:''}</div>
+          </div>
+          <div class="payment-date">${p.date||''}</div>
+        </div>`).join('')}
+      </div>`
+    : `<div style="text-align:center;padding:30px;color:var(--muted)">No payments recorded yet</div>`;
+  document.getElementById('histContent').innerHTML = html;
+  document.getElementById('histModal').classList.add('open');
+}
+
+// ═══════════════════════════════════════
+// DELETE
+// ═══════════════════════════════════════
+async function confirmDelete(id) {
+  const l = loans.find(x=>x.id===id);
+  if(!l) return;
+  if(!confirm(`Delete record for "${l.name}"? This cannot be undone.`)) return;
+  try {
+    await deleteFromFirebase(id);
+    await loadLoans();
+    showToast('Record deleted','info');
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function fmt(n) { return Number(n||0).toLocaleString('en-IN'); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showToast(msg, type='info') {
+  const w = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = {success:'fa-circle-check',error:'fa-circle-xmark',info:'fa-circle-info'};
+  t.innerHTML = `<i class="fa ${icons[type]||'fa-circle-info'}"></i> ${msg}`;
+  w.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+function focusSearch() { document.getElementById('searchInput').focus(); }
+
+// ═══════════════════════════════════════
+// SIDEBAR MOBILE
+// ═══════════════════════════════════════
+function toggleSidebar() {
+  const s = document.getElementById('sidebar');
+  const bg = document.getElementById('overlayBg');
+  s.classList.toggle('open');
+  bg.classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlayBg').classList.remove('open');
+}
+
+// Placeholder nav
+function goPage(p) { showToast('Navigate to '+p+' page','info'); closeSidebar(); }
+</script>
+</body>
+</html>
