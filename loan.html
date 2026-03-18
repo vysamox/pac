@@ -410,7 +410,7 @@ import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-ap
 import{getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,orderBy,serverTimestamp,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyDsMgJjQmbWuJEbHbPCn7SlsPCrpnCYJvg",authDomain:"bloggershortener.firebaseapp.com",projectId:"bloggershortener",storageBucket:"bloggershortener.firebasestorage.app",messagingSenderId:"956739137776",appId:"1:956739137776:web:ef162f86eaf2f600ea9235"});
 window.db = getFirestore(app);
-window.__DB=db;window.__FS={collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,orderBy,serverTimestamp,onSnapshot};
+window.__DB = window.db;window.__FS={collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,orderBy,serverTimestamp,onSnapshot};
 document.dispatchEvent(new Event('fb-ready'));
 </script>
 
