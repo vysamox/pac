@@ -409,7 +409,7 @@ textarea.field{resize:vertical;min-height:70px;line-height:1.5}
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,orderBy,serverTimestamp,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyDsMgJjQmbWuJEbHbPCn7SlsPCrpnCYJvg",authDomain:"bloggershortener.firebaseapp.com",projectId:"bloggershortener",storageBucket:"bloggershortener.firebasestorage.app",messagingSenderId:"956739137776",appId:"1:956739137776:web:ef162f86eaf2f600ea9235"});
-const db=getFirestore(app);
+window.db = getFirestore(app);
 window.__DB=db;window.__FS={collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,orderBy,serverTimestamp,onSnapshot};
 document.dispatchEvent(new Event('fb-ready'));
 </script>
@@ -425,8 +425,8 @@ document.dispatchEvent(new Event('fb-ready'));
   <nav class="nav">
     <div class="nav-sec">Loan Manager</div>
     <div class="ni active" id="ni-all" onclick="gotoFilter('all',this)"><i class="fa fa-list-ul"></i>All Records<span class="nbadge" id="nb-all">0</span></div>
-    <div class="ni" id="ni-bor" onclick="gotoFilter('borrowed',this)"><i class="fa fa-hand-holding-dollar"></i>I Borrowed<span class="nbadge" style="background:var(--rd-s);color:var(--rd)" id="nb-bor">0</span></div>
-    <div class="ni" id="ni-len" onclick="gotoFilter('lent',this)"><i class="fa fa-money-bill-transfer"></i>I Lent Out<span class="nbadge" style="background:var(--gr-s);color:var(--gr)" id="nb-len">0</span></div>
+    <div class="ni" id="ni-bor" onclick="gotoFilter('borrowed',this)"><i class="fa fa-hand-holding-dollar"></i>I took money<span class="nbadge" style="background:var(--rd-s);color:var(--rd)" id="nb-bor">0</span></div>
+    <div class="ni" id="ni-len" onclick="gotoFilter('lent',this)"><i class="fa fa-money-bill-transfer"></i>I gave money<span class="nbadge" style="background:var(--gr-s);color:var(--gr)" id="nb-len">0</span></div>
     <div class="ni" id="ni-per" onclick="gotoFilter('personal',this)"><i class="fa fa-wallet"></i>Personal</div>
     <div class="nav-sec">Card Manager</div>
     <div class="ni" id="ni-cards" onclick="switchView('cards',this)"><i class="fa fa-credit-card" style="color:var(--ac)"></i>My Credit Cards<span class="nbadge" style="background:rgba(115,102,255,.12);color:var(--ac)" id="nb-cards">0</span></div>
@@ -485,8 +485,8 @@ document.dispatchEvent(new Event('fb-ready'));
       </div>
       <div class="filter-strip">
         <div class="ft on" id="ft-all" onclick="setFt('all',this)"><i class="fa fa-list-ul"></i> All <span class="cnt" id="ftc-all">0</span></div>
-        <div class="ft" id="ft-borrowed" onclick="setFt('borrowed',this)"><i class="fa fa-arrow-down"></i> Borrowed <span class="cnt" id="ftc-bor">0</span></div>
-        <div class="ft" id="ft-lent" onclick="setFt('lent',this)"><i class="fa fa-arrow-up"></i> Lent <span class="cnt" id="ftc-len">0</span></div>
+        <div class="ft" id="ft-borrowed" onclick="setFt('borrowed',this)"><i class="fa fa-arrow-down"></i> I took money <span class="cnt" id="ftc-bor">0</span></div>
+        <div class="ft" id="ft-lent" onclick="setFt('lent',this)"><i class="fa fa-arrow-up"></i> I gave money <span class="cnt" id="ftc-len">0</span></div>
         <div class="ft" id="ft-personal" onclick="setFt('personal',this)"><i class="fa fa-wallet"></i> Personal <span class="cnt" id="ftc-per">0</span></div>
         <div class="ft" id="ft-overdue" onclick="setFt('overdue',this)"><i class="fa fa-exclamation-circle" style="color:var(--rd)"></i> Overdue <span class="cnt" id="ftc-ov">0</span></div>
         <div class="ft" id="ft-due7" onclick="setFt('due7',this)"><i class="fa fa-clock" style="color:var(--yw)"></i> Due Soon <span class="cnt" id="ftc-d7">0</span></div>
@@ -549,8 +549,8 @@ document.dispatchEvent(new Event('fb-ready'));
     <div class="mb">
       <div class="fsec"><i class="fa fa-tag"></i>Record Type</div>
       <div class="type-grid" style="margin-bottom:16px">
-        <div class="to sel" data-t="borrowed" onclick="pickType(this)"><span class="to-icon">🙏</span><div class="to-lbl">Borrowed</div></div>
-        <div class="to" data-t="lent" onclick="pickType(this)"><span class="to-icon">🤝</span><div class="to-lbl">Lent</div></div>
+        <div class="to sel" data-t="borrowed" onclick="pickType(this)"><span class="to-icon">🙏</span><div class="to-lbl">I took money</div></div>
+        <div class="to" data-t="lent" onclick="pickType(this)"><span class="to-icon">🤝</span><div class="to-lbl">I gave money</div></div>
         <div class="to" data-t="credit" onclick="pickType(this)"><span class="to-icon">💳</span><div class="to-lbl">Credit</div></div>
         <div class="to" data-t="personal" onclick="pickType(this)"><span class="to-icon">💼</span><div class="to-lbl">Personal</div></div>
       </div>
