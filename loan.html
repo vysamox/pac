@@ -320,6 +320,51 @@ textarea.field{resize:vertical;min-height:70px;line-height:1.5}
 .linked-box{background:rgba(115,102,255,.06);border:1px solid rgba(115,102,255,.18);border-radius:var(--r2);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--t2);display:flex;gap:10px;align-items:flex-start}
 .linked-box i{color:var(--ac);flex-shrink:0;margin-top:1px}
 
+/* ══ TRANSACTION HISTORY TABLE ══ */
+.txn-modal-head{padding:16px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.txn-card-pill{display:flex;align-items:center;gap:9px;background:var(--s2);border:1px solid var(--bd2);border-radius:10px;padding:7px 13px;flex-shrink:0}
+.txn-card-pill .cp-num{font-family:var(--fh);font-size:12px;font-weight:700;letter-spacing:2px;color:var(--t2)}
+.txn-card-pill .cp-name{font-size:12px;font-weight:600;color:var(--t1)}
+.txn-card-pill .cp-bank{font-size:10px;color:var(--t3)}
+.txn-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 24px;border-bottom:1px solid var(--bd)}
+.txn-stat{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:11px 13px}
+.txn-stat-val{font-family:var(--fh);font-size:16px;font-weight:800;line-height:1.2}
+.txn-stat-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.txn-toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.txn-search{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:0 12px;height:36px;flex:1;min-width:160px;transition:var(--tr)}
+.txn-search:focus-within{border-color:var(--ac);box-shadow:0 0 0 3px var(--ag)}
+.txn-search input{background:none;border:none;outline:none;color:var(--t1);font-family:var(--fb);font-size:12px;flex:1}
+.txn-search input::placeholder{color:var(--t3)}
+.txn-filter{display:flex;gap:4px;flex-wrap:wrap}
+.txf{display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:600;color:var(--t2);background:var(--s2);border:1px solid var(--bd);transition:var(--tr);white-space:nowrap}
+.txf:hover{color:var(--t1);border-color:var(--bd2)}
+.txf.on{color:#fff;border-color:transparent}
+.txf.on.f-all{background:var(--ac);box-shadow:0 2px 10px var(--ag)}
+.txf.on.f-spend{background:var(--rd);box-shadow:0 2px 10px var(--rd-b)}
+.txf.on.f-pay{background:var(--gr);box-shadow:0 2px 10px var(--gr-b)}
+.txf.on.f-refund{background:var(--bl);box-shadow:0 2px 10px var(--bl-b)}
+.txn-table-wrap{overflow-x:auto;max-height:420px;overflow-y:auto}
+.txn-table-wrap table{width:100%;border-collapse:collapse;min-width:640px}
+.txn-table-wrap thead{background:var(--s2);position:sticky;top:0;z-index:2}
+.txn-table-wrap th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);border-bottom:1px solid var(--bd);white-space:nowrap}
+.txn-table-wrap td{padding:11px 14px;border-bottom:1px solid var(--bd);font-size:12px;vertical-align:middle}
+.txn-table-wrap tr:last-child td{border-bottom:none}
+.txn-table-wrap tbody tr:hover td{background:var(--s2)}
+.txn-type-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;margin-right:6px}
+.txn-cat-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.txn-actions-row{display:flex;gap:4px}
+.txn-del-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--bd);background:var(--s2);cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;font-size:11px;transition:var(--tr)}
+.txn-del-btn:hover{color:var(--rd);border-color:var(--rd-b);background:var(--rd-s)}
+.txn-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-top:1px solid var(--bd);flex-wrap:wrap;gap:8px}
+.txn-count{font-size:11px;color:var(--t3)}
+.add-txn-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:none;border-radius:var(--r2);font-family:var(--fb);font-weight:600;font-size:12px;cursor:pointer;transition:var(--tr);box-shadow:0 3px 10px var(--ag)}
+.add-txn-btn:hover{transform:translateY(-1px);box-shadow:0 5px 16px var(--ag2)}
+/* Add transaction inline form */
+.add-txn-form{background:var(--s2);border-top:1px solid var(--bd);padding:14px 24px;display:none}
+.add-txn-form.open{display:block}
+.add-txn-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr auto;gap:9px;align-items:end}
+@media(max-width:700px){.txn-stats{grid-template-columns:repeat(2,1fr)}.add-txn-grid{grid-template-columns:1fr 1fr}.txn-stats{padding:12px 16px}.txn-toolbar{padding:10px 16px}.txn-footer{padding:10px 16px}.txn-table-wrap th,.txn-table-wrap td{padding:9px 10px}}
+
 @media(max-width:1100px){.summary-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%)}
@@ -380,6 +425,7 @@ document.dispatchEvent(new Event('fb-ready'));
     <div class="ni" id="ni-per" onclick="gotoFilter('personal',this)"><i class="fa fa-wallet"></i>Personal<span class="nbadge" id="nb-per">0</span></div>
     <div class="nav-sec">Card Manager</div>
     <div class="ni" id="ni-cards" onclick="switchView('cards',this)"><i class="fa fa-credit-card" style="color:var(--ac)"></i>My Credit Cards<span class="nbadge" style="background:rgba(115,102,255,.12);color:var(--ac)" id="nb-cards">0</span></div>
+    <div class="ni" id="ni-txns" onclick="switchView('cards',this);setTimeout(()=>openAllTxns(),100)"><i class="fa fa-table-list" style="color:var(--yw)"></i>All Transactions<span class="nbadge" style="background:var(--yw-s);color:var(--yw)" id="nb-txns">0</span></div>
     <div class="nav-sec">Alerts</div>
     <div class="ni" id="ni-ov" onclick="gotoFilter('overdue',this)"><i class="fa fa-circle-exclamation" style="color:var(--rd)"></i>Overdue<span class="nbadge" style="background:var(--rd-s);color:var(--rd)" id="nb-ov">0</span></div>
     <div class="ni" id="ni-d7" onclick="gotoFilter('due7',this)"><i class="fa fa-clock" style="color:var(--yw)"></i>Due in 7 Days<span class="nbadge" style="background:var(--yw-s);color:var(--yw)" id="nb-d7">0</span></div>
@@ -746,6 +792,142 @@ document.dispatchEvent(new Event('fb-ready'));
 <!-- HISTORY MODAL -->
 <div class="overlay" id="histModal">
   <div class="modal md"><div class="mh"><div class="mt" id="histTitle">Payment History</div><button class="mclose" onclick="closeM('histModal')"><i class="fa fa-xmark"></i></button></div><div class="mb" id="histBody"></div></div>
+</div>
+
+<!-- TRANSACTION HISTORY MODAL -->
+<div class="overlay" id="txnModal">
+  <div class="modal xl" style="max-width:860px">
+    <div class="mh">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;flex-wrap:wrap">
+        <div class="mt" style="flex-shrink:0">Transaction History</div>
+        <div class="txn-card-pill" id="txn-card-pill">
+          <div><div class="cp-name" id="txn-cp-name">—</div><div class="cp-bank" id="txn-cp-bank">—</div></div>
+          <div class="cp-num" id="txn-cp-num">•••• ####</div>
+        </div>
+      </div>
+      <button class="mclose" onclick="closeM('txnModal')"><i class="fa fa-xmark"></i></button>
+    </div>
+
+    <div class="txn-stats">
+      <div class="txn-stat"><div class="txn-stat-val" id="ts-total" style="color:var(--rd)">₹0</div><div class="txn-stat-lbl">Total Spent</div></div>
+      <div class="txn-stat"><div class="txn-stat-val" id="ts-paid" style="color:var(--gr)">₹0</div><div class="txn-stat-lbl">Payments Made</div></div>
+      <div class="txn-stat"><div class="txn-stat-val" id="ts-refund" style="color:var(--bl)">₹0</div><div class="txn-stat-lbl">Refunds</div></div>
+      <div class="txn-stat"><div class="txn-stat-val" id="ts-count" style="color:var(--ac)">0</div><div class="txn-stat-lbl">Transactions</div></div>
+    </div>
+
+    <div class="txn-toolbar">
+      <div class="txn-search"><i class="fa fa-magnifying-glass" style="color:var(--t3);font-size:11px;flex-shrink:0"></i><input type="text" id="txn-search-q" placeholder="Search merchant, note, category…" oninput="renderTxnTable()"/></div>
+      <div class="txn-filter">
+        <div class="txf on f-all" data-tf="all" onclick="setTxnFilter('all',this)">All</div>
+        <div class="txf f-spend" data-tf="spend" onclick="setTxnFilter('spend',this)"><i class="fa fa-arrow-up" style="font-size:9px"></i> Spent</div>
+        <div class="txf f-pay" data-tf="pay" onclick="setTxnFilter('pay',this)"><i class="fa fa-arrow-down" style="font-size:9px"></i> Payments</div>
+        <div class="txf f-refund" data-tf="refund" onclick="setTxnFilter('refund',this)"><i class="fa fa-rotate-left" style="font-size:9px"></i> Refunds</div>
+      </div>
+      <select class="sort-sel" id="txn-sort" onchange="renderTxnTable()" style="height:36px;font-size:12px">
+        <option value="date-desc">Newest First</option>
+        <option value="date-asc">Oldest First</option>
+        <option value="amt-desc">Amount ↓</option>
+        <option value="amt-asc">Amount ↑</option>
+      </select>
+    </div>
+
+    <div class="txn-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Merchant / Description</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th style="text-align:right">Amount</th>
+            <th>Method</th>
+            <th>Note</th>
+            <th style="text-align:center">Del</th>
+          </tr>
+        </thead>
+        <tbody id="txnTableBody">
+          <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--t3)">No transactions yet</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Inline Add Transaction Form -->
+    <div class="add-txn-form" id="addTxnForm">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ac);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="fa fa-plus"></i> New Transaction</div>
+      <div class="add-txn-grid">
+        <div class="fg">
+          <label>Date *</label>
+          <input class="field" type="date" id="nt-date" style="height:36px;padding:6px 10px;font-size:12px"/>
+        </div>
+        <div class="fg">
+          <label>Merchant / Description *</label>
+          <input class="field" type="text" id="nt-merchant" placeholder="Amazon, Swiggy, Zomato…" style="height:36px;padding:6px 10px;font-size:12px"/>
+        </div>
+        <div class="fg">
+          <label>Category</label>
+          <select class="field" id="nt-category" style="height:36px;padding:6px 10px;font-size:12px">
+            <option value="Shopping">🛍 Shopping</option>
+            <option value="Food">🍕 Food &amp; Dining</option>
+            <option value="Travel">✈ Travel</option>
+            <option value="Fuel">⛽ Fuel</option>
+            <option value="Groceries">🛒 Groceries</option>
+            <option value="Entertainment">🎬 Entertainment</option>
+            <option value="Health">💊 Health</option>
+            <option value="Utilities">💡 Utilities</option>
+            <option value="Education">📚 Education</option>
+            <option value="EMI">📅 EMI / Loan</option>
+            <option value="Payment">💳 Card Payment</option>
+            <option value="Refund">↩ Refund</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Type</label>
+          <select class="field" id="nt-type" style="height:36px;padding:6px 10px;font-size:12px" onchange="onTxnTypeChange()">
+            <option value="spend">Spent (Debit)</option>
+            <option value="pay">Card Payment</option>
+            <option value="refund">Refund / Credit</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Amount (₹) *</label>
+          <div class="has-pfx"><span class="pfx" style="font-size:12px">₹</span><input class="field" type="number" id="nt-amount" placeholder="0" min="1" step="0.01" style="height:36px;padding:6px 10px 6px 28px;font-size:12px"/></div>
+        </div>
+        <div class="fg" style="grid-column:span 1">
+          <label style="opacity:0">Add</label>
+          <button class="btn btn-primary" onclick="saveTxn()" style="height:36px;padding:0 16px;font-size:12px;white-space:nowrap"><i class="fa fa-check"></i> Add</button>
+        </div>
+      </div>
+      <div class="g2" style="margin-top:9px">
+        <div class="fg">
+          <label>Note / Reference</label>
+          <input class="field" type="text" id="nt-note" placeholder="Optional note, UTR, order ID…" style="height:36px;padding:6px 10px;font-size:12px"/>
+        </div>
+        <div class="fg">
+          <label>Transaction Method</label>
+          <select class="field" id="nt-method" style="height:36px;padding:6px 10px;font-size:12px">
+            <option>Tap &amp; Pay (NFC)</option>
+            <option>Swipe (POS)</option>
+            <option>Online / E-commerce</option>
+            <option>UPI Linked</option>
+            <option>EMI</option>
+            <option>Cash Advance</option>
+            <option>Standing Order</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="txn-footer">
+      <span class="txn-count" id="txn-count">0 transactions</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="icon-btn-sm" onclick="exportTxnCSV()"><i class="fa fa-file-csv"></i> Export CSV</button>
+        <button class="icon-btn-sm" id="toggleAddTxnBtn" onclick="toggleAddTxnForm()"><i class="fa fa-plus"></i> Add Transaction</button>
+        <button class="btn btn-ghost" onclick="closeM('txnModal')" style="height:36px;padding:0 16px;font-size:12px"><i class="fa fa-xmark"></i> Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- DELETE CONFIRM -->
@@ -1218,6 +1400,16 @@ function updateCardSum(){
   setEl('csc-due','₹'+fmt(totDue));setEl('csc-due-m',ovCards.length>0?'⚡ '+ovCards.length+' overdue':'Min due: ₹'+fmt(totMin));setPct('csb-due',totLim>0?totDue/totLim*100:0);
   setEl('csc-avail','₹'+fmt(avail));setEl('csc-avail-m',totLim>0?Math.round(avail/totLim*100)+'% available':'');setPct('csb-avail',totLim>0?avail/totLim*100:0);
   setEl('nb-cards',CARDS.length);
+  /* update total transaction count badge */
+  const totTxns=CARDS.reduce((s,c)=>s+(c.transactions||[]).length,0);
+  setEl('nb-txns',totTxns);
+}
+
+/* Open all-cards transaction view — picks first card if only one, or shows all */
+function openAllTxns(){
+  if(!CARDS.length) return toast('No cards added yet','warn');
+  /* Open transactions for the first card; user can switch via card tile */
+  openTxnHistory(CARDS[0].id);
 }
 
 function renderCardGrid(){
@@ -1286,7 +1478,10 @@ function buildCard(c,now){
         <div class="cc-nick">${esc(c.nickname||'—')}</div>
         <div class="cc-variant">${esc(c.cardVariant||'Standard')} · ${esc(c.network||'Card')}${c.rewardsType&&c.rewardsType!=='None'?' · '+esc(c.rewardsType):''}</div>
       </div>
-      <span class="badge ${stMap[c.status]||'b-active'}">${stLbl[c.status]||'Active'}</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+        <span class="badge ${stMap[c.status]||'b-active'}">${stLbl[c.status]||'Active'}</span>
+        ${(c.transactions||[]).length>0?`<span style="font-size:10px;font-weight:700;color:var(--yw);background:var(--yw-s);padding:2px 7px;border-radius:20px;white-space:nowrap"><i class="fa fa-table-list" style="font-size:9px"></i> ${(c.transactions||[]).length} txns</span>`:''}
+      </div>
     </div>
     <div class="util-wrap">
       <div class="util-top">
@@ -1314,6 +1509,7 @@ function buildCard(c,now){
     </div>
     <div class="cc-acts">
       <button class="cc-pay-btn" data-id="${esc(c.id)}" data-action="pay-card"><i class="fa fa-coins"></i> Pay Bill</button>
+      <button class="cc-ib" title="Transactions" data-id="${esc(c.id)}" data-action="txn-card" style="color:var(--yw)"><i class="fa fa-table-list"></i></button>
       <button class="cc-ib edit" title="Edit Card" data-id="${esc(c.id)}" data-action="edit-card"><i class="fa fa-pen"></i></button>
       <button class="cc-ib hist" title="Payment History" data-id="${esc(c.id)}" data-action="hist-card"><i class="fa fa-clock-rotate-left"></i></button>
       <button class="cc-ib del" title="Delete Card" data-id="${esc(c.id)}" data-name="${esc(c.nickname)}" data-action="del-card"><i class="fa fa-trash"></i></button>
@@ -1329,6 +1525,7 @@ document.getElementById('cardGrid').addEventListener('click',function(e){
   if(action==='pay-card') openPay(id,true);
   else if(action==='edit-card') editCard(id);
   else if(action==='hist-card') openHist(id,true);
+  else if(action==='txn-card') openTxnHistory(id);
   else if(action==='del-card') confirmDel(id,btn.dataset.name||'',true);
 });
 
@@ -1745,6 +1942,326 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));closeSb();}
   if((e.ctrlKey||e.metaKey)&&e.key==='n'&&!document.querySelector('.overlay.open')){e.preventDefault();mainAdd();}
 });
+
+/* ══════════════════════════════════════
+   TRANSACTION HISTORY SYSTEM
+══════════════════════════════════════ */
+
+/* Current card being viewed in txn modal */
+let TXN_CARD_ID=null;
+let TXN_FILTER='all';
+
+/* Category config: color + icon */
+const CAT_CFG={
+  'Shopping':  {color:'var(--ac)', bg:'rgba(115,102,255,.12)', icon:'🛍'},
+  'Food':      {color:'var(--or)', bg:'var(--or-s)',           icon:'🍕'},
+  'Travel':    {color:'var(--bl)', bg:'var(--bl-s)',           icon:'✈'},
+  'Fuel':      {color:'var(--yw)', bg:'var(--yw-s)',           icon:'⛽'},
+  'Groceries': {color:'var(--gr)', bg:'var(--gr-s)',           icon:'🛒'},
+  'Entertainment':{color:'var(--pu)',bg:'var(--pu-s)',         icon:'🎬'},
+  'Health':    {color:'#f472b6',  bg:'rgba(244,114,182,.09)', icon:'💊'},
+  'Utilities': {color:'var(--t2)',bg:'var(--s4)',              icon:'💡'},
+  'Education': {color:'var(--bl)', bg:'var(--bl-s)',           icon:'📚'},
+  'EMI':       {color:'var(--rd)', bg:'var(--rd-s)',           icon:'📅'},
+  'Payment':   {color:'var(--gr)', bg:'var(--gr-s)',           icon:'💳'},
+  'Refund':    {color:'var(--bl)', bg:'var(--bl-s)',           icon:'↩'},
+  'Other':     {color:'var(--t3)', bg:'var(--s4)',             icon:'📦'}
+};
+
+/* Open the transaction history modal for a card */
+function openTxnHistory(cardId){
+  const c=CARDS.find(x=>x.id===cardId);
+  if(!c) return toast('Card not found','error');
+  TXN_CARD_ID=cardId;
+  TXN_FILTER='all';
+
+  /* set card pill in header */
+  setEl('txn-cp-name', c.nickname||'—');
+  setEl('txn-cp-bank', c.issuingBank||'—');
+  setEl('txn-cp-num',  '•••• '+(c.lastFour||'####'));
+
+  /* reset search & filter UI */
+  const sq=document.getElementById('txn-search-q');
+  if(sq) sq.value='';
+  document.querySelectorAll('.txf').forEach(f=>{
+    f.classList.remove('on');
+    if(f.dataset.tf==='all') f.classList.add('on');
+  });
+
+  /* reset add form */
+  resetTxnForm();
+  const form=document.getElementById('addTxnForm');
+  if(form) form.classList.remove('open');
+  const btn=document.getElementById('toggleAddTxnBtn');
+  if(btn) btn.innerHTML='<i class="fa fa-plus"></i> Add Transaction';
+
+  renderTxnTable();
+  openM('txnModal');
+}
+
+/* Set filter tab */
+function setTxnFilter(f, el){
+  TXN_FILTER=f;
+  document.querySelectorAll('.txf').forEach(x=>x.classList.remove('on'));
+  if(el) el.classList.add('on');
+  renderTxnTable();
+}
+
+/* Get transactions array for current card */
+function getTxns(){
+  const c=CARDS.find(x=>x.id===TXN_CARD_ID);
+  return c ? (c.transactions||[]) : [];
+}
+
+/* Render the table and stats */
+function renderTxnTable(){
+  const c=CARDS.find(x=>x.id===TXN_CARD_ID);
+  if(!c) return;
+
+  const q=(document.getElementById('txn-search-q')?.value||'').toLowerCase();
+  const sort=document.getElementById('txn-sort')?.value||'date-desc';
+  let txns=[...(c.transactions||[])];
+
+  /* filter by type */
+  if(TXN_FILTER==='spend')   txns=txns.filter(t=>t.txnType==='spend');
+  else if(TXN_FILTER==='pay') txns=txns.filter(t=>t.txnType==='pay');
+  else if(TXN_FILTER==='refund') txns=txns.filter(t=>t.txnType==='refund');
+
+  /* search */
+  if(q) txns=txns.filter(t=>
+    (t.merchant||'').toLowerCase().includes(q)||
+    (t.note||'').toLowerCase().includes(q)||
+    (t.category||'').toLowerCase().includes(q)||
+    (t.method||'').toLowerCase().includes(q)
+  );
+
+  /* sort */
+  txns.sort((a,b)=>{
+    switch(sort){
+      case'date-desc': return (b.date||'')>(a.date||'')?1:-1;
+      case'date-asc':  return (a.date||'')>(b.date||'')?1:-1;
+      case'amt-desc':  return (b.amount||0)-(a.amount||0);
+      case'amt-asc':   return (a.amount||0)-(b.amount||0);
+    }
+    return 0;
+  });
+
+  /* update summary stats from ALL transactions (not filtered) */
+  const all=c.transactions||[];
+  const totalSpent =all.filter(t=>t.txnType==='spend')  .reduce((s,t)=>s+(t.amount||0),0);
+  const totalPaid  =all.filter(t=>t.txnType==='pay')    .reduce((s,t)=>s+(t.amount||0),0);
+  const totalRefund=all.filter(t=>t.txnType==='refund') .reduce((s,t)=>s+(t.amount||0),0);
+  setEl('ts-total',  '₹'+fmt(totalSpent));
+  setEl('ts-paid',   '₹'+fmt(totalPaid));
+  setEl('ts-refund', '₹'+fmt(totalRefund));
+  setEl('ts-count',  all.length);
+  setEl('txn-count', txns.length+' transaction'+(txns.length===1?'':'s'));
+
+  const tbody=document.getElementById('txnTableBody');
+  if(!txns.length){
+    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--t3)"><i class="fa fa-receipt" style="font-size:28px;display:block;margin-bottom:10px;opacity:.2"></i>${TXN_FILTER==='all'&&!q?'No transactions yet — click <strong>Add Transaction</strong> below to start tracking':'No transactions match the current filter'}</td></tr>`;
+    return;
+  }
+
+  const typeMap={
+    spend:  {label:'Spent',   color:'var(--rd)', dot:'#ff5a68'},
+    pay:    {label:'Payment', color:'var(--gr)', dot:'#1edd8a'},
+    refund: {label:'Refund',  color:'var(--bl)', dot:'#4db0ff'}
+  };
+
+  tbody.innerHTML=txns.map((t,i)=>{
+    const tm=typeMap[t.txnType]||typeMap.spend;
+    const cat=CAT_CFG[t.category]||CAT_CFG['Other'];
+    const amtSign=t.txnType==='spend'?'-':'+';
+    const amtColor=t.txnType==='spend'?'var(--rd)':t.txnType==='refund'?'var(--bl)':'var(--gr)';
+    return`<tr>
+      <td style="font-size:12px;color:var(--t2);white-space:nowrap">${t.date||'—'}</td>
+      <td>
+        <div style="font-weight:600;font-size:13px;line-height:1.3">${esc(t.merchant||'—')}</div>
+      </td>
+      <td>
+        <span class="txn-cat-pill" style="background:${cat.bg};color:${cat.color}">${cat.icon} ${esc(t.category||'Other')}</span>
+      </td>
+      <td>
+        <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:${tm.color}">
+          <span style="width:7px;height:7px;border-radius:50%;background:${tm.dot};flex-shrink:0;display:inline-block"></span>
+          ${tm.label}
+        </span>
+      </td>
+      <td style="text-align:right;font-family:var(--fh);font-weight:700;color:${amtColor};white-space:nowrap">
+        ${amtSign}₹${fmt(t.amount||0)}
+      </td>
+      <td style="font-size:11px;color:var(--t3)">${esc(t.method||'—')}</td>
+      <td style="font-size:11px;color:var(--t3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(t.note||'')}">${esc(t.note||'—')}</td>
+      <td style="text-align:center">
+        <button class="txn-del-btn" data-txn-idx="${t._idx}" onclick="deleteTxn(this)" title="Delete transaction">
+          <i class="fa fa-trash"></i>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* Toggle add-transaction form */
+function toggleAddTxnForm(){
+  const form=document.getElementById('addTxnForm');
+  const btn=document.getElementById('toggleAddTxnBtn');
+  const isOpen=form.classList.contains('open');
+  form.classList.toggle('open',!isOpen);
+  btn.innerHTML=isOpen
+    ?'<i class="fa fa-plus"></i> Add Transaction'
+    :'<i class="fa fa-xmark"></i> Cancel';
+  if(!isOpen){
+    resetTxnForm();
+    document.getElementById('nt-merchant').focus();
+  }
+}
+
+/* Reset the add-transaction form */
+function resetTxnForm(){
+  const d=document.getElementById('nt-date');
+  if(d) d.value=today();
+  ['nt-merchant','nt-note'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const cat=document.getElementById('nt-category');if(cat) cat.value='Shopping';
+  const typ=document.getElementById('nt-type');if(typ) typ.value='spend';
+  const mth=document.getElementById('nt-method');if(mth) mth.value='Online / E-commerce';
+  const amt=document.getElementById('nt-amount');if(amt) amt.value='';
+  onTxnTypeChange();
+}
+
+/* Auto-set category when type changes */
+function onTxnTypeChange(){
+  const typ=document.getElementById('nt-type')?.value;
+  const cat=document.getElementById('nt-category');
+  if(!cat) return;
+  if(typ==='pay')    cat.value='Payment';
+  if(typ==='refund') cat.value='Refund';
+  if(typ==='spend' && (cat.value==='Payment'||cat.value==='Refund')) cat.value='Shopping';
+}
+
+/* Save a new transaction */
+async function saveTxn(){
+  const merchant=(document.getElementById('nt-merchant')?.value||'').trim();
+  const amount=parseFloat(document.getElementById('nt-amount')?.value||0);
+  const date=document.getElementById('nt-date')?.value||today();
+  const category=document.getElementById('nt-category')?.value||'Other';
+  const txnType=document.getElementById('nt-type')?.value||'spend';
+  const method=document.getElementById('nt-method')?.value||'Other';
+  const note=(document.getElementById('nt-note')?.value||'').trim();
+
+  if(!merchant) return toast('Enter a merchant / description','warn');
+  if(amount<=0)  return toast('Enter a valid amount','warn');
+
+  const c=CARDS.find(x=>x.id===TXN_CARD_ID);
+  if(!c) return toast('Card not found','error');
+
+  const newTxn={
+    merchant,amount,date,category,txnType,method,note,
+    ts:new Date().toISOString()
+  };
+
+  /* Update outstanding balance on card */
+  let newOut=c.currentOutstanding||0;
+  let newDue=c.totalDue||0;
+  if(txnType==='spend'){
+    newOut+=amount;
+    newDue+=amount;
+  } else if(txnType==='pay'){
+    newOut=Math.max(0,newOut-amount);
+    newDue=Math.max(0,newDue-amount);
+  } else if(txnType==='refund'){
+    newOut=Math.max(0,newOut-amount);
+    newDue=Math.max(0,newDue-amount);
+  }
+
+  try{
+    await fs.updateDoc(fs.doc(db,'credit_cards',c.id),{
+      transactions:[...(c.transactions||[]),newTxn],
+      currentOutstanding:newOut,
+      totalDue:newDue,
+      updatedAt:fs.serverTimestamp()
+    });
+    toast(`₹${fmt(amount)} ${txnType==='spend'?'spent':'recorded'} ✓`,'success');
+    resetTxnForm();
+    /* keep form open for fast entry */
+    document.getElementById('nt-merchant').focus();
+  }catch(e){
+    toast('Save failed: '+e.message,'error');
+  }
+}
+
+/* Delete a transaction by index */
+async function deleteTxn(btn){
+  const c=CARDS.find(x=>x.id===TXN_CARD_ID);
+  if(!c) return;
+  const idx=parseInt(btn.dataset.txnIdx);
+  const txns=[...(c.transactions||[])];
+  if(isNaN(idx)||idx<0||idx>=txns.length) return toast('Transaction not found','error');
+
+  const t=txns[idx];
+  if(!confirm(`Delete this transaction?\n${t.merchant} · ₹${fmt(t.amount)}`)) return;
+
+  /* Reverse balance effect */
+  let newOut=c.currentOutstanding||0;
+  let newDue=c.totalDue||0;
+  if(t.txnType==='spend'){
+    newOut=Math.max(0,newOut-t.amount);
+    newDue=Math.max(0,newDue-t.amount);
+  } else if(t.txnType==='pay'||t.txnType==='refund'){
+    newOut+=t.amount;
+    newDue+=t.amount;
+  }
+
+  txns.splice(idx,1);
+  try{
+    await fs.updateDoc(fs.doc(db,'credit_cards',c.id),{
+      transactions:txns,
+      currentOutstanding:newOut,
+      totalDue:newDue,
+      updatedAt:fs.serverTimestamp()
+    });
+    toast('Transaction deleted','success');
+  }catch(e){
+    toast('Delete failed: '+e.message,'error');
+  }
+}
+
+/* Rebuild transactions with _idx for delete buttons after snapshot updates */
+function patchTxnIdx(c){
+  if(!c||!c.transactions) return c;
+  return {...c, transactions: c.transactions.map((t,i)=>({...t,_idx:i}))};
+}
+
+/* Export transactions as CSV */
+function exportTxnCSV(){
+  const c=CARDS.find(x=>x.id===TXN_CARD_ID);
+  if(!c) return;
+  const txns=c.transactions||[];
+  if(!txns.length) return toast('No transactions to export','warn');
+  const h=['Date','Merchant','Category','Type','Amount','Method','Note'];
+  const rows=txns.map(t=>[
+    t.date||'',t.merchant||'',t.category||'',t.txnType||'',
+    t.amount||0,t.method||'',t.note||''
+  ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  dlCSV([h.map(x=>`"${x}"`).join(','),...rows].join('\n'),`txn_${(c.nickname||'card').replace(/\s+/g,'_')}_${today()}.csv`);
+  toast('Exported ✓','success');
+}
+
+/* Re-render txn table whenever cards snapshot fires, if modal is open */
+function renderCards(){
+  updateCardSum();
+
+  // ✅ PATCH INDEX HERE
+  CARDS = CARDS.map(patchTxnIdx);
+
+  renderCardGrid();
+
+  // refresh txn modal if open
+  if(TXN_CARD_ID && document.getElementById('txnModal').classList.contains('open')){
+    renderTxnTable();
+  }
+
+}
 </script>
 </body>
 </html>
