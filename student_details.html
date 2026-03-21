@@ -4,926 +4,1931 @@
 <meta charset="UTF-8">
 <title>Student ID Manager</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- ⭐ Favicon -->
 <link rel="icon" type="image/png" href="assets/fav.png">
 <link rel="apple-touch-icon" href="assets/fav.png">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
+/* ============================================================
+   DESIGN TOKENS & RESET
+============================================================ */
+:root {
+  --bg-base:        #020812;
+  --bg-surface:     #040f1e;
+  --bg-card:        rgba(6, 18, 38, 0.92);
+  --bg-hover:       rgba(0, 200, 255, 0.06);
+  --bg-active:      rgba(0, 200, 255, 0.12);
+
+  --cyan:           #00c8ff;
+  --cyan-dim:       rgba(0, 200, 255, 0.35);
+  --cyan-glow:      rgba(0, 200, 255, 0.15);
+  --teal:           #00ffb3;
+  --teal-dim:       rgba(0, 255, 179, 0.25);
+  --amber:          #ffb830;
+  --red:            #ff4d5e;
+  --green:          #00e57a;
+
+  --text-primary:   #e8f4ff;
+  --text-secondary: #7da8cc;
+  --text-muted:     #3d6480;
+
+  --border:         rgba(0, 200, 255, 0.12);
+  --border-strong:  rgba(0, 200, 255, 0.28);
+  --border-hover:   rgba(0, 200, 255, 0.45);
+
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+
+  --shadow-cyan: 0 0 24px rgba(0, 200, 255, 0.12);
+  --shadow-card: 0 4px 32px rgba(0, 0, 0, 0.5);
+
+  --font-ui:   'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
 body {
-  font-family: Poppins, sans-serif;
-  background: linear-gradient(135deg,#000428,#004e92);
-  color:#fff;
-  padding:20px;
+  font-family: var(--font-ui);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-/* ================= HEADER ================= */
-.app-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 22px;
-  margin-bottom:18px;
-  background:rgba(0,0,0,.35);
-  border-radius:16px;
-  border:1px solid rgba(0,255,255,.3);
-  backdrop-filter:blur(10px);
-}
-
-.logo {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  font-size:18px;
-  font-weight:700;
-  color:#00eaff;
-}
-
-.logo .glow {
-  font-size:26px;
-  filter:drop-shadow(0 0 8px #00eaff);
-}
-
-.app-meta {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:13px;
-  color:#aefcff;
-}
-
-.status-dot {
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#00ff99;
-  box-shadow:0 0 8px #00ff99;
-}
-
-/* ================= FOOTER ================= */
-.app-footer {
-  margin-top:22px;
-  padding:12px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:12px;
-  background:rgba(0,0,0,.35);
-  border-radius:16px;
-  border:1px solid rgba(0,255,255,.3);
-  backdrop-filter:blur(10px);
-  color:#aefcff;
-}
-
-.footer-right {
-  color:#00ffcc;
-  font-weight:600;
-}
-
-
-h1 {
-  text-align:center;
-  color:#00eaff;
-  margin-bottom:10px;
-}
-
-.controls {
-  text-align:center;
-  margin-bottom:20px;
-}
-
-button {
-  padding:12px 18px;
-  border:none;
-  border-radius:10px;
-  font-weight:700;
-  background:#00eaff;
-  cursor:pointer;
-}
-
-button:disabled {
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.table-box {
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(14px);
-  border-radius:16px;
-  border:1px solid rgba(0,255,255,.3);
-  overflow:hidden;
-}
-
-table {
-  width:100%;
-  border-collapse:collapse;
-}
-
-/* ================= TABLE BORDERS ================= */
-
-/* Add borders to table headers and cells */
-th, td {
-  padding: 12px;
-  font-size: 14px;
-  /* Horizontal Divider */
-  border-bottom: 1px solid rgba(0, 255, 255, 0.15); 
-  /* Vertical Divider */
-  border-right: 1px solid rgba(0, 255, 255, 0.05);  
-}
-
-/* Remove the border from the last column so it looks clean */
-th:last-child, 
-td:last-child {
-  border-right: none;
-}
-
-/* Make the bottom border of the last row disappear (optional, fits the box) */
-tr:last-child td {
-  border-bottom: none;
-}
-
-/* Add a cool hover effect to highlight the row and borders */
-tr:hover {
-  background: rgba(0, 255, 255, 0.1) !important; /* Overrides even/odd color */
-  cursor: pointer;
-  transition: 0.2s ease-in-out;
-}
-
-.uid {
-  font-weight:700;
-  color:#00ffcc;
-  font-family:monospace;
-}
-
-.missing {
-  color:#ff6666;
-  font-weight:700;
-}
-
-.pagination {
-  margin-top:15px;
-  display:flex;
-  justify-content:center;
-  gap:12px;
-}
-
-.ok-live {
-  color:#00ff99;
-  font-weight:700;
-  animation: okPop 0.35s ease;
-}
-
-@keyframes okPop {
-  from { transform: scale(0.7); opacity:0; }
-  to   { transform: scale(1); opacity:1; }
-}
-
-.actions {
-  display:flex;
-  gap:8px;
-}
-
-.btn {
-  padding:6px 10px;
-  border-radius:8px;
-  border:none;
-  font-size:12px;
-  font-weight:700;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.btn.view {
-  background:#00eaff;
-  color:#003;
-}
-
-.btn.edit {
-  background:#ffe066;
-  color:#222;
-}
-
-.btn.delete {
-  background:#ff5c5c;
-  color:#fff;
-}
-
-.btn:hover {
-  transform:scale(1.08);
-  box-shadow:0 0 10px rgba(255,255,255,.25);
-}
-
-.view-header {
-  display:flex;
-  align-items:center;
-  gap:14px;
-  margin-bottom:15px;
-}
-
-.avatar {
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  background:#00eaff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-  color:#003;
-}
-
-.view-sub {
-  font-size:12px;
-  color:#00ffcc;
-}
-
-#viewGrid {
-
-  grid-template-columns: 1fr 1fr;   /* two equal columns */
-  gap: 16px;
-  width: 100%;
-}
-
-
-#viewGrid > div {
-  background: rgba(0,255,255,.06);
-  border: 1px solid rgba(0,255,255,.2);
-  border-radius: 10px;
-  padding: 10px 14px;
-  width: 100%;
-}
-
-
-#viewGrid span {
-  display: block;
-  font-size: 11px;
-  color: #00eaff;
-  margin-bottom: 3px;
-}
-
-.view-modal {
+/* ============================================================
+   ANIMATED BACKGROUND GRID
+============================================================ */
+body::before {
+  content: '';
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.75);
-  display: none;
+  background-image:
+    linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -40%;
+  left: -20%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(ellipse at center, rgba(0,200,255,0.04) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(8%,6%) scale(1.08); }
+}
+
+.page-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 20px 32px;
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+.app-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.view-card {
-  background: linear-gradient(180deg,#001a33,#001f3f);
-  padding: 20px;
-  border-radius: 16px;
-  width: 92%;
-  max-width: 1100px; 
-  max-height: 90vh;
-  overflow-y: auto;
-  border: 1px solid cyan;
-  box-shadow: 0 0 30px rgba(0,255,255,.2);
-}
-
-#viewGrid table {
-  width: 100%;
-  border-collapse: collapse;
-  color: #eaffff;
-}
-
-#viewGrid td {
-  padding: 8px 10px;
-  border-bottom: 1px solid rgba(0,255,255,.15);
-}
-
-#viewGrid td:first-child {
-  color: #00eaff;
-  font-weight: 600;
-  width: 35%;
-}
-
-#viewGrid th {
-  background: rgba(0,255,255,.1);
-  padding: 10px;
-  text-align: left;
-  color: #00ffcc;
-}
-
-#viewGrid table td,
-#viewGrid table th {
-  border: 1px solid rgba(0,255,255,.25);
-  padding: 8px 10px;
-}
-
-.view-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  background: rgba(0,0,0,.2);
-  border-radius: 12px;
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-cyan), var(--shadow-card);
+  position: relative;
   overflow: hidden;
 }
 
-.view-table th {
-  background: rgba(0,255,255,.12);
-  color: #00eaff;
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid rgba(0,255,255,.3);
+.app-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0.6;
 }
 
-.view-table td {
-  padding: 8px 10px;
-  border-bottom: 1px solid rgba(0,255,255,.15);
-  color: #eaffff;
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.view-table table {
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(0,200,255,0.2), rgba(0,255,179,0.1));
+  border: 1px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  position: relative;
+}
+
+.logo-icon::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--cyan), var(--teal));
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: -1;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.logo-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: -0.2px;
+}
+
+.logo-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(0,200,255,0.07);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: default;
+  transition: var(--transition);
+}
+
+.stat-pill:hover {
+  border-color: var(--border-hover);
+  color: var(--cyan);
+}
+
+.stat-pill-value {
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.online-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid var(--green);
+  animation: pulse 2s ease-out infinite;
+  opacity: 0;
+}
+
+@keyframes pulse {
+  0%   { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2);   opacity: 0; }
+}
+
+/* ============================================================
+   STATS ROW
+============================================================ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.stat-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent, var(--cyan));
+  opacity: 0.6;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.stat-card.green { --accent: var(--green); }
+.stat-card.amber { --accent: var(--amber); }
+.stat-card.red   { --accent: var(--red); }
+
+.stat-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.stat-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-card-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   ACTION BOX
+============================================================ */
+.action-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title span {
+  width: 3px;
+  height: 14px;
+  background: var(--cyan);
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.08);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.action-btn:hover::before { opacity: 1; }
+
+.action-btn:active {
+  transform: scale(0.97);
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.action-btn.primary {
+  background: rgba(0, 200, 255, 0.12);
+  border-color: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+.action-btn.primary:hover {
+  background: rgba(0, 200, 255, 0.2);
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px rgba(0,200,255,0.2);
+}
+
+.action-btn.success {
+  background: rgba(0, 229, 122, 0.1);
+  border-color: rgba(0, 229, 122, 0.3);
+  color: var(--green);
+}
+
+.action-btn.success:hover {
+  background: rgba(0, 229, 122, 0.18);
+  border-color: var(--green);
+  box-shadow: 0 0 18px rgba(0,229,122,0.15);
+}
+
+.action-btn.warning {
+  background: rgba(255, 184, 48, 0.1);
+  border-color: rgba(255, 184, 48, 0.3);
+  color: var(--amber);
+}
+
+.action-btn.warning:hover {
+  background: rgba(255, 184, 48, 0.18);
+  border-color: var(--amber);
+  box-shadow: 0 0 18px rgba(255,184,48,0.15);
+}
+
+.action-btn.danger {
+  background: rgba(255, 77, 94, 0.1);
+  border-color: rgba(255, 77, 94, 0.3);
+  color: var(--red);
+}
+
+.action-btn.danger:hover {
+  background: rgba(255, 77, 94, 0.18);
+  border-color: var(--red);
+  box-shadow: 0 0 18px rgba(255,77,94,0.15);
+}
+
+/* ============================================================
+   CAMPUS PANEL
+============================================================ */
+.campus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.campus-tile {
+  background: rgba(0,200,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: var(--transition);
+}
+
+.campus-tile:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-hover);
+}
+
+.campus-tile-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.campus-tile-count {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--cyan);
+}
+
+/* ============================================================
+   SEARCH BAR
+============================================================ */
+.search-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.search-wrap svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color var(--transition);
+}
+
+.search-wrap:focus-within svg { color: var(--cyan); }
+
+#searchInput {
+  width: 100%;
+  max-width: 480px;
+  padding: 12px 16px 12px 44px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: all var(--transition);
+}
+
+#searchInput::placeholder { color: var(--text-muted); }
+
+#searchInput:focus {
+  border-color: var(--cyan-dim);
+  background: rgba(6,18,38,0.98);
+  box-shadow: 0 0 0 3px rgba(0,200,255,0.08), var(--shadow-cyan);
+}
+
+.search-count {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  vertical-align: middle;
+}
+
+/* ============================================================
+   TABLE
+============================================================ */
+.table-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.view-table table td {
-  padding: 6px 8px;
-  border: 1px solid rgba(0,255,255,.15);
+thead tr {
+  background: rgba(0,200,255,0.04);
 }
 
-@media (max-width: 768px) {
-  .view-card {
-    max-width: 100%;
-    padding: 12px;
-  }
-
-  .view-table td {
-    font-size: 12px;
-  }
-
-  .view-table table td {
-    display: block;
-    width: 100%;
-  }
-}
-
-.search-box {
-  position: relative;
-  max-width: 420px;
-  margin: 14px auto 20px;
-  width: 100%;
-}
-
-.search-box input {
-  width: 80%;
-  padding: 14px 16px 14px 42px;
-  border-radius: 14px;
-  border: 1px solid rgba(0,255,255,.35);
-  outline: none;
-  background: linear-gradient(145deg, rgba(0,0,0,.7), rgba(0,20,40,.9));
-  color: #00eaff;
+th {
+  padding: 12px 16px;
+  font-size: 11px;
   font-weight: 700;
-  font-size: 14px;
-  letter-spacing: .4px;
-  box-shadow: 
-    0 0 18px rgba(0,255,255,.25),
-    inset 0 0 8px rgba(0,255,255,.15);
-  transition: .3s ease;
-}
-
-.search-box input::placeholder {
-  color: rgba(0,255,255,.6);
-}
-
-.search-box input:focus {
-  box-shadow:
-    0 0 28px rgba(0,255,255,.5),
-    inset 0 0 12px rgba(0,255,255,.35);
-  border-color: #00ffcc;
-}
-
-/* Icon */
-.search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  color: #00ffcc;
-  pointer-events: none;
-  filter: drop-shadow(0 0 6px #00ffcc);
-}
-
-/* Scanning animation */
-.scan-line {
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  top: 50%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #00ffcc, transparent);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.search-box input:focus ~ .scan-line {
-  animation: scan 1.2s linear infinite;
-  opacity: 1;
-}
-
-@keyframes scan {
-  0%   { top: 20%; opacity: 0; }
-  50%  { opacity: 1; }
-  100% { top: 80%; opacity: 0; }
-}
-
-/* ================= ADMIN ACTION BOX ================= */
-
-.action-box {
-  max-width: 900px;
-  margin: 0 auto 22px;
-  padding: 18px 20px;
-  background: linear-gradient(
-    145deg,
-    rgba(0, 40, 80, 0.65),
-    rgba(0, 10, 30, 0.85)
-  );
-  border-radius: 18px;
-  border: 1px solid rgba(0,255,255,.35);
-  backdrop-filter: blur(14px);
-  box-shadow:
-    0 0 22px rgba(0,255,255,.25),
-    inset 0 0 12px rgba(0,255,255,.12);
-}
-
-/* Title */
-.action-box-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #00eaff;
-  margin-bottom: 14px;
-  letter-spacing: .4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Buttons container */
-.action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-/* Base button */
-.action-btn {
-  padding: 12px 18px;
-  border-radius: 12px;
-  border: none;
-  font-weight: 700;
-  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
   cursor: pointer;
-  transition: .25s ease;
+  user-select: none;
+  transition: color var(--transition);
+}
+
+th:hover { color: var(--cyan); }
+
+th .sort-icon {
+  display: inline-block;
+  margin-left: 4px;
+  opacity: 0.4;
+  transition: opacity var(--transition);
+}
+
+th.sort-asc .sort-icon,
+th.sort-desc .sort-icon { opacity: 1; color: var(--cyan); }
+
+th.sort-asc .sort-icon::after  { content: ' ↑'; }
+th.sort-desc .sort-icon::after { content: ' ↓'; }
+th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: ' ↕'; }
+
+td {
+  padding: 13px 16px;
+  font-size: 13px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tbody tr {
+  transition: background var(--transition);
+}
+
+tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cell-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.cell-name {
+  font-weight: 600;
+}
+
+.cell-uid {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--teal);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.cell-missing {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--red);
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.badge.ok {
+  background: rgba(0,229,122,0.12);
+  color: var(--green);
+  border: 1px solid rgba(0,229,122,0.25);
+}
+
+.badge.missing {
+  background: rgba(255,77,94,0.12);
+  color: var(--red);
+  border: 1px solid rgba(255,77,94,0.25);
+}
+
+.action-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
-  letter-spacing: .3px;
+  gap: 6px;
 }
 
-/* Button variants */
-.action-btn.primary {
-  background: linear-gradient(135deg,#00eaff,#00ffcc);
-  color: #002b3d;
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all var(--transition);
+  flex-shrink: 0;
 }
 
-.action-btn.secondary {
-  background: linear-gradient(135deg,#ffe066,#ffcc33);
-  color: #3a2a00;
+.icon-btn:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-active);
+  color: var(--cyan);
+  transform: translateY(-1px);
 }
 
-.action-btn.warning {
-  background: linear-gradient(135deg,#ff7676,#ff4d4d);
-  color: #fff;
+.icon-btn.view:hover  { color: var(--cyan); border-color: var(--cyan-dim); }
+.icon-btn.edit:hover  { color: var(--amber); border-color: rgba(255,184,48,0.3); }
+.icon-btn.del:hover   { color: var(--red); border-color: rgba(255,77,94,0.3); }
+
+/* ============================================================
+   PAGINATION
+============================================================ */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.action-btn.info {
-  background: linear-gradient(135deg,#74c0fc,#4dabf7);
-  color: #002;
+.pagination-info {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
 }
 
-/* Hover */
-.action-btn:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 0 18px rgba(255,255,255,.35);
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* Disabled */
-.action-btn:disabled {
-  opacity: .55;
+.page-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: var(--cyan-dim);
+  color: var(--cyan);
+  background: var(--bg-hover);
+}
+
+.page-btn.active {
+  background: rgba(0,200,255,0.12);
+  border-color: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+.page-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
-/* Mobile */
-@media (max-width: 600px) {
-  .action-buttons {
-    flex-direction: column;
-  }
-
-  .action-btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-
-/* ================= FIX MODALS ================= */
-
-.fix-modal {
+/* ============================================================
+   MODALS — FIX MODAL BASE
+============================================================ */
+.modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.75);
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 20px;
 }
 
-.fix-card {
-  width: 95%;
-  max-width: 900px;
+.modal-overlay.active {
+  display: flex;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 960px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 20px;
-  background: linear-gradient(180deg,#001a33,#001f3f);
-  border-radius: 18px;
-  border: 1px solid rgba(0,255,255,.35);
-  box-shadow: 0 0 35px rgba(0,255,255,.25);
+  box-shadow: 0 0 60px rgba(0,200,255,0.15), var(--shadow-card);
+  animation: slideUp 0.2s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-.fix-card h2 {
-  color: #00eaff;
-  margin-bottom: 6px;
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.fix-desc {
-  font-size: 13px;
-  color: #aefcff;
-  margin-bottom: 14px;
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface);
+  z-index: 2;
 }
 
+.modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  line-height: 1;
+}
+
+.modal-close:hover {
+  border-color: var(--red);
+  color: var(--red);
+  background: rgba(255,77,94,0.08);
+}
+
+.modal-body {
+  padding: 20px 24px;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-surface);
+}
+
+/* ============================================================
+   FIX TABLE (inside modals)
+============================================================ */
 .fix-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 15px;
-}
-
-.fix-table th,
-.fix-table td {
-  padding: 10px;
-  border: 1px solid rgba(0,255,255,.2);
   font-size: 13px;
 }
 
 .fix-table th {
-  background: rgba(0,255,255,.12);
-  color: #00eaff;
+  background: rgba(0,200,255,0.05);
+  padding: 10px 14px;
+  text-align: left;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: default;
 }
 
-.fix-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
+.fix-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
 }
 
-/* ================= MOBILE TABLE CARDS ================= */
+.fix-table tbody tr:last-child td { border-bottom: none; }
 
-.mobile-card {
-  background: linear-gradient(180deg,#001a33,#001f3f);
-  border: 1px solid rgba(0,255,255,.35);
-  border-radius: 16px;
-  padding: 14px 16px;
-  box-shadow: 0 0 18px rgba(0,255,255,.2);
-}
-
-.mobile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.mobile-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: #00eaff;
-}
-
-.mobile-uid {
-  font-family: monospace;
-  font-size: 13px;
-  color: #00ffcc;
-}
-
-.mobile-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px dashed rgba(0,255,255,.15);
-  font-size: 13px;
-}
-
-.mobile-row span:first-child {
-  color: #00eaff;
-  font-weight: 600;
-}
-
-.mobile-row span:last-child {
-  color: #eaffff;
-  font-weight: 600;
-}
-
-.mobile-row:last-of-type {
-  border-bottom: none;
-}
-
-.mobile-actions {
-  margin-top: 10px;
-  text-align: right;
-}
-
-.mobile-actions button {
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: none;
-  font-size: 12px;
-  font-weight: 700;
-  background: linear-gradient(135deg,#00eaff,#00ffcc);
-  color: #002b3d;
-}
-
-.campus-summary {
-  margin-top: 18px;
-  padding: 14px;
-  background: rgba(0,255,255,.06);
-  border: 1px solid rgba(0,255,255,.25);
-  border-radius: 14px;
-}
-
-.campus-summary-title {
-  font-weight: 700;
-  color: #00eaff;
-  margin-bottom: 10px;
-}
-
-.campus-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 13px;
-  border-bottom: 1px dashed rgba(0,255,255,.2);
-}
-
-.campus-row:last-child {
-  border-bottom: none;
-}
-
-.campus-name {
-  color: #00ffcc;
-  font-weight: 600;
-}
-
-.campus-count {
-  font-weight: 700;
-  color: #fff;
-}
-
-/* Hide mobile cards on desktop */
-.mobile-list {
+/* ============================================================
+   PROGRESS BAR
+============================================================ */
+.progress-wrap {
+  margin-top: 16px;
   display: none;
 }
 
-/* Show mobile cards only on small screens */
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+}
+
+.progress-track {
+  height: 6px;
+  background: rgba(0,200,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--teal));
+  border-radius: 6px;
+  width: 0%;
+  transition: width 0.2s ease;
+  box-shadow: 0 0 10px rgba(0,200,255,0.4);
+}
+
+/* ============================================================
+   VIEW MODAL (student detail)
+============================================================ */
+.view-modal-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 1100px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 0 60px rgba(0,200,255,0.15), var(--shadow-card);
+  animation: slideUp 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.view-student-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.view-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(0,200,255,0.25), rgba(0,255,179,0.15));
+  border: 1px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.view-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.view-uid {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--teal);
+  margin-top: 2px;
+}
+
+.view-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  padding: 20px 24px;
+}
+
+.view-field {
+  background: rgba(0,200,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  transition: border-color var(--transition);
+}
+
+.view-field:hover { border-color: var(--border-strong); }
+
+.view-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--cyan);
+  margin-bottom: 5px;
+}
+
+.view-field-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+/* ============================================================
+   MOBILE CARDS
+============================================================ */
+.mobile-list { display: none; }
+
+.m-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--transition);
+}
+
+.m-card:hover { border-color: var(--border-strong); }
+
+.m-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.m-card-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.m-card-uid {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--teal);
+  margin-top: 2px;
+}
+
+.m-card-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.m-card-row:last-of-type { border-bottom: none; }
+
+.m-card-key {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.m-card-val {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+}
+
+.m-card-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.m-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.m-btn:hover {
+  border-color: var(--cyan-dim);
+  color: var(--cyan);
+  background: var(--bg-hover);
+}
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+============================================================ */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), var(--shadow-cyan);
+  animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  max-width: 320px;
+  pointer-events: auto;
+}
+
+.toast.success { border-color: rgba(0,229,122,0.4); }
+.toast.error   { border-color: rgba(255,77,94,0.4); }
+.toast.info    { border-color: var(--cyan-dim); }
+
+.toast-icon { font-size: 16px; flex-shrink: 0; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(24px) scale(0.95); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toastOut {
+  to   { opacity: 0; transform: translateX(24px) scale(0.95); }
+}
+
+.toast.hiding { animation: toastOut 0.2s ease forwards; }
+
+/* ============================================================
+   EMPTY STATE
+============================================================ */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  margin-top: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.footer-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.footer-badge {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   SCROLLBAR
+============================================================ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 900px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 768px) {
+  .table-wrapper { display: none; }
+  .mobile-list { display: block; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .header-meta .stat-pill { display: none; }
+  .btn-row { flex-direction: column; }
+  .action-btn { width: 100%; justify-content: center; }
+}
 
-  .table-box {
-    display: none;
-  }
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .page-wrap { padding: 12px 12px 24px; }
+}
 
-  .mobile-list {
-    display: block;
-  }
+/* ============================================================
+   UTILITY
+============================================================ */
+.text-cyan  { color: var(--cyan); }
+.text-teal  { color: var(--teal); }
+.text-amber { color: var(--amber); }
+.text-red   { color: var(--red); }
+.text-green { color: var(--green); }
+.text-muted { color: var(--text-muted); }
+.mono       { font-family: var(--font-mono); }
+.fw-700     { font-weight: 700; }
 
+.hidden { display: none !important; }
+
+/* Schema modal special row */
+.schema-issue {
+  background: rgba(255,184,48,0.04);
 }
 </style>
 </head>
 
 <body>
+<div class="page-wrap">
 
-  <header class="app-header">
+<!-- ===================== HEADER ===================== -->
+<header class="app-header">
   <div class="logo">
-    <span class="glow">🎓</span>
-    <span>Student ID Manager</span>
+    <div class="logo-icon">🎓</div>
+    <div class="logo-text">
+      <div class="logo-title">Student ID Manager</div>
+      <div class="logo-sub">Admin Dashboard</div>
+    </div>
   </div>
-  <div class="app-meta">
-    <span class="status-dot"></span>
-    <span class="status-text">System Online</span>
+  <div class="header-meta">
+    <div class="stat-pill" id="headerTotalPill">
+      <span>Students</span>
+      <span class="stat-pill-value" id="headerTotalVal">—</span>
+    </div>
+    <div class="stat-pill" id="headerMissingPill">
+      <span>Missing IDs</span>
+      <span class="stat-pill-value" id="headerMissingVal">—</span>
+    </div>
+    <div class="online-badge">
+      <span class="pulse-dot"></span>
+      <span>System Online</span>
+    </div>
   </div>
 </header>
 
-<h1>Student ID Manager</h1>
+<!-- ===================== STATS ROW ===================== -->
+<div class="stats-row" id="statsRow">
+  <div class="stat-card">
+    <div class="stat-card-label">Total Students</div>
+    <div class="stat-card-value" id="statTotal">—</div>
+    <div class="stat-card-sub">Across all campuses</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-card-label">IDs Assigned</div>
+    <div class="stat-card-value text-green" id="statAssigned">—</div>
+    <div class="stat-card-sub" id="statAssignedPct">—% complete</div>
+  </div>
+  <div class="stat-card amber">
+    <div class="stat-card-label">Campuses</div>
+    <div class="stat-card-value text-amber" id="statCampuses">—</div>
+    <div class="stat-card-sub">Active locations</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-card-label">Missing IDs</div>
+    <div class="stat-card-value text-red" id="statMissing">—</div>
+    <div class="stat-card-sub">Needs attention</div>
+  </div>
+</div>
+
+<!-- ===================== ACTION BOX ===================== -->
 <div class="action-box">
-  <div class="action-box-title">
-    ⚙️ Admin Actions
+  <div class="section-header">
+    <div class="section-title"><span></span> Admin Actions</div>
   </div>
 
-  <div class="action-buttons">
-    <button id="courseFixBtn" class="action-btn info">🎓 Generate Course IDs</button>
-    <button id="exportExcelBtn" class="action-btn primary">📊 Export Full Excel</button>
-</div>
-
-  <!-- 🔥 Campus Overview Panel -->
-  <div class="campus-summary" id="campusSummary"></div>
-
-  <!-- Course Status -->
-  <div id="courseGenStatus" style="display:none;margin-top:12px">
-    <div id="courseAlready">Already Done: 0</div>
-    <div id="courseDone">Done Now: 0</div>
-    <div id="coursePending">Pending: 0</div>
+  <div class="btn-row">
+    <button id="courseFixBtn" class="action-btn primary">
+      🎓 Generate Course IDs
+    </button>
+    <button id="exportExcelBtn" class="action-btn success">
+      📊 Export Full Excel
+    </button>
+    <button id="fixSchemaModalBtn" class="action-btn warning" style="display:none">
+      🔎 Fix Schema Issues <span id="schemaBadgeCount"></span>
+    </button>
+    <button id="dobFixBtn" class="action-btn warning" style="display:none">
+      📅 Fix DOB Format
+    </button>
+    <button id="refreshBtn" class="action-btn primary">
+      🔄 Refresh Data
+    </button>
   </div>
+
+  <!-- Course gen status -->
+  <div id="courseGenStatus" style="display:none; font-size:12px; margin-top:10px; font-family:var(--font-mono); color:var(--text-secondary);">
+    <span id="courseAlready" class="text-muted"></span> &nbsp;
+    <span id="courseDone" class="text-green"></span> &nbsp;
+    <span id="coursePending" class="text-amber"></span>
+  </div>
+
+  <!-- Campus overview -->
+  <div class="section-header" style="margin-top:20px; margin-bottom:0">
+    <div class="section-title"><span></span> Campus Overview</div>
+  </div>
+  <div class="campus-grid" id="campusSummary"></div>
 </div>
 
-
-
-
-
-
-<div class="fix-modal" id="schemaModal">
-  <div class="fix-card">
-    <h2>🔎 Field Mismatch Report</h2>
-    <p class="fix-desc">
-      The system detected inconsistent field names. You can auto-normalize them safely.
-    </p>
-
-    <table class="fix-table">
-      <thead>
-        <tr>
-           <th>Student</th>
-  <th>Issue Type</th>
-  <th>Field</th>
-  <th>Recommended</th>
-        </tr>
-      </thead>
-      <tbody id="schemaTable"></tbody>
-    </table>
-
-    <div class="fix-actions">
-      <button id="fixSchemaBtn" class="action-btn primary">
-        🛠 Fix All
-      </button>
-      <button onclick="closeFixModals()" class="action-btn warning">
-        ❌ Cancel
-      </button>
+<!-- ===================== SEARCH + TABLE ===================== -->
+<div class="table-wrapper">
+  <div class="table-toolbar">
+    <div class="search-wrap" style="margin:0; flex:1; max-width:420px;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search name, phone, student ID…">
+    </div>
+    <span class="search-count" id="searchCount"></span>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <select id="campusFilter" class="action-btn primary" style="padding:8px 12px; cursor:pointer; font-size:12px;">
+        <option value="">All Campuses</option>
+      </select>
+      <select id="idStatusFilter" class="action-btn primary" style="padding:8px 12px; cursor:pointer; font-size:12px;">
+        <option value="">All Status</option>
+        <option value="assigned">ID Assigned</option>
+        <option value="missing">ID Missing</option>
+      </select>
     </div>
   </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th data-sort="index">#<span class="sort-icon"></span></th>
+        <th data-sort="name">Name<span class="sort-icon"></span></th>
+        <th data-sort="campus">Campus<span class="sort-icon"></span></th>
+        <th data-sort="dob">Date of Birth<span class="sort-icon"></span></th>
+        <th data-sort="phone">Phone<span class="sort-icon"></span></th>
+        <th data-sort="courseId">Course ID<span class="sort-icon"></span></th>
+        <th data-sort="year">Year<span class="sort-icon"></span></th>
+        <th data-sort="admission">Admission<span class="sort-icon"></span></th>
+        <th data-sort="uid">Student ID<span class="sort-icon"></span></th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="studentTable"></tbody>
+  </table>
+
+  <!-- Pagination inside table wrapper -->
+  <div class="pagination">
+    <span class="pagination-info" id="paginationInfo"></span>
+    <div class="pagination-controls" id="paginationControls"></div>
+  </div>
 </div>
 
-
-<div class="search-box">
-  <span class="search-icon">🔍</span>
-  <input id="searchInput" type="text" placeholder="Search by Name, Phone or Student ID">
-  <span class="scan-line"></span>
-</div>
-
-
-<div class="table-box">
-<table>
-<thead>
-<tr>
-  <th>#</th>
-  <th>Name</th>
-  <th>Campus</th>
-   <th>Date of Birth</th>
-  <th>Phone</th>
-  <th>Course ID</th>  
-  <th>Year</th>
-  <th>Admission</th>
-  <th>Student ID</th>
-  <th>Actions</th>
-</tr>
-</thead>
-<tbody id="studentTable"></tbody>
-</table>
-</div>
-<!-- ================= MOBILE STUDENT LIST ================= -->
+<!-- ===================== MOBILE CARD LIST ===================== -->
 <div class="mobile-list" id="mobileStudentList"></div>
 
-<div class="view-modal" id="viewModal">
-  <div class="view-card">
-    <div class="view-header">
-      <div class="avatar" id="viewAvatar">👤</div>
+<!-- ===================== VIEW MODAL ===================== -->
+<div class="modal-overlay" id="viewModal">
+  <div class="view-modal-card">
+    <div class="modal-header">
       <div>
-        <div id="viewName" style="font-size:18px;font-weight:700"></div>
-        <div class="view-sub" id="viewUID"></div>
+        <div class="modal-title" id="viewModalTitle">Student Details</div>
+        <div class="modal-subtitle" id="viewModalSub"></div>
+      </div>
+      <button class="modal-close" onclick="closeView()">✕</button>
+    </div>
+    <div class="view-student-header">
+      <div class="view-avatar" id="viewAvatar">👤</div>
+      <div>
+        <div class="view-name" id="viewName"></div>
+        <div class="view-uid" id="viewUID"></div>
       </div>
     </div>
-
-    <div class="view-grid" id="viewGrid"></div>
-
-    <div style="text-align:right;margin-top:15px">
-      <button class="btn delete" onclick="closeView()">Close</button>
-    </div>
+    <div class="view-fields" id="viewGrid"></div>
   </div>
 </div>
 
-<div class="pagination">
-  <button id="prevBtn">⬅ Prev</button>
-  <span id="pageInfo"></span>
-  <button id="nextBtn">Next ➡</button>
-</div>
-
-<div class="fix-modal" id="idFixModal">
-  <div class="fix-card">
-    <h2>🆔 Student ID Generation</h2>
-    <p class="fix-desc">
-      Preview IDs that will be generated (no overwrite).
-    </p>
-
-    <table class="fix-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Current ID</th>
-          <th>New ID</th>
-        </tr>
-      </thead>
-      <tbody id="idFixTable"></tbody>
-    </table>
-
-    <!-- ✅ Progress Bar -->
-    <div id="idGenProgress" style="margin-top:12px;display:none">
-      <div style="font-size:13px;color:#00eaff">
-        Progress:
-        <span id="idGenCount">0</span> /
-        <span id="idGenTotal">0</span>
-        (<span id="idGenPercent">0%</span>)
+<!-- ===================== ID GENERATION MODAL ===================== -->
+<div class="modal-overlay" id="idFixModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">🆔 Generate Student IDs</div>
+        <div class="modal-subtitle">Preview IDs that will be assigned (no overwrite of existing IDs)</div>
       </div>
-      <div style="height:6px;background:rgba(0,255,255,.2);border-radius:6px;margin-top:6px">
-        <div id="idGenBar"
-             style="height:6px;width:0%;background:#00ffcc;border-radius:6px;transition:.2s">
+      <button class="modal-close" onclick="closeFixModals()">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="fix-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Current ID</th>
+            <th>New ID</th>
+          </tr>
+        </thead>
+        <tbody id="idFixTable"></tbody>
+      </table>
+      <div class="progress-wrap" id="idGenProgress">
+        <div class="progress-info">
+          <span>Generating IDs…</span>
+          <span><span id="idGenCount">0</span> / <span id="idGenTotal">0</span> (<span id="idGenPercent">0%</span>)</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-bar" id="idGenBar"></div>
         </div>
       </div>
     </div>
-
-    <!-- ✅ Only ONE Action Block -->
-    <div class="fix-actions">
-      <button id="confirmIdGen" class="action-btn primary">
-        🚀 Generate IDs
-      </button>
-      <button onclick="closeFixModals()" class="action-btn warning">
-        ❌ Cancel
-      </button>
+    <div class="modal-footer">
+      <button id="confirmIdGen" class="action-btn success">🚀 Generate IDs</button>
+      <button onclick="closeFixModals()" class="action-btn danger">✕ Cancel</button>
     </div>
   </div>
 </div>
 
-<div class="fix-modal" id="dobFixModal">
-  <div class="fix-card">
-    <h2>📅 DOB Fix (DD-MM-YYYY)</h2>
-    <p class="fix-desc">
-      Only students with incorrect DOB format are shown.
-    </p>
-
-    <table class="fix-table">
-      <thead>
-        <tr>
-          <th>Student ID</th>
-          <th>Name</th>
-          <th>Original DOB</th>
-          <th>Will Be</th>
-        </tr>
-      </thead>
-      <tbody id="dobFixTable"></tbody>
-    </table>
-
-    <div class="fix-actions">
-      <button id="confirmDobFix" class="action-btn secondary">
-        ✅ Fix DOB Now
-      </button>
-      <button onclick="closeFixModals()" class="action-btn warning">
-        ❌ Cancel
-      </button>
+<!-- ===================== DOB FIX MODAL ===================== -->
+<div class="modal-overlay" id="dobFixModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">📅 Fix Date of Birth Format</div>
+        <div class="modal-subtitle">Normalises all DOB values to DD-MM-YYYY standard</div>
+      </div>
+      <button class="modal-close" onclick="closeFixModals()">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="fix-table">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Original DOB</th>
+            <th>Will Become</th>
+          </tr>
+        </thead>
+        <tbody id="dobFixTable"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button id="confirmDobFix" class="action-btn warning">✅ Fix DOB Now</button>
+      <button onclick="closeFixModals()" class="action-btn danger">✕ Cancel</button>
     </div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-<script type="module" src="./assets/js/student-id-manager.js"></script>
+<!-- ===================== SCHEMA FIX MODAL ===================== -->
+<div class="modal-overlay" id="schemaModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">🔎 Field Mismatch Report</div>
+        <div class="modal-subtitle">Detected inconsistent field names — auto-normalise safely</div>
+      </div>
+      <button class="modal-close" onclick="closeFixModals()">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="fix-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Issue Type</th>
+            <th>Field</th>
+            <th>Recommended</th>
+          </tr>
+        </thead>
+        <tbody id="schemaTable"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button id="fixSchemaBtn" class="action-btn success">🛠 Fix All</button>
+      <button onclick="closeFixModals()" class="action-btn danger">✕ Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOAST CONTAINER ===================== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===================== FOOTER ===================== -->
 <footer class="app-footer">
-  <div>
-    © 2026 Student ID System | Powered by Samrat
-  </div>
-  <div class="footer-right">
-    Secure • No Overwrite • No Delete • Audit Safe
+  <div>© 2026 Student ID System &nbsp;·&nbsp; Powered by Samrat</div>
+  <div class="footer-badges">
+    <span class="footer-badge">Secure</span>
+    <span class="footer-badge">No Overwrite</span>
+    <span class="footer-badge">Audit Safe</span>
   </div>
 </footer>
+
+</div><!-- /page-wrap -->
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script>
+/* ============================================================
+   GLOBAL HELPERS — Toast, Modal, Sorting
+============================================================ */
+
+// Toast system
+function showToast(msg, type = 'info', duration = 3200) {
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  const tc = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
+  tc.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('hiding');
+    setTimeout(() => t.remove(), 220);
+  }, duration);
+}
+
+// Modal helpers
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.add('active');
+}
+
+function closeFixModals() {
+  ['idFixModal','dobFixModal','schemaModal'].forEach(id => {
+    const m = document.getElementById(id);
+    if (m) m.classList.remove('active');
+  });
+}
+
+function closeView() {
+  const m = document.getElementById('viewModal');
+  if (m) m.classList.remove('active');
+}
+
+// Click outside modal to close
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) {
+      overlay.classList.remove('active');
+    }
+  });
+});
+
+// ESC key to close
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+  }
+});
+
+/* ============================================================
+   SORTING ENGINE
+============================================================ */
+let sortKey = null;
+let sortDir = 1; // 1 = asc, -1 = desc
+
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (sortKey === key) {
+      sortDir *= -1;
+    } else {
+      sortKey = key;
+      sortDir = 1;
+    }
+    // Update UI
+    document.querySelectorAll('th[data-sort]').forEach(h => {
+      h.classList.remove('sort-asc','sort-desc');
+    });
+    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    renderTable();
+  });
+});
+
+/* ============================================================
+   FILTER ENGINE
+============================================================ */
+document.getElementById('campusFilter').addEventListener('change', renderTable);
+document.getElementById('idStatusFilter').addEventListener('change', renderTable);
+
+/* ============================================================
+   STATS UPDATER
+============================================================ */
+function updateStats(data) {
+  const total    = data.length;
+  const assigned = data.filter(s => s.studentId && s.studentId !== 'N/A').length;
+  const missing  = total - assigned;
+  const campuses = new Set(data.map(s => s.campus || s.Campus || '').filter(Boolean)).size;
+  const pct      = total ? Math.round((assigned / total) * 100) : 0;
+
+  document.getElementById('statTotal').textContent    = total;
+  document.getElementById('statAssigned').textContent = assigned;
+  document.getElementById('statMissing').textContent  = missing;
+  document.getElementById('statCampuses').textContent = campuses;
+  document.getElementById('statAssignedPct').textContent = `${pct}% complete`;
+  document.getElementById('headerTotalVal').textContent  = total;
+  document.getElementById('headerMissingVal').textContent = missing;
+
+  // Campus grid
+  const campusMap = {};
+  data.forEach(s => {
+    const c = s.campus || s.Campus || 'Unknown';
+    campusMap[c] = (campusMap[c] || 0) + 1;
+  });
+
+  const grid = document.getElementById('campusSummary');
+  grid.innerHTML = Object.entries(campusMap).sort((a,b) => b[1]-a[1]).map(([name, count]) => `
+    <div class="campus-tile">
+      <span class="campus-tile-name">${name}</span>
+      <span class="campus-tile-count">${count}</span>
+    </div>
+  `).join('');
+
+  // Populate campus filter
+  const cf = document.getElementById('campusFilter');
+  const current = cf.value;
+  cf.innerHTML = '<option value="">All Campuses</option>';
+  Object.keys(campusMap).sort().forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    if (c === current) o.selected = true;
+    cf.appendChild(o);
+  });
+}
+
+/* ============================================================
+   RENDER HELPERS
+============================================================ */
+function getFieldValue(student, ...keys) {
+  for (const k of keys) {
+    if (student[k] !== undefined && student[k] !== null && student[k] !== '') {
+      return student[k];
+    }
+  }
+  return '—';
+}
+
+function renderActions(student, idx) {
+  return `
+    <div class="action-cell">
+      <button class="icon-btn view" onclick="openStudentView(${idx})" title="View">👁</button>
+      <button class="icon-btn edit" onclick="editStudent(${idx})" title="Edit">✏️</button>
+    </div>
+  `;
+}
+
+/* ============================================================
+   VIEW MODAL
+============================================================ */
+function openStudentView(idx) {
+  if (!window._studentData) return;
+  const s = window._studentData[idx];
+  if (!s) return;
+
+  const name = getFieldValue(s,'name','Name','Student Name','student_name');
+  const uid  = getFieldValue(s,'studentId','StudentID','student_id','ID');
+
+  document.getElementById('viewAvatar').textContent   = name.charAt(0).toUpperCase() || '👤';
+  document.getElementById('viewName').textContent     = name;
+  document.getElementById('viewUID').textContent      = uid !== '—' ? uid : 'No ID assigned';
+  document.getElementById('viewModalTitle').textContent = 'Student Details';
+  document.getElementById('viewModalSub').textContent   = `Record #${idx + 1}`;
+
+  const grid = document.getElementById('viewGrid');
+  const skip = ['__rowNum','_idx'];
+  grid.innerHTML = Object.entries(s)
+    .filter(([k]) => !skip.includes(k))
+    .map(([k, v]) => `
+      <div class="view-field">
+        <div class="view-field-label">${k}</div>
+        <div class="view-field-value">${v !== undefined && v !== null && v !== '' ? v : '<span class="text-muted">—</span>'}</div>
+      </div>
+    `).join('');
+
+  openModal('viewModal');
+}
+
+function editStudent(idx) {
+  showToast('Edit functionality is handled by your JS module', 'info');
+}
+
+/* ============================================================
+   MAIN TABLE RENDER
+============================================================ */
+let currentPage  = 1;
+const perPage    = 20;
+
+function getSortedFiltered(data) {
+  const q      = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const campus = document.getElementById('campusFilter').value;
+  const status = document.getElementById('idStatusFilter').value;
+
+  let filtered = data.filter(s => {
+    const name  = (getFieldValue(s,'name','Name','Student Name') + '').toLowerCase();
+    const phone = (getFieldValue(s,'phone','Phone','mobile','Mobile') + '').toLowerCase();
+    const uid   = (getFieldValue(s,'studentId','StudentID','student_id','ID') + '').toLowerCase();
+    const camp  = (s.campus || s.Campus || '');
+    const hasId = uid && uid !== '—' && uid !== 'n/a';
+
+    if (q && !name.includes(q) && !phone.includes(q) && !uid.includes(q)) return false;
+    if (campus && camp !== campus) return false;
+    if (status === 'assigned' && !hasId) return false;
+    if (status === 'missing'  && hasId)  return false;
+    return true;
+  });
+
+  if (sortKey) {
+    filtered.sort((a, b) => {
+      let av = '', bv = '';
+      if      (sortKey === 'name')    { av = getFieldValue(a,'name','Name','Student Name'); bv = getFieldValue(b,'name','Name','Student Name'); }
+      else if (sortKey === 'campus')  { av = a.campus||a.Campus||''; bv = b.campus||b.Campus||''; }
+      else if (sortKey === 'uid')     { av = getFieldValue(a,'studentId','StudentID','student_id','ID'); bv = getFieldValue(b,'studentId','StudentID','student_id','ID'); }
+      else if (sortKey === 'phone')   { av = getFieldValue(a,'phone','Phone','mobile','Mobile'); bv = getFieldValue(b,'phone','Phone','mobile','Mobile'); }
+      else if (sortKey === 'year')    { av = getFieldValue(a,'year','Year'); bv = getFieldValue(b,'year','Year'); }
+      else if (sortKey === 'admission'){ av = getFieldValue(a,'admission','Admission'); bv = getFieldValue(b,'admission','Admission'); }
+      else if (sortKey === 'dob')     { av = getFieldValue(a,'dob','DOB','dateOfBirth','Date of Birth'); bv = getFieldValue(b,'dob','DOB','dateOfBirth','Date of Birth'); }
+      else if (sortKey === 'courseId'){ av = getFieldValue(a,'courseId','CourseID','course_id','Course ID'); bv = getFieldValue(b,'courseId','CourseID','course_id','Course ID'); }
+      else { av = String(a[sortKey]||''); bv = String(b[sortKey]||''); }
+
+      av = String(av).toLowerCase();
+      bv = String(bv).toLowerCase();
+      return av < bv ? -sortDir : av > bv ? sortDir : 0;
+    });
+  }
+
+  return filtered;
+}
+
+function renderTable() {
+  if (!window._studentData) return;
+
+  const filtered = getSortedFiltered(window._studentData);
+  const total    = filtered.length;
+  const pages    = Math.max(1, Math.ceil(total / perPage));
+  if (currentPage > pages) currentPage = pages;
+
+  const slice = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  // Search count
+  document.getElementById('searchCount').textContent =
+    window._studentData.length !== total
+      ? `${total} result${total !== 1 ? 's' : ''} found`
+      : '';
+
+  // Table body
+  const tbody = document.getElementById('studentTable');
+  if (!slice.length) {
+    tbody.innerHTML = `<tr><td colspan="10">
+      <div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <div class="empty-state-text">No students match your filters.</div>
+      </div>
+    </td></tr>`;
+  } else {
+    tbody.innerHTML = slice.map((s, i) => {
+      const globalIdx = (currentPage - 1) * perPage + i;
+      const name  = getFieldValue(s,'name','Name','Student Name');
+      const camp  = getFieldValue(s,'campus','Campus');
+      const dob   = getFieldValue(s,'dob','DOB','dateOfBirth','Date of Birth');
+      const phone = getFieldValue(s,'phone','Phone','mobile','Mobile');
+      const cid   = getFieldValue(s,'courseId','CourseID','course_id','Course ID');
+      const year  = getFieldValue(s,'year','Year');
+      const adm   = getFieldValue(s,'admission','Admission');
+      const uid   = getFieldValue(s,'studentId','StudentID','student_id','ID');
+      const hasUid = uid !== '—' && uid.toLowerCase() !== 'n/a' && uid !== '';
+
+      return `<tr>
+        <td class="cell-num">${globalIdx + 1}</td>
+        <td class="cell-name">${name}</td>
+        <td>${camp}</td>
+        <td class="mono" style="font-size:12px">${dob}</td>
+        <td class="mono" style="font-size:12px">${phone}</td>
+        <td class="mono" style="font-size:12px">${cid}</td>
+        <td>${year}</td>
+        <td>${adm}</td>
+        <td>${hasUid
+              ? `<span class="cell-uid">${uid}</span>`
+              : `<span class="badge missing">Missing</span>`
+            }</td>
+        <td>${renderActions(s, globalIdx)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Pagination info
+  const start = total ? (currentPage - 1) * perPage + 1 : 0;
+  const end   = Math.min(currentPage * perPage, total);
+  document.getElementById('paginationInfo').textContent = total
+    ? `Showing ${start}–${end} of ${total}`
+    : 'No records';
+
+  // Pagination controls
+  const pc = document.getElementById('paginationControls');
+  let btns = '';
+  btns += `<button class="page-btn" ${currentPage===1?'disabled':''} onclick="changePage(${currentPage-1})">← Prev</button>`;
+
+  // smart page numbers
+  const delta = 2;
+  const range = [];
+  for (let p = Math.max(1, currentPage - delta); p <= Math.min(pages, currentPage + delta); p++) range.push(p);
+  if (range[0] > 1) { btns += `<button class="page-btn" onclick="changePage(1)">1</button>`; if (range[0] > 2) btns += `<span style="color:var(--text-muted); padding:0 4px">…</span>`; }
+  range.forEach(p => { btns += `<button class="page-btn ${p===currentPage?'active':''}" onclick="changePage(${p})">${p}</button>`; });
+  if (range[range.length-1] < pages) { if (range[range.length-1] < pages - 1) btns += `<span style="color:var(--text-muted); padding:0 4px">…</span>`; btns += `<button class="page-btn" onclick="changePage(${pages})">${pages}</button>`; }
+
+  btns += `<button class="page-btn" ${currentPage===pages?'disabled':''} onclick="changePage(${currentPage+1})">Next →</button>`;
+  pc.innerHTML = btns;
+
+  // Mobile
+  renderMobile(slice);
+}
+
+function changePage(p) {
+  currentPage = p;
+  renderTable();
+  document.querySelector('.table-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ============================================================
+   MOBILE RENDER
+============================================================ */
+function renderMobile(slice) {
+  const el = document.getElementById('mobileStudentList');
+  if (!slice.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">No students found.</div></div>`;
+    return;
+  }
+  el.innerHTML = slice.map((s, i) => {
+    const name  = getFieldValue(s,'name','Name','Student Name');
+    const camp  = getFieldValue(s,'campus','Campus');
+    const uid   = getFieldValue(s,'studentId','StudentID','student_id','ID');
+    const phone = getFieldValue(s,'phone','Phone','mobile','Mobile');
+    const year  = getFieldValue(s,'year','Year');
+    const adm   = getFieldValue(s,'admission','Admission');
+    const hasUid = uid !== '—' && uid.toLowerCase() !== 'n/a';
+    const globalIdx = (currentPage - 1) * perPage + i;
+
+    return `
+    <div class="m-card">
+      <div class="m-card-top">
+        <div>
+          <div class="m-card-name">${name}</div>
+          <div class="m-card-uid">${hasUid ? uid : '⚠ No ID assigned'}</div>
+        </div>
+        <span class="badge ${hasUid?'ok':'missing'}">${hasUid?'ID OK':'Missing'}</span>
+      </div>
+      <div class="m-card-row"><span class="m-card-key">Campus</span><span class="m-card-val">${camp}</span></div>
+      <div class="m-card-row"><span class="m-card-key">Phone</span><span class="m-card-val mono" style="font-size:12px">${phone}</span></div>
+      <div class="m-card-row"><span class="m-card-key">Year</span><span class="m-card-val">${year}</span></div>
+      <div class="m-card-row"><span class="m-card-key">Admission</span><span class="m-card-val">${adm}</span></div>
+      <div class="m-card-actions">
+        <button class="m-btn" onclick="openStudentView(${globalIdx})">👁 View Details</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   SEARCH (debounced)
+============================================================ */
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { currentPage = 1; renderTable(); }, 200);
+});
+
+/* ============================================================
+   REFRESH BUTTON
+============================================================ */
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  showToast('Refreshing data…', 'info', 1500);
+  // The JS module should expose a global refresh/reload fn; call it if available
+  if (typeof window.reloadStudentData === 'function') {
+    window.reloadStudentData();
+  }
+});
+
+/* ============================================================
+   BRIDGE: called by student-id-manager.js to push data in
+   Usage from your JS module:
+     window.renderStudentUI(studentsArray)
+============================================================ */
+window.renderStudentUI = function(data) {
+  window._studentData = data;
+  updateStats(data);
+  currentPage = 1;
+  renderTable();
+};
+
+/* ============================================================
+   KEEP old API surface intact for your JS module
+============================================================ */
+
+// closeView / closeFixModals already defined above
+
+// Keep schema modal open button
+document.getElementById('fixSchemaModalBtn').addEventListener('click', () => openModal('schemaModal'));
+
+// Keep dobFix button
+document.getElementById('dobFixBtn').addEventListener('click', () => openModal('dobFixModal'));
+
+</script>
+
+<!-- Your existing logic module (unchanged) -->
+<script type="module" src="./assets/js/student-id-manager.js"></script>
 
 </body>
 </html>

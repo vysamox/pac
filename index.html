@@ -199,37 +199,153 @@ canvas#const-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-eve
 @keyframes blob-float{0%{transform:translate(0,0) scale(1);}33%{transform:translate(18px,-28px) scale(1.05);}66%{transform:translate(-12px,12px) scale(.96);}100%{transform:translate(6px,-6px) scale(1.02);}}
 .ab3{animation:blob-float3 16s ease-in-out infinite alternate;}
 @keyframes blob-float3{0%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-44%) scale(1.08)}100%{transform:translateX(-56%) scale(.94)}}
-.hero-inner{position:relative;z-index:2;max-width:900px;margin:0 auto;}
+.hero-inner{position:relative;z-index:2;max-width:1100px;margin:0 auto;}
 
 /* ─── HUD RING AVATAR ─── */
-.av-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:36px;width:290px;height:290px;}
-.hud-ring-outer{position:absolute;width:280px;height:280px;border-radius:50%;border:1.5px dashed rgba(0,240,255,0.18);animation:halo-spin 24s linear infinite;pointer-events:none;}
-.hud-ring-outer::before,.hud-ring-outer::after{content:"";position:absolute;border-radius:50%;width:10px;height:10px;background:var(--neon);box-shadow:0 0 14px var(--neon),0 0 28px rgba(0,240,255,0.6);top:-5px;left:50%;margin-left:-5px;}
-.hud-ring-outer::after{top:auto;bottom:-5px;width:8px;height:8px;margin-left:-4px;background:var(--violet);box-shadow:0 0 12px var(--violet),0 0 24px rgba(139,92,246,0.6);}
-.hud-ring-main{position:absolute;width:218px;height:218px;border-radius:50%;border:3px solid transparent;background:linear-gradient(var(--ink2),var(--ink2)) padding-box,conic-gradient(from 195deg,var(--neon) 0deg,var(--blue) 80deg,var(--violet) 190deg,transparent 191deg,transparent 360deg) border-box;animation:halo-spin 4.5s linear infinite;pointer-events:none;box-shadow:0 0 50px rgba(0,240,255,0.28),0 0 90px rgba(139,92,246,0.12),inset 0 0 30px rgba(0,240,255,0.04);}
-.hud-ring-mid{position:absolute;width:188px;height:188px;border-radius:50%;border:1px solid rgba(0,240,255,0.1);pointer-events:none;}
-.hud-ticks{position:absolute;width:216px;height:216px;border-radius:50%;animation:halo-spin 10s linear infinite reverse;pointer-events:none;}
+.av-wrap{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  margin-bottom:36px;width:310px;height:310px;
+}
+
+/* radar sweep */
+.hud-radar{
+  position:absolute;width:306px;height:306px;border-radius:50%;z-index:0;overflow:hidden;pointer-events:none;
+}
+.hud-radar::after{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(0,240,255,0.0) 0deg,rgba(0,240,255,0.14) 60deg,rgba(0,240,255,0.0) 61deg);
+  animation:radar-sweep 4s linear infinite;
+}
+@keyframes radar-sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* outer dashed orbit */
+.hud-ring-outer{
+  position:absolute;width:300px;height:300px;border-radius:50%;
+  border:1px dashed rgba(0,240,255,0.15);
+  animation:halo-spin 28s linear infinite;pointer-events:none;
+}
+.hud-ring-outer::before,.hud-ring-outer::after{
+  content:"";position:absolute;border-radius:50%;
+  width:10px;height:10px;
+  background:var(--neon);box-shadow:0 0 14px var(--neon),0 0 28px rgba(0,240,255,0.6);
+  top:-5px;left:50%;margin-left:-5px;
+}
+.hud-ring-outer::after{
+  top:auto;bottom:-5px;width:8px;height:8px;margin-left:-4px;
+  background:var(--violet);box-shadow:0 0 12px var(--violet),0 0 24px rgba(139,92,246,0.6);
+}
+/* secondary orbit ring */
+.hud-ring-outer2{
+  position:absolute;width:260px;height:260px;border-radius:50%;
+  border:1px dashed rgba(139,92,246,0.12);
+  animation:halo-spin 18s linear infinite reverse;pointer-events:none;
+}
+.hud-ring-outer2::before{
+  content:"";position:absolute;border-radius:50%;
+  width:7px;height:7px;background:var(--green);
+  box-shadow:0 0 10px var(--green);
+  top:-3.5px;left:50%;margin-left:-3.5px;
+}
+/* main arc */
+.hud-ring-main{
+  position:absolute;width:224px;height:224px;border-radius:50%;
+  border:3px solid transparent;
+  background:linear-gradient(var(--ink2),var(--ink2)) padding-box,
+    conic-gradient(from 195deg,var(--neon) 0deg,var(--blue) 80deg,var(--violet) 190deg,transparent 191deg,transparent 360deg) border-box;
+  animation:halo-spin 4.5s linear infinite;pointer-events:none;
+  box-shadow:0 0 50px rgba(0,240,255,0.25),0 0 90px rgba(139,92,246,0.1),inset 0 0 30px rgba(0,240,255,0.04);
+}
+.hud-ring-mid{position:absolute;width:192px;height:192px;border-radius:50%;border:1px solid rgba(0,240,255,0.1);pointer-events:none;}
+.hud-ticks{position:absolute;width:220px;height:220px;border-radius:50%;animation:halo-spin 10s linear infinite reverse;pointer-events:none;}
 .hud-ticks::before{content:"";position:absolute;width:2px;height:14px;background:var(--neon);top:-1px;left:50%;margin-left:-1px;box-shadow:0 0 8px var(--neon);border-radius:1px;}
 .hud-ticks::after{content:"";position:absolute;width:2px;height:10px;background:var(--violet);bottom:-1px;left:50%;margin-left:-1px;box-shadow:0 0 8px var(--violet);border-radius:1px;}
-.av-img{width:160px;height:160px;border-radius:50%;object-fit:cover;display:block;filter:brightness(1.1) contrast(1.08) saturate(1.15);position:relative;z-index:2;}
-.av-pulse{position:absolute;bottom:62px;right:62px;width:16px;height:16px;border-radius:50%;z-index:3;background:var(--green);border:2.5px solid var(--ink);box-shadow:0 0 12px var(--green);animation:pulse-s 2s ease-in-out infinite;}
+/* corner tick marks */
+.hud-tick-marks{position:absolute;width:224px;height:224px;border-radius:50%;pointer-events:none;}
+.hud-tick-marks::before{content:"";position:absolute;width:6px;height:2px;background:rgba(0,240,255,0.4);top:50%;right:-1px;margin-top:-1px;}
+.hud-tick-marks::after{content:"";position:absolute;width:6px;height:2px;background:rgba(0,240,255,0.4);top:50%;left:-1px;margin-top:-1px;}
+
+.av-img{width:170px;height:170px;border-radius:50%;object-fit:cover;display:block;filter:brightness(1.1) contrast(1.08) saturate(1.15);position:relative;z-index:2;}
+.av-pulse{position:absolute;bottom:68px;right:68px;width:16px;height:16px;border-radius:50%;z-index:3;background:var(--green);border:2.5px solid var(--ink);box-shadow:0 0 12px var(--green),0 0 24px rgba(6,255,165,0.4);animation:pulse-s 2s ease-in-out infinite;}
 @keyframes halo-spin{to{transform:rotate(360deg)}}
 
-/* ─── Floating HUD panels ─── */
-.hud-panel{position:absolute;z-index:1;background:rgba(0,18,40,0.6);border:1px solid rgba(0,240,255,0.14);border-radius:10px;padding:10px 14px;backdrop-filter:blur(14px);font-family:'Fira Code',monospace;font-size:9.5px;font-weight:300;color:rgba(0,240,255,0.65);letter-spacing:.5px;line-height:1.65;pointer-events:none;}
-.hud-panel::before{content:"";display:block;width:100%;height:1px;background:linear-gradient(90deg,var(--neon),transparent);margin-bottom:5px;opacity:.35;}
-.hud-panel.hp-l{left:-190px;top:50%;transform:translateY(-50%);width:160px;animation:hpf-l 7s ease-in-out infinite alternate;}
-.hud-panel.hp-r{right:-185px;top:50%;transform:translateY(-50%);width:155px;animation:hpf-r 7s ease-in-out infinite alternate;animation-delay:-3.5s;}
-.hud-panel.hp-tr{right:-140px;top:-20px;width:135px;animation:hpf-t 6s ease-in-out infinite alternate;animation-delay:-1s;}
-.hud-panel.hp-bl{left:-145px;bottom:-10px;width:135px;animation:hpf-b 6s ease-in-out infinite alternate;animation-delay:-4s;}
-@keyframes hpf-l{0%{transform:translateY(-50%) translateX(0)}100%{transform:translateY(calc(-50% - 10px)) translateX(4px)}}
-@keyframes hpf-r{0%{transform:translateY(-50%) translateX(0)}100%{transform:translateY(calc(-50% - 10px)) translateX(-4px)}}
-@keyframes hpf-t{0%{transform:translateY(0)}100%{transform:translateY(-10px)}}
-@keyframes hpf-b{0%{transform:translateY(0)}100%{transform:translateY(10px)}}
-.hud-chart{display:flex;gap:3px;align-items:flex-end;height:22px;margin-top:5px;}
-.hud-bar{width:6px;border-radius:2px;background:linear-gradient(to top,var(--blue),var(--neon));animation:bar-pulse 1.8s ease-in-out infinite alternate;}
-.hud-bar:nth-child(1){height:10px;animation-delay:0s;}.hud-bar:nth-child(2){height:18px;animation-delay:.2s;}.hud-bar:nth-child(3){height:13px;animation-delay:.4s;}.hud-bar:nth-child(4){height:20px;animation-delay:.1s;}.hud-bar:nth-child(5){height:15px;animation-delay:.35s;}
-@keyframes bar-pulse{0%{opacity:.4;transform:scaleY(.7)}100%{opacity:1;transform:scaleY(1)}}
+/* ─── HUD connector lines ─── */
+.hud-connector{
+  position:absolute;pointer-events:none;z-index:0;
+}
+.hud-connector svg{display:block;}
+.hud-connector line{
+  stroke:rgba(0,240,255,0.2);stroke-width:1;
+  stroke-dasharray:4 4;
+  animation:dash-flow 2s linear infinite;
+}
+@keyframes dash-flow{to{stroke-dashoffset:-16}}
+.hud-connector circle{fill:var(--neon);filter:drop-shadow(0 0 4px var(--neon));}
+
+/* ─── HUD panels ─── */
+.hud-panel{
+  position:absolute;z-index:3;
+  background:rgba(2,12,30,0.82);
+  border:1px solid rgba(0,240,255,0.2);
+  border-radius:12px;padding:12px 16px;
+  backdrop-filter:blur(20px);
+  font-family:'Fira Code',monospace;font-size:9.5px;font-weight:300;
+  color:rgba(0,240,255,0.8);letter-spacing:.6px;line-height:1.8;
+  pointer-events:none;
+  box-shadow:0 8px 30px rgba(0,0,0,0.5),inset 0 0 20px rgba(0,240,255,0.02);
+}
+.hud-panel-title{
+  font-size:9px;font-weight:400;letter-spacing:3px;text-transform:uppercase;
+  color:var(--neon);opacity:.7;margin-bottom:8px;
+  border-bottom:1px solid rgba(0,240,255,0.12);padding-bottom:5px;
+  display:flex;align-items:center;gap:6px;
+}
+.hud-panel-title::before{
+  content:"";width:5px;height:5px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 6px var(--green);
+  animation:pulse-s 2s ease-in-out infinite;flex-shrink:0;
+}
+.hud-panel.hp-l{
+  left:-215px;top:50%;transform:translateY(-50%);width:175px;
+  animation:hpf-l 8s ease-in-out infinite alternate;
+}
+.hud-panel.hp-r{
+  right:-210px;top:50%;transform:translateY(-50%);width:168px;
+  animation:hpf-r 8s ease-in-out infinite alternate;animation-delay:-4s;
+}
+.hud-panel.hp-tr{
+  right:-165px;top:-35px;width:148px;
+  animation:hpf-t 7s ease-in-out infinite alternate;animation-delay:-1.5s;
+}
+.hud-panel.hp-bl{
+  left:-165px;bottom:-25px;width:148px;
+  animation:hpf-b 7s ease-in-out infinite alternate;animation-delay:-5s;
+}
+@keyframes hpf-l{0%{transform:translateY(-50%) translateX(0)}100%{transform:translateY(calc(-50% - 12px)) translateX(5px)}}
+@keyframes hpf-r{0%{transform:translateY(-50%) translateX(0)}100%{transform:translateY(calc(-50% - 12px)) translateX(-5px)}}
+@keyframes hpf-t{0%{transform:translateY(0)}100%{transform:translateY(-12px)}}
+@keyframes hpf-b{0%{transform:translateY(0)}100%{transform:translateY(12px)}}
+
+/* ─── HUD bar rows ─── */
+.hud-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.hud-row-lbl{width:28px;flex-shrink:0;font-size:9px;opacity:.7;}
+.hud-row-bar{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+.hud-row-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--neon),var(--blue));box-shadow:0 0 6px rgba(0,240,255,0.5);transition:width 1s ease;}
+.hud-row-val{font-size:9px;color:var(--neon);min-width:26px;text-align:right;}
+
+/* analytics bar chart */
+.hud-chart{display:flex;gap:4px;align-items:flex-end;height:28px;margin-top:6px;}
+.hud-bar{border-radius:2px;background:linear-gradient(to top,var(--blue),var(--neon));transition:height .5s ease;}
+.hud-bar:nth-child(1){width:8px;height:12px;animation:bar-pulse 1.8s ease-in-out infinite alternate;animation-delay:0s;}
+.hud-bar:nth-child(2){width:8px;height:22px;animation:bar-pulse 1.8s ease-in-out infinite alternate;animation-delay:.25s;}
+.hud-bar:nth-child(3){width:8px;height:16px;animation:bar-pulse 1.8s ease-in-out infinite alternate;animation-delay:.5s;}
+.hud-bar:nth-child(4){width:8px;height:24px;animation:bar-pulse 1.8s ease-in-out infinite alternate;animation-delay:.12s;}
+.hud-bar:nth-child(5){width:8px;height:18px;animation:bar-pulse 1.8s ease-in-out infinite alternate;animation-delay:.38s;}
+@keyframes bar-pulse{0%{opacity:.45;transform:scaleY(.65)}100%{opacity:1;transform:scaleY(1)}}
+
+/* data value highlight */
+.hud-val{color:#fff;font-weight:500;}
+.hud-good{color:var(--green);}
+.hud-warn{color:var(--amber);}
 
 /* eyebrow */
 .eyebrow{display:inline-flex;align-items:center;gap:10px;padding:8px 22px;border-radius:99px;margin-bottom:24px;background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.18);font-family:'Fira Code',monospace;font-size:11px;font-weight:400;letter-spacing:3.5px;text-transform:uppercase;color:var(--neon);}
@@ -970,13 +1086,17 @@ footer::before{content:"";display:block;height:1px;background:linear-gradient(90
   .sec{padding:80px 20px;}
   .hero{padding:80px 20px 100px;}
   .hud-panel{display:none;}
-  .av-wrap{width:210px;height:210px;}
-  .hud-ring-outer{width:200px;height:200px;}
-  .hud-ring-main{width:160px;height:160px;}
-  .hud-ring-mid{width:138px;height:138px;}
-  .hud-ticks{width:158px;height:158px;}
-  .av-img{width:118px;height:118px;}
-  .av-pulse{bottom:44px;right:44px;}
+  .hud-connector{display:none;}
+  .av-wrap{width:230px;height:230px;}
+  .hud-radar{width:226px;height:226px;}
+  .hud-ring-outer{width:220px;height:220px;}
+  .hud-ring-outer2{width:190px;height:190px;}
+  .hud-ring-main{width:168px;height:168px;}
+  .hud-ring-mid{width:146px;height:146px;}
+  .hud-ticks{width:166px;height:166px;}
+  .hud-tick-marks{width:168px;height:168px;}
+  .av-img{width:124px;height:124px;}
+  .av-pulse{bottom:50px;right:50px;}
   .hero-title{font-size:52px;letter-spacing:2px;}
   .av-img{width:100px;height:100px;}
   .cta-primary,.cta-ghost{padding:12px 24px;font-size:13px;}
@@ -1217,7 +1337,7 @@ footer::before{content:"";display:block;height:1px;background:linear-gradient(90
   </a>
   <nav id="mainMenu"></nav>
   <div class="hdr-right">
-    <a href="#" class="hdr-btn"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="/login.html" class="hdr-btn"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
     <div class="hamburger" id="hamburger" onclick="toggleNav()">
       <span></span><span></span><span></span>
     </div>
@@ -1270,39 +1390,93 @@ footer::before{content:"";display:block;height:1px;background:linear-gradient(90
 
     <!-- HUD avatar ring -->
     <div class="av-wrap">
+      <!-- Radar sweep -->
+      <div class="hud-radar"></div>
+
+      <!-- Rings -->
       <div class="hud-ring-outer"></div>
+      <div class="hud-ring-outer2"></div>
       <div class="hud-ring-main"></div>
       <div class="hud-ring-mid"></div>
       <div class="hud-ticks"></div>
+      <div class="hud-tick-marks"></div>
+
+      <!-- Connector lines SVG layer -->
+      <div class="hud-connector" style="inset:0;position:absolute;width:100%;height:100%;overflow:visible;">
+        <svg width="310" height="310" viewBox="0 0 310 310" style="position:absolute;top:0;left:0;" overflow="visible">
+          <!-- left panel connector -->
+          <line x1="37" y1="155" x2="0" y2="155" stroke="rgba(0,240,255,0.25)" stroke-width="1" stroke-dasharray="4 4"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1.5s" repeatCount="indefinite"/></line>
+          <circle cx="37" cy="155" r="2.5" fill="#00f0ff" opacity="0.6"/>
+          <!-- right panel connector -->
+          <line x1="273" y1="155" x2="310" y2="155" stroke="rgba(0,240,255,0.25)" stroke-width="1" stroke-dasharray="4 4"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1.5s" repeatCount="indefinite"/></line>
+          <circle cx="273" cy="155" r="2.5" fill="#00f0ff" opacity="0.6"/>
+          <!-- top-right connector -->
+          <line x1="255" y1="80" x2="280" y2="55" stroke="rgba(139,92,246,0.3)" stroke-width="1" stroke-dasharray="3 3"><animate attributeName="stroke-dashoffset" from="0" to="-12" dur="1.2s" repeatCount="indefinite"/></line>
+          <circle cx="255" cy="80" r="2" fill="#8b5cf6" opacity="0.7"/>
+          <!-- bottom-left connector -->
+          <line x1="55" y1="235" x2="30" y2="260" stroke="rgba(0,240,255,0.2)" stroke-width="1" stroke-dasharray="3 3"><animate attributeName="stroke-dashoffset" from="0" to="-12" dur="1.4s" repeatCount="indefinite"/></line>
+          <circle cx="55" cy="235" r="2" fill="#00f0ff" opacity="0.5"/>
+        </svg>
+      </div>
+
       <img src="assets/me.jpg" alt="Admin" class="av-img">
       <div class="av-pulse"></div>
 
-      <!-- Floating HUD panels -->
-      <div class="hud-panel hp-l">
-        SYS_STATUS<br>
-        CPU &nbsp;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; 72%<br>
-        MEM &nbsp;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; 58%<br>
-        NET &nbsp;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; LIVE
-      </div>
-      <div class="hud-panel hp-r">
-        PAC_ENTRIES<br>
-        TODAY &nbsp;&nbsp;+142<br>
-        TOTAL &nbsp;&nbsp;8,204<br>
-        STATUS &nbsp;SYNC'd
-      </div>
-      <div class="hud-panel hp-tr">
-        ANALYTICS<br>
-        <div class="hud-chart">
-          <div class="hud-bar"></div><div class="hud-bar"></div>
-          <div class="hud-bar"></div><div class="hud-bar"></div>
-          <div class="hud-bar"></div>
+      <!-- ── LEFT: SYS STATUS ── -->
+      <div class="hud-panel hp-l" id="hud-sys">
+        <div class="hud-panel-title">SYS_STATUS</div>
+        <div class="hud-row">
+          <span class="hud-row-lbl">CPU</span>
+          <div class="hud-row-bar"><div class="hud-row-fill" id="hud-cpu-bar" style="width:72%"></div></div>
+          <span class="hud-row-val" id="hud-cpu-val">72%</span>
+        </div>
+        <div class="hud-row">
+          <span class="hud-row-lbl">MEM</span>
+          <div class="hud-row-bar"><div class="hud-row-fill" id="hud-mem-bar" style="width:58%;background:linear-gradient(90deg,var(--violet),var(--blue))"></div></div>
+          <span class="hud-row-val" id="hud-mem-val">58%</span>
+        </div>
+        <div class="hud-row">
+          <span class="hud-row-lbl">NET</span>
+          <div class="hud-row-bar"><div class="hud-row-fill" style="width:92%;background:linear-gradient(90deg,var(--green),var(--neon))"></div></div>
+          <span class="hud-row-val hud-good">LIVE</span>
+        </div>
+        <div class="hud-row" style="margin-top:4px;">
+          <span class="hud-row-lbl">DISK</span>
+          <div class="hud-row-bar"><div class="hud-row-fill" id="hud-disk-bar" style="width:34%;background:linear-gradient(90deg,#6ea8fe,var(--blue))"></div></div>
+          <span class="hud-row-val" id="hud-disk-val">34%</span>
         </div>
       </div>
-      <div class="hud-panel hp-bl">
-        UPTIME<br>
-        &gt;&gt; 99.7%<br>
-        LATENCY 82ms<br>
-        DB &nbsp;&nbsp;&nbsp;ONLINE
+
+      <!-- ── RIGHT: PAC ENTRIES ── -->
+      <div class="hud-panel hp-r" id="hud-pac">
+        <div class="hud-panel-title">PAC_ENTRIES</div>
+        TODAY &nbsp;<span class="hud-val" id="hud-today">+142</span><br>
+        TOTAL &nbsp;<span class="hud-val" id="hud-total">8,204</span><br>
+        STATUS <span class="hud-good" id="hud-sync">SYNC'd</span><br>
+        QUEUE &nbsp;<span class="hud-val" id="hud-queue">0</span><br>
+        RATE &nbsp;&nbsp;<span class="hud-val" id="hud-rate">6/hr</span>
+      </div>
+
+      <!-- ── TOP-RIGHT: ANALYTICS ── -->
+      <div class="hud-panel hp-tr" id="hud-analytics">
+        <div class="hud-panel-title">ANALYTICS</div>
+        <div class="hud-chart">
+          <div class="hud-bar" id="hb1"></div>
+          <div class="hud-bar" id="hb2"></div>
+          <div class="hud-bar" id="hb3"></div>
+          <div class="hud-bar" id="hb4"></div>
+          <div class="hud-bar" id="hb5"></div>
+        </div>
+        <div style="margin-top:6px;font-size:9px;opacity:.6;">ENTRIES / 5 MIN</div>
+      </div>
+
+      <!-- ── BOTTOM-LEFT: UPTIME ── -->
+      <div class="hud-panel hp-bl" id="hud-uptime">
+        <div class="hud-panel-title">UPTIME</div>
+        SLA &nbsp;&nbsp;&nbsp;&gt;&gt; <span class="hud-good">99.7%</span><br>
+        LATENCY <span class="hud-val" id="hud-lat">82ms</span><br>
+        DB &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hud-good" id="hud-db">ONLINE</span><br>
+        SYNC &nbsp;&nbsp;<span class="hud-val" id="hud-sync2">0s ago</span>
       </div>
     </div>
 
@@ -2054,7 +2228,7 @@ footer::before{content:"";display:block;height:1px;background:linear-gradient(90
     <h2>Ready to Take <span>Full Control</span> of Your PAC Network?</h2>
     <p>Join 12+ UCL owners and 9 active operators already managing their Aadhaar centers smarter, faster, and more securely with PAC Management.</p>
     <div class="cta-banner-btns">
-      <a href="#" class="cta-big"><i class="fa-solid fa-gauge-high"></i> Access Dashboard</a>
+      <a href="/login.html" class="cta-big"><i class="fa-solid fa-gauge-high"></i> Access Dashboard</a>
       <a href="#" class="cta-soft"><i class="fa-solid fa-book-open"></i> Read the Docs</a>
     </div>
     <div class="cta-trust">
@@ -2164,8 +2338,102 @@ document.querySelectorAll('a,button,.b-card,.tc,.ucl-c,.h-stat,.why-row,.stat-c'
 
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   LIVE ACTIVITY ENGINE
+   LIVE HUD ENGINE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function(){
+  /* CPU - realistic server load: fluctuates 55–85% */
+  let cpu=72, mem=58, disk=34, lat=82, today=142, total=8204, syncAge=0;
+
+  function rnd(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+  function setBar(id, val, max=100){
+    const el=document.getElementById(id);
+    if(el) el.style.width=Math.min(100,(val/max)*100)+'%';
+  }
+  function setText(id, txt){
+    const el=document.getElementById(id);
+    if(el) el.textContent=txt;
+  }
+
+  /* update every 2.5s */
+  function updateHUD(){
+    /* CPU walk ±6 */
+    cpu=Math.max(40,Math.min(88,cpu+(rnd(-6,6))));
+    mem=Math.max(45,Math.min(75,mem+(rnd(-3,4))));
+    disk=Math.max(30,Math.min(42,disk+(rnd(-1,1))));
+    lat=Math.max(68,Math.min(160,lat+(rnd(-14,18))));
+    syncAge=Math.floor((Date.now()-window._lastBackup2||0)/1000)||rnd(0,12);
+    window._lastBackup2=window._lastBackup2||Date.now();
+
+    /* sys panel */
+    setBar('hud-cpu-bar', cpu); setText('hud-cpu-val', cpu+'%');
+    setBar('hud-mem-bar', mem); setText('hud-mem-val', mem+'%');
+    setBar('hud-disk-bar',disk); setText('hud-disk-val',disk+'%');
+
+    /* latency */
+    const latEl=document.getElementById('hud-lat');
+    if(latEl){
+      latEl.textContent=lat+'ms';
+      latEl.className=lat>120?'hud-warn':'hud-val';
+    }
+
+    /* sync age */
+    setText('hud-sync2', syncAge+'s ago');
+    syncAge+=3;
+
+    /* PAC entries increment occasionally */
+    if(Math.random()>0.55){
+      const add=rnd(1,3);
+      today+=add;total+=add;
+      setText('hud-today','+'+today);
+      setText('hud-total',(total).toLocaleString());
+      setText('hud-rate', rnd(4,9)+'/hr');
+    }
+
+    /* queue flicker */
+    setText('hud-queue', Math.random()>0.9 ? rnd(1,3) : 0);
+
+    /* animate analytics bars */
+    for(let i=1;i<=5;i++){
+      const el=document.getElementById('hb'+i);
+      if(el) el.style.height=rnd(8,26)+'px';
+    }
+
+    /* sync status flicker */
+    const syncEl=document.getElementById('hud-sync');
+    if(syncEl){
+      if(Math.random()>0.85){
+        syncEl.textContent='SYNC...';syncEl.className='hud-warn';
+        setTimeout(()=>{syncEl.textContent="SYNC'd";syncEl.className='hud-good';},600);
+      }
+    }
+
+    /* DB status flicker rare */
+    const dbEl=document.getElementById('hud-db');
+    if(dbEl && Math.random()>0.97){
+      dbEl.textContent='CHECK...';dbEl.className='hud-warn';
+      setTimeout(()=>{dbEl.textContent='ONLINE';dbEl.className='hud-good';},800);
+    }
+  }
+
+  /* also update latency chip in hero-stats */
+  setInterval(()=>{
+    updateHUD();
+    /* flash random panel border */
+    const panels=['hud-sys','hud-pac','hud-analytics','hud-uptime'];
+    const target=panels[Math.floor(Math.random()*panels.length)];
+    const el=document.getElementById(target);
+    if(el){
+      el.style.borderColor='rgba(0,240,255,0.5)';
+      el.style.boxShadow='0 8px 30px rgba(0,0,0,0.5),0 0 20px rgba(0,240,255,0.15)';
+      setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},500);
+    }
+  }, 2500);
+
+  /* initial call */
+  updateHUD();
+})();
+
 (function(){
 
   /* ── Activity event pool ── */

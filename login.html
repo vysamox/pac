@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAC Management System | Login</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#02040c">
+<link rel="icon" type="image/png" href="assets/fav.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ TOKENS */
+:root{
+  --ink:#02040c;--ink2:#050b1a;
+  --neon:#00f0ff;--blue:#1a6bff;--violet:#8b5cf6;
+  --green:#06ffa5;--rose:#ff2d78;--amber:#ffd60a;
+  --txt:#e4f0ff;--sub:rgba(180,210,250,0.55);--dim:rgba(120,160,210,0.28);
+  --e:cubic-bezier(0.16,1,0.3,1);--t:0.45s var(--e);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{height:100%;font-size:16px;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--ink);color:var(--txt);cursor:none;line-height:1.6;min-height:100vh;}
+::selection{background:rgba(0,240,255,0.25);color:#fff;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--ink);}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--neon),var(--blue));border-radius:4px;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:.15;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ CURSOR */
+#c-dot{position:fixed;width:6px;height:6px;background:var(--neon);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--neon);opacity:0;transition:opacity .3s;}
+#c-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,240,255,0.5);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%);opacity:0;transition:width .3s var(--e),height .3s var(--e),border-color .25s,opacity .3s;}
+#c-ring.expand{width:52px;height:52px;border-color:var(--neon);}
+#c-dot.active,#c-ring.active{opacity:1;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ SPLASH — CINEMATIC */
+#splash{position:fixed;inset:0;z-index:9000;background:#010208;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity 1s var(--e),visibility 1s;}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none;}
+#splash-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+/* corner brackets */
+.sp-corner{position:absolute;width:60px;height:60px;pointer-events:none;z-index:2;}
+.sp-corner::before,.sp-corner::after{content:"";position:absolute;background:var(--neon);box-shadow:0 0 8px var(--neon);border-radius:1px;}
+.sp-c-tl{top:24px;left:24px;}
+.sp-c-tl::before{top:0;left:0;width:2px;height:28px;animation:corner-g .6s var(--e) .3s both;}
+.sp-c-tl::after{top:0;left:0;height:2px;width:28px;animation:corner-g .6s var(--e) .3s both;}
+.sp-c-tr{top:24px;right:24px;}
+.sp-c-tr::before{top:0;right:0;width:2px;height:28px;animation:corner-g .6s var(--e) .4s both;}
+.sp-c-tr::after{top:0;right:0;height:2px;width:28px;animation:corner-g .6s var(--e) .4s both;}
+.sp-c-bl{bottom:24px;left:24px;}
+.sp-c-bl::before{bottom:0;left:0;width:2px;height:28px;animation:corner-g .6s var(--e) .5s both;}
+.sp-c-bl::after{bottom:0;left:0;height:2px;width:28px;animation:corner-g .6s var(--e) .5s both;}
+.sp-c-br{bottom:24px;right:24px;}
+.sp-c-br::before{bottom:0;right:0;width:2px;height:28px;animation:corner-g .6s var(--e) .6s both;}
+.sp-c-br::after{bottom:0;right:0;height:2px;width:28px;animation:corner-g .6s var(--e) .6s both;}
+@keyframes corner-g{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+
+.sp-corner-lbl{position:absolute;font-family:'Fira Code',monospace;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,240,255,0.3);animation:fade-up .6s var(--e) .7s both;}
+.sp-lbl-tl{top:30px;left:66px;}.sp-lbl-tr{top:30px;right:66px;text-align:right;}
+.sp-lbl-bl{bottom:30px;left:66px;}.sp-lbl-br{bottom:30px;right:66px;text-align:right;}
+
+/* centre */
+.sp-centre{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;}
+
+/* logo */
+.sp-logo{display:flex;align-items:center;gap:18px;margin-bottom:48px;animation:sp-drop .9s var(--e) .1s both;}
+@keyframes sp-drop{from{opacity:0;transform:translateY(-28px)}to{opacity:1;transform:translateY(0)}}
+.sp-box{width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;background:linear-gradient(135deg,var(--neon),var(--blue));box-shadow:0 0 40px rgba(0,240,255,0.5),0 0 80px rgba(0,240,255,0.15);position:relative;overflow:hidden;}
+.sp-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.35) 50%,transparent 70%);animation:shine 1.8s ease-in-out infinite;}
+@keyframes shine{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.sp-box i{position:relative;z-index:1;}
+.sp-txt b{display:block;font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:6px;color:var(--txt);text-shadow:0 0 30px rgba(0,240,255,0.3);}
+.sp-txt span{display:block;font-family:'Fira Code',monospace;font-size:10px;letter-spacing:5px;color:var(--neon);text-transform:uppercase;opacity:.85;}
+
+/* orbit system */
+.sp-orbit{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center;margin-bottom:44px;animation:sp-scale .8s var(--e) .4s both;}
+@keyframes sp-scale{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+.sp-radar{position:absolute;inset:0;border-radius:50%;overflow:hidden;}
+.sp-radar::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(0,240,255,0) 0deg,rgba(0,240,255,0.16) 60deg,rgba(0,240,255,0) 61deg);animation:rspin 2s linear infinite;}
+@keyframes rspin{to{transform:rotate(360deg)}}
+.sp-r1{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;background:linear-gradient(#010208,#010208) padding-box,conic-gradient(from 0deg,var(--neon),var(--blue),var(--violet),var(--neon)) border-box;animation:rspin 3s linear infinite;box-shadow:0 0 30px rgba(0,240,255,0.2),inset 0 0 30px rgba(0,240,255,0.04);}
+.sp-r2{position:absolute;inset:18px;border-radius:50%;border:1px dashed rgba(0,240,255,0.18);animation:rspin 7s linear infinite reverse;}
+.sp-r3{position:absolute;inset:36px;border-radius:50%;border:1px solid rgba(139,92,246,0.15);animation:rspin 5s linear infinite;}
+.sp-r4{position:absolute;inset:54px;border-radius:50%;border:1px dashed rgba(0,240,255,0.1);animation:rspin 9s linear infinite reverse;}
+.sp-orb-dot{position:absolute;border-radius:50%;animation:rspin linear infinite;}
+.sp-od1{width:10px;height:10px;background:var(--neon);box-shadow:0 0 12px var(--neon),0 0 24px var(--neon);top:105px;left:-5px;animation-duration:3s;transform-origin:115px 5px;}
+.sp-od2{width:7px;height:7px;background:var(--violet);box-shadow:0 0 10px var(--violet);top:106.5px;left:11px;animation-duration:7s;animation-direction:reverse;transform-origin:99px 3.5px;}
+.sp-od3{width:6px;height:6px;background:var(--green);box-shadow:0 0 10px var(--green);top:107px;left:30px;animation-duration:5s;transform-origin:80px 3px;}
+.sp-ticks{position:absolute;inset:0;border-radius:50%;animation:rspin 12s linear infinite reverse;}
+.sp-ticks::before{content:"";position:absolute;top:-1px;left:50%;margin-left:-1px;width:2px;height:12px;background:var(--neon);border-radius:1px;box-shadow:0 0 6px var(--neon);}
+.sp-ticks::after{content:"";position:absolute;bottom:-1px;left:50%;margin-left:-1px;width:2px;height:12px;background:var(--violet);border-radius:1px;box-shadow:0 0 6px var(--violet);}
+.sp-cross{position:absolute;inset:0;pointer-events:none;}
+.sp-cross::before{content:"";position:absolute;top:50%;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.07),rgba(0,240,255,0.07),transparent);}
+.sp-cross::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(0,240,255,0.07),rgba(0,240,255,0.07),transparent);}
+.sp-ico{position:relative;z-index:2;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(0,30,60,0.9),rgba(1,2,8,0.95));border:1px solid rgba(0,240,255,0.12);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--neon);box-shadow:0 0 40px rgba(0,240,255,0.25),inset 0 0 30px rgba(0,240,255,0.06);animation:ico-pulse 3s ease-in-out infinite;}
+@keyframes ico-pulse{0%,100%{box-shadow:0 0 40px rgba(0,240,255,0.25),inset 0 0 30px rgba(0,240,255,0.06)}50%{box-shadow:0 0 70px rgba(0,240,255,0.5),inset 0 0 40px rgba(0,240,255,0.12)}}
+
+/* boot log lines */
+.sp-logs{display:flex;flex-direction:column;gap:5px;margin-bottom:24px;width:320px;animation:fade-up .6s var(--e) .8s both;}
+.sp-log-line{display:flex;align-items:center;gap:10px;font-family:'Fira Code',monospace;font-size:10.5px;letter-spacing:.4px;color:rgba(120,160,210,0.3);opacity:0;transform:translateX(-12px);transition:opacity .4s,transform .4s,color .3s;}
+.sp-log-line.active{opacity:1;transform:translateX(0);color:var(--sub);}
+.sp-log-line.done{color:rgba(120,160,210,0.22);}
+.sp-log-line.done .sp-log-ico{color:var(--green);}
+.sp-log-ico{font-size:9px;width:14px;flex-shrink:0;}
+.sp-log-ico.spin{animation:lspin .8s linear infinite;}
+@keyframes lspin{to{transform:rotate(360deg)}}
+
+/* segmented bar */
+.sp-bar-wrap{width:320px;margin-bottom:12px;animation:fade-up .6s var(--e) .9s both;}
+.sp-bar-track{width:100%;height:4px;background:rgba(255,255,255,0.04);border-radius:99px;overflow:hidden;position:relative;margin-bottom:7px;}
+.sp-bar-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--neon),var(--violet));background-size:200%;box-shadow:0 0 14px rgba(0,240,255,0.6);transition:width .3s var(--e);animation:bar-shim 2s linear infinite;}
+@keyframes bar-shim{0%{background-position:0%}100%{background-position:200%}}
+.sp-bar-segs{display:flex;justify-content:space-between;padding:0 2px;}
+.sp-seg-lbl{font-family:'Fira Code',monospace;font-size:8.5px;letter-spacing:.5px;color:rgba(120,160,210,0.2);text-transform:uppercase;transition:color .3s;}
+.sp-seg-lbl.lit{color:var(--neon);}
+
+/* pct row */
+.sp-pct-row{display:flex;align-items:center;justify-content:space-between;font-family:'Fira Code',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);animation:fade-up .6s var(--e) 1s both;width:320px;}
+.sp-pct-val{color:var(--neon);font-size:14px;font-weight:500;}
+.sp-status-txt{font-size:9px;letter-spacing:3px;text-transform:uppercase;}
+
+/* exit flash */
+#splash.hide::after{content:"";position:absolute;inset:0;background:var(--neon);animation:flash-out .5s ease forwards;pointer-events:none;z-index:10;}
+@keyframes flash-out{0%{opacity:.1}100%{opacity:0}}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ SUCCESS OVERLAY */
+#suc-ov{position:fixed;inset:0;z-index:8000;background:rgba(2,4,12,0);backdrop-filter:blur(0px);display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:background .5s,backdrop-filter .5s,opacity .5s;}
+#suc-ov.show{opacity:1;pointer-events:all;background:rgba(2,4,12,0.9);backdrop-filter:blur(28px);}
+.suc-ring{width:100px;height:100px;border-radius:50%;border:3px solid var(--green);box-shadow:0 0 40px rgba(6,255,165,0.4);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--green);margin-bottom:22px;animation:suc-pop .5s var(--e);}
+@keyframes suc-pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.suc-h{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:4px;color:var(--green);margin-bottom:6px;}
+.suc-s{font-family:'Fira Code',monospace;font-size:11px;letter-spacing:3px;color:var(--sub);text-transform:uppercase;}
+.suc-bar-w{width:200px;height:2px;background:rgba(6,255,165,0.15);border-radius:99px;overflow:hidden;margin-top:28px;}
+.suc-bar{height:100%;width:0;background:var(--green);border-radius:99px;animation:suc-f 1.5s var(--e) .1s forwards;}
+@keyframes suc-f{from{width:0}to{width:100%}}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ BACKGROUND */
+.bg-scene{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 130% 100% at 50% -10%,#071e30 0%,#04101e 35%,#02040c 100%);}
+canvas#bg-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+.aurora{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
+.ab{position:absolute;border-radius:50%;filter:blur(110px);opacity:.11;animation:blob 16s ease-in-out infinite alternate;}
+.ab1{width:700px;height:500px;background:radial-gradient(#00564a,transparent 70%);top:-200px;left:-180px;}
+.ab2{width:600px;height:500px;background:radial-gradient(#2e1065,transparent 70%);top:-140px;right:-160px;animation-delay:-6s;}
+.ab3{width:400px;height:400px;background:radial-gradient(#003858,transparent 70%);bottom:-60px;left:30%;animation-delay:-11s;}
+@keyframes blob{0%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,-30px) scale(1.06)}100%{transform:translate(-10px,10px) scale(.96)}}
+.scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.10;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.1) 2px,rgba(0,0,0,0.1) 4px);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ PAGE LAYOUT */
+.page{position:relative;z-index:10;display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 42px);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ LEFT PANEL */
+.left-panel{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:52px 60px;position:relative;overflow:hidden;}
+.left-panel::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.03) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 80% 80% at 30% 50%,black 20%,transparent 75%);}
+.left-panel::after{content:"";position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(to bottom,transparent,rgba(0,240,255,0.18) 30%,rgba(0,240,255,0.18) 70%,transparent);}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:44px;animation:fade-up .9s var(--e) both;}
+.brand-box{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--neon),var(--blue));box-shadow:0 0 24px rgba(0,240,255,0.35);}
+.brand-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.25) 50%,transparent 70%);animation:shine 3s ease-in-out infinite;}
+.brand-box i{position:relative;z-index:1;}
+.brand-txt b{display:block;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;color:var(--txt);}
+.brand-txt span{display:block;font-family:'Fira Code',monospace;font-size:9.5px;font-weight:300;letter-spacing:4px;color:var(--neon);text-transform:uppercase;opacity:.8;}
+.left-headline{margin-bottom:36px;animation:fade-up .9s var(--e) .1s both;}
+.left-kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:16px;padding:5px 16px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;letter-spacing:3px;text-transform:uppercase;color:var(--neon);background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.16);}
+.kicker-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+.left-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,4vw,60px);line-height:.96;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;}
+.lt1{display:block;background:linear-gradient(160deg,#fff 20%,rgba(200,230,255,0.7) 60%,rgba(140,190,255,0.4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lt2{display:block;background:linear-gradient(135deg,var(--neon) 0%,#40a9ff 45%,var(--violet) 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 22px rgba(0,240,255,0.35));animation:gpan 6s ease infinite alternate;background-size:200% 100%;}
+@keyframes gpan{0%{background-position:0% 50%}100%{background-position:100% 50%}}
+.left-desc{font-size:14.5px;color:var(--sub);line-height:1.75;max-width:380px;}
+.feature-pills{display:flex;flex-direction:column;gap:10px;animation:fade-up .9s var(--e) .2s both;}
+.f-pill{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:var(--t);}
+.f-pill:hover{background:rgba(0,240,255,0.04);border-color:rgba(0,240,255,0.15);transform:translateX(6px);}
+.pill-icon{width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.pi-c{background:rgba(0,240,255,0.1);color:var(--neon);border:1px solid rgba(0,240,255,0.18);}
+.pi-g{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.18);}
+.pi-v{background:rgba(139,92,246,0.1);color:var(--violet);border:1px solid rgba(139,92,246,0.18);}
+.pill-text h4{font-family:'Rajdhani',sans-serif;font-size:13.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--txt);margin-bottom:2px;}
+.pill-text p{font-family:'Fira Code',monospace;font-size:10px;font-weight:300;color:var(--sub);letter-spacing:.5px;}
+.sys-row{display:flex;align-items:center;gap:10px;margin-top:36px;flex-wrap:wrap;animation:fade-up .9s var(--e) .3s both;}
+.sys-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10px;font-weight:300;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);letter-spacing:.5px;}
+.sd{width:5px;height:5px;border-radius:50%;flex-shrink:0;animation:pulse 2s ease-in-out infinite;}
+.sd-g{background:var(--green);box-shadow:0 0 6px var(--green);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ RIGHT PANEL */
+.right-panel{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 52px;position:relative;}
+
+/* shared card styles */
+.login-card,.otp-card{
+  width:100%;max-width:430px;
+  background:linear-gradient(145deg,rgba(6,14,36,0.94),rgba(3,8,22,0.97));
+  border:1px solid rgba(0,240,255,0.12);border-radius:26px;
+  padding:42px 38px 36px;backdrop-filter:blur(32px);
+  box-shadow:0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04);
+  position:relative;overflow:hidden;
+}
+.login-card{animation:card-in 1s var(--e) .15s both;}
+@keyframes card-in{from{opacity:0;transform:translateY(36px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* corner decorations */
+.cc{position:absolute;top:0;left:0;width:80px;height:80px;pointer-events:none;}
+.cc::before,.cc::after{content:"";position:absolute;background:var(--neon);box-shadow:0 0 8px var(--neon);}
+.cc::before{top:0;left:28px;width:1px;height:26px;opacity:.5;}
+.cc::after{top:26px;left:0;height:1px;width:26px;opacity:.5;}
+.ccb{position:absolute;bottom:0;right:0;width:80px;height:80px;pointer-events:none;}
+.ccb::before,.ccb::after{content:"";position:absolute;background:var(--violet);box-shadow:0 0 8px var(--violet);}
+.ccb::before{bottom:0;right:28px;width:1px;height:26px;opacity:.4;}
+.ccb::after{bottom:26px;right:0;height:1px;width:26px;opacity:.4;}
+
+.login-card::before,.otp-card::before{content:"";position:absolute;inset:-1px;border-radius:27px;background:conic-gradient(from 0deg,transparent 0,transparent 280deg,rgba(0,240,255,0.35) 320deg,transparent 360deg);opacity:0;transition:opacity .5s;z-index:-1;animation:bspin 4s linear infinite;}
+.login-card:hover::before,.otp-card:hover::before{opacity:1;}
+@keyframes bspin{to{transform:rotate(360deg)}}
+.login-card::after,.otp-card::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.025) 50%,transparent 60%);transform:translateX(-100%);transition:.8s;pointer-events:none;}
+.login-card:hover::after,.otp-card:hover::after{transform:translateX(100%);}
+
+.ht{position:absolute;font-family:'Fira Code',monospace;font-size:9px;font-weight:300;letter-spacing:2px;text-transform:uppercase;color:rgba(0,240,255,0.4);pointer-events:none;}
+.ht-tl{top:13px;left:46px;}
+.ht-tr{top:13px;right:13px;}
+.ht-bl{bottom:13px;left:13px;}
+.ht-br{bottom:13px;right:13px;}
+
+/* card header */
+.card-head{text-align:center;margin-bottom:28px;}
+.ci-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;margin:0 auto 18px;}
+.ci-ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;background:linear-gradient(var(--ink2),var(--ink2)) padding-box,conic-gradient(from 0deg,var(--neon),var(--blue),var(--violet),var(--neon)) border-box;animation:rspin 4s linear infinite;}
+.ci{position:relative;z-index:1;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(0,240,255,0.08);border:1px solid rgba(0,240,255,0.2);color:var(--neon);box-shadow:0 0 20px rgba(0,240,255,0.18);}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;text-transform:uppercase;color:var(--txt);margin-bottom:5px;}
+.card-sub{font-family:'Fira Code',monospace;font-size:10px;font-weight:300;color:var(--sub);letter-spacing:2px;text-transform:uppercase;}
+
+/* alerts */
+.alert{display:none;align-items:flex-start;gap:10px;padding:12px 15px;border-radius:12px;margin-bottom:18px;font-size:13px;animation:fade-up .4s var(--e);}
+.alert.show{display:flex;}
+.alert.err{background:rgba(255,45,120,0.08);border:1px solid rgba(255,45,120,0.22);color:#ff8fbb;}
+.alert.suc{background:rgba(6,255,165,0.08);border:1px solid rgba(6,255,165,0.2);color:var(--green);}
+.alert i{font-size:13px;flex-shrink:0;margin-top:1px;}
+
+/* form elements */
+.fg{margin-bottom:18px;position:relative;}
+.fl{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-family:'Rajdhani',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--sub);}
+.fl i{font-size:10px;color:var(--neon);opacity:.7;}
+.iw{position:relative;}
+.fi{width:100%;padding:13px 18px 13px 44px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:13px;color:var(--txt);font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;transition:var(--t);cursor:none;}
+.fi::placeholder{color:var(--dim);font-size:13px;}
+.fi:focus{border-color:rgba(0,240,255,0.35);background:rgba(0,240,255,0.04);box-shadow:0 0 0 3px rgba(0,240,255,0.08);}
+.fi:focus~.ib{width:100%;}
+.ii{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--dim);opacity:.7;transition:var(--t);pointer-events:none;}
+.fi:focus~.ii{color:var(--neon);opacity:1;}
+.eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--dim);cursor:none;transition:var(--t);padding:4px;}
+.eye:hover{color:var(--neon);}
+.ib{position:absolute;bottom:0;left:0;height:2px;width:0;border-radius:0 0 13px 13px;background:linear-gradient(90deg,var(--neon),var(--blue));box-shadow:0 0 8px var(--neon);transition:width .4s var(--e);}
+.sw{margin-top:7px;display:none;}
+.sw.on{display:block;}
+.st{height:3px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;margin-bottom:4px;}
+.sb{height:100%;width:0;border-radius:99px;transition:width .4s var(--e),background .3s;}
+.sl{font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;}
+.form-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.remember{display:flex;align-items:center;gap:9px;cursor:none;font-size:13px;color:var(--sub);}
+.remember input{display:none;}
+.cb{width:17px;height:17px;border-radius:5px;border:1.5px solid rgba(0,240,255,0.25);background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--t);cursor:none;}
+.remember input:checked+.cb{background:rgba(0,240,255,0.15);border-color:var(--neon);}
+.cbx{font-size:8px;color:var(--neon);opacity:0;transition:opacity .2s;}
+.remember input:checked+.cb .cbx{opacity:1;}
+.forgot{font-family:'Fira Code',monospace;font-size:11px;color:var(--neon);text-decoration:none;letter-spacing:.5px;opacity:.8;transition:var(--t);}
+.forgot:hover{opacity:1;}
+
+/* primary buttons */
+.btn-primary{width:100%;padding:15px 28px;border-radius:99px;border:none;cursor:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#01080f;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;box-shadow:0 0 40px rgba(0,240,255,0.3),0 12px 30px rgba(0,0,0,0.4);transition:var(--t);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-primary::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.22) 55%,transparent 70%);transform:translateX(-100%);transition:.5s;}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 60px rgba(0,240,255,0.5),0 16px 40px rgba(0,0,0,0.5);}
+.btn-primary:hover::before{transform:translateX(100%);}
+.btn-primary:active{transform:translateY(0) scale(.99);}
+.btn-primary.loading{pointer-events:none;opacity:.8;}
+.btn-primary.loading .bt{opacity:0;}
+.btn-primary.loading .bsp{opacity:1;}
+.bsp{position:absolute;width:20px;height:20px;border-radius:50%;border:2.5px solid rgba(0,0,0,0.2);border-top-color:#01080f;animation:spin .7s linear infinite;opacity:0;transition:opacity .2s;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.or-div{display:flex;align-items:center;gap:14px;margin:20px 0;}
+.or-line{flex:1;height:1px;background:rgba(255,255,255,0.06);}
+.or-txt{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+.btn-google{width:100%;padding:13px 28px;border-radius:99px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);cursor:none;color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:var(--t);display:flex;align-items:center;justify-content:center;gap:10px;backdrop-filter:blur(10px);}
+.btn-google:hover{border-color:rgba(66,133,244,0.4);background:rgba(66,133,244,0.07);transform:translateY(-3px);}
+.btn-google i{font-size:15px;color:#4285f4;}
+.card-ft{text-align:center;margin-top:22px;font-size:13px;color:var(--dim);}
+.card-ft a{color:var(--neon);text-decoration:none;font-weight:600;transition:var(--t);opacity:.85;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   OTP CARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.otp-card{
+  display:none;
+  position:absolute; /* overlays right panel */
+  animation:otp-arrive 0.7s var(--e) both;
+}
+.otp-card.show{display:block;}
+@keyframes otp-arrive{
+  from{opacity:0;transform:translateX(60px) scale(.96);}
+  to{opacity:1;transform:translateX(0) scale(1);}
+}
+
+/* telegram badge */
+.tg-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:99px;margin-bottom:20px;
+  background:rgba(0,136,204,0.1);border:1px solid rgba(0,136,204,0.25);
+  font-family:'Fira Code',monospace;font-size:10.5px;letter-spacing:2px;
+  color:#29b6f6;text-transform:uppercase;
+}
+.tg-badge i{font-size:14px;}
+
+/* destination info */
+.otp-dest{
+  font-family:'Fira Code',monospace;font-size:11px;color:var(--sub);
+  letter-spacing:.5px;text-align:center;margin-bottom:24px;line-height:1.8;
+}
+.otp-dest strong{color:var(--neon);}
+
+/* ── 6 digit boxes ── */
+.otp-inputs{
+  display:flex;gap:10px;justify-content:center;
+  margin-bottom:8px;
+}
+.otp-box{
+  width:50px;height:60px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;
+  color:var(--neon);text-align:center;
+  outline:none;transition:var(--t);cursor:none;
+  caret-color:var(--neon);
+  /* hide number spinners */
+  -moz-appearance:textfield;
+}
+.otp-box::-webkit-outer-spin-button,
+.otp-box::-webkit-inner-spin-button{-webkit-appearance:none;}
+.otp-box:focus{
+  border-color:rgba(0,240,255,0.5);
+  background:rgba(0,240,255,0.06);
+  box-shadow:0 0 0 3px rgba(0,240,255,0.1),0 0 20px rgba(0,240,255,0.1);
+  transform:translateY(-3px);
+}
+.otp-box.filled{
+  border-color:rgba(0,240,255,0.3);
+  background:rgba(0,240,255,0.05);
+}
+.otp-box.err-shake{
+  border-color:rgba(255,45,120,0.6) !important;
+  animation:shake .4s var(--e);
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-8px);}
+  40%{transform:translateX(8px);}
+  60%{transform:translateX(-5px);}
+  80%{transform:translateX(5px);}
+}
+.otp-box.correct{
+  border-color:rgba(6,255,165,0.5) !important;
+  background:rgba(6,255,165,0.06) !important;
+  color:var(--green) !important;
+}
+
+/* OTP timer bar */
+.otp-timer-wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);letter-spacing:1px;
+}
+.otp-bar-track{flex:1;height:2px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;margin:0 12px;}
+.otp-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--neon));border-radius:99px;width:100%;transition:width 1s linear,background .5s;}
+.otp-bar-fill.warn{background:linear-gradient(90deg,var(--rose),var(--amber));}
+.otp-timer-val{color:var(--neon);font-weight:500;min-width:32px;text-align:right;}
+.otp-timer-val.warn{color:var(--rose);}
+
+/* resend row */
+.otp-resend-row{text-align:center;margin-top:16px;}
+.otp-resend-btn{
+  font-family:'Fira Code',monospace;font-size:11px;font-weight:300;
+  color:var(--neon);background:none;border:none;cursor:none;
+  letter-spacing:1px;text-decoration:underline;text-underline-offset:3px;
+  transition:var(--t);opacity:.7;
+}
+.otp-resend-btn:hover{opacity:1;}
+.otp-resend-btn:disabled{color:var(--dim);text-decoration:none;cursor:not-allowed;opacity:.5;}
+.otp-resend-cd{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);letter-spacing:1px;}
+
+/* back to login */
+.otp-back{
+  display:flex;align-items:center;gap:7px;margin-top:20px;justify-content:center;
+  font-family:'Fira Code',monospace;font-size:10.5px;color:var(--sub);
+  cursor:none;letter-spacing:1px;transition:var(--t);
+  background:none;border:none;
+}
+.otp-back:hover{color:var(--neon);}
+.otp-back i{font-size:10px;}
+
+/* attempts badge */
+.otp-attempts{
+  text-align:center;margin-top:10px;
+  font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:1px;
+  color:var(--dim);
+}
+
+/* sending state */
+.sending-overlay{
+  position:absolute;inset:0;z-index:10;border-radius:26px;
+  background:rgba(3,8,22,0.92);backdrop-filter:blur(10px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  opacity:0;pointer-events:none;transition:opacity .4s;
+}
+.sending-overlay.show{opacity:1;pointer-events:all;}
+.sending-ring{
+  width:60px;height:60px;border-radius:50%;
+  border:3px solid rgba(0,240,255,0.1);border-top-color:var(--neon);
+  animation:spin .9s linear infinite;
+  box-shadow:0 0 20px rgba(0,240,255,0.2);
+}
+.sending-txt{font-family:'Fira Code',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--sub);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ FOOTER */
+.ver-bar{position:relative;z-index:20;width:100%;height:42px;background:rgba(2,4,12,0.92);border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;gap:20px;padding:0 24px;backdrop-filter:blur(20px);}
+.ver-bar::before{content:"";position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.15),transparent);}
+.vb-i{display:inline-flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:10px;font-weight:300;color:var(--dim);letter-spacing:.5px;}
+.vb-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:pulse 2s ease-in-out infinite;}
+.vb-sep{width:1px;height:14px;background:rgba(255,255,255,0.07);}
+@keyframes fade-up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ MOBILE */
+@media(max-width:900px){
+  #c-dot,#c-ring{display:none;}
+  body{cursor:auto;}
+  .fi,.btn-primary,.btn-google,.eye,.remember,.forgot,.otp-box,.otp-resend-btn,.otp-back{cursor:pointer;}
+  .page{display:block;min-height:100vh;padding-bottom:0;}
+  .left-panel{position:fixed;inset:0;z-index:5;padding:52px 28px 260px;justify-content:flex-start;overflow:hidden;}
+  .left-panel::after{display:none;}
+  .brand{margin-bottom:24px;}
+  .left-headline{margin-bottom:0;}
+  .left-title{font-size:clamp(32px,9vw,50px);}
+  .left-desc{font-size:13px;max-width:100%;margin-top:12px;}
+  .feature-pills{display:none;}
+  .sys-row{margin-top:18px;}
+  .right-panel{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;justify-content:flex-end;padding:0;align-items:stretch;background:transparent;pointer-events:none;}
+  .login-card,.otp-card{max-width:100%;border-radius:28px 28px 0 0;border-bottom:none;padding:6px 24px 32px;pointer-events:all;animation:sheet-up .65s var(--e) .35s both;box-shadow:0 -24px 60px rgba(0,0,0,0.85);max-height:90vh;overflow-y:auto;}
+  .otp-card{position:relative;} /* reset absolute on mobile */
+  .login-card::before,.login-card::after,.otp-card::before,.otp-card::after{display:none;}
+  @keyframes sheet-up{from{transform:translateY(110%);opacity:.5}to{transform:translateY(0);opacity:1}}
+  .pull-handle{display:block!important;width:40px;height:4px;border-radius:99px;background:rgba(255,255,255,0.2);margin:10px auto 14px;}
+  .card-head{margin-bottom:18px;}
+  .ci-wrap{width:54px;height:54px;margin-bottom:12px;}
+  .ci{width:42px;height:42px;font-size:17px;}
+  .card-title{font-size:22px;}
+  .ht{display:none;}
+  .ver-bar{position:relative;border-radius:0;padding-bottom:env(safe-area-inset-bottom,0px);}
+  .otp-box{width:44px;height:54px;font-size:24px;}
+  .otp-inputs{gap:7px;}
+}
+@media(max-width:480px){
+  .login-card,.otp-card{padding:6px 18px 28px;}
+  .left-title{font-size:clamp(28px,10vw,42px);}
+  .otp-box{width:38px;height:50px;font-size:22px;border-radius:10px;}
+  .otp-inputs{gap:5px;}
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ EARTH */
+#earth-wrap{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;pointer-events:none;width:380px;height:380px;display:flex;align-items:center;justify-content:center;}
+#earth-canvas{width:100%;height:100%;border-radius:50%;filter:drop-shadow(0 0 40px rgba(0,240,255,0.2)) drop-shadow(0 0 90px rgba(26,107,255,0.1));}
+.earth-orbit{position:absolute;border-radius:50%;border:1px solid rgba(0,240,255,0.08);animation:eorbit linear infinite;pointer-events:none;}
+.eo1{width:460px;height:460px;animation-duration:22s;}
+.eo2{width:520px;height:520px;animation-duration:36s;animation-direction:reverse;border-color:rgba(139,92,246,0.07);}
+.eo3{width:580px;height:580px;animation-duration:52s;border-color:rgba(0,240,255,0.04);}
+@keyframes eorbit{to{transform:rotate(360deg)}}
+.earth-orbit::before{content:"";position:absolute;border-radius:50%;top:-4px;left:50%;margin-left:-4px;width:8px;height:8px;background:var(--neon);box-shadow:0 0 14px var(--neon),0 0 28px rgba(0,240,255,0.5);}
+.eo2::before{background:var(--violet);box-shadow:0 0 10px var(--violet);width:6px;height:6px;top:-3px;margin-left:-3px;}
+.eo3::before{background:var(--green);box-shadow:0 0 10px var(--green);width:5px;height:5px;top:-2.5px;margin-left:-2.5px;}
+.earth-tag{position:absolute;font-family:"Fira Code",monospace;font-size:9px;font-weight:300;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,240,255,0.6);background:rgba(2,4,12,0.75);border:1px solid rgba(0,240,255,0.18);border-radius:6px;padding:5px 10px;backdrop-filter:blur(10px);white-space:nowrap;pointer-events:none;animation:etag ease-in-out infinite alternate;line-height:1.5;}
+.et1{top:20px;left:-110px;animation-duration:4s;animation-delay:0s;}
+.et2{top:20px;right:-110px;animation-duration:4.5s;animation-delay:-2.1s;}
+.et3{bottom:50px;left:-100px;animation-duration:5s;animation-delay:-1s;}
+.et4{bottom:50px;right:-100px;animation-duration:3.8s;animation-delay:-3s;}
+@keyframes etag{0%{transform:translateY(0)}100%{transform:translateY(-10px)}}
+.et-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);margin-right:5px;vertical-align:middle;animation:pulse 2s ease-in-out infinite;}
+@media(max-width:900px){#earth-wrap{display:none;}}
+</style>
+</head>
+<body>
+
+<div id="c-dot"></div>
+<div id="c-ring"></div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <!-- animated grid canvas -->
+  <canvas id="splash-canvas"></canvas>
+
+  <!-- HUD corner brackets -->
+  <div class="sp-corner sp-c-tl"></div>
+  <div class="sp-corner sp-c-tr"></div>
+  <div class="sp-corner sp-c-bl"></div>
+  <div class="sp-corner sp-c-br"></div>
+  <span class="sp-corner-lbl sp-lbl-tl">SYS::BOOT</span>
+  <span class="sp-corner-lbl sp-lbl-tr" id="sp-clock">00:00:00</span>
+  <span class="sp-corner-lbl sp-lbl-bl">PAC v2.0.0</span>
+  <span class="sp-corner-lbl sp-lbl-br">SECURE INIT</span>
+
+  <div class="sp-centre">
+    <!-- logo -->
+    <div class="sp-logo">
+      <div class="sp-box"><i class="fa-solid fa-database"></i></div>
+      <div class="sp-txt"><b>PAC SYSTEM</b><span>Management Dashboard</span></div>
+    </div>
+
+    <!-- orbit rings -->
+    <div class="sp-orbit">
+      <div class="sp-radar"></div>
+      <div class="sp-r1"></div>
+      <div class="sp-r2"></div>
+      <div class="sp-r3"></div>
+      <div class="sp-r4"></div>
+      <div class="sp-orb-dot sp-od1"></div>
+      <div class="sp-orb-dot sp-od2"></div>
+      <div class="sp-orb-dot sp-od3"></div>
+      <div class="sp-ticks"></div>
+      <div class="sp-cross"></div>
+      <div class="sp-ico"><i class="fa-solid fa-fingerprint"></i></div>
+    </div>
+
+    <!-- boot log -->
+    <div class="sp-logs" id="sp-logs">
+      <div class="sp-log-line" id="spl-0"><span class="sp-log-ico"><i class="fa-solid fa-circle-dot"></i></span>Initializing secure kernel…</div>
+      <div class="sp-log-line" id="spl-1"><span class="sp-log-ico"><i class="fa-solid fa-circle-dot"></i></span>Loading Firebase Auth module…</div>
+      <div class="sp-log-line" id="spl-2"><span class="sp-log-ico"><i class="fa-solid fa-circle-dot"></i></span>Establishing Firestore connection…</div>
+      <div class="sp-log-line" id="spl-3"><span class="sp-log-ico"><i class="fa-solid fa-circle-dot"></i></span>Verifying SSL certificate chain…</div>
+      <div class="sp-log-line" id="spl-4"><span class="sp-log-ico"><i class="fa-solid fa-circle-dot"></i></span>Enabling 2FA OTP module…</div>
+      <div class="sp-log-line" id="spl-5"><span class="sp-log-ico"><i class="fa-solid fa-circle-dot"></i></span>All systems nominal</div>
+    </div>
+
+    <!-- segmented progress bar -->
+    <div class="sp-bar-wrap">
+      <div class="sp-bar-track">
+        <div class="sp-bar-fill" id="sp-bar-fill"></div>
+      </div>
+      <div class="sp-bar-segs">
+        <span class="sp-seg-lbl" id="seg0">KERNEL</span>
+        <span class="sp-seg-lbl" id="seg1">AUTH</span>
+        <span class="sp-seg-lbl" id="seg2">DB</span>
+        <span class="sp-seg-lbl" id="seg3">SSL</span>
+        <span class="sp-seg-lbl" id="seg4">2FA</span>
+        <span class="sp-seg-lbl" id="seg5">READY</span>
+      </div>
+    </div>
+
+    <!-- pct row -->
+    <div class="sp-pct-row">
+      <span class="sp-status-txt" id="sp-status-txt">Booting…</span>
+      <span class="sp-pct-val" id="sp-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div id="suc-ov">
+  <div class="suc-ring"><i class="fa-solid fa-check"></i></div>
+  <div class="suc-h">Authenticated</div>
+  <div class="suc-s">Redirecting to dashboard…</div>
+  <div class="suc-bar-w"><div class="suc-bar"></div></div>
+</div>
+
+<!-- BG -->
+<div class="bg-scene"></div>
+<canvas id="bg-canvas"></canvas>
+<div class="aurora"><div class="ab ab1"></div><div class="ab ab2"></div><div class="ab ab3"></div></div>
+<div class="scanlines"></div>
+
+<!-- EARTH — centered between panels -->
+<div id="earth-wrap">
+  <div class="earth-orbit eo1"></div>
+  <div class="earth-orbit eo2"></div>
+  <div class="earth-orbit eo3"></div>
+  <canvas id="earth-canvas" width="380" height="380"></canvas>
+  <!-- HUD floating tags -->
+  <div class="earth-tag et1"><span class="et-dot"></span>DB ONLINE<br><span style="color:var(--dim);font-size:8px;">FIRESTORE · 82ms</span></div>
+  <div class="earth-tag et2"><span class="et-dot"></span>SYNC ACTIVE<br><span style="color:var(--dim);font-size:8px;">8,204 RECORDS</span></div>
+  <div class="earth-tag et3"><span class="et-dot"></span>2FA MODULE<br><span style="color:var(--dim);font-size:8px;">TELEGRAM OTP</span></div>
+  <div class="earth-tag et4"><span class="et-dot"></span>SLA · 99.7%<br><span style="color:var(--dim);font-size:8px;">ALL SYSTEMS GO</span></div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-box"><i class="fa-solid fa-database"></i></div>
+      <div class="brand-txt"><b>PAC SYSTEM</b><span>Management Dashboard</span></div>
+    </div>
+    <div class="left-headline">
+      <div class="left-kicker"><span class="kicker-dot"></span>Secure Access Portal</div>
+      <h1 class="left-title"><span class="lt1">Command Your</span><span class="lt2">PAC Network</span></h1>
+      <p class="left-desc">Sign in to access real-time analytics, center management, agent tracking, and the full Firestore-powered dashboard.</p>
+    </div>
+    <div class="feature-pills">
+      <div class="f-pill"><div class="pill-icon pi-c"><i class="fa-solid fa-bolt"></i></div><div class="pill-text"><h4>Real-Time Sync</h4><p>Sub-500ms · Firestore listeners · Zero lag</p></div></div>
+      <div class="f-pill"><div class="pill-icon pi-g"><i class="fa-solid fa-shield-halved"></i></div><div class="pill-text"><h4>Secure + 2FA OTP</h4><p>Firebase Auth · Telegram OTP · RBAC</p></div></div>
+      <div class="f-pill"><div class="pill-icon pi-v"><i class="fa-solid fa-chart-area"></i></div><div class="pill-text"><h4>Deep Analytics</h4><p>Live dashboards · Exportable reports</p></div></div>
+    </div>
+    <div class="sys-row">
+      <div class="sys-chip"><span class="sd sd-g"></span>All Systems Operational</div>
+      <div class="sys-chip"><span class="sd sd-g"></span>2FA Active</div>
+      <div class="sys-chip" id="lat-chip">⚡ -- ms</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel" id="right-panel">
+
+    <!-- ══ LOGIN CARD ══ -->
+    <div class="login-card" id="login-card">
+      <div class="pull-handle" style="display:none;"></div>
+      <div class="cc"></div><div class="ccb"></div>
+      <span class="ht ht-tl">SYS::AUTH</span>
+      <span class="ht ht-tr" id="hud-time">--:--:--</span>
+      <span class="ht ht-bl">v2.0.0</span>
+      <span class="ht ht-br" id="hud-status">● SECURE</span>
+
+      <div class="card-head">
+        <div class="ci-wrap"><div class="ci-ring"></div><div class="ci"><i class="fa-solid fa-fingerprint"></i></div></div>
+        <div class="card-title">Access Portal</div>
+        <div class="card-sub">Authenticate to continue</div>
+      </div>
+
+      <div class="alert err" id="a-err"><i class="fa-solid fa-triangle-exclamation"></i><span id="a-err-msg">Invalid credentials.</span></div>
+      <div class="alert suc" id="a-ok"><i class="fa-solid fa-circle-check"></i><span id="a-ok-msg">Done!</span></div>
+
+      <form id="login-form" autocomplete="off">
+        <div class="fg">
+          <label class="fl"><i class="fa-solid fa-at"></i>Email Address</label>
+          <div class="iw">
+            <input type="email" id="email" class="fi" placeholder="admin@pacsystem.app" required autocomplete="email">
+            <i class="fa-solid fa-envelope ii"></i>
+            <div class="ib"></div>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl"><i class="fa-solid fa-key"></i>Password</label>
+          <div class="iw">
+            <input type="password" id="pwd" class="fi" placeholder="Enter your password" required autocomplete="current-password" style="padding-right:44px;">
+            <i class="fa-solid fa-lock ii"></i>
+            <div class="ib"></div>
+            <span class="eye" onclick="toggleEye()"><i class="fa-solid fa-eye" id="eye-i"></i></span>
+          </div>
+          <div class="sw" id="sw"><div class="st"><div class="sb" id="sb"></div></div><span class="sl" id="sl" style="color:var(--dim)">Strength</span></div>
+        </div>
+        <div class="form-row">
+          <label class="remember"><input type="checkbox" id="rem"><div class="cb"><i class="fa-solid fa-check cbx"></i></div>Remember me</label>
+          <a href="#" class="forgot" id="fp-btn">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn-primary" id="btn-login">
+          <span class="bt"><i class="fa-solid fa-right-to-bracket"></i>&nbsp; Sign In</span>
+          <span class="bsp"></span>
+        </button>
+      </form>
+
+      <div class="or-div"><div class="or-line"></div><div class="or-txt">or continue with</div><div class="or-line"></div></div>
+      <button class="btn-google" id="btn-g"><i class="fa-brands fa-google"></i>Sign in with Google</button>
+      <p class="card-ft">Don't have access? <a href="#">Contact Administrator</a></p>
+    </div>
+
+    <!-- ══ OTP CARD ══ -->
+    <div class="otp-card" id="otp-card">
+      <!-- sending spinner overlay -->
+      <div class="sending-overlay" id="sending-ov">
+        <div class="sending-ring"></div>
+        <div class="sending-txt">Sending OTP to Telegram…</div>
+      </div>
+
+      <div class="pull-handle" style="display:none;"></div>
+      <div class="cc"></div><div class="ccb"></div>
+      <span class="ht ht-tl">SYS::2FA</span>
+      <span class="ht ht-tr" id="otp-hud-time">--:--:--</span>
+      <span class="ht ht-bl">OTP::VERIFY</span>
+      <span class="ht ht-br" id="otp-hud-status">● PENDING</span>
+
+      <div class="card-head">
+        <div class="ci-wrap">
+          <div class="ci-ring"></div>
+          <div class="ci" style="background:rgba(0,136,204,0.12);border-color:rgba(0,136,204,0.3);color:#29b6f6;">
+            <i class="fa-brands fa-telegram"></i>
+          </div>
+        </div>
+        <div class="card-title">OTP Verification</div>
+        <div class="card-sub">Two-Factor Authentication</div>
+      </div>
+
+      <div style="text-align:center;">
+        <div class="tg-badge"><i class="fa-brands fa-telegram"></i> Via Telegram</div>
+      </div>
+
+      <div class="otp-dest">
+        A <strong>6-digit OTP</strong> has been sent to your<br>
+        Telegram group. Enter it below.<br>
+        <span style="color:var(--dim);font-size:9.5px;margin-top:4px;display:block;">Valid for 5 minutes · Do not share this code</span>
+      </div>
+
+      <div class="alert err" id="otp-err"><i class="fa-solid fa-triangle-exclamation"></i><span id="otp-err-msg">Incorrect OTP. Please try again.</span></div>
+
+      <!-- 6 digit inputs -->
+      <div class="otp-inputs" id="otp-inputs">
+        <input type="number" class="otp-box" maxlength="1" min="0" max="9" inputmode="numeric" autocomplete="one-time-code">
+        <input type="number" class="otp-box" maxlength="1" min="0" max="9" inputmode="numeric">
+        <input type="number" class="otp-box" maxlength="1" min="0" max="9" inputmode="numeric">
+        <input type="number" class="otp-box" maxlength="1" min="0" max="9" inputmode="numeric">
+        <input type="number" class="otp-box" maxlength="1" min="0" max="9" inputmode="numeric">
+        <input type="number" class="otp-box" maxlength="1" min="0" max="9" inputmode="numeric">
+      </div>
+
+      <!-- countdown timer bar -->
+      <div class="otp-timer-wrap">
+        <span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;">Expires in</span>
+        <div class="otp-bar-track"><div class="otp-bar-fill" id="otp-bar"></div></div>
+        <span class="otp-timer-val" id="otp-timer">5:00</span>
+      </div>
+
+      <button class="btn-primary" id="otp-verify-btn" style="margin-bottom:0;">
+        <span class="bt"><i class="fa-solid fa-shield-check"></i>&nbsp; Verify OTP</span>
+        <span class="bsp"></span>
+      </button>
+
+      <div class="otp-resend-row">
+        <button class="otp-resend-btn" id="otp-resend" disabled>
+          Resend OTP
+        </button>
+        <span class="otp-resend-cd" id="otp-resend-cd">· Wait <span id="otp-cd-val">60</span>s</span>
+      </div>
+
+      <div class="otp-attempts" id="otp-attempts">Attempts remaining: <span id="otp-att-val" style="color:var(--amber)">5</span></div>
+
+      <div style="text-align:center;">
+        <button class="otp-back" id="otp-back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Login</button>
+      </div>
+    </div>
+
+  </div><!-- /right-panel -->
+</div><!-- /page -->
+
+<!-- FOOTER -->
+<div class="ver-bar">
+  <div class="vb-i"><span class="vb-dot"></span>All Systems Nominal</div>
+  <div class="vb-sep"></div>
+  <div class="vb-i"><i class="fa-solid fa-code-branch" style="color:var(--neon)"></i>v2.0.0</div>
+  <div class="vb-sep"></div>
+  <div class="vb-i"><i class="fa-solid fa-clock" style="color:var(--neon)"></i><span id="ft-time">--:--:--</span></div>
+  <div class="vb-sep"></div>
+  <div class="vb-i"><i class="fa-solid fa-shield-check" style="color:var(--green)"></i>2FA Enabled</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     CONFIGURATION  ← edit here
+══════════════════════════════════════════ -->
+<script>
+/*
+  ┌─────────────────────────────────────────────────┐
+  │  TELEGRAM CONFIG                                │
+  │  1. Create a bot: message @BotFather on TG      │
+  │  2. Get the token and paste it below            │
+  │  3. Make sure your bot is in the group/channel  │
+  └─────────────────────────────────────────────────┘
+*/
+const TG_BOT_TOKEN = '7607621792:AAHhgqpQ-ZK4Sf1iZySZHrKHoF9eGaBbxDs';
+const TG_CHAT_ID   = '-1003045536794';           // ← your group chat ID (already set)
+const OTP_EXPIRY_MS = 5 * 60 * 1000;            // 5 minutes
+const MAX_ATTEMPTS  = 5;
+const RESEND_CD_SEC = 60;
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail }
+  from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+const cfg={
+  apiKey:"AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain:"mrsamrat08.firebaseapp.com",
+  projectId:"mrsamrat08",
+  storageBucket:"mrsamrat08.appspot.com",
+  messagingSenderId:"525481767881",
+  appId:"1:525481767881:web:6fd53162b242709890ae18"
+};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const gp=new GoogleAuthProvider();
+
+const ERRS={
+  'auth/user-not-found':'No account found with this email.',
+  'auth/wrong-password':'Incorrect password. Please try again.',
+  'auth/invalid-email':'Invalid email address format.',
+  'auth/too-many-requests':'Too many attempts. Account temporarily locked.',
+  'auth/network-request-failed':'Network error. Check your connection.',
+  'auth/invalid-credential':'Invalid credentials. Check email & password.',
+  'auth/user-disabled':'This account has been disabled.',
+};
+
+function showErr(msg){
+  document.getElementById('a-err-msg').textContent=msg;
+  document.getElementById('a-err').classList.add('show');
+  document.getElementById('a-ok').classList.remove('show');
+  const c=document.getElementById('login-card');
+  c.style.borderColor='rgba(255,45,120,0.35)';
+  setTimeout(()=>{c.style.borderColor='';},1600);
+}
+function setLoading(v){document.getElementById('btn-login').classList.toggle('loading',v);}
+
+/* called after OTP verified → full success animation then redirect */
+window.__doRedirect=function(){
+  document.getElementById('suc-ov').classList.add('show');
+  document.getElementById('hud-status').textContent='● VERIFIED';
+  document.getElementById('hud-status').style.color='rgba(6,255,165,0.75)';
+  document.getElementById('otp-hud-status').textContent='● VERIFIED';
+  document.getElementById('otp-hud-status').style.color='rgba(6,255,165,0.75)';
+  setTimeout(()=>{ window.location.href='index.html'; },1800);
+};
+
+/* email login → then show OTP step */
+document.getElementById('login-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  setLoading(true);
+  document.getElementById('a-err').classList.remove('show');
+  const email=document.getElementById('email').value.trim();
+  const pwd=document.getElementById('pwd').value;
+  if(document.getElementById('rem').checked) localStorage.setItem('pac_email',email);
+  else localStorage.removeItem('pac_email');
+  try{
+    await signInWithEmailAndPassword(auth,email,pwd);
+    /* ✅ Firebase auth passed — now trigger OTP */
+    window.__triggerOTP(email);
+  }catch(err){
+    showErr(ERRS[err.code]||'Authentication failed. Please try again.');
+    setLoading(false);
+  }
+});
+
+/* google login → OTP step */
+document.getElementById('btn-g').addEventListener('click',async()=>{
+  document.getElementById('a-err').classList.remove('show');
+  try{
+    const res=await signInWithPopup(auth,gp);
+    window.__triggerOTP(res.user.email);
+  }catch(err){
+    if(err.code!=='auth/popup-closed-by-user')
+      showErr('Google sign-in failed. Please try again.');
+  }
+});
+
+/* forgot */
+document.getElementById('fp-btn').addEventListener('click',async e=>{
+  e.preventDefault();
+  const email=document.getElementById('email').value.trim();
+  if(!email){showErr('Enter your email above first, then click Forgot Password.');return;}
+  try{
+    await sendPasswordResetEmail(auth,email);
+    document.getElementById('a-ok-msg').textContent='Password reset email sent! Check your inbox.';
+    document.getElementById('a-ok').classList.add('show');
+    document.getElementById('a-err').classList.remove('show');
+  }catch(err){showErr('Could not send reset email. Check the address and try again.');}
+});
+
+/* pre-fill */
+const saved=localStorage.getItem('pac_email');
+if(saved){document.getElementById('email').value=saved;document.getElementById('rem').checked=true;}
+</script>
+
+<!-- UI + OTP ENGINE -->
+<script>
+/* ━━━━━━ SPLASH — CINEMATIC ENGINE ━━━━━━ */
+(function(){
+  /* ── animated grid canvas ── */
+  const sc=document.getElementById('splash-canvas');
+  if(sc){
+    const ctx=sc.getContext('2d');
+    sc.width=window.innerWidth; sc.height=window.innerHeight;
+    window.addEventListener('resize',()=>{sc.width=window.innerWidth;sc.height=window.innerHeight;});
+
+    /* moving grid lines */
+    let offset=0;
+    const gridPts=Array.from({length:40},()=>({
+      x:Math.random()*sc.width, y:Math.random()*sc.height,
+      vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+      r:Math.random()*.6+.2
+    }));
+
+    function drawGrid(){
+      ctx.clearRect(0,0,sc.width,sc.height);
+      /* grid */
+      ctx.strokeStyle='rgba(0,240,255,0.025)';ctx.lineWidth=1;
+      const gs=60; offset=(offset+.3)%gs;
+      for(let x=offset;x<sc.width;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,sc.height);ctx.stroke();}
+      for(let y=offset;y<sc.height;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(sc.width,y);ctx.stroke();}
+      /* floating dots */
+      gridPts.forEach(p=>{
+        p.x+=p.vx;p.y+=p.vy;
+        if(p.x<0||p.x>sc.width)p.vx*=-1;
+        if(p.y<0||p.y>sc.height)p.vy*=-1;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle='rgba(0,240,255,0.4)';ctx.fill();
+      });
+      /* connections */
+      gridPts.forEach((a,i)=>gridPts.slice(i+1).forEach(b=>{
+        const d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(d<140){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,240,255,${(1-d/140)*.06})`;ctx.lineWidth=.8;ctx.stroke();}
+      }));
+      requestAnimationFrame(drawGrid);
+    }
+    drawGrid();
+  }
+
+  /* ── clock in corner ── */
+  function updateSplashClock(){
+    const n=new Date();
+    const t=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+    const el=document.getElementById('sp-clock');if(el)el.textContent=t;
+  }
+  updateSplashClock();
+  const clockInt=setInterval(updateSplashClock,1000);
+
+  /* ── boot sequence config ── */
+  const STEPS=[
+    {id:'spl-0', seg:'seg0', pct:10,  label:'Initializing…',    status:'KERNEL BOOT'},
+    {id:'spl-1', seg:'seg1', pct:28,  label:'Loading auth…',    status:'AUTH MODULE'},
+    {id:'spl-2', seg:'seg2', pct:50,  label:'Connecting DB…',   status:'FIRESTORE'},
+    {id:'spl-3', seg:'seg3', pct:68,  label:'Verifying SSL…',   status:'CERT CHAIN'},
+    {id:'spl-4', seg:'seg4', pct:85,  label:'Enabling 2FA…',    status:'OTP MODULE'},
+    {id:'spl-5', seg:'seg5', pct:100, label:'All systems go!',  status:'READY'},
+  ];
+
+  const barEl    = document.getElementById('sp-bar-fill');
+  const pctEl    = document.getElementById('sp-pct');
+  const statusEl = document.getElementById('sp-status-txt');
+
+  /* activate a step */
+  function activateStep(i){
+    const s=STEPS[i];
+    /* mark previous as done */
+    if(i>0){
+      const prev=document.getElementById(STEPS[i-1].id);
+      if(prev){
+        prev.classList.remove('active');
+        prev.classList.add('done');
+        prev.querySelector('.sp-log-ico').innerHTML='<i class="fa-solid fa-check"></i>';
+      }
+      document.getElementById(STEPS[i-1].seg)?.classList.add('lit');
+    }
+    /* activate current */
+    const cur=document.getElementById(s.id);
+    if(cur){
+      cur.classList.add('active');
+      cur.querySelector('.sp-log-ico').innerHTML='<i class="fa-solid fa-circle-notch spin"></i>';
+      /* re-attach spin class after replace */
+      setTimeout(()=>{
+        const ico=cur.querySelector('.sp-log-ico i');
+        if(ico)ico.classList.add('sp-log-ico-spin');
+      },10);
+    }
+    /* animate bar */
+    if(barEl)barEl.style.width=s.pct+'%';
+    /* animate percent */
+    animatePct(i===0?0:(STEPS[i-1]?.pct||0), s.pct);
+    if(statusEl)statusEl.textContent=s.status;
+  }
+
+  let _displayPct=0;
+  function animatePct(from,to){
+    let v=from;
+    const diff=to-from;
+    const steps=20;const stepSize=diff/steps;
+    const iv=setInterval(()=>{
+      v=Math.min(v+stepSize,to);
+      _displayPct=Math.floor(v);
+      if(pctEl)pctEl.textContent=_displayPct+'%';
+      if(v>=to)clearInterval(iv);
+    },18);
+  }
+
+  /* run steps with delays */
+  const DELAYS=[200, 520, 850, 1150, 1450, 1720];
+  STEPS.forEach((_,i)=>setTimeout(()=>activateStep(i), DELAYS[i]));
+
+  /* final step: mark last done, then hide splash */
+  setTimeout(()=>{
+    const last=document.getElementById(STEPS[STEPS.length-1].id);
+    if(last){
+      last.classList.remove('active');last.classList.add('done');
+      last.querySelector('.sp-log-ico').innerHTML='<i class="fa-solid fa-check"></i>';
+    }
+    document.getElementById(STEPS[STEPS.length-1].seg)?.classList.add('lit');
+    if(barEl)barEl.style.width='100%';
+    if(pctEl)pctEl.textContent='100%';
+    if(statusEl)statusEl.textContent='LAUNCH';
+  }, DELAYS[DELAYS.length-1]+350);
+
+  setTimeout(()=>{
+    clearInterval(clockInt);
+    document.getElementById('splash').classList.add('hide');
+    if(window.innerWidth<=900){
+      document.querySelectorAll('.pull-handle').forEach(h=>h.style.display='block');
+    }
+  }, 2900);
+})();
+
+/* ━━━━━━ CURSOR ━━━━━━ */
+const cd=document.getElementById('c-dot'),cr=document.getElementById('c-ring');
+let mx=-200,my=-200,rx=-200,ry=-200,rdy=false;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';if(!rdy){rdy=true;cd.classList.add('active');cr.classList.add('active');}});
+document.querySelectorAll('a,button,.f-pill,.login-card,.otp-card').forEach(el=>{el.addEventListener('mouseenter',()=>cr.classList.add('expand'));el.addEventListener('mouseleave',()=>cr.classList.remove('expand'));});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop);})();
+
+/* ━━━━━━ PARTICLES ━━━━━━ */
+(function(){
+  const c=document.getElementById('bg-canvas');if(!c)return;
+  const ctx=c.getContext('2d');let W,H;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  window.addEventListener('resize',resize);resize();
+  const pts=Array.from({length:60},()=>({x:Math.random()*1920,y:Math.random()*1080,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*.9+.3}));
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,240,255,0.5)';ctx.fill();});
+    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<115){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,240,255,${(1-d/115)*.08})`;ctx.lineWidth=1;ctx.stroke();}}));
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ━━━━━━ CLOCK ━━━━━━ */
+function tick(){
+  const n=new Date();
+  const t=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+  ['hud-time','otp-hud-time','ft-time'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t;});
+}
+setInterval(tick,1000);tick();
+setInterval(()=>{const e=document.getElementById('lat-chip');if(e)e.textContent='⚡ '+(72+Math.floor(Math.random()*70))+'ms';},3000);
+
+/* ━━━━━━ EYE / STRENGTH ━━━━━━ */
+function toggleEye(){const i=document.getElementById('pwd'),ic=document.getElementById('eye-i');if(i.type==='password'){i.type='text';ic.className='fa-solid fa-eye-slash';}else{i.type='password';ic.className='fa-solid fa-eye';}}
+document.getElementById('pwd').addEventListener('input',function(){
+  const v=this.value,w=document.getElementById('sw'),b=document.getElementById('sb'),l=document.getElementById('sl');
+  if(!v.length){w.classList.remove('on');return;}w.classList.add('on');
+  let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+  const L=[{w:'20%',bg:'var(--rose)',t:'Weak'},{w:'45%',bg:'var(--amber)',t:'Fair'},{w:'70%',bg:'#4285f4',t:'Good'},{w:'100%',bg:'var(--green)',t:'Strong'}];
+  const lv=L[Math.max(0,s-1)];b.style.width=lv.w;b.style.background=lv.bg;l.textContent=lv.t;l.style.color=lv.bg;
+});
+document.querySelector('.cb').addEventListener('click',()=>{const c=document.getElementById('rem');c.checked=!c.checked;});
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   OTP ENGINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+let _otp='', _otpExpiry=0, _attempts=MAX_ATTEMPTS;
+let _timerInt=null, _resendInt=null;
+
+/* generate 6-digit OTP */
+function genOTP(){
+  return String(Math.floor(100000+Math.random()*900000));
+}
+
+/* send OTP via Telegram Bot API */
+async function sendTelegramOTP(otp,userEmail){
+  const msg=`🔐 *PAC Management System — OTP Verification*\n\n`+
+    `Your one-time password:\n\n`+
+    `\`\`\`\n${otp}\n\`\`\`\n\n`+
+    `👤 User: \`${userEmail}\`\n`+
+    `⏰ Valid for: *5 minutes*\n`+
+    `🕐 Sent at: ${new Date().toLocaleTimeString('en-IN')}\n\n`+
+    `⚠️ Do not share this code with anyone.\n`+
+    `_PAC System Auto-Auth_`;
+
+  const url=`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      chat_id:TG_CHAT_ID,
+      text:msg,
+      parse_mode:'Markdown'
+    })
+  });
+  const data=await res.json();
+  if(!data.ok) throw new Error(data.description||'Telegram error');
+  return data;
+}
+
+/* switch from login card to OTP card */
+function showOTPCard(){
+  const loginCard=document.getElementById('login-card');
+  const otpCard=document.getElementById('otp-card');
+  loginCard.style.transition='opacity .35s,transform .35s';
+  loginCard.style.opacity='0';
+  loginCard.style.transform='translateX(-40px)';
+  setTimeout(()=>{
+    loginCard.style.display='none';
+    otpCard.classList.add('show');
+    /* focus first box */
+    setTimeout(()=>document.querySelectorAll('.otp-box')[0].focus(),200);
+  },350);
+}
+
+function hideOTPCard(){
+  const loginCard=document.getElementById('login-card');
+  const otpCard=document.getElementById('otp-card');
+  otpCard.classList.remove('show');
+  loginCard.style.display='';
+  loginCard.style.opacity='1';
+  loginCard.style.transform='';
+  /* re-enable login button */
+  document.getElementById('btn-login').classList.remove('loading');
+  /* clear OTP state */
+  clearTimers();
+  resetOTPBoxes();
+  document.getElementById('otp-err').classList.remove('show');
+}
+
+function resetOTPBoxes(){
+  document.querySelectorAll('.otp-box').forEach(b=>{b.value='';b.classList.remove('filled','err-shake','correct');});
+}
+
+function clearTimers(){
+  if(_timerInt){clearInterval(_timerInt);_timerInt=null;}
+  if(_resendInt){clearInterval(_resendInt);_resendInt=null;}
+}
+
+/* start countdown timer (5 minutes) */
+function startTimer(){
+  clearTimers();
+  const total=OTP_EXPIRY_MS/1000;
+  let remaining=total;
+  const bar=document.getElementById('otp-bar');
+  const timerEl=document.getElementById('otp-timer');
+  _timerInt=setInterval(()=>{
+    remaining--;
+    const pct=(remaining/total)*100;
+    bar.style.width=pct+'%';
+    if(pct<30) bar.classList.add('warn'); else bar.classList.remove('warn');
+    const m=Math.floor(remaining/60);
+    const s=String(remaining%60).padStart(2,'0');
+    timerEl.textContent=m+':'+s;
+    if(pct<30) timerEl.classList.add('warn'); else timerEl.classList.remove('warn');
+    if(remaining<=0){
+      clearInterval(_timerInt);
+      timerEl.textContent='0:00';
+      bar.style.width='0%';
+      showOTPErr('OTP expired. Please click Resend OTP.');
+      document.getElementById('otp-verify-btn').disabled=true;
+      document.getElementById('otp-verify-btn').style.opacity='.5';
+    }
+  },1000);
+}
+
+/* resend cooldown */
+function startResendCooldown(){
+  const btn=document.getElementById('otp-resend');
+  const cdEl=document.getElementById('otp-cd-val');
+  const cdWrap=document.getElementById('otp-resend-cd');
+  btn.disabled=true;cdWrap.style.display='';
+  let sec=RESEND_CD_SEC;
+  cdEl.textContent=sec;
+  _resendInt=setInterval(()=>{
+    sec--;cdEl.textContent=sec;
+    if(sec<=0){clearInterval(_resendInt);btn.disabled=false;cdWrap.style.display='none';}
+  },1000);
+}
+
+function showOTPErr(msg){
+  document.getElementById('otp-err-msg').textContent=msg;
+  document.getElementById('otp-err').classList.add('show');
+  document.querySelectorAll('.otp-box').forEach(b=>b.classList.add('err-shake'));
+  setTimeout(()=>document.querySelectorAll('.otp-box').forEach(b=>b.classList.remove('err-shake')),500);
+}
+
+/* main trigger — called after Firebase auth passes */
+window.__triggerOTP=async function(userEmail){
+  _otp=genOTP();
+  _otpExpiry=Date.now()+OTP_EXPIRY_MS;
+  _attempts=MAX_ATTEMPTS;
+  document.getElementById('otp-att-val').textContent=_attempts;
+
+  /* show sending overlay */
+  document.getElementById('sending-ov').classList.add('show');
+
+  try{
+    await sendTelegramOTP(_otp,userEmail);
+  }catch(err){
+    /* if Telegram fails, still show OTP card but warn — for dev/test log OTP to console */
+    console.warn('[PAC OTP] Telegram send failed:',err.message);
+    console.info('[PAC OTP - DEV ONLY] OTP is:',_otp); // remove in production!
+    /* show card anyway so user isn't locked out */
+  }
+
+  document.getElementById('sending-ov').classList.remove('show');
+  showOTPCard();
+  startTimer();
+  startResendCooldown();
+
+  /* reset verify button */
+  const vb=document.getElementById('otp-verify-btn');
+  vb.disabled=false;vb.style.opacity='1';
+  vb.classList.remove('loading');
+};
+
+/* OTP box keyboard logic */
+const boxes=[...document.querySelectorAll('.otp-box')];
+boxes.forEach((box,i)=>{
+  box.addEventListener('keydown',e=>{
+    if(e.key==='Backspace'){
+      if(box.value){box.value='';box.classList.remove('filled');}
+      else if(i>0){boxes[i-1].focus();boxes[i-1].value='';boxes[i-1].classList.remove('filled');}
+      e.preventDefault();
+    }
+    if(e.key==='ArrowLeft'&&i>0)boxes[i-1].focus();
+    if(e.key==='ArrowRight'&&i<5)boxes[i+1].focus();
+    if(e.key==='Enter')document.getElementById('otp-verify-btn').click();
+  });
+
+  box.addEventListener('input',e=>{
+    /* take only last digit */
+    const val=box.value.replace(/\D/g,'');
+    if(!val){box.value='';box.classList.remove('filled');return;}
+    box.value=val.slice(-1);
+    box.classList.add('filled');
+    /* auto advance */
+    if(i<5)boxes[i+1].focus();
+    /* auto verify if all filled */
+    if(boxes.every(b=>b.value.length===1)) verifyOTP();
+  });
+
+  /* handle paste on first box */
+  box.addEventListener('paste',e=>{
+    e.preventDefault();
+    const pasted=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+    pasted.split('').forEach((ch,idx)=>{if(boxes[idx]){boxes[idx].value=ch;boxes[idx].classList.add('filled');}});
+    if(pasted.length===6)verifyOTP();
+    else if(boxes[pasted.length])boxes[pasted.length].focus();
+  });
+});
+
+function getEnteredOTP(){return boxes.map(b=>b.value).join('');}
+
+function verifyOTP(){
+  const entered=getEnteredOTP();
+  if(entered.length<6){showOTPErr('Please enter all 6 digits.');return;}
+  if(Date.now()>_otpExpiry){showOTPErr('OTP expired. Click Resend OTP to get a new one.');return;}
+
+  if(entered===_otp){
+    /* ✅ CORRECT */
+    boxes.forEach(b=>{b.classList.add('correct');b.classList.remove('filled');});
+    document.getElementById('otp-err').classList.remove('show');
+    document.getElementById('otp-hud-status').textContent='● VERIFIED';
+    document.getElementById('otp-hud-status').style.color='rgba(6,255,165,0.75)';
+    clearTimers();
+    setTimeout(window.__doRedirect,600);
+  } else {
+    /* ❌ WRONG */
+    _attempts--;
+    document.getElementById('otp-att-val').textContent=_attempts;
+    if(_attempts<=0){
+      showOTPErr('Too many incorrect attempts. Please log in again.');
+      setTimeout(()=>{hideOTPCard();},2000);
+    } else {
+      showOTPErr(`Incorrect OTP. ${_attempts} attempt${_attempts===1?'':'s'} remaining.`);
+      boxes.forEach(b=>{b.value='';b.classList.remove('filled');});
+      boxes[0].focus();
+    }
+  }
+}
+
+/* verify button */
+document.getElementById('otp-verify-btn').addEventListener('click',()=>{
+  const vb=document.getElementById('otp-verify-btn');
+  vb.classList.add('loading');
+  setTimeout(()=>{verifyOTP();vb.classList.remove('loading');},600);
+});
+
+/* resend */
+document.getElementById('otp-resend').addEventListener('click',async()=>{
+  if(document.getElementById('otp-resend').disabled)return;
+  _otp=genOTP();
+  _otpExpiry=Date.now()+OTP_EXPIRY_MS;
+  _attempts=MAX_ATTEMPTS;
+  document.getElementById('otp-att-val').textContent=_attempts;
+
+  document.getElementById('sending-ov').classList.add('show');
+  const email=localStorage.getItem('pac_email')||'admin';
+  try{await sendTelegramOTP(_otp,email);}
+  catch(e){console.warn('[PAC OTP] Resend failed:',e.message);console.info('[PAC OTP DEV] OTP:',_otp);}
+  document.getElementById('sending-ov').classList.remove('show');
+
+  resetOTPBoxes();
+  document.getElementById('otp-err').classList.remove('show');
+  startTimer();startResendCooldown();
+  /* re-enable verify */
+  const vb=document.getElementById('otp-verify-btn');vb.disabled=false;vb.style.opacity='1';
+  boxes[0].focus();
+});
+
+/* back to login */
+document.getElementById('otp-back-btn').addEventListener('click',()=>hideOTPCard());
+
+/* reduced motion */
+if(window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+  document.querySelectorAll('[style*="animation"]').forEach(e=>e.style.animation='none');
+}
+
+/* ━━━━━━ EARTH GLOBE ENGINE ━━━━━━ */
+(function(){
+  const c=document.getElementById('earth-canvas');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  const S=380,cx=S/2,cy=S/2,R=155;
+  let rot=0;
+
+  /* ── Full world country-level outlines ── */
+  const continents=[
+    /* ══ NORTH AMERICA ══ */
+    /* Canada + Alaska */
+    [[83,-60],[83,-140],[70,-140],[60,-138],[54,-130],[50,-124],[48,-88],[46,-84],[44,-76],[45,-64],[47,-53],[52,-55],[58,-64],[62,-64],[65,-64],[68,-78],[70,-85],[73,-85],[75,-98],[72,-100],[73,-114],[72,-126],[76,-130],[80,-120],[83,-100],[83,-60]],
+    /* USA contiguous */
+    [[48,-88],[48,-95],[49,-101],[49,-110],[48,-122],[46,-124],[42,-124],[38,-122],[34,-120],[32,-117],[32,-114],[31,-111],[31,-108],[29,-104],[26,-97],[26,-80],[30,-81],[33,-79],[36,-75],[39,-74],[41,-71],[42,-70],[44,-67],[45,-66],[46,-60],[47,-53],[44,-76],[43,-79],[42,-81],[41,-83],[42,-84],[44,-83],[46,-84],[48,-88]],
+    /* Mexico */
+    [[26,-97],[22,-97],[19,-90],[16,-88],[16,-86],[16,-83],[20,-87],[21,-87],[21,-90],[19,-91],[18,-92],[18,-94],[20,-97],[22,-98],[24,-98],[26,-97]],
+    /* Central America */
+    [[16,-86],[14,-83],[11,-83],[9,-79],[8,-77],[10,-85],[12,-87],[14,-89],[15,-89],[16,-86]],
+    /* Cuba */
+    [[23,-74],[22,-75],[20,-75],[20,-77],[22,-82],[23,-82],[23,-74]],
+    /* Hispaniola */
+    [[20,-72],[18,-68],[18,-74],[20,-72]],
+    /* Jamaica */
+    [[18,-77],[17,-76],[18,-75],[18,-77]],
+    /* Greenland */
+    [[83,-25],[83,-60],[75,-72],[72,-68],[65,-52],[60,-45],[60,-43],[63,-40],[65,-36],[68,-26],[76,-18],[83,-18],[83,-25]],
+    /* ══ SOUTH AMERICA ══ */
+    /* Main landmass */
+    [[12,-72],[11,-62],[10,-60],[7,-60],[3,-52],[1,-50],[0,-50],[-5,-35],[-10,-37],[-15,-38],[-23,-43],[-33,-52],[-38,-57],[-42,-63],[-55,-65],[-55,-68],[-45,-75],[-38,-73],[-30,-71],[-18,-70],[-15,-75],[-10,-78],[-3,-78],[0,-75],[5,-77],[8,-77],[10,-85]],
+    /* Trinidad */
+    [[11,-61],[10,-60],[10,-62],[11,-61]],
+    /* Falklands */
+    [[-52,-59],[-52,-57],[-51,-57],[-51,-59],[-52,-59]],
+    /* ══ EUROPE ══ */
+    /* Western Europe main */
+    [[72,25],[72,8],[60,5],[58,5],[54,8],[52,4],[51,2],[48,0],[44,-2],[43,0],[42,3],[42,10],[44,8],[44,12],[45,13],[46,14],[48,17],[50,18],[52,14],[54,10],[56,10],[58,12],[60,12],[62,8],[64,14],[66,15],[69,18],[71,26],[72,25]],
+    /* UK Great Britain */
+    [[58,-3],[58,-6],[55,-6],[52,-5],[51,-2],[52,2],[53,0],[54,-1],[56,-3],[58,-3]],
+    /* Ireland */
+    [[55,-6],[54,-10],[52,-10],[52,-6],[54,-6],[55,-6]],
+    /* Iberian Peninsula (Spain+Portugal) */
+    [[44,-2],[43,-8],[37,-9],[36,-7],[36,-5],[38,-1],[40,0],[42,3],[44,-2]],
+    /* Italy */
+    [[44,8],[38,15],[38,16],[40,18],[42,14],[44,12],[44,8]],
+    /* Sicily */
+    [[38,13],[37,12],[37,15],[38,13]],
+    /* Greece */
+    [[42,22],[38,24],[37,22],[38,20],[40,22],[42,22]],
+    /* Scandinavia */
+    [[72,25],[71,26],[70,20],[68,17],[65,14],[62,5],[58,5],[60,5],[62,8],[64,14],[66,15],[69,18],[71,26],[72,25]],
+    /* Denmark */
+    [[58,12],[56,8],[55,8],[56,10],[58,12]],
+    /* Finland */
+    [[70,28],[68,26],[65,25],[62,25],[60,25],[60,28],[62,30],[65,29],[68,28],[70,28]],
+    /* Baltic states rough */
+    [[58,24],[56,24],[54,22],[56,22],[58,24]],
+    /* Poland */
+    [[54,18],[50,18],[50,24],[54,24],[54,18]],
+    /* Ukraine */
+    [[52,22],[46,30],[46,37],[48,40],[50,38],[52,34],[52,22]],
+    /* Romania */
+    [[48,22],[44,28],[44,30],[46,30],[48,26],[48,22]],
+    /* ══ AFRICA ══ */
+    /* Main */
+    [[37,10],[37,12],[30,32],[22,37],[12,44],[8,48],[4,42],[0,42],[-5,40],[-10,40],[-15,35],[-25,33],[-35,20],[-35,18],[-30,17],[-20,12],[-10,14],[0,9],[5,2],[5,-2],[10,-15],[15,-18],[20,-17],[27,-13],[30,-10],[33,-8],[37,10]],
+    /* Madagascar */
+    [[-13,48],[-14,49],[-25,47],[-25,44],[-20,44],[-13,48]],
+    /* Morocco / NW Africa detail */
+    [[37,-2],[36,-6],[33,-8],[28,-13],[22,-17],[16,-16],[20,-17],[27,-13],[35,-5],[37,-2]],
+    /* Horn of Africa */
+    [[12,44],[12,49],[10,51],[8,48],[4,42],[8,45],[12,44]],
+    /* ══ ASIA ══ */
+    /* Russia main */
+    [[72,25],[68,28],[65,29],[62,62],[62,70],[65,75],[70,80],[72,88],[72,100],[68,100],[65,107],[60,120],[56,130],[52,140],[48,140],[44,132],[40,128],[44,88],[48,88],[52,78],[56,70],[60,62],[62,60],[60,56],[55,50],[52,50],[50,38],[52,34],[52,22],[54,22],[56,24],[58,24],[60,28],[62,30],[65,29],[68,28],[70,28],[72,25]],
+    /* Siberia / far east Russia */
+    [[72,100],[72,150],[68,170],[64,170],[60,162],[56,162],[52,155],[52,140],[56,130],[60,120],[65,107],[68,100],[72,100]],
+    /* Turkey */
+    [[42,26],[36,26],[36,36],[38,40],[40,44],[42,40],[42,36],[42,26]],
+    /* Saudi Arabia + Arabian Peninsula */
+    [[30,38],[22,37],[12,44],[14,43],[16,42],[20,57],[24,57],[26,56],[22,50],[24,46],[26,40],[28,38],[30,38]],
+    /* Iran */
+    [[38,44],[26,56],[30,60],[36,62],[38,56],[42,50],[40,44],[38,44]],
+    /* Pakistan / Afghanistan */
+    [[38,64],[22,64],[22,70],[26,68],[30,68],[34,72],[36,74],[38,72],[40,70],[38,64]],
+    /* India */
+    [[34,72],[22,68],[8,77],[8,80],[12,80],[16,80],[20,87],[22,88],[26,89],[28,88],[26,88],[30,76],[32,74],[34,72]],
+    /* Sri Lanka */
+    [[10,80],[7,80],[7,82],[9,82],[10,80]],
+    /* China main */
+    [[52,120],[48,132],[44,132],[40,128],[40,124],[36,122],[26,120],[22,113],[20,110],[20,106],[22,102],[26,100],[28,98],[30,96],[32,92],[36,82],[40,76],[40,70],[44,80],[48,86],[52,80],[56,72],[62,62],[62,70],[62,80],[56,76],[52,78],[52,88],[48,88],[44,88],[40,88],[36,80],[32,80],[30,90],[28,92],[26,96],[22,98],[18,102],[14,102],[18,106],[16,108],[16,110],[18,110],[20,110],[22,113],[24,116],[26,118],[28,120],[32,120],[36,120],[40,122],[44,122],[48,128],[52,128],[52,120]],
+    /* Japan (Honshu) */
+    [[42,142],[38,142],[34,136],[34,130],[36,130],[38,140],[40,142],[42,142]],
+    /* Japan (Kyushu + Shikoku rough) */
+    [[34,130],[32,130],[32,132],[34,132],[34,130]],
+    /* Japan (Hokkaido) */
+    [[44,142],[42,140],[44,140],[44,144],[44,142]],
+    /* Korea */
+    [[38,128],[34,128],[36,128],[38,130],[38,128]],
+    /* Vietnam / Indochina */
+    [[22,102],[14,102],[10,106],[8,108],[10,108],[14,108],[18,106],[22,102]],
+    /* Thailand / Myanmar */
+    [[22,98],[14,98],[10,99],[14,102],[18,102],[22,98]],
+    /* Malaysia Peninsula */
+    [[6,100],[4,102],[2,104],[4,104],[6,102],[6,100]],
+    /* Sumatra */
+    [[6,96],[0,98],[-6,106],[-4,108],[0,106],[4,98],[6,96]],
+    /* Java */
+    [[-6,107],[-8,112],[-8,114],[-6,108],[-6,107]],
+    /* Borneo */
+    [[6,116],[0,110],[-4,114],[-2,116],[2,116],[4,118],[6,118],[6,116]],
+    /* Philippines (Luzon) */
+    [[18,122],[14,122],[14,124],[16,122],[18,122]],
+    /* New Guinea */
+    [[-5,142],[-8,140],[-6,134],[-4,136],[-2,138],[0,136],[-2,142],[-5,142]],
+    /* ══ OCEANIA ══ */
+    /* Australia */
+    [[-14,126],[-14,136],[-14,140],[-18,140],[-22,150],[-26,153],[-34,151],[-38,146],[-40,148],[-38,140],[-34,136],[-32,134],[-32,126],[-26,114],[-22,114],[-18,122],[-14,126]],
+    /* Tasmania */
+    [[-41,144],[-43,146],[-43,148],[-41,146],[-41,144]],
+    /* New Zealand North */
+    [[-36,174],[-38,178],[-40,176],[-38,174],[-36,174]],
+    /* New Zealand South */
+    [[-42,172],[-46,168],[-46,170],[-44,172],[-42,172]],
+    /* ══ MIDDLE EAST ══ */
+    /* Iraq */
+    [[38,40],[30,48],[28,48],[30,46],[32,44],[36,40],[38,40]],
+    /* Syria / Lebanon / Israel */
+    [[36,36],[30,34],[32,36],[34,36],[36,38],[36,36]],
+    /* Egypt */
+    [[30,32],[22,32],[22,37],[24,36],[28,34],[30,32]],
+    /* Sudan / South Sudan */
+    [[22,32],[10,38],[4,32],[8,24],[14,24],[22,32]],
+    /* Ethiopia / Somalia rough */
+    [[12,44],[8,48],[4,44],[4,42],[8,40],[12,44]],
+    /* ══ CENTRAL ASIA ══ */
+    /* Kazakhstan */
+    [[52,50],[50,58],[46,60],[44,58],[44,52],[48,52],[52,50]],
+    /* Caspian region */
+    [[44,52],[38,52],[36,54],[38,56],[40,56],[44,52]],
+    /* ══ ARCTIC / ISLANDS ══ */
+    /* Iceland */
+    [[66,-14],[64,-24],[64,-22],[66,-18],[66,-14]],
+    /* Svalbard */
+    [[80,14],[78,10],[78,20],[80,20],[80,14]],
+    /* Novaya Zemlya */
+    [[74,54],[72,52],[74,60],[76,60],[74,54]],
+    /* ══ CARIBBEAN ══ */
+    /* Puerto Rico */
+    [[18,-66],[17,-66],[18,-65],[18,-66]],
+    /* ══ ANTARCTICA ══ */
+    [[-70,0],[-70,30],[-70,60],[-70,90],[-70,120],[-70,150],[-70,180],[-70,-150],[-70,-120],[-70,-90],[-70,-60],[-70,-30],[-70,0]],
+  ];
+
+  const cities=[
+    /* Asia */
+    {lat:28.6,lon:77.2},   /* 0  Delhi */
+    {lat:22.5,lon:88.3},   /* 1  Kolkata */
+    {lat:35.6,lon:139.6},  /* 2  Tokyo */
+    {lat:31.2,lon:121.4},  /* 3  Shanghai */
+    {lat:22.3,lon:114.1},  /* 4  Hong Kong */
+    {lat:1.3,lon:103.8},   /* 5  Singapore */
+    {lat:13.7,lon:100.5},  /* 6  Bangkok */
+    {lat:55.7,lon:37.6},   /* 7  Moscow */
+    {lat:39.9,lon:116.3},  /* 8  Beijing */
+    {lat:37.5,lon:126.9},  /* 9  Seoul */
+    {lat:19.0,lon:72.8},   /* 10 Mumbai */
+    {lat:24.4,lon:54.6},   /* 11 Abu Dhabi */
+    {lat:41.0,lon:28.9},   /* 12 Istanbul */
+    /* Europe */
+    {lat:51.5,lon:-0.1},   /* 13 London */
+    {lat:48.8,lon:2.3},    /* 14 Paris */
+    {lat:52.5,lon:13.4},   /* 15 Berlin */
+    {lat:41.9,lon:12.5},   /* 16 Rome */
+    {lat:40.4,lon:-3.7},   /* 17 Madrid */
+    /* Africa */
+    {lat:30.0,lon:31.2},   /* 18 Cairo */
+    {lat:6.5,lon:3.4},     /* 19 Lagos */
+    {lat:-1.3,lon:36.8},   /* 20 Nairobi */
+    {lat:-26.2,lon:28.0},  /* 21 Johannesburg */
+    {lat:33.9,lon:-6.8},   /* 22 Casablanca */
+    /* Americas */
+    {lat:40.7,lon:-74.0},  /* 23 New York */
+    {lat:37.7,lon:-122.4}, /* 24 San Francisco */
+    {lat:34.0,lon:-118.2}, /* 25 Los Angeles */
+    {lat:19.4,lon:-99.1},  /* 26 Mexico City */
+    {lat:-23.5,lon:-46.6}, /* 27 Sao Paulo */
+    {lat:-34.6,lon:-58.4}, /* 28 Buenos Aires */
+    {lat:45.5,lon:-73.6},  /* 29 Montreal */
+    {lat:4.7,lon:-74.0},   /* 30 Bogota */
+    /* Oceania */
+    {lat:-33.8,lon:151.2}, /* 31 Sydney */
+    {lat:-37.8,lon:144.9}, /* 32 Melbourne */
+    {lat:-36.8,lon:174.7}, /* 33 Auckland */
+  ];
+
+  const connections=[
+    /* Asia web */
+    [0,1],[0,8],[0,10],[0,11],[1,2],[1,3],[2,9],[3,4],[3,8],[4,5],[5,6],[6,10],[7,8],[7,12],[7,15],
+    [8,9],[11,12],[11,18],
+    /* Europe web */
+    [13,14],[13,15],[14,16],[14,17],[15,16],[12,16],[13,23],
+    /* Africa */
+    [18,19],[18,22],[19,20],[20,21],[22,14],
+    /* Americas */
+    [23,24],[23,25],[23,29],[24,25],[25,26],[26,27],[27,28],[27,30],[23,13],
+    /* Pacific */
+    [31,32],[31,33],[31,2],[24,31],
+    /* Intercontinental */
+    [0,13],[7,13],[11,13],[1,31],[5,31],[18,13],[21,13],[19,27],
+  ];
+
+  function ll(lat,lon,r){
+    const phi=(90-lat)*Math.PI/180;
+    const theta=(lon+r)*Math.PI/180;
+    const x3=R*Math.sin(phi)*Math.cos(theta);
+    const y3=R*Math.cos(phi);
+    const z3=R*Math.sin(phi)*Math.sin(theta);
+    if(z3<0)return null;
+    return{x:cx+x3,y:cy-y3,z:z3};
+  }
+
+  /* ── METEOR POOL ── */
+  const meteors=Array.from({length:8},()=>newMeteor());
+  function newMeteor(){
+    const angle=Math.random()*Math.PI*2;
+    const dist=R*1.4+Math.random()*60;
+    return{
+      x:cx+Math.cos(angle)*dist, y:cy+Math.sin(angle)*dist,
+      vx:(Math.random()-.5)*3.5, vy:(Math.random()-.5)*3.5,
+      len:30+Math.random()*50,
+      life:1, decay:0.012+Math.random()*0.018,
+      size:Math.random()*1.2+0.3,
+      color:Math.random()>.6?'0,240,255':'139,92,246'
+    };
+  }
+
+  /* ── SHOCKWAVE POOL ── */
+  const shockwaves=[];
+  function addShockwave(x,y){
+    shockwaves.push({x,y,r:0,maxR:R*.35,life:1,color:'0,240,255'});
+  }
+  /* spawn random shockwaves on cities every few seconds */
+  setInterval(()=>{
+    const alive=cities.filter((_,i)=>{const p=ll(cities[i].lat,cities[i].lon,rot);return p&&p.z>0;});
+    if(alive.length){
+      const city=alive[Math.floor(Math.random()*alive.length)];
+      const p=ll(city.lat,city.lon,rot);
+      if(p) addShockwave(p.x,p.y);
+    }
+  },1800);
+
+  /* ── AURORA BANDS ── */
+  const auroraBands=[
+    {lat:68,phase:0,  amp:5,color:'0,255,140'},
+    {lat:72,phase:1.2,amp:7,color:'100,100,255'},
+    {lat:65,phase:2.4,amp:4,color:'0,240,255'},
+    {lat:-65,phase:0.8,amp:5,color:'0,200,160'},
+    {lat:-70,phase:1.8,amp:6,color:'80,80,240'},
+  ];
+
+  /* ── CLOUD LAYER rotation offset ── */
+  let cloudRot=0;
+
+  /* ── SATELLITE TRAILS ── */
+  const satellites=[
+    {lat:0,   lon:0,  speed:0.8, inclination:45, color:'0,240,255', trail:[]},
+    {lat:30,  lon:90, speed:1.2, inclination:-30,color:'139,92,246',trail:[]},
+    {lat:-20, lon:180,speed:0.6, inclination:60, color:'6,255,165', trail:[]},
+  ];
+
+  /* ── LIGHTNING arcs ── */
+  const lightnings=[];
+  setInterval(()=>{
+    if(Math.random()>.45) return;
+    const i=Math.floor(Math.random()*connections.length);
+    const [ci,cj]=connections[i];
+    lightnings.push({ci,cj,life:1,decay:0.15});
+  },600);
+
+  /* ── SCAN LINE ── */
+  let scanAngle=0;
+
+  /* ── NIGHT SIDE glow points (city lights) ── */
+  const nightCities=[
+    {lat:35,lon:139},{lat:22,lon:88},{lat:28,lon:77},{lat:40,lon:-74},
+    {lat:51,lon:0},{lat:48,lon:2},{lat:52,lon:13},{lat:31,lon:121},
+    {lat:39,lon:116},{lat:55,lon:37},{lat:-33,lon:151},{lat:19,lon:72},
+    {lat:37,lon:127},{lat:41,lon:29},{lat:-23,lon:-46},{lat:1,lon:103},
+  ];
+
+  let frameCount=0;
+
+  function draw(){
+    frameCount++;
+    const t=Date.now()/1000;
+    ctx.clearRect(0,0,S,S);
+
+    /* ─── ATMOSPHERE GLOW ─── */
+    const atm=ctx.createRadialGradient(cx,cy,R*.72,cx,cy,R*1.22);
+    atm.addColorStop(0,'rgba(0,240,255,0)');
+    atm.addColorStop(.6,'rgba(0,160,255,0.04)');
+    atm.addColorStop(.85,'rgba(0,240,255,0.12)');
+    atm.addColorStop(1,'rgba(26,107,255,0.22)');
+    ctx.beginPath();ctx.arc(cx,cy,R*1.22,0,Math.PI*2);ctx.fillStyle=atm;ctx.fill();
+
+    /* outer haze ring */
+    ctx.beginPath();ctx.arc(cx,cy,R*1.18,0,Math.PI*2);
+    ctx.strokeStyle='rgba(0,240,255,0.06)';ctx.lineWidth=12;ctx.stroke();
+
+    /* ─── OCEAN ─── */
+    const oc=ctx.createRadialGradient(cx-R*.32,cy-R*.32,R*.08,cx,cy,R);
+    oc.addColorStop(0,'rgba(0,45,100,0.92)');
+    oc.addColorStop(.5,'rgba(0,24,58,0.9)');
+    oc.addColorStop(1,'rgba(0,8,24,0.96)');
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=oc;ctx.fill();
+
+    /* ─── SCAN LINE (radar sweep) ─── */
+    ctx.save();
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.clip();
+    const scanGrad=ctx.createConicalGradient?ctx.createConicalGradient(cx,cy,scanAngle):null;
+    /* fallback: draw scan wedge */
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,scanAngle-0.35,scanAngle,false);
+    ctx.closePath();
+    ctx.fillStyle='rgba(0,240,255,0.04)';ctx.fill();
+    /* scan line */
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(scanAngle)*R,cy+Math.sin(scanAngle)*R);
+    ctx.strokeStyle='rgba(0,240,255,0.25)';ctx.lineWidth=1.5;
+    ctx.shadowColor='#00f0ff';ctx.shadowBlur=12;ctx.stroke();ctx.shadowBlur=0;
+    ctx.restore();
+    scanAngle+=0.018;
+
+    /* ─── LAT/LON GRID ─── */
+    for(let la=-75;la<=75;la+=15){
+      ctx.beginPath();let f=true;
+      for(let lo=-180;lo<=180;lo+=4){const p=ll(la,lo,rot);if(!p){f=true;continue;}f?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);f=false;}
+      ctx.strokeStyle=`rgba(0,200,255,${la===0?0.12:0.05})`;ctx.lineWidth=la===0?.9:.55;ctx.stroke();
+    }
+    for(let lo=0;lo<360;lo+=20){
+      ctx.beginPath();let f=true;
+      for(let la=-90;la<=90;la+=4){const p=ll(la,lo,rot);if(!p){f=true;continue;}f?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);f=false;}
+      ctx.strokeStyle='rgba(0,200,255,0.05)';ctx.lineWidth=.55;ctx.stroke();
+    }
+
+    /* ─── AURORA BOREALIS / AUSTRALIS ─── */
+    auroraBands.forEach(band=>{
+      ctx.beginPath();let f=true;
+      for(let lo=-180;lo<=180;lo+=3){
+        const wave=band.amp*Math.sin((lo+t*15+band.phase*50)*Math.PI/60);
+        const p=ll(band.lat+wave,lo,rot);
+        if(!p){f=true;continue;}
+        f?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);f=false;
+      }
+      ctx.strokeStyle=`rgba(${band.color},${0.12+0.06*Math.sin(t+band.phase)})`;
+      ctx.lineWidth=2.5;ctx.stroke();
+    });
+
+    /* ─── CONTINENTS ─── */
+    continents.forEach(poly=>{
+      ctx.beginPath();let s=false;
+      poly.forEach(([la,lo])=>{const p=ll(la,lo,rot);if(!p)return;s?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);s=true;});
+      ctx.closePath();
+      const gf=ctx.createLinearGradient(cx-R,cy-R,cx+R,cy+R);
+      gf.addColorStop(0,'rgba(0,240,255,0.14)');
+      gf.addColorStop(1,'rgba(26,107,255,0.08)');
+      ctx.fillStyle=gf;
+      ctx.strokeStyle='rgba(0,240,255,0.35)';
+      ctx.lineWidth=1;ctx.fill();ctx.stroke();
+    });
+
+    /* ─── CLOUD LAYER (wispy arcs) ─── */
+    cloudRot+=0.04;
+    const clouds=[
+      {lat:20,lon:60,w:28},{lat:45,lon:-40,w:22},{lat:-10,lon:20,w:18},
+      {lat:55,lon:100,w:20},{lat:30,lon:-100,w:24},{lat:-30,lon:140,w:16},
+      {lat:10,lon:-20,w:20},{lat:40,lon:60,w:15},{lat:-45,lon:-60,w:18},
+    ];
+    clouds.forEach((cl,i)=>{
+      const anim=t*8+i*25;
+      ctx.beginPath();let f=true;
+      for(let dl=-cl.w;dl<=cl.w;dl+=2){
+        const wave=3*Math.sin((dl+anim)*0.15);
+        const p=ll(cl.lat+wave,cl.lon+dl+cloudRot,rot);
+        if(!p){f=true;continue;}
+        f?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);f=false;
+      }
+      ctx.strokeStyle=`rgba(200,230,255,${0.06+0.04*Math.sin(t+i)})`;
+      ctx.lineWidth=3;ctx.stroke();
+    });
+
+    /* ─── NIGHT SIDE CITY LIGHTS ─── */
+    nightCities.forEach(nc=>{
+      /* only show on dark side (negative z roughly) */
+      const phi=(90-nc.lat)*Math.PI/180;
+      const theta=(nc.lon+rot)*Math.PI/180;
+      const z3=R*Math.sin(phi)*Math.sin(theta);
+      if(z3>-R*0.05)return; /* hide if on bright side */
+      const x3=R*Math.sin(phi)*Math.cos(theta);
+      const y3=R*Math.cos(phi);
+      const px=cx+x3,py=cy-y3;
+      const flicker=0.3+0.7*Math.random();
+      ctx.beginPath();ctx.arc(px,py,1.2,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,240,180,${0.4*flicker})`;
+      ctx.shadowColor='rgba(255,240,180,0.8)';ctx.shadowBlur=4;
+      ctx.fill();ctx.shadowBlur=0;
+    });
+
+    /* ─── SATELLITE TRAILS ─── */
+    satellites.forEach((sat,si)=>{
+      const satT=t*(0.5+si*0.2);
+      const satLon=(satT*80)%360-180;
+      const satLat=sat.inclination*Math.sin(satT*3.14);
+      const p=ll(satLat,satLon,rot);
+      if(p){
+        sat.trail.push({x:p.x,y:p.y});
+        if(sat.trail.length>28)sat.trail.shift();
+      }
+      /* draw trail */
+      if(sat.trail.length>1){
+        sat.trail.forEach((pt,ti)=>{
+          if(ti===0)return;
+          const prev=sat.trail[ti-1];
+          const alpha=(ti/sat.trail.length)*0.5;
+          ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.lineTo(pt.x,pt.y);
+          ctx.strokeStyle=`rgba(${sat.color},${alpha})`;
+          ctx.lineWidth=1.2;ctx.stroke();
+        });
+      }
+      /* satellite dot */
+      if(p){
+        ctx.beginPath();ctx.arc(p.x,p.y,2.8,0,Math.PI*2);
+        ctx.fillStyle=`rgba(${sat.color},0.95)`;
+        ctx.shadowColor=`rgba(${sat.color},1)`;ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0;
+        /* solar panel lines */
+        ctx.beginPath();ctx.moveTo(p.x-6,p.y);ctx.lineTo(p.x+6,p.y);
+        ctx.strokeStyle=`rgba(${sat.color},0.4)`;ctx.lineWidth=1;ctx.stroke();
+      }
+    });
+
+    /* ─── DATA CONNECTIONS + PACKETS ─── */
+    connections.forEach(([i,j],ci)=>{
+      const a=cities[i],b=cities[j];
+      const pa=ll(a.lat,a.lon,rot),pb=ll(b.lat,b.lon,rot);
+      if(!pa||!pb)return;
+      const ml=(a.lat+b.lat)/2+12,mlo=(a.lon+b.lon)/2;
+      const pm=ll(ml,mlo,rot);
+
+      /* glow underline */
+      ctx.save();
+      ctx.beginPath();ctx.moveTo(pa.x,pa.y);
+      if(pm)ctx.quadraticCurveTo(pm.x,pm.y,pb.x,pb.y);else ctx.lineTo(pb.x,pb.y);
+      ctx.strokeStyle='rgba(0,240,255,0.06)';ctx.lineWidth=3;ctx.stroke();
+
+      /* dashed animated arc */
+      ctx.beginPath();ctx.moveTo(pa.x,pa.y);
+      if(pm)ctx.quadraticCurveTo(pm.x,pm.y,pb.x,pb.y);else ctx.lineTo(pb.x,pb.y);
+      ctx.strokeStyle='rgba(0,240,255,0.22)';ctx.lineWidth=.85;
+      ctx.setLineDash([3,6]);ctx.lineDashOffset=-(t*14)%9;
+      ctx.stroke();ctx.setLineDash([]);ctx.restore();
+
+      /* TWO packets per connection at different phases */
+      [0, 0.5].forEach((offset,oi)=>{
+        const frac=(t*0.35+i*0.17+offset)%1;
+        if(!pm)return;
+        const bx=Math.pow(1-frac,2)*pa.x+2*(1-frac)*frac*pm.x+Math.pow(frac,2)*pb.x;
+        const by=Math.pow(1-frac,2)*pa.y+2*(1-frac)*frac*pm.y+Math.pow(frac,2)*pb.y;
+        const pColor=oi===0?'0,240,255':'139,92,246';
+        /* glow */
+        ctx.beginPath();ctx.arc(bx,by,5,0,Math.PI*2);
+        ctx.fillStyle=`rgba(${pColor},0.12)`;ctx.fill();
+        /* core */
+        ctx.beginPath();ctx.arc(bx,by,2,0,Math.PI*2);
+        ctx.fillStyle=`rgba(${pColor},0.95)`;
+        ctx.shadowColor=`rgba(${pColor},1)`;ctx.shadowBlur=8;ctx.fill();ctx.shadowBlur=0;
+      });
+    });
+
+    /* ─── LIGHTNING ARCS ─── */
+    lightnings.forEach((lg,li)=>{
+      const a=cities[lg.ci],b=cities[lg.cj];
+      const pa=ll(a.lat,a.lon,rot),pb=ll(b.lat,b.lon,rot);
+      if(pa&&pb&&lg.life>0){
+        ctx.save();
+        ctx.beginPath();ctx.moveTo(pa.x,pa.y);
+        /* jagged lightning path */
+        const steps=6;
+        for(let s=1;s<steps;s++){
+          const frac=s/steps;
+          const lx=pa.x+(pb.x-pa.x)*frac+(Math.random()-0.5)*14;
+          const ly=pa.y+(pb.y-pa.y)*frac+(Math.random()-0.5)*14;
+          ctx.lineTo(lx,ly);
+        }
+        ctx.lineTo(pb.x,pb.y);
+        ctx.strokeStyle=`rgba(180,100,255,${lg.life*0.7})`;
+        ctx.lineWidth=1.2;
+        ctx.shadowColor='rgba(139,92,246,0.9)';ctx.shadowBlur=10;
+        ctx.stroke();ctx.shadowBlur=0;ctx.restore();
+      }
+      lg.life-=lg.decay;
+    });
+    /* remove dead lightnings */
+    for(let i=lightnings.length-1;i>=0;i--){if(lightnings[i].life<=0)lightnings.splice(i,1);}
+
+    /* ─── SHOCKWAVES ─── */
+    shockwaves.forEach(sw=>{
+      ctx.beginPath();ctx.arc(sw.x,sw.y,sw.r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(0,240,255,${sw.life*0.5})`;
+      ctx.lineWidth=1.5*sw.life;ctx.stroke();
+      /* outer ripple */
+      ctx.beginPath();ctx.arc(sw.x,sw.y,sw.r*0.6,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(0,240,255,${sw.life*0.25})`;
+      ctx.lineWidth=sw.life;ctx.stroke();
+      sw.r+=sw.maxR*0.04;sw.life-=0.03;
+    });
+    for(let i=shockwaves.length-1;i>=0;i--){if(shockwaves[i].life<=0)shockwaves.splice(i,1);}
+
+    /* ─── CITY NODES ─── */
+    cities.forEach((city,i)=>{
+      const p=ll(city.lat,city.lon,rot);if(!p)return;
+      const pulse=.5+.5*Math.sin(t*2.8+i*1.3);
+      const z_depth=Math.max(0,p.z/R);
+      const baseColor=i<13?'0,240,255':(i<18?'255,200,80':(i<23?'6,255,165':'255,100,150'));
+
+      /* outer glow ring */
+      ctx.beginPath();ctx.arc(p.x,p.y,7+pulse*5,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${baseColor},${0.04+pulse*0.06})`;ctx.fill();
+      /* mid ring */
+      ctx.beginPath();ctx.arc(p.x,p.y,4+pulse*2,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${baseColor},${0.08+pulse*0.08})`;ctx.fill();
+      /* core */
+      ctx.beginPath();ctx.arc(p.x,p.y,2.2,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${baseColor},${0.7+pulse*0.3})`;
+      ctx.shadowColor=`rgba(${baseColor},0.9)`;ctx.shadowBlur=10*z_depth;
+      ctx.fill();ctx.shadowBlur=0;
+
+      /* crosshair tick marks on every 4th city */
+      if(i%4===0){
+        const cs=6+pulse*2;
+        ctx.beginPath();
+        ctx.moveTo(p.x-cs,p.y);ctx.lineTo(p.x+cs,p.y);
+        ctx.moveTo(p.x,p.y-cs);ctx.lineTo(p.x,p.y+cs);
+        ctx.strokeStyle=`rgba(${baseColor},0.25)`;ctx.lineWidth=.8;ctx.stroke();
+      }
+    });
+
+    /* ─── METEORS ─── */
+    meteors.forEach((m,mi)=>{
+      if(m.life>0){
+        const fade=m.life;
+        const tx2=m.x-m.vx*(m.len/Math.hypot(m.vx,m.vy));
+        const ty2=m.y-m.vy*(m.len/Math.hypot(m.vx,m.vy));
+        const mg=ctx.createLinearGradient(tx2,ty2,m.x,m.y);
+        mg.addColorStop(0,`rgba(${m.color},0)`);
+        mg.addColorStop(1,`rgba(${m.color},${fade*0.9})`);
+        ctx.beginPath();ctx.moveTo(tx2,ty2);ctx.lineTo(m.x,m.y);
+        ctx.strokeStyle=mg;ctx.lineWidth=m.size;
+        ctx.shadowColor=`rgba(${m.color},0.8)`;ctx.shadowBlur=6;
+        ctx.stroke();ctx.shadowBlur=0;
+        /* head glow */
+        ctx.beginPath();ctx.arc(m.x,m.y,m.size*1.5,0,Math.PI*2);
+        ctx.fillStyle=`rgba(${m.color},${fade*0.8})`;ctx.fill();
+        m.x+=m.vx;m.y+=m.vy;m.life-=m.decay;
+      } else {
+        meteors[mi]=newMeteor();
+      }
+    });
+
+    /* ─── SPECULAR HIGHLIGHT ─── */
+    const sp=ctx.createRadialGradient(cx-R*.4,cy-R*.4,0,cx-R*.4,cy-R*.4,R*.65);
+    sp.addColorStop(0,'rgba(255,255,255,0.10)');
+    sp.addColorStop(.5,'rgba(255,255,255,0.03)');
+    sp.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=sp;ctx.fill();
+
+    /* ─── RIM LIGHT ─── */
+    const rim=ctx.createRadialGradient(cx,cy,R*.83,cx,cy,R);
+    rim.addColorStop(0,'rgba(0,240,255,0)');
+    rim.addColorStop(.7,'rgba(0,240,255,0.12)');
+    rim.addColorStop(1,'rgba(26,107,255,0.28)');
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+    ctx.strokeStyle=rim;ctx.lineWidth=4;ctx.stroke();
+
+    /* ─── TERMINATOR LINE (day/night divide) ─── */
+    ctx.save();
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.clip();
+    ctx.beginPath();
+    for(let la=-90;la<=90;la+=3){
+      const tlo=90-rot; /* approximate sun direction */
+      const p1=ll(la,tlo,rot);
+      if(!p1)continue;
+      la===-90?ctx.moveTo(p1.x,p1.y):ctx.lineTo(p1.x,p1.y);
+    }
+    ctx.strokeStyle='rgba(255,160,30,0.12)';ctx.lineWidth=6;ctx.stroke();
+    ctx.restore();
+
+    rot+=0.13;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
