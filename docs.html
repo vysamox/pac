@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentation | PAC Management System</title>
+<meta name="description" content="PAC Management System — Full documentation, guides, and API reference.">
+<meta name="author" content="Samrat">
+<link rel="icon" type="image/png" href="assets/fav.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:    #02040c;
+  --ink2:   #050b1a;
+  --ink3:   #07112a;
+  --surface: rgba(5,12,30,0.7);
+  --rim:     rgba(255,255,255,0.07);
+  --rim-hi:  rgba(0,229,255,0.3);
+  --neon:    #00f0ff;
+  --blue:    #1a6bff;
+  --violet:  #8b5cf6;
+  --green:   #06ffa5;
+  --rose:    #ff2d78;
+  --amber:   #ffd60a;
+  --txt:  #e4f0ff;
+  --sub:  rgba(180,210,250,0.55);
+  --dim:  rgba(120,160,210,0.28);
+  --r:  20px;
+  --r2: 14px;
+  --e:  cubic-bezier(0.16,1,0.3,1);
+  --t:  0.45s var(--e);
+  --sidebar-w: 280px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--ink);color:var(--txt);overflow-x:hidden;line-height:1.6;cursor:none;}
+::selection{background:rgba(0,240,255,0.25);color:#fff;}
+/* ── PREMIUM SCROLLBAR ── */
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{
+  background:rgba(2,4,12,0.95);
+  border-left:1px solid rgba(0,240,255,0.08);
+}
+::-webkit-scrollbar-track:vertical{
+  background:linear-gradient(to bottom,
+    rgba(2,4,12,0.95) 0%,
+    rgba(5,12,30,0.98) 50%,
+    rgba(2,4,12,0.95) 100%
+  );
+  border-left:1px solid rgba(0,240,255,0.08);
+  box-shadow:inset 1px 0 0 rgba(255,255,255,0.03);
+}
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(to bottom,
+    rgba(0,240,255,0.9) 0%,
+    rgba(26,107,255,0.85) 40%,
+    rgba(139,92,246,0.8) 80%,
+    rgba(0,240,255,0.9) 100%
+  );
+  border-radius:6px;
+  border:2px solid rgba(2,4,12,0.8);
+  box-shadow:
+    0 0 8px rgba(0,240,255,0.5),
+    0 0 16px rgba(0,240,255,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+  transition:background .25s ease,box-shadow .25s ease;
+}
+::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(to bottom,
+    rgba(0,240,255,1) 0%,
+    rgba(26,107,255,1) 40%,
+    rgba(139,92,246,0.95) 80%,
+    rgba(0,240,255,1) 100%
+  );
+  box-shadow:
+    0 0 14px rgba(0,240,255,0.8),
+    0 0 30px rgba(0,240,255,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+::-webkit-scrollbar-thumb:active{
+  background:linear-gradient(to bottom,var(--neon),var(--blue));
+  box-shadow:0 0 20px rgba(0,240,255,0.9),0 0 40px rgba(0,240,255,0.4);
+}
+::-webkit-scrollbar-button{
+  display:block;
+  width:10px;height:14px;
+  background:rgba(5,12,30,0.98);
+  border-left:1px solid rgba(0,240,255,0.08);
+}
+::-webkit-scrollbar-button:vertical:decrement{
+  background:rgba(5,12,30,0.98)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='14' viewBox='0 0 10 14'%3E%3Cpath d='M5 4l-3 4h6z' fill='rgba(0,240,255,0.7)'/%3E%3C/svg%3E") center/8px no-repeat;
+  border-bottom:1px solid rgba(0,240,255,0.1);
+}
+::-webkit-scrollbar-button:vertical:decrement:hover{background-color:rgba(0,240,255,0.1);}
+::-webkit-scrollbar-button:vertical:increment{
+  background:rgba(5,12,30,0.98)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='14' viewBox='0 0 10 14'%3E%3Cpath d='M5 10l-3-4h6z' fill='rgba(0,240,255,0.7)'/%3E%3C/svg%3E") center/8px no-repeat;
+  border-top:1px solid rgba(0,240,255,0.1);
+}
+::-webkit-scrollbar-button:vertical:increment:hover{background-color:rgba(0,240,255,0.1);}
+::-webkit-scrollbar-corner{background:rgba(2,4,12,0.98);}
+/* Firefox */
+html,*{scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.7) rgba(2,4,12,0.95);}
+
+/* CURSOR */
+#c-dot{position:fixed;width:6px;height:6px;background:var(--neon);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--neon),0 0 20px rgba(0,240,255,0.5);opacity:0;transition:opacity .3s;}
+#c-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,240,255,0.5);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%);opacity:0;transition:width .3s var(--e),height .3s var(--e),border-color .25s,opacity .3s;}
+#c-ring.expand{width:52px;height:52px;border-color:var(--neon);}
+#c-dot.active,#c-ring.active{opacity:1;}
+
+/* GRAIN */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.15;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 52px;background:rgba(2,4,12,0.85);backdrop-filter:blur(40px) saturate(180%);border-bottom:1px solid rgba(255,255,255,0.06);}
+header::after{content:"";position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.3),transparent);}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-box{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--neon),var(--blue));}
+.logo-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.25) 50%,transparent 70%);animation:logo-shine 3s ease-in-out infinite;}
+@keyframes logo-shine{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.logo-box i{position:relative;z-index:1;}
+.logo-txt b{display:block;font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:18px;letter-spacing:3px;color:var(--txt);}
+.logo-txt span{display:block;font-family:'Fira Code',monospace;font-size:9px;font-weight:300;letter-spacing:4px;color:var(--neon);text-transform:uppercase;opacity:.8;}
+nav{display:flex;align-items:center;gap:2px;}
+nav a{font-family:'Rajdhani',sans-serif;font-size:14.5px;font-weight:600;color:var(--sub);text-decoration:none;padding:7px 15px;border-radius:99px;border:1px solid transparent;transition:var(--t);letter-spacing:1px;text-transform:uppercase;}
+nav a:hover,nav a.active{color:var(--neon);background:rgba(0,240,255,0.06);border-color:rgba(0,240,255,0.18);}
+.hdr-right{display:flex;align-items:center;gap:14px;}
+.hdr-btn{display:flex;align-items:center;gap:7px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:8px 18px;border-radius:99px;cursor:none;transition:var(--t);text-decoration:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#01080f;box-shadow:0 0 20px rgba(0,240,255,0.25);}
+.hdr-btn:hover{transform:scale(1.04);box-shadow:0 0 30px rgba(0,240,255,0.45);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:1px solid rgba(0,240,255,0.2);border-radius:10px;background:none;}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--neon);border-radius:2px;transition:var(--t);}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+#mob-nav{position:fixed;top:66px;left:0;right:0;z-index:999;background:rgba(2,4,12,0.97);backdrop-filter:blur(40px);border-bottom:1px solid rgba(0,240,255,0.1);max-height:0;overflow:hidden;transition:max-height .4s var(--e),padding .3s;display:flex;flex-direction:column;}
+#mob-nav.open{max-height:400px;padding:16px 0 24px;}
+#mob-nav a{padding:14px 28px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--sub);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.04);transition:var(--t);}
+#mob-nav a:hover{color:var(--neon);padding-left:36px;}
+
+/* PAGE LAYOUT */
+.page-wrap{display:flex;padding-top:66px;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;top:66px;left:0;bottom:0;
+  width:var(--sidebar-w);
+  background:rgba(2,5,15,0.95);
+  border-right:1px solid rgba(255,255,255,0.06);
+  overflow-y:auto;z-index:100;
+  padding:28px 0 40px;
+  scrollbar-width:thin;
+}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-thumb{
+  background:linear-gradient(to bottom,var(--neon),var(--blue));
+  border-radius:3px;
+  box-shadow:0 0 6px rgba(0,240,255,0.4);
+}
+.sidebar::-webkit-scrollbar-track{background:rgba(2,4,12,0.5);}
+
+.sb-search{
+  margin:0 16px 24px;position:relative;
+}
+.sb-search input{
+  width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;padding:9px 12px 9px 36px;
+  font-family:'Fira Code',monospace;font-size:12px;color:var(--txt);
+  outline:none;transition:var(--t);
+}
+.sb-search input::placeholder{color:var(--dim);}
+.sb-search input:focus{border-color:rgba(0,240,255,0.3);background:rgba(0,240,255,0.04);}
+.sb-search i{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--dim);}
+
+.sb-section{margin-bottom:8px;}
+.sb-section-title{
+  font-family:'Fira Code',monospace;font-size:9.5px;font-weight:400;
+  letter-spacing:3px;text-transform:uppercase;color:var(--dim);
+  padding:8px 20px 6px;
+}
+.sb-link{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 20px;font-family:'Rajdhani',sans-serif;
+  font-size:14px;font-weight:600;letter-spacing:.5px;
+  color:var(--sub);text-decoration:none;
+  border-left:2px solid transparent;
+  transition:var(--t);position:relative;
+}
+.sb-link:hover{color:var(--txt);background:rgba(0,240,255,0.04);border-left-color:rgba(0,240,255,0.3);}
+.sb-link.active{color:var(--neon);background:rgba(0,240,255,0.06);border-left-color:var(--neon);}
+.sb-link i{font-size:12px;width:16px;text-align:center;flex-shrink:0;}
+.sb-badge{
+  margin-left:auto;font-family:'Fira Code',monospace;font-size:9px;
+  padding:2px 7px;border-radius:99px;font-weight:400;
+}
+.sb-new{background:rgba(6,255,165,0.12);color:var(--green);border:1px solid rgba(6,255,165,0.2);}
+.sb-beta{background:rgba(255,214,10,0.1);color:var(--amber);border:1px solid rgba(255,214,10,0.2);}
+
+/* MAIN CONTENT */
+.doc-main{
+  margin-left:var(--sidebar-w);
+  flex:1;
+  padding:52px 64px 100px;
+  max-width:calc(100% - var(--sidebar-w));
+}
+
+/* DOC SECTION */
+.doc-section{
+  max-width:820px;
+  margin-bottom:80px;
+  opacity:0;transform:translateY(24px);
+  transition:opacity .6s var(--e),transform .6s var(--e);
+}
+.doc-section.visible{opacity:1;transform:translateY(0);}
+
+/* PAGE HERO */
+.doc-hero{
+  margin-bottom:64px;padding-bottom:48px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  position:relative;
+}
+.doc-hero::after{content:"";position:absolute;bottom:0;left:0;width:200px;height:1px;background:linear-gradient(90deg,var(--neon),transparent);}
+.doc-kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;padding:5px 16px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--neon);background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.16);}
+.doc-hero h1{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(42px,6vw,80px);line-height:.95;letter-spacing:3px;text-transform:uppercase;margin-bottom:18px;}
+.doc-hero h1 span{background:linear-gradient(135deg,var(--neon),var(--blue),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(0,240,255,0.3));}
+.doc-hero p{font-family:'Space Grotesk',sans-serif;font-size:17px;color:var(--sub);line-height:1.8;max-width:600px;}
+.doc-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;}
+.doc-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);}
+.doc-chip i{color:var(--neon);font-size:10px;}
+
+/* SECTION HEADINGS */
+.doc-section h2{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(28px,3.5vw,44px);letter-spacing:2px;text-transform:uppercase;color:var(--txt);margin-bottom:16px;display:flex;align-items:center;gap:14px;}
+.doc-section h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(0,240,255,0.15),transparent);}
+.doc-section h2 .h2-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:rgba(0,240,255,0.08);color:var(--neon);border:1px solid rgba(0,240,255,0.15);}
+.doc-section h3{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--txt);margin:32px 0 12px;padding-left:14px;border-left:3px solid var(--neon);}
+.doc-section p{font-family:'Space Grotesk',sans-serif;font-size:15px;color:var(--sub);line-height:1.85;margin-bottom:16px;font-weight:400;}
+.doc-section p strong{color:var(--txt);font-weight:600;}
+
+/* CODE BLOCKS */
+.code-block{
+  position:relative;margin:20px 0;border-radius:14px;overflow:hidden;
+  background:rgba(2,8,22,0.9);border:1px solid rgba(0,240,255,0.1);
+}
+.code-block::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--neon),var(--blue),var(--violet));}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(0,240,255,0.03);}
+.code-lang{font-family:'Fira Code',monospace;font-size:10px;font-weight:400;color:var(--neon);letter-spacing:2px;text-transform:uppercase;}
+.code-dots{display:flex;gap:6px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.cd-r{background:#ff5f56;}.cd-y{background:#febc2e;}.cd-g{background:#27c93f;}
+.code-copy{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);cursor:pointer;padding:3px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:none;transition:var(--t);}
+.code-copy:hover{color:var(--neon);border-color:rgba(0,240,255,0.2);}
+.code-copy.copied{color:var(--green);border-color:rgba(6,255,165,0.3);}
+pre{padding:20px 22px;overflow-x:auto;font-family:'Fira Code',monospace;font-size:13px;line-height:1.75;color:rgba(200,225,255,0.85);}
+pre .kw{color:var(--violet);}
+pre .str{color:var(--green);}
+pre .fn{color:var(--neon);}
+pre .cm{color:var(--dim);}
+pre .num{color:var(--amber);}
+pre .obj{color:#6ea8fe;}
+
+/* INLINE CODE */
+code{font-family:'Fira Code',monospace;font-size:12.5px;background:rgba(0,240,255,0.08);color:var(--neon);padding:2px 7px;border-radius:5px;border:1px solid rgba(0,240,255,0.12);}
+
+/* INFO / WARNING / TIP CARDS */
+.doc-card{
+  display:flex;gap:16px;padding:20px 22px;border-radius:14px;margin:20px 0;
+}
+.dc-info{background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);}
+.dc-warn{background:rgba(255,214,10,0.05);border:1px solid rgba(255,214,10,0.15);}
+.dc-tip{background:rgba(6,255,165,0.05);border:1px solid rgba(6,255,165,0.15);}
+.dc-danger{background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.15);}
+.dc-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.dc-info .dc-icon{color:var(--neon);}
+.dc-warn .dc-icon{color:var(--amber);}
+.dc-tip .dc-icon{color:var(--green);}
+.dc-danger .dc-icon{color:var(--rose);}
+.dc-body p{font-size:14px;margin-bottom:0;}
+.dc-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.dc-info .dc-title{color:var(--neon);}
+.dc-warn .dc-title{color:var(--amber);}
+.dc-tip .dc-title{color:var(--green);}
+.dc-danger .dc-title{color:var(--rose);}
+
+/* STEP LIST */
+.step-list{list-style:none;margin:20px 0;}
+.step-list li{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.step-list li:last-child{border-bottom:none;}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(0,240,255,0.15),rgba(26,107,255,0.15));border:1px solid rgba(0,240,255,0.25);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--neon);flex-shrink:0;letter-spacing:1px;}
+.step-body h4{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--txt);letter-spacing:.5px;margin-bottom:4px;}
+.step-body p{font-size:13.5px;margin-bottom:0;color:var(--sub);}
+
+/* FEATURE TABLE */
+.doc-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;}
+.doc-table th{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--neon);padding:12px 16px;text-align:left;border-bottom:1px solid rgba(0,240,255,0.15);background:rgba(0,240,255,0.04);}
+.doc-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--sub);font-family:'Space Grotesk',sans-serif;vertical-align:top;line-height:1.6;}
+.doc-table tr:last-child td{border-bottom:none;}
+.doc-table tr:hover td{background:rgba(0,240,255,0.02);color:var(--txt);}
+.td-yes{color:var(--green);font-weight:600;}
+.td-no{color:var(--rose);font-weight:600;}
+.td-partial{color:var(--amber);font-weight:600;}
+.td-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10px;}
+.tdb-admin{background:rgba(139,92,246,0.12);color:var(--violet);border:1px solid rgba(139,92,246,0.2);}
+.tdb-op{background:rgba(0,240,255,0.08);color:var(--neon);border:1px solid rgba(0,240,255,0.15);}
+.tdb-view{background:rgba(26,107,255,0.1);color:#6ea8fe;border:1px solid rgba(26,107,255,0.2);}
+
+/* CARD GRID */
+.doc-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:20px 0;}
+.mini-card{padding:22px 20px;background:linear-gradient(145deg,rgba(6,14,36,0.9),rgba(3,8,22,0.95));border:1px solid rgba(255,255,255,0.07);border-radius:16px;transition:var(--t);cursor:default;}
+.mini-card:hover{border-color:rgba(0,240,255,0.2);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.4);}
+.mini-card-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px;}
+.mci-c{background:rgba(0,240,255,0.1);color:var(--neon);border:1px solid rgba(0,240,255,0.18);}
+.mci-g{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.18);}
+.mci-v{background:rgba(139,92,246,0.1);color:var(--violet);border:1px solid rgba(139,92,246,0.18);}
+.mci-b{background:rgba(26,107,255,0.1);color:#6ea8fe;border:1px solid rgba(26,107,255,0.18);}
+.mci-a{background:rgba(255,214,10,0.1);color:var(--amber);border:1px solid rgba(255,214,10,0.18);}
+.mini-card h4{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--txt);margin-bottom:6px;}
+.mini-card p{font-size:12.5px;color:var(--sub);line-height:1.65;margin-bottom:0;}
+
+/* ENDPOINT BADGE */
+.endpoint{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:10px;font-family:'Fira Code',monospace;font-size:12px;margin:6px 0;background:rgba(2,8,22,0.9);border:1px solid rgba(255,255,255,0.08);}
+.ep-method{padding:3px 9px;border-radius:6px;font-size:10px;font-weight:500;letter-spacing:1px;flex-shrink:0;}
+.ep-get{background:rgba(6,255,165,0.12);color:var(--green);}
+.ep-post{background:rgba(0,240,255,0.12);color:var(--neon);}
+.ep-put{background:rgba(255,214,10,0.1);color:var(--amber);}
+.ep-del{background:rgba(255,45,120,0.1);color:var(--rose);}
+.ep-path{color:var(--txt);}
+
+/* DIVIDER */
+.doc-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.15),transparent);margin:60px 0;}
+
+/* BACK TO TOP */
+#back-top{
+  position:fixed;bottom:32px;right:32px;
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--neon),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  color:#01080f;font-size:16px;cursor:pointer;
+  box-shadow:0 0 20px rgba(0,240,255,0.3);
+  transition:var(--t);opacity:0;transform:translateY(16px);
+  border:none;z-index:500;
+}
+#back-top.show{opacity:1;transform:translateY(0);}
+#back-top:hover{transform:translateY(-4px);box-shadow:0 0 30px rgba(0,240,255,0.5);}
+
+/* PROGRESS BAR */
+#read-progress{position:fixed;top:66px;left:0;height:2px;background:linear-gradient(90deg,var(--neon),var(--blue),var(--violet));z-index:999;transition:width .1s linear;width:0%;}
+
+/* FOOTER */
+footer{background:rgba(1,3,10,0.98);border-top:1px solid rgba(255,255,255,0.06);margin-left:var(--sidebar-w);}
+footer::before{content:"";display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.25),transparent);}
+.footer-bottom{padding:24px 52px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;}
+.f-meta{display:flex;flex-wrap:wrap;gap:10px;}
+.f-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+.f-badge i{color:var(--neon);font-size:10px;}
+.f-copy{font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--dim);}
+
+/* ── MOBILE FIXES ── */
+
+/* Sidebar overlay */
+.sidebar-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.65);
+  backdrop-filter:blur(4px);
+  z-index:199;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s;
+}
+.sidebar-overlay.show{opacity:1;pointer-events:all;}
+
+/* Sidebar toggle button (mobile only) */
+.sidebar-toggle{
+  display:none;
+  align-items:center;gap:7px;
+  font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:7px 14px;border-radius:99px;cursor:pointer;
+  background:rgba(0,240,255,0.07);border:1px solid rgba(0,240,255,0.2);
+  color:var(--neon);transition:var(--t);margin-bottom:20px;
+  width:100%;justify-content:center;
+}
+.sidebar-toggle:hover{background:rgba(0,240,255,0.12);}
+.sidebar-toggle i{font-size:12px;}
+
+@media(max-width:900px){
+  :root{--sidebar-w:0px;}
+
+  /* Sidebar as slide-in drawer */
+  .sidebar{
+    transform:translateX(-280px);
+    width:280px;
+    transition:transform .4s var(--e);
+    top:60px;z-index:200;
+    box-shadow:4px 0 40px rgba(0,0,0,0.8);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{display:block;}
+
+  /* Main */
+  .doc-main{margin-left:0;max-width:100%;padding:28px 18px 80px;}
+  .sidebar-toggle{display:flex;}
+  footer{margin-left:0;}
+
+  /* Header */
+  header{padding:0 18px;height:60px;}
+  #read-progress{top:60px;}
+  #mob-nav{top:60px;}
+  nav{display:none!important;}
+  .hdr-right .hdr-btn{display:none;}
+  .hamburger{display:flex;}
+
+  /* Cursor off */
+  #c-dot,#c-ring{display:none;}
+  body{cursor:auto;}
+  .hdr-btn,.code-copy,#back-top,.sidebar-toggle{cursor:pointer;}
+
+  /* Hero */
+  .doc-hero{margin-bottom:40px;padding-bottom:32px;}
+  .doc-hero h1{font-size:clamp(32px,8vw,50px);letter-spacing:1px;}
+  .doc-hero p{font-size:14px;}
+  .doc-kicker{font-size:9px;padding:4px 12px;}
+  .doc-meta{gap:7px;margin-top:16px;}
+  .doc-chip{font-size:9px;padding:4px 9px;}
+
+  /* Cards grid 1 col */
+  .doc-card-grid{grid-template-columns:1fr;gap:12px;margin-top:20px;}
+  .mini-card{padding:18px 16px;}
+
+  /* Sections */
+  .doc-section{margin-bottom:52px;}
+  .doc-section h2{font-size:clamp(22px,5vw,30px);gap:10px;}
+  .doc-section h2 .h2-icon{width:32px;height:32px;font-size:13px;flex-shrink:0;}
+  .doc-section h3{font-size:16px;margin:24px 0 10px;}
+  .doc-section p{font-size:14px;}
+  .doc-divider{margin:40px 0;}
+
+  /* Tables scroll */
+  .doc-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;font-size:12.5px;}
+  .doc-table th,.doc-table td{padding:10px 12px;}
+
+  /* Code */
+  pre{font-size:11.5px;padding:14px 16px;}
+  .code-block{margin:12px 0;border-radius:10px;}
+  .code-header{padding:8px 14px;}
+  .code-lang{font-size:9px;}
+
+  /* Step list */
+  .step-list li{gap:12px;padding:14px 0;}
+  .step-num{width:28px;height:28px;font-size:14px;flex-shrink:0;}
+  .step-body h4{font-size:14px;}
+  .step-body p{font-size:13px;}
+
+  /* Doc cards */
+  .doc-card{padding:14px 16px;gap:12px;border-radius:12px;}
+  .dc-icon{font-size:16px;}
+  .dc-title{font-size:13px;}
+  .dc-body p{font-size:13px;}
+
+  /* Endpoints */
+  .endpoint{font-size:11px;padding:8px 12px;border-radius:8px;overflow-x:auto;}
+  .ep-path{white-space:nowrap;}
+
+  /* Changelog */
+  .doc-section ul li{font-size:13px;}
+
+  /* FAQ */
+  .faq-q-text{font-size:14px;}
+  .faq-a{font-size:13px;}
+
+  /* Back to top */
+  #back-top{bottom:20px;right:14px;width:40px;height:40px;font-size:14px;}
+
+  /* Footer */
+  .footer-bottom{padding:16px 18px;flex-direction:column;align-items:flex-start;gap:8px;}
+  .f-badge{font-size:10px;padding:4px 10px;}
+}
+
+@media(max-width:480px){
+  .doc-main{padding:20px 12px 60px;}
+  .doc-hero h1{font-size:28px;}
+  pre{font-size:10.5px;padding:12px;}
+  .doc-section h2{font-size:20px;}
+  .mini-card h4{font-size:13px;}
+}
+</style>
+</head>
+<body>
+
+<div id="c-dot"></div>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="c-ring"></div>
+<div id="read-progress"></div>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-box"><i class="fa-solid fa-database"></i></div>
+    <div class="logo-txt"><b>PAC System</b><span>Management Dashboard</span></div>
+  </a>
+  <nav>
+    <a href="index.html#features">Features</a>
+    <a href="docs.html" class="active">Documentation</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="hdr-right">
+    <a href="/login.html" class="hdr-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<div id="mob-nav">
+  <a href="index.html#features" onclick="toggleNav()">Features</a>
+  <a href="docs.html" onclick="toggleNav()">Documentation</a>
+  <a href="contact.html" onclick="toggleNav()">Contact</a>
+  <a href="/login.html" onclick="toggleNav()">Login</a>
+</div>
+
+<div class="page-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="sb-search-input" placeholder="Search docs..." onkeyup="searchDocs(this.value)">
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-title">Getting Started</div>
+      <a href="#overview" class="sb-link active" onclick="setActive(this)"><i class="fa-solid fa-house"></i> Overview <span class="sb-badge sb-new">v2.0</span></a>
+      <a href="#quickstart" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-bolt"></i> Quick Start</a>
+      <a href="#installation" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-download"></i> Installation</a>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-title">Core Modules</div>
+      <a href="#pac-entries" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-file-invoice"></i> PAC Entries</a>
+      <a href="#center-mgmt" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-building"></i> Center Management</a>
+      <a href="#agent-tracking" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-users-gear"></i> Agent Tracking</a>
+      <a href="#ucl-owners" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-id-card"></i> UCL Owners</a>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-title">Security</div>
+      <a href="#auth" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-lock"></i> Authentication</a>
+      <a href="#roles" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-user-shield"></i> Roles & Permissions</a>
+      <a href="#firestore-rules" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-shield-halved"></i> Firestore Rules</a>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-title">Data & Sync</div>
+      <a href="#realtime" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-rss"></i> Real-Time Sync</a>
+      <a href="#backup" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-cloud-arrow-up"></i> Backup System</a>
+      <a href="#exports" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-file-export"></i> Exports & Reports <span class="sb-badge sb-beta">Beta</span></a>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-title">Reference</div>
+      <a href="#api-ref" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-code"></i> API Reference</a>
+      <a href="#changelog" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-code-branch"></i> Changelog</a>
+      <a href="#faq" class="sb-link" onclick="setActive(this)"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="doc-main">
+    <button class="sidebar-toggle" onclick="openSidebar()"><i class="fa-solid fa-bars"></i> Browse Docs</button>
+
+    <!-- HERO -->
+    <div class="doc-hero doc-section" id="overview">
+      <div class="doc-kicker"><i class="fa-solid fa-book-open"></i> Documentation</div>
+      <h1>PAC System<br><span>Documentation</span></h1>
+      <p>Everything you need to set up, configure, and operate the PAC Management System — from first login to advanced analytics and multi-center deployments.</p>
+      <div class="doc-meta">
+        <span class="doc-chip"><i class="fa-solid fa-code-branch"></i> Version 2.0.0</span>
+        <span class="doc-chip"><i class="fa-solid fa-calendar"></i> Updated 2025</span>
+        <span class="doc-chip"><i class="fa-solid fa-fire"></i> Firebase 10.x</span>
+        <span class="doc-chip"><i class="fa-solid fa-circle-check" style="color:var(--green)"></i> Stable Release</span>
+      </div>
+
+      <div class="doc-card-grid" style="margin-top:36px;">
+        <div class="mini-card"><div class="mini-card-icon mci-c"><i class="fa-solid fa-bolt"></i></div><h4>Quick Start</h4><p>Get up and running in minutes with our step-by-step setup guide.</p></div>
+        <div class="mini-card"><div class="mini-card-icon mci-g"><i class="fa-solid fa-file-invoice"></i></div><h4>PAC Entries</h4><p>Learn how to submit, edit, and track PAC records across all centers.</p></div>
+        <div class="mini-card"><div class="mini-card-icon mci-v"><i class="fa-solid fa-user-shield"></i></div><h4>Roles & Auth</h4><p>Configure granular permissions and secure every operator account.</p></div>
+        <div class="mini-card"><div class="mini-card-icon mci-b"><i class="fa-solid fa-code"></i></div><h4>API Reference</h4><p>Complete Firestore collection schemas and query reference.</p></div>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- QUICK START -->
+    <div class="doc-section" id="quickstart">
+      <h2><span class="h2-icon"><i class="fa-solid fa-bolt"></i></span> Quick Start</h2>
+      <p>Follow these steps to get PAC Management running in your environment. The system is hosted on Vercel and backed by Google Firestore — no local server required.</p>
+
+      <ol class="step-list">
+        <li><div class="step-num">1</div><div class="step-body"><h4>Access the Platform</h4><p>Navigate to <code>cscpac.vercel.app</code> in any modern browser. No installation needed — PAC is a Progressive Web App.</p></div></li>
+        <li><div class="step-num">2</div><div class="step-body"><h4>Login with Admin Credentials</h4><p>Use your assigned admin email and password on the <a href="/login.html" style="color:var(--neon);">login page</a>. First-time setup credentials are provided by the system administrator.</p></div></li>
+        <li><div class="step-num">3</div><div class="step-body"><h4>Register Your Center</h4><p>Navigate to <strong>Center Management → Add New Center</strong>. Assign a unique Center ID, location, and the UCL owner responsible.</p></div></li>
+        <li><div class="step-num">4</div><div class="step-body"><h4>Add Operators</h4><p>Go to <strong>Agent Tracking → Create Operator</strong>. Set their role (View-Only, Data Entry, Manager, or Admin) and link them to a center.</p></div></li>
+        <li><div class="step-num">5</div><div class="step-body"><h4>Start Submitting PAC Entries</h4><p>Operators can immediately begin submitting PAC records. All data syncs to Firestore in real time across every connected session.</p></div></li>
+      </ol>
+
+      <div class="doc-card dc-tip">
+        <i class="fa-solid fa-lightbulb dc-icon"></i>
+        <div class="dc-body"><div class="dc-title">Pro Tip</div><p>Bookmark the dashboard on mobile for instant PWA access — operators get a native app-like experience with no install required.</p></div>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- INSTALLATION -->
+    <div class="doc-section" id="installation">
+      <h2><span class="h2-icon"><i class="fa-solid fa-download"></i></span> Installation & Config</h2>
+      <p>PAC Management runs entirely in the browser with no backend setup required. If you are self-hosting or customizing the codebase, follow the steps below.</p>
+
+      <h3>Firebase Configuration</h3>
+      <p>Replace the Firebase config object in <code>index.html</code> and all dashboard files with your own project credentials from the Firebase Console.</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot cd-r"></div><div class="code-dot cd-y"></div><div class="code-dot cd-g"></div></div>
+          <span class="code-lang">JavaScript</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cm">// firebase-config.js</span>
+<span class="kw">const</span> <span class="obj">firebaseConfig</span> = {
+  <span class="str">apiKey</span>:            <span class="str">"YOUR_API_KEY"</span>,
+  <span class="str">authDomain</span>:        <span class="str">"your-project.firebaseapp.com"</span>,
+  <span class="str">projectId</span>:         <span class="str">"your-project-id"</span>,
+  <span class="str">storageBucket</span>:     <span class="str">"your-project.appspot.com"</span>,
+  <span class="str">messagingSenderId</span>: <span class="str">"123456789"</span>,
+  <span class="str">appId</span>:             <span class="str">"1:123456789:web:abcdef"</span>
+};
+
+<span class="kw">const</span> <span class="obj">app</span> = <span class="fn">initializeApp</span>(<span class="obj">firebaseConfig</span>);
+<span class="kw">const</span> <span class="obj">db</span>  = <span class="fn">getFirestore</span>(<span class="obj">app</span>);</pre>
+      </div>
+
+      <h3>Deploying to Vercel</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot cd-r"></div><div class="code-dot cd-y"></div><div class="code-dot cd-g"></div></div>
+          <span class="code-lang">Bash</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cm"># Install Vercel CLI</span>
+npm install -g vercel
+
+<span class="cm"># Deploy from project root</span>
+vercel --prod
+
+<span class="cm"># Set environment variables (optional)</span>
+vercel env add FIREBASE_API_KEY</pre>
+      </div>
+
+      <div class="doc-card dc-warn">
+        <i class="fa-solid fa-triangle-exclamation dc-icon"></i>
+        <div class="dc-body"><div class="dc-title">Important</div><p>Never commit your Firebase API keys to a public repository. Use Vercel environment variables or a <code>.env</code> file added to <code>.gitignore</code>.</p></div>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- PAC ENTRIES -->
+    <div class="doc-section" id="pac-entries">
+      <h2><span class="h2-icon"><i class="fa-solid fa-file-invoice"></i></span> PAC Entries</h2>
+      <p>PAC entries are the core data unit of the system. Each record represents a single Aadhaar enrollment transaction linked to a center, operator, and timestamp.</p>
+
+      <h3>Firestore Collection Schema</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot cd-r"></div><div class="code-dot cd-y"></div><div class="code-dot cd-g"></div></div>
+          <span class="code-lang">Firestore Document</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cm">// Collection: pacEntries / {docId}</span>
+{
+  <span class="str">centerId</span>:    <span class="str">"SC-04"</span>,          <span class="cm">// Center reference ID</span>
+  <span class="str">operatorId</span>:  <span class="str">"op_meheraj"</span>,     <span class="cm">// Operator UID</span>
+  <span class="str">enrollName</span>:  <span class="str">"Rahul Das"</span>,       <span class="cm">// Enrollee name</span>
+  <span class="str">aadhaarLast</span>: <span class="str">"XXXX"</span>,            <span class="cm">// Last 4 digits</span>
+  <span class="str">status</span>:      <span class="str">"verified"</span>,        <span class="cm">// pending | verified | rejected</span>
+  <span class="str">timestamp</span>:   <span class="fn">serverTimestamp</span>(), <span class="cm">// Auto Firestore timestamp</span>
+  <span class="str">syncedAt</span>:    <span class="fn">serverTimestamp</span>(), <span class="cm">// Last sync time</span>
+  <span class="str">notes</span>:       <span class="str">""</span>                 <span class="cm">// Optional operator notes</span>
+}</pre>
+      </div>
+
+      <h3>Entry Statuses</h3>
+      <table class="doc-table">
+        <thead><tr><th>Status</th><th>Description</th><th>Who Can Change</th></tr></thead>
+        <tbody>
+          <tr><td><code>pending</code></td><td>Entry submitted, awaiting review</td><td>Any operator</td></tr>
+          <tr><td><code>verified</code></td><td>Enrollment confirmed and validated</td><td>Manager / Admin</td></tr>
+          <tr><td><code>rejected</code></td><td>Entry flagged with a reason</td><td>Admin only</td></tr>
+          <tr><td><code>syncing</code></td><td>Offline entry pending cloud sync</td><td>System automatic</td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-card dc-info">
+        <i class="fa-solid fa-circle-info dc-icon"></i>
+        <div class="dc-body"><div class="dc-title">Offline Support</div><p>Firestore offline persistence is enabled by default. Entries submitted without internet are queued locally and synced automatically when connectivity is restored.</p></div>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- CENTER MANAGEMENT -->
+    <div class="doc-section" id="center-mgmt">
+      <h2><span class="h2-icon"><i class="fa-solid fa-building"></i></span> Center Management</h2>
+      <p>Each Aadhaar enrollment center is registered as a document in the <code>centers</code> Firestore collection. Centers are linked to UCL owners and can have multiple assigned operators.</p>
+
+      <h3>Center Document Schema</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot cd-r"></div><div class="code-dot cd-y"></div><div class="code-dot cd-g"></div></div>
+          <span class="code-lang">Firestore Document</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cm">// Collection: centers / {centerId}</span>
+{
+  <span class="str">centerId</span>:   <span class="str">"SC-04"</span>,
+  <span class="str">name</span>:       <span class="str">"Singi Enrollment Center"</span>,
+  <span class="str">location</span>:   <span class="str">"Singi, Bolpur, Birbhum"</span>,
+  <span class="str">pincode</span>:    <span class="str">"731240"</span>,
+  <span class="str">uclOwner</span>:   <span class="str">"sabir_chowdhury"</span>,
+  <span class="str">active</span>:     <span class="kw">true</span>,
+  <span class="str">operators</span>:  [<span class="str">"op_meheraj"</span>, <span class="str">"op_samrat"</span>],
+  <span class="str">createdAt</span>:  <span class="fn">serverTimestamp</span>()
+}</pre>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- AUTH -->
+    <div class="doc-section" id="auth">
+      <h2><span class="h2-icon"><i class="fa-solid fa-lock"></i></span> Authentication</h2>
+      <p>PAC Management uses <strong>Firebase Authentication</strong> with email/password sign-in. All sessions are managed server-side via Firebase ID tokens — no custom auth server required.</p>
+
+      <h3>Login Flow</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot cd-r"></div><div class="code-dot cd-y"></div><div class="code-dot cd-g"></div></div>
+          <span class="code-lang">JavaScript</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">import</span> { <span class="obj">getAuth</span>, <span class="obj">signInWithEmailAndPassword</span> }
+  <span class="kw">from</span> <span class="str">"firebase/auth"</span>;
+
+<span class="kw">const</span> <span class="obj">auth</span> = <span class="fn">getAuth</span>();
+
+<span class="kw">async function</span> <span class="fn">login</span>(email, password) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">result</span> = <span class="kw">await</span> <span class="fn">signInWithEmailAndPassword</span>(
+      <span class="obj">auth</span>, email, password
+    );
+    <span class="cm">// Redirect to dashboard on success</span>
+    <span class="obj">window</span>.<span class="obj">location</span>.<span class="fn">href</span> = <span class="str">"/dashboard.html"</span>;
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span>.<span class="fn">error</span>(<span class="str">"Login failed:"</span>, <span class="obj">err</span>.<span class="obj">message</span>);
+  }
+}</pre>
+      </div>
+
+      <div class="doc-card dc-danger">
+        <i class="fa-solid fa-shield-halved dc-icon"></i>
+        <div class="dc-body"><div class="dc-title">Security Note</div><p>Always enforce <strong>Firebase Security Rules</strong> — never rely solely on client-side auth checks. Rules are the last line of defense against unauthorized data access.</p></div>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- ROLES -->
+    <div class="doc-section" id="roles">
+      <h2><span class="h2-icon"><i class="fa-solid fa-user-shield"></i></span> Roles & Permissions</h2>
+      <p>PAC Management uses a four-tier role system enforced at both the application and Firestore Rules level.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Role</th><th>PAC Entries</th><th>Centers</th><th>Operators</th><th>Reports</th><th>Settings</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-badge tdb-admin">Admin</span></td><td class="td-yes">Full</td><td class="td-yes">Full</td><td class="td-yes">Full</td><td class="td-yes">Full</td><td class="td-yes">Full</td></tr>
+          <tr><td><span class="td-badge tdb-op">Manager</span></td><td class="td-yes">Full</td><td class="td-partial">View+Edit</td><td class="td-partial">View Only</td><td class="td-yes">Full</td><td class="td-no">No</td></tr>
+          <tr><td><span class="td-badge tdb-op">Data Entry</span></td><td class="td-partial">Add Only</td><td class="td-partial">View Only</td><td class="td-no">No</td><td class="td-partial">Own Only</td><td class="td-no">No</td></tr>
+          <tr><td><span class="td-badge tdb-view">View Only</span></td><td class="td-partial">Read Only</td><td class="td-partial">Read Only</td><td class="td-no">No</td><td class="td-partial">View Only</td><td class="td-no">No</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Setting a User Role</h3>
+      <p>Roles are stored in the <code>users</code> collection and read on every authenticated request. Admin assigns roles from the operator management panel.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot cd-r"></div><div class="code-dot cd-y"></div><div class="code-dot cd-g"></div></div>
+          <span class="code-lang">Firestore Document</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cm">// Collection: users / {uid}</span>
+{
+  <span class="str">uid</span>:       <span class="str">"firebase_uid_here"</span>,
+  <span class="str">name</span>:      <span class="str">"Meheraj Chowdhuri"</span>,
+  <span class="str">email</span>:     <span class="str">"meheraj@example.com"</span>,
+  <span class="str">role</span>:      <span class="str">"data_entry"</span>,  <span class="cm">// admin | manager | data_entry | view_only</span>
+  <span class="str">centerId</span>:  <span class="str">"SC-04"</span>,
+  <span class="str">active</span>:    <span class="kw">true</span>
+}</pre>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- FIRESTORE RULES -->
+    <div class="doc-section" id="firestore-rules">
+      <h2><span class="h2-icon"><i class="fa-solid fa-shield-halved"></i></span> Firestore Security Rules</h2>
+      <p>These rules ensure only authenticated users with the correct role can read or write each collection. Deploy them from the Firebase Console under <strong>Firestore → Rules</strong>.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot cd-r"></div><div class="code-dot cd-y"></div><div class="code-dot cd-g"></div></div>
+          <span class="code-lang">Firestore Rules</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">rules_version</span> = <span class="str">'2'</span>;
+<span class="kw">service</span> <span class="fn">cloud.firestore</span> {
+  <span class="kw">match</span> /databases/{database}/documents {
+
+    <span class="cm">// Helper: get caller's role</span>
+    <span class="kw">function</span> <span class="fn">role</span>() {
+      <span class="kw">return</span> <span class="fn">get</span>(/databases/$(database)/documents/users/$(
+        <span class="obj">request</span>.auth.uid)).<span class="obj">data</span>.role;
+    }
+
+    <span class="cm">// PAC Entries</span>
+    <span class="kw">match</span> /pacEntries/{id} {
+      <span class="kw">allow</span> read:  <span class="kw">if</span> <span class="obj">request</span>.auth != <span class="kw">null</span>;
+      <span class="kw">allow</span> write: <span class="kw">if</span> <span class="fn">role</span>() <span class="kw">in</span> [<span class="str">'admin'</span>,<span class="str">'manager'</span>,<span class="str">'data_entry'</span>];
+    }
+
+    <span class="cm">// Centers — admins and managers only</span>
+    <span class="kw">match</span> /centers/{id} {
+      <span class="kw">allow</span> read:  <span class="kw">if</span> <span class="obj">request</span>.auth != <span class="kw">null</span>;
+      <span class="kw">allow</span> write: <span class="kw">if</span> <span class="fn">role</span>() <span class="kw">in</span> [<span class="str">'admin'</span>, <span class="str">'manager'</span>];
+    }
+
+    <span class="cm">// Users — admin only</span>
+    <span class="kw">match</span> /users/{uid} {
+      <span class="kw">allow</span> read:  <span class="kw">if</span> <span class="obj">request</span>.auth.uid == uid || <span class="fn">role</span>() == <span class="str">'admin'</span>;
+      <span class="kw">allow</span> write: <span class="kw">if</span> <span class="fn">role</span>() == <span class="str">'admin'</span>;
+    }
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- REAL-TIME SYNC -->
+    <div class="doc-section" id="realtime">
+      <h2><span class="h2-icon"><i class="fa-solid fa-rss"></i></span> Real-Time Sync</h2>
+      <p>PAC Management uses Firestore's <code>onSnapshot</code> listeners to push live updates to all connected dashboards. No polling, no manual refresh — changes appear in under 500ms.</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot cd-r"></div><div class="code-dot cd-y"></div><div class="code-dot cd-g"></div></div>
+          <span class="code-lang">JavaScript</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">import</span> { <span class="obj">collection</span>, <span class="obj">onSnapshot</span>, <span class="obj">query</span>, <span class="obj">orderBy</span> }
+  <span class="kw">from</span> <span class="str">"firebase/firestore"</span>;
+
+<span class="cm">// Listen to all PAC entries in real time</span>
+<span class="kw">const</span> <span class="obj">q</span> = <span class="fn">query</span>(
+  <span class="fn">collection</span>(<span class="obj">db</span>, <span class="str">"pacEntries"</span>),
+  <span class="fn">orderBy</span>(<span class="str">"timestamp"</span>, <span class="str">"desc"</span>)
+);
+
+<span class="kw">const</span> <span class="obj">unsubscribe</span> = <span class="fn">onSnapshot</span>(<span class="obj">q</span>, (<span class="obj">snapshot</span>) => {
+  <span class="obj">snapshot</span>.<span class="fn">docChanges</span>().<span class="fn">forEach</span>((<span class="obj">change</span>) => {
+    <span class="kw">if</span> (<span class="obj">change</span>.type === <span class="str">"added"</span>)    <span class="fn">renderNewEntry</span>(<span class="obj">change</span>.doc);
+    <span class="kw">if</span> (<span class="obj">change</span>.type === <span class="str">"modified"</span>) <span class="fn">updateEntry</span>(<span class="obj">change</span>.doc);
+    <span class="kw">if</span> (<span class="obj">change</span>.type === <span class="str">"removed"</span>)  <span class="fn">removeEntry</span>(<span class="obj">change</span>.doc.id);
+  });
+});
+
+<span class="cm">// Call unsubscribe() to stop listening when leaving page</span></pre>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- BACKUP -->
+    <div class="doc-section" id="backup">
+      <h2><span class="h2-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span> Backup System</h2>
+      <p>PAC Management runs automatic incremental backups every <strong>30 seconds</strong> for active sessions, with a full daily snapshot stored in Google Cloud Storage.</p>
+
+      <div class="doc-card-grid">
+        <div class="mini-card"><div class="mini-card-icon mci-g"><i class="fa-solid fa-rotate"></i></div><h4>Auto Backup</h4><p>Every 30 seconds during active sessions. Zero manual effort required.</p></div>
+        <div class="mini-card"><div class="mini-card-icon mci-c"><i class="fa-solid fa-calendar-days"></i></div><h4>Daily Snapshot</h4><p>Full database snapshot stored daily with 30-day retention in Cloud Storage.</p></div>
+        <div class="mini-card"><div class="mini-card-icon mci-a"><i class="fa-solid fa-hand-pointer"></i></div><h4>Manual Trigger</h4><p>Trigger an on-demand backup any time from the Admin Settings panel.</p></div>
+      </div>
+
+      <div class="doc-card dc-info" style="margin-top:20px;">
+        <i class="fa-solid fa-circle-info dc-icon"></i>
+        <div class="dc-body"><div class="dc-title">Backup Location</div><p>All backups are stored in your Firebase project's default Cloud Storage bucket under <code>/backups/pac/{date}/</code>. Access them from the Firebase Console → Storage.</p></div>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- EXPORTS -->
+    <div class="doc-section" id="exports">
+      <h2><span class="h2-icon"><i class="fa-solid fa-file-export"></i></span> Exports & Reports</h2>
+      <p>The Reports module lets you export any filtered dataset in multiple formats. Filter by date range, center, operator, or status before exporting.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Format</th><th>Available For</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><code>CSV</code></td><td>All PAC entries, filtered datasets</td><td class="td-yes">Available</td></tr>
+          <tr><td><code>XLSX</code></td><td>All PAC entries, center summaries</td><td class="td-yes">Available</td></tr>
+          <tr><td><code>PDF</code></td><td>Monthly reports, operator summaries</td><td class="td-yes">Available</td></tr>
+          <tr><td>Scheduled Email</td><td>Weekly/monthly auto-reports</td><td class="td-partial">Beta</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- API REFERENCE -->
+    <div class="doc-section" id="api-ref">
+      <h2><span class="h2-icon"><i class="fa-solid fa-code"></i></span> API Reference</h2>
+      <p>PAC Management reads and writes data directly via the Firestore SDK. The following collections form the core data model.</p>
+
+      <h3>Collections</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0;">
+        <div class="endpoint"><span class="ep-method ep-get">READ</span><span class="ep-path">collection("pacEntries")</span></div>
+        <div class="endpoint"><span class="ep-method ep-post">WRITE</span><span class="ep-path">collection("pacEntries")</span></div>
+        <div class="endpoint"><span class="ep-method ep-get">READ</span><span class="ep-path">collection("centers")</span></div>
+        <div class="endpoint"><span class="ep-method ep-put">UPDATE</span><span class="ep-path">collection("centers")</span></div>
+        <div class="endpoint"><span class="ep-method ep-get">READ</span><span class="ep-path">collection("users")</span></div>
+        <div class="endpoint"><span class="ep-method ep-post">WRITE</span><span class="ep-path">collection("uclOwners")</span></div>
+        <div class="endpoint"><span class="ep-method ep-get">READ</span><span class="ep-path">collection("pacnav")</span></div>
+      </div>
+
+      <div class="doc-card dc-info">
+        <i class="fa-solid fa-circle-info dc-icon"></i>
+        <div class="dc-body"><div class="dc-title">SDK Version</div><p>PAC Management uses <strong>Firebase JS SDK v10.12.4</strong>. Always import from the modular SDK (<code>firebase/firestore</code>) for optimal bundle size.</p></div>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- CHANGELOG -->
+    <div class="doc-section" id="changelog">
+      <h2><span class="h2-icon"><i class="fa-solid fa-code-branch"></i></span> Changelog</h2>
+
+      <h3>v2.0.0 — 2025</h3>
+      <ul style="list-style:none;padding:0;margin:0 0 24px;">
+        <li style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--sub);"><span style="color:var(--green);flex-shrink:0;">+</span> Complete UI redesign with dark space-command aesthetic</li>
+        <li style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--sub);"><span style="color:var(--green);flex-shrink:0;">+</span> Real-time activity feed with live Firestore listeners</li>
+        <li style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--sub);"><span style="color:var(--green);flex-shrink:0;">+</span> HUD-style hero section with animated system panels</li>
+        <li style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--sub);"><span style="color:var(--green);flex-shrink:0;">+</span> Progressive Web App (PWA) support</li>
+        <li style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--sub);"><span style="color:var(--neon);flex-shrink:0;">~</span> Upgraded to Firebase SDK v10.12.4</li>
+        <li style="display:flex;gap:10px;padding:8px 0;font-size:14px;color:var(--sub);"><span style="color:var(--neon);flex-shrink:0;">~</span> Static nav replaces Firestore-driven nav system</li>
+      </ul>
+
+      <h3>v1.0.0 — 2024</h3>
+      <ul style="list-style:none;padding:0;margin:0;">
+        <li style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--sub);"><span style="color:var(--green);flex-shrink:0;">+</span> Initial release with PAC entry management</li>
+        <li style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--sub);"><span style="color:var(--green);flex-shrink:0;">+</span> Firebase Auth integration</li>
+        <li style="display:flex;gap:10px;padding:8px 0;font-size:14px;color:var(--sub);"><span style="color:var(--green);flex-shrink:0;">+</span> Basic center and operator management</li>
+      </ul>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <!-- FAQ -->
+    <div class="doc-section" id="faq">
+      <h2><span class="h2-icon"><i class="fa-solid fa-circle-question"></i></span> FAQ</h2>
+
+      <div id="faq-list" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q"><span class="faq-q-text">Can multiple operators work on the same center simultaneously?</span><div class="faq-icon"><i class="fa-solid fa-plus"></i></div></div>
+          <div class="faq-a">Yes. Firestore handles concurrent writes gracefully. Each operator's session is independent, and all updates are merged in real time across all connected dashboards without conflicts.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q"><span class="faq-q-text">How do I reset an operator's password?</span><div class="faq-icon"><i class="fa-solid fa-plus"></i></div></div>
+          <div class="faq-a">From the Firebase Console → Authentication, find the user and click "Reset Password". Alternatively, the admin panel has a "Send Password Reset Email" option under Operator Settings.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q"><span class="faq-q-text">What is the maximum number of centers supported?</span><div class="faq-icon"><i class="fa-solid fa-plus"></i></div></div>
+          <div class="faq-a">There is no hard limit imposed by PAC Management itself. Firestore scales horizontally, so hundreds of centers and thousands of concurrent operators are supported within standard Firebase quotas.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q"><span class="faq-q-text">Is data encrypted at rest?</span><div class="faq-icon"><i class="fa-solid fa-plus"></i></div></div>
+          <div class="faq-a">Yes. Google Cloud Firestore encrypts all data at rest using AES-256 by default. Data in transit is protected by TLS 1.3. No additional configuration is required.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-bottom">
+    <div class="f-meta">
+      <span class="f-badge"><i class="fa-solid fa-clock"></i><span id="live-time">--</span></span>
+      <span class="f-badge"><i class="fa-solid fa-code-branch"></i> v2.0.0</span>
+      <span class="f-badge"><i class="fa-solid fa-book-open"></i> Documentation</span>
+    </div>
+    <p class="f-copy">&copy; 2025 PAC Management System · All rights reserved · Designed by Samrat</p>
+  </div>
+</footer>
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-arrow-up"></i></button>
+
+<!-- FAQ STYLES (matching index) -->
+<style>
+.faq-item{background:linear-gradient(145deg,rgba(6,14,36,0.9),rgba(3,8,22,0.94));border:1px solid rgba(255,255,255,0.07);border-radius:16px;overflow:hidden;transition:0.45s cubic-bezier(0.16,1,0.3,1);}
+.faq-item.open{border-color:rgba(0,240,255,0.2);}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;cursor:pointer;transition:0.45s cubic-bezier(0.16,1,0.3,1);}
+.faq-q:hover{background:rgba(0,240,255,0.03);}
+.faq-q-text{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:.5px;color:var(--txt);}
+.faq-icon{width:28px;height:28px;border-radius:50%;background:rgba(0,240,255,0.08);border:1px solid rgba(0,240,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--neon);font-size:12px;transition:transform .4s cubic-bezier(0.16,1,0.3,1);}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:rgba(0,240,255,0.15);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(0.16,1,0.3,1),padding .35s;padding:0 22px;font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--sub);line-height:1.8;}
+.faq-item.open .faq-a{max-height:200px;padding:0 22px 18px;}
+</style>
+
+<script>
+/* CURSOR */
+const cd=document.getElementById('c-dot'),cr=document.getElementById('c-ring');
+let mx=-200,my=-200,rx=-200,ry=-200,ready=false;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cd.style.left=mx+'px';cd.style.top=my+'px';
+  if(!ready){ready=true;cd.classList.add('active');cr.classList.add('active');}
+});
+document.querySelectorAll('a,button,.mini-card,.faq-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cr.classList.add('expand'));
+  el.addEventListener('mouseleave',()=>cr.classList.remove('expand'));
+});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop);})();
+
+/* MOBILE NAV */
+function toggleNav(){
+  const mob=document.getElementById('mob-nav'),hb=document.getElementById('hamburger');
+  const open=mob.classList.toggle('open');hb.classList.toggle('open',open);
+}
+
+/* SIDEBAR DRAWER (mobile) */
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+/* SIDEBAR ACTIVE */
+function setActive(el){
+  document.querySelectorAll('.sb-link').forEach(a=>a.classList.remove('active'));
+  el.classList.add('active');
+  // Close sidebar on mobile after clicking a link
+  if(window.innerWidth<=900) closeSidebar();
+}
+
+/* FAQ */
+function toggleFaq(el){
+  const isOpen=el.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(f=>f.classList.remove('open'));
+  if(!isOpen)el.classList.add('open');
+}
+
+/* COPY CODE */
+function copyCode(btn){
+  const pre=btn.closest('.code-block').querySelector('pre');
+  const text=pre.innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},2000);
+  });
+}
+
+/* SEARCH DOCS */
+function searchDocs(val){
+  const v=val.toLowerCase();
+  document.querySelectorAll('.sb-link').forEach(a=>{
+    const txt=a.textContent.toLowerCase();
+    a.style.display=(!v||txt.includes(v))?'':'none';
+  });
+}
+
+/* CLOCK */
+function tick(){
+  const el=document.getElementById('live-time');if(!el)return;
+  const n=new Date();
+  const d=String(n.getDate()).padStart(2,'0'),m=String(n.getMonth()+1).padStart(2,'0'),y=n.getFullYear();
+  let h=n.getHours();const mn=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
+  const ap=h>=12?'PM':'AM';h=h%12||12;
+  el.textContent=`${d}-${m}-${y} ${String(h).padStart(2,'0')}:${mn}:${s} ${ap}`;
+}
+setInterval(tick,1000);tick();
+
+/* READ PROGRESS BAR */
+window.addEventListener('scroll',()=>{
+  const main=document.querySelector('.doc-main');
+  const scrolled=window.scrollY;
+  const total=document.body.scrollHeight-window.innerHeight;
+  document.getElementById('read-progress').style.width=(scrolled/total*100)+'%';
+
+  /* back to top */
+  const btn=document.getElementById('back-top');
+  scrolled>400?btn.classList.add('show'):btn.classList.remove('show');
+});
+
+/* SIDEBAR SCROLL SPY */
+const sections=document.querySelectorAll('.doc-section[id]');
+const links=document.querySelectorAll('.sb-link[href^="#"]');
+const spy=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      links.forEach(a=>a.classList.remove('active'));
+      const match=document.querySelector(`.sb-link[href="#${en.target.id}"]`);
+      if(match)match.classList.add('active');
+    }
+  });
+},{rootMargin:'-20% 0px -70% 0px'});
+sections.forEach(s=>spy.observe(s));
+
+/* REVEAL ANIMATIONS */
+const io=new IntersectionObserver(e=>{
+  e.forEach(en=>{if(!en.isIntersecting)return;en.target.classList.add('visible');io.unobserve(en.target);});
+},{threshold:.08});
+document.querySelectorAll('.doc-section').forEach((el,i)=>{
+  el.style.transitionDelay=(i===0?'0s':'.05s');
+  io.observe(el);
+});
+</script>
+</body>
+</html>

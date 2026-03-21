@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Database Monitor — PAC Management</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="assets/fav.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- existing CSS modules — unchanged -->
+<link rel="stylesheet" href="./assets/css/card-border-style.css">
+<link rel="stylesheet" href="./assets/css/duplicate-delete-registry.css">
+<link rel="stylesheet" href="./assets/css/ucl-owner-list-button.css">
+<link rel="stylesheet" href="./assets/css/pacnav-table-body.css">
+<link rel="stylesheet" href="./assets/css/pagination.css">
+
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS — matches index.html
+══════════════════════════════════════ */
+:root{
+  --ink:    #02040c;
+  --ink2:   #050b1a;
+  --ink3:   #07112a;
+  --surface: rgba(5,12,30,0.75);
+  --rim:     rgba(255,255,255,0.07);
+  --rim-hi:  rgba(0,229,255,0.3);
+  --neon:    #00f0ff;
+  --blue:    #1a6bff;
+  --violet:  #8b5cf6;
+  --green:   #06ffa5;
+  --rose:    #ff2d78;
+  --amber:   #ffd60a;
+  --txt:  #e4f0ff;
+  --sub:  rgba(180,210,250,0.55);
+  --dim:  rgba(120,160,210,0.28);
+  --e:  cubic-bezier(0.16,1,0.3,1);
+  --t:  0.45s var(--e);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:var(--ink);
+  color:var(--txt);
+  overflow-x:hidden;
+  line-height:1.6;
+  min-height:100vh;
+}
+::selection{background:rgba(0,240,255,0.25);color:#fff;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-track{background:rgba(2,4,12,0.95);border-left:1px solid rgba(0,240,255,0.08);}
+::-webkit-scrollbar-thumb{background:linear-gradient(to bottom,rgba(0,240,255,0.9),rgba(26,107,255,0.85),rgba(139,92,246,0.8));border-radius:6px;border:2px solid rgba(2,4,12,0.8);box-shadow:0 0 8px rgba(0,240,255,0.5);}
+::-webkit-scrollbar-thumb:hover{box-shadow:0 0 14px rgba(0,240,255,0.8);}
+::-webkit-scrollbar-button:vertical:decrement{display:block;height:14px;background:rgba(5,12,30,0.98) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='14' viewBox='0 0 10 14'%3E%3Cpath d='M5 4l-3 4h6z' fill='rgba(0,240,255,0.7)'/%3E%3C/svg%3E") center/8px no-repeat;}
+::-webkit-scrollbar-button:vertical:increment{display:block;height:14px;background:rgba(5,12,30,0.98) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='14' viewBox='0 0 10 14'%3E%3Cpath d='M5 10l-3-4h6z' fill='rgba(0,240,255,0.7)'/%3E%3C/svg%3E") center/8px no-repeat;}
+html{scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.7) rgba(2,4,12,0.95);}
+
+/* ── GRAIN ── */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:.15;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+header{
+  position:sticky;top:0;z-index:1000;
+  height:66px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+  background:rgba(2,4,12,0.88);
+  backdrop-filter:blur(40px) saturate(180%);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+header::after{content:"";position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.3),transparent);}
+
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-box{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--neon),var(--blue));}
+.logo-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.25) 50%,transparent 70%);animation:logo-shine 3s ease-in-out infinite;}
+@keyframes logo-shine{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.logo-box i{position:relative;z-index:1;}
+.logo-txt b{display:block;font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:18px;letter-spacing:3px;color:var(--txt);}
+.logo-txt span{display:block;font-family:'Fira Code',monospace;font-size:9px;font-weight:300;letter-spacing:4px;color:var(--neon);text-transform:uppercase;opacity:.8;}
+
+.hdr-nav{display:flex;align-items:center;gap:2px;}
+.hdr-nav a{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;color:var(--sub);text-decoration:none;padding:7px 14px;border-radius:99px;border:1px solid transparent;transition:var(--t);letter-spacing:1px;text-transform:uppercase;}
+.hdr-nav a:hover,.hdr-nav a.active{color:var(--neon);background:rgba(0,240,255,0.06);border-color:rgba(0,240,255,0.18);}
+
+.hdr-right{display:flex;align-items:center;gap:12px;}
+.hdr-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);}
+.hdr-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse-s 2s ease-in-out infinite;flex-shrink:0;}
+@keyframes pulse-s{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:1px solid rgba(0,240,255,0.2);border-radius:10px;background:none;}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--neon);border-radius:2px;transition:var(--t);}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+#mob-nav{position:fixed;top:66px;left:0;right:0;z-index:999;background:rgba(2,4,12,0.97);backdrop-filter:blur(40px);border-bottom:1px solid rgba(0,240,255,0.1);max-height:0;overflow:hidden;transition:max-height .4s var(--e),padding .3s;display:flex;flex-direction:column;}
+#mob-nav.open{max-height:500px;padding:16px 0 24px;}
+#mob-nav a{padding:14px 28px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--sub);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.04);transition:var(--t);}
+#mob-nav a:hover{color:var(--neon);padding-left:36px;}
+
+/* ══════════════════════════════════════
+   PAGE HERO STRIP
+══════════════════════════════════════ */
+.page-hero{
+  padding:40px 48px 32px;
+  background:radial-gradient(ellipse 120% 100% at 50% -20%,#071e30 0%,#04101e 40%,var(--ink) 100%);
+  border-bottom:1px solid rgba(0,240,255,0.08);
+  position:relative;overflow:hidden;
+}
+.page-hero::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);opacity:.2;pointer-events:none;}
+.ph-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.ph-left{}
+.ph-kicker{font-family:'Fira Code',monospace;font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--neon);opacity:.8;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.ph-kicker::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse-s 2s ease-in-out infinite;}
+.ph-title{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(32px,4.5vw,58px);letter-spacing:3px;text-transform:uppercase;line-height:.95;}
+.ph-title span{color:var(--neon);text-shadow:0 0 20px rgba(0,240,255,0.5),0 0 50px rgba(0,240,255,0.2);}
+.ph-sub{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--sub);margin-top:8px;max-width:420px;line-height:1.7;}
+.ph-chips{display:flex;gap:10px;flex-wrap:wrap;}
+.ph-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:14px;background:rgba(5,12,30,0.8);border:1px solid rgba(255,255,255,0.08);font-size:12.5px;font-weight:500;backdrop-filter:blur(14px);}
+.ph-chip .chi{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.chi-c{background:rgba(0,240,255,0.12);color:var(--neon);}
+.chi-g{background:rgba(6,255,165,0.12);color:var(--green);}
+.chi-v{background:rgba(139,92,246,0.12);color:var(--violet);}
+.chi-a{background:rgba(255,214,10,0.12);color:var(--amber);}
+.ph-chip-val{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;line-height:1;}
+.ph-chip-lbl{font-family:'Fira Code',monospace;font-size:9px;color:var(--sub);letter-spacing:1px;text-transform:uppercase;}
+
+/* ══════════════════════════════════════
+   MAIN WRAP
+══════════════════════════════════════ */
+.main-wrap{padding:40px 48px 80px;max-width:1400px;margin:0 auto;}
+
+/* ── SECTION LABEL ── */
+.sec-label{
+  display:flex;align-items:center;gap:10px;margin-bottom:20px;
+  font-family:'Fira Code',monospace;font-size:10.5px;font-weight:400;
+  letter-spacing:3px;text-transform:uppercase;color:var(--neon);opacity:.8;
+}
+.sec-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(0,240,255,0.15),transparent);}
+
+/* ══════════════════════════════════════
+   METRIC CARDS GRID
+══════════════════════════════════════ */
+.metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:16px;
+  margin-bottom:40px;
+}
+
+.m-card{
+  position:relative;
+  padding:24px 22px;
+  background:linear-gradient(145deg,rgba(6,14,36,0.92),rgba(3,8,22,0.96));
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:20px;
+  overflow:hidden;
+  transition:var(--t);
+  cursor:default;
+}
+.m-card:hover{
+  border-color:rgba(0,240,255,0.25);
+  transform:translateY(-6px);
+  box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 30px rgba(0,240,255,0.08);
+}
+/* animated top line */
+.m-card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-line,linear-gradient(90deg,var(--neon),var(--blue)));opacity:.7;}
+/* shine */
+.m-card::before{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.03),transparent);transition:.7s;transform:skewX(-12deg);}
+.m-card:hover::before{left:130%;}
+
+.m-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.m-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.mi-c{background:rgba(0,240,255,0.1);color:var(--neon);border:1px solid rgba(0,240,255,0.18);}
+.mi-g{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.18);}
+.mi-v{background:rgba(139,92,246,0.1);color:var(--violet);border:1px solid rgba(139,92,246,0.18);}
+.mi-b{background:rgba(26,107,255,0.1);color:#6ea8fe;border:1px solid rgba(26,107,255,0.18);}
+.mi-a{background:rgba(255,214,10,0.1);color:var(--amber);border:1px solid rgba(255,214,10,0.18);}
+.mi-r{background:rgba(255,45,120,0.1);color:var(--rose);border:1px solid rgba(255,45,120,0.18);}
+
+.m-action-btn{
+  width:32px;height:32px;border-radius:9px;border:1px solid rgba(0,240,255,0.15);
+  background:rgba(0,240,255,0.06);color:var(--neon);font-size:13px;
+  cursor:pointer;transition:var(--t);display:flex;align-items:center;justify-content:center;
+}
+.m-action-btn:hover{background:rgba(0,240,255,0.15);border-color:rgba(0,240,255,0.35);transform:scale(1.08);}
+.m-action-btn.add{color:var(--green);border-color:rgba(6,255,165,0.2);background:rgba(6,255,165,0.06);}
+.m-action-btn.add:hover{background:rgba(6,255,165,0.15);}
+.m-action-btn.edit{color:var(--amber);border-color:rgba(255,214,10,0.2);background:rgba(255,214,10,0.06);}
+.m-action-btn.edit:hover{background:rgba(255,214,10,0.15);}
+.m-action-btn-row{display:flex;gap:6px;}
+
+.m-val{
+  font-family:'Bebas Neue',sans-serif;font-weight:400;
+  font-size:52px;line-height:.9;letter-spacing:2px;
+  margin-bottom:6px;
+  color:#e4f0ff;
+  text-shadow:0 0 20px rgba(0,240,255,0.5),0 0 40px rgba(0,240,255,0.15);
+  transition:transform .3s;
+}
+.m-card:hover .m-val{transform:scale(1.04);}
+.m-val.danger{
+  color:#ff6b8e;
+  text-shadow:0 0 20px rgba(255,45,120,0.6),0 0 40px rgba(255,45,120,0.2);
+}
+.m-val.warn{
+  color:#ffd60a;
+  text-shadow:0 0 20px rgba(255,214,10,0.6),0 0 40px rgba(255,214,10,0.2);
+}
+.m-val.ok{
+  color:#06ffa5;
+  text-shadow:0 0 20px rgba(6,255,165,0.6),0 0 40px rgba(6,255,165,0.2);
+}
+.m-val.violet{
+  color:#a78bfa;
+  text-shadow:0 0 20px rgba(139,92,246,0.6),0 0 40px rgba(139,92,246,0.2);
+}
+
+.m-lbl{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--sub);}
+.m-note{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);letter-spacing:.5px;margin-top:4px;}
+
+/* threat card pulse */
+.m-card.threat{
+  border-color:rgba(255,45,120,0.35);
+  animation:threat-pulse 2.5s ease-in-out infinite;
+}
+@keyframes threat-pulse{
+  0%,100%{box-shadow:0 0 0 rgba(255,45,120,0);}
+  50%{box-shadow:0 0 24px rgba(255,45,120,0.2),inset 0 0 20px rgba(255,45,120,0.06);}
+}
+
+/* ══════════════════════════════════════
+   SYSTEM STATUS PANEL
+══════════════════════════════════════ */
+.status-panel{
+  background:linear-gradient(145deg,rgba(6,14,36,0.9),rgba(3,8,22,0.95));
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:22px;padding:32px;margin-bottom:40px;
+  position:relative;overflow:hidden;
+}
+.status-panel::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--neon),var(--blue),var(--violet));background-size:200%;animation:gradient-slide 5s linear infinite;}
+@keyframes gradient-slide{0%{background-position:0%}100%{background-position:200%}}
+.sp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.sp-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--txt);display:flex;align-items:center;gap:10px;}
+.sp-title i{font-size:16px;color:var(--neon);}
+.sp-live{display:inline-flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:10px;color:var(--green);background:rgba(6,255,165,0.08);border:1px solid rgba(6,255,165,0.18);padding:5px 12px;border-radius:99px;}
+.sp-live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse-s 1.5s ease-in-out infinite;}
+
+.status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.s-item{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  padding:16px 18px;border-radius:14px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+  transition:var(--t);
+}
+.s-item:hover{background:rgba(0,240,255,0.03);border-color:rgba(0,240,255,0.15);}
+.s-item-left{flex:1;min-width:0;}
+.s-item-label{font-family:'Fira Code',monospace;font-size:10px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:5px;}
+.s-item-val{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.s-item-val b{color:var(--neon);}
+.s-view-btn{
+  width:30px;height:30px;border-radius:8px;border:1px solid rgba(0,240,255,0.15);
+  background:rgba(0,240,255,0.06);color:var(--neon);font-size:12px;
+  cursor:pointer;transition:var(--t);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.s-view-btn:hover{background:rgba(0,240,255,0.15);border-color:rgba(0,240,255,0.35);}
+.s-view-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+.storage-bar{margin-top:6px;height:3px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;}
+.storage-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--neon));border-radius:99px;transition:width .8s var(--e);}
+
+/* ══════════════════════════════════════
+   TABLE CONTAINER
+══════════════════════════════════════ */
+.table-wrap{
+  background:linear-gradient(145deg,rgba(6,14,36,0.9),rgba(3,8,22,0.95));
+  border:1px solid rgba(0,240,255,0.12);
+  border-radius:22px;padding:28px;
+  margin-bottom:32px;overflow:hidden;
+}
+.tw-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+.tw-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--txt);display:flex;align-items:center;gap:10px;}
+.tw-title i{font-size:16px;color:var(--neon);}
+.tw-fix-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 18px;border-radius:10px;border:none;cursor:pointer;
+  background:rgba(255,45,120,0.1);border:1px solid rgba(255,45,120,0.3);
+  color:var(--rose);font-family:'Rajdhani',sans-serif;font-size:12px;
+  font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  transition:var(--t);
+}
+.tw-fix-btn:hover{background:rgba(255,45,120,0.2);box-shadow:0 0 16px rgba(255,45,120,0.25);}
+
+/* TABLE */
+.pac-table{width:100%;border-collapse:collapse;font-size:13px;}
+.pac-table th{
+  padding:12px 14px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;color:var(--neon);
+  background:rgba(0,240,255,0.04);border-bottom:1px solid rgba(0,240,255,0.12);
+  text-align:left;position:sticky;top:0;z-index:2;white-space:nowrap;
+}
+.pac-table td{
+  padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);
+  color:var(--sub);transition:var(--t);vertical-align:middle;
+}
+.pac-table tbody tr{position:relative;transition:var(--t);}
+.pac-table tbody tr:hover td{background:rgba(0,240,255,0.04);color:var(--txt);}
+.pac-table tbody tr:last-child td{border-bottom:none;}
+
+/* alert rows */
+.pac-table tr.alert-high td{background:rgba(255,45,120,0.08)!important;color:var(--txt)!important;}
+.pac-table tr.alert-high:hover td{background:rgba(255,45,120,0.14)!important;}
+.pac-table tr.alert-low td{background:rgba(255,214,10,0.06)!important;color:var(--txt)!important;}
+.pac-table tr.alert-low:hover td{background:rgba(255,214,10,0.12)!important;}
+
+/* table overflow scroll wrapper */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;}
+
+/* ══════════════════════════════════════
+   MODALS
+══════════════════════════════════════ */
+.pac-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);
+  justify-content:center;align-items:center;z-index:99999;
+  padding:20px;
+}
+.pac-modal.show{display:flex;}
+.pac-modal-box{
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;
+  background:linear-gradient(145deg,rgba(5,12,35,0.98),rgba(2,6,20,0.99));
+  border:1px solid rgba(0,240,255,0.2);border-radius:22px;
+  padding:32px;position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,0.7),0 0 40px rgba(0,240,255,0.08);
+  animation:modal-pop .4s var(--e);
+}
+.pac-modal-box.wide{max-width:1100px;}
+.pac-modal-box.medium{max-width:720px;}
+@keyframes modal-pop{from{opacity:0;transform:scale(.92) translateY(16px)}to{opacity:1;transform:none}}
+.pac-modal-box::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--neon),var(--blue),var(--violet));border-radius:22px 22px 0 0;}
+
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--txt);}
+.modal-close{
+  width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);color:var(--sub);font-size:14px;
+  cursor:pointer;transition:var(--t);display:flex;align-items:center;justify-content:center;
+}
+.modal-close:hover{color:var(--rose);border-color:rgba(255,45,120,0.3);background:rgba(255,45,120,0.08);}
+
+/* modal form inputs */
+.m-label{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);margin-bottom:7px;display:block;}
+.m-input{
+  width:100%;padding:12px 14px;margin-bottom:16px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+  border-radius:11px;font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--txt);
+  outline:none;transition:var(--t);appearance:none;
+}
+.m-input::placeholder{color:var(--dim);}
+.m-input:focus{border-color:rgba(0,240,255,0.4);background:rgba(0,240,255,0.04);box-shadow:0 0 0 3px rgba(0,240,255,0.08);}
+.m-input select,.m-input option{background:var(--ink2);}
+select.m-input{background:rgba(255,255,255,0.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(0,240,255,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;}
+select.m-input option{background:#050b1a;color:var(--txt);}
+
+/* modal table */
+.modal-table-wrap{overflow-x:auto;max-height:55vh;overflow-y:auto;border-radius:12px;margin-top:4px;}
+.modal-table{width:100%;border-collapse:collapse;font-size:13px;}
+.modal-table th{padding:11px 13px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--neon);background:rgba(0,240,255,0.04);border-bottom:1px solid rgba(0,240,255,0.1);position:sticky;top:0;z-index:2;white-space:nowrap;}
+.modal-table td{padding:11px 13px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--sub);font-size:13px;}
+.modal-table tbody tr:hover td{background:rgba(0,240,255,0.03);color:var(--txt);}
+
+/* ROLE CHECKBOXES */
+.role-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.role-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:var(--sub);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--t);}
+.role-chip input{accent-color:var(--neon);}
+.role-chip:hover{background:rgba(0,240,255,0.1);color:var(--txt);}
+
+/* BUTTONS */
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;
+  background:linear-gradient(135deg,var(--neon),var(--blue));
+  color:#01080f;font-family:'Rajdhani',sans-serif;font-size:14px;
+  font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  transition:var(--t);justify-content:center;
+  box-shadow:0 0 20px rgba(0,240,255,0.25);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(0,240,255,0.4);}
+.btn-danger{background:linear-gradient(135deg,var(--rose),#c0205a);box-shadow:0 0 20px rgba(255,45,120,0.2);}
+.btn-danger:hover{box-shadow:0 0 30px rgba(255,45,120,0.4);}
+.btn-sm{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 13px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Rajdhani',sans-serif;font-size:11.5px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;transition:var(--t);
+}
+.btn-sm.edit{background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.2);color:var(--neon);}
+.btn-sm.edit:hover{background:rgba(0,240,255,0.2);}
+.btn-sm.deact{background:rgba(255,45,120,0.1);border:1px solid rgba(255,45,120,0.2);color:var(--rose);}
+.btn-sm.deact:hover{background:rgba(255,45,120,0.2);}
+.btn-sm.act{background:rgba(6,255,165,0.1);border:1px solid rgba(6,255,165,0.2);color:var(--green);}
+.btn-sm.act:hover{background:rgba(6,255,165,0.2);}
+.btn-sm.del{background:rgba(255,45,120,0.08);border:1px solid rgba(255,45,120,0.15);color:var(--rose);}
+.btn-sm.del:hover{background:rgba(255,45,120,0.18);}
+.btn-sm.sus{background:rgba(255,214,10,0.08);border:1px solid rgba(255,214,10,0.18);color:var(--amber);}
+.btn-sm.sus:hover{background:rgba(255,214,10,0.18);}
+.btn-sm.view{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);color:var(--violet);}
+.btn-sm.view:hover{background:rgba(139,92,246,0.2);}
+.btn-sm.restore{background:rgba(255,214,10,0.08);border:1px solid rgba(255,214,10,0.18);color:var(--amber);}
+.btn-sm.restore:hover{background:rgba(255,214,10,0.18);}
+.btn-row{display:flex;gap:6px;flex-wrap:nowrap;}
+
+/* STATUS / PRIORITY BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10px;font-weight:400;letter-spacing:.5px;}
+.badge.active{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.2);}
+.badge.inactive{background:rgba(255,45,120,0.1);color:var(--rose);border:1px solid rgba(255,45,120,0.2);}
+.badge.pending{background:rgba(255,214,10,0.1);color:var(--amber);border:1px solid rgba(255,214,10,0.2);}
+.badge.critical{background:rgba(255,45,120,0.15);color:var(--rose);border:1px solid rgba(255,45,120,0.3);}
+.badge.ok{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.2);}
+.badge.live{background:rgba(0,240,255,0.08);color:var(--neon);border:1px solid rgba(0,240,255,0.18);}
+.badge-dot{width:5px;height:5px;border-radius:50%;animation:pulse-s 2s ease-in-out infinite;}
+.badge.active .badge-dot{background:var(--green);box-shadow:0 0 6px var(--green);}
+.badge.pending .badge-dot{background:var(--amber);box-shadow:0 0 6px var(--amber);}
+
+/* VERSION HISTORY BADGES */
+.vh-badge{padding:2px 8px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10px;font-weight:600;}
+.vh-badge.ok{background:rgba(6,255,165,0.12);color:var(--green);}
+.vh-badge.dup{background:rgba(255,214,10,0.12);color:var(--amber);}
+.vh-badge.live{background:rgba(0,240,255,0.1);color:var(--neon);}
+
+/* INLINE DETAIL ROWS */
+.detail-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.detail-row:last-child{border-bottom:none;}
+.dr-lbl{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);min-width:120px;flex-shrink:0;padding-top:2px;}
+.dr-val{font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:var(--txt);flex:1;word-break:break-word;line-height:1.5;}
+.dr-val b{color:var(--neon);}
+.dr-val.mono{font-family:'Fira Code',monospace;font-size:12px;}
+
+/* INSIGHT GRID */
+.insight-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.insight-card{background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);padding:18px;border-radius:14px;text-align:center;}
+.insight-card h4{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.insight-card .iv{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--neon);letter-spacing:2px;text-shadow:0 0 16px rgba(0,240,255,0.6),0 0 32px rgba(0,240,255,0.2);}
+
+/* PROGRESS BAR */
+.progress-track{height:6px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;margin-top:4px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--neon),var(--blue));border-radius:99px;transition:width .6s var(--e);}
+
+/* QUERY RESULT BOX */
+.query-result-box{background:rgba(2,8,22,0.8);border:1px solid rgba(0,240,255,0.12);border-radius:14px;padding:20px;font-family:'Fira Code',monospace;font-size:12px;color:var(--sub);line-height:1.8;overflow-x:auto;}
+
+/* ALERT SYSTEM */
+#globalAlerts{position:fixed;top:76px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;max-width:340px;}
+.alert{padding:13px 16px;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:slideIn .3s var(--e);position:relative;backdrop-filter:blur(20px);}
+.alert.success{background:rgba(6,40,20,0.95);border:1px solid rgba(6,255,165,0.3);color:var(--green);}
+.alert.error{background:rgba(40,5,15,0.95);border:1px solid rgba(255,45,120,0.3);color:var(--rose);}
+.alert.warn{background:rgba(40,30,5,0.95);border:1px solid rgba(255,214,10,0.3);color:var(--amber);}
+.alert.info{background:rgba(2,12,40,0.95);border:1px solid rgba(0,240,255,0.25);color:var(--neon);}
+.alert .close{position:absolute;right:12px;top:10px;cursor:pointer;opacity:.7;background:none;border:none;color:inherit;font-size:14px;}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* PAC AMOUNT TABLE (hidden by default, shown when mismatch) */
+#pacAmountTableBox{display:none;}
+
+/* PAGINATION */
+.pag-bar{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:18px;}
+.pag-btn{padding:8px 18px;border-radius:10px;border:1px solid rgba(0,240,255,0.2);background:rgba(0,240,255,0.06);color:var(--neon);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--t);}
+.pag-btn:hover{background:rgba(0,240,255,0.15);}
+.pag-btn:disabled{opacity:.3;cursor:not-allowed;}
+.pag-info{font-family:'Fira Code',monospace;font-size:11px;color:var(--sub);letter-spacing:1px;}
+
+/* FOOTER */
+footer{
+  background:rgba(1,3,10,0.98);
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+footer::before{content:"";display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.25),transparent);}
+.footer-bottom{padding:20px 48px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;}
+.f-meta{display:flex;flex-wrap:wrap;gap:10px;}
+.f-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+.f-badge i{color:var(--neon);font-size:10px;}
+.f-copy{font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--dim);}
+
+/* MOBILE */
+@media(max-width:900px){
+  header{padding:0 18px;height:60px;}
+  #mob-nav{top:60px;}
+  .hdr-nav{display:none!important;}
+  .hdr-right .hdr-badge{display:none;}
+  .hamburger{display:flex;}
+  .page-hero{padding:28px 20px 24px;}
+  .ph-chips{gap:7px;}
+  .main-wrap{padding:24px 16px 60px;}
+  .metrics-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .status-grid{grid-template-columns:1fr;}
+  .modal-table th,.modal-table td{white-space:nowrap;}
+  .pac-modal-box{padding:22px 18px;}
+  .footer-bottom{padding:16px 18px;flex-direction:column;align-items:flex-start;gap:8px;}
+}
+@media(max-width:480px){
+  .metrics-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .m-val{font-size:36px;}
+  .page-hero{padding:20px 14px 18px;}
+}
+
+/* ══════════════════════════════════════
+   ADVANCED FEATURES CSS
+══════════════════════════════════════ */
+
+/* ── NOTIFICATION BELL ── */
+.notif-bell{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;cursor:pointer;
+  background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.18);
+  color:var(--neon);font-size:16px;transition:var(--t);flex-shrink:0;
+}
+.notif-bell:hover{background:rgba(0,240,255,0.14);box-shadow:0 0 14px rgba(0,240,255,0.25);}
+.notif-bell .nb-count{
+  position:absolute;top:-4px;right:-4px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--rose);color:#fff;font-family:'Fira Code',monospace;
+  font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--ink);animation:pulse-s 2s ease-in-out infinite;
+  display:none;
+}
+.notif-bell.has-notif .nb-count{display:flex;}
+.notif-bell .nb-ring{animation:bell-ring .5s ease;}
+@keyframes bell-ring{0%{transform:rotate(0)}20%{transform:rotate(15deg)}40%{transform:rotate(-15deg)}60%{transform:rotate(10deg)}80%{transform:rotate(-5deg)}100%{transform:rotate(0)}}
+
+/* notification dropdown */
+.notif-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;width:340px;
+  background:linear-gradient(145deg,rgba(5,12,35,0.98),rgba(2,6,20,0.99));
+  border:1px solid rgba(0,240,255,0.2);border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.7),0 0 30px rgba(0,240,255,0.06);
+  z-index:9999;display:none;overflow:hidden;
+  animation:modal-pop .3s var(--e);
+}
+.notif-dropdown.open{display:block;}
+.nd-head{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.nd-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--txt);}
+.nd-clear{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);cursor:pointer;transition:var(--t);}
+.nd-clear:hover{color:var(--rose);}
+.nd-list{max-height:320px;overflow-y:auto;}
+.nd-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:13px 18px;border-bottom:1px solid rgba(255,255,255,0.03);
+  transition:var(--t);cursor:default;
+}
+.nd-item:hover{background:rgba(0,240,255,0.03);}
+.nd-item.unread{background:rgba(0,240,255,0.04);}
+.nd-item.unread::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--neon);}
+.nd-item{position:relative;}
+.nd-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.nd-ico.pac{background:rgba(0,240,255,0.1);color:var(--neon);}
+.nd-ico.ucl{background:rgba(6,255,165,0.1);color:var(--green);}
+.nd-ico.threat{background:rgba(255,45,120,0.1);color:var(--rose);}
+.nd-ico.dup{background:rgba(255,214,10,0.1);color:var(--amber);}
+.nd-body{}
+.nd-msg{font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--txt);margin-bottom:2px;}
+.nd-time{font-family:'Fira Code',monospace;font-size:9.5px;color:var(--dim);}
+.nd-empty{padding:30px;text-align:center;font-family:'Fira Code',monospace;font-size:11px;color:var(--dim);}
+
+/* ── SEARCH BAR ── */
+.search-wrap{
+  display:flex;align-items:center;gap:10px;
+  padding:0 48px;margin:16px 0 0;
+}
+.search-bar{
+  display:flex;align-items:center;gap:10px;flex:1;max-width:500px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;padding:10px 16px;transition:var(--t);
+}
+.search-bar:focus-within{border-color:rgba(0,240,255,0.35);background:rgba(0,240,255,0.04);box-shadow:0 0 0 3px rgba(0,240,255,0.08);}
+.search-bar i{color:var(--dim);font-size:14px;flex-shrink:0;transition:var(--t);}
+.search-bar:focus-within i{color:var(--neon);}
+.search-bar input{flex:1;background:none;border:none;outline:none;font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:var(--txt);}
+.search-bar input::placeholder{color:var(--dim);}
+.search-results{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:linear-gradient(145deg,rgba(5,12,35,0.99),rgba(2,6,20,0.99));
+  border:1px solid rgba(0,240,255,0.18);border-radius:14px;z-index:9000;
+  max-height:280px;overflow-y:auto;display:none;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
+}
+.search-results.open{display:block;}
+.sr-item{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:var(--t);
+}
+.sr-item:hover{background:rgba(0,240,255,0.05);}
+.sr-item:last-child{border-bottom:none;}
+.sr-type{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:4px;flex-shrink:0;}
+.sr-type.pac{background:rgba(0,240,255,0.12);color:var(--neon);}
+.sr-type.ucl{background:rgba(6,255,165,0.12);color:var(--green);}
+.sr-text{font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--txt);flex:1;}
+.sr-sub{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);}
+.search-pos{position:relative;}
+
+/* ── TERMINAL LOG ── */
+.terminal-panel{
+  background:rgba(0,4,12,0.95);border:1px solid rgba(0,240,255,0.15);
+  border-radius:18px;overflow:hidden;margin-bottom:32px;
+}
+.term-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;background:rgba(0,240,255,0.04);
+  border-bottom:1px solid rgba(0,240,255,0.1);
+}
+.term-title{font-family:'Fira Code',monospace;font-size:12px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--neon);}
+.term-dots{display:flex;gap:6px;}
+.term-dot{width:10px;height:10px;border-radius:50%;}
+.td-r{background:#ff5f57;}.td-y{background:#ffbd2e;}.td-g{background:#27c93f;}
+.term-controls{display:flex;gap:8px;}
+.term-btn{padding:5px 12px;border-radius:6px;border:1px solid rgba(0,240,255,0.15);background:rgba(0,240,255,0.05);color:var(--neon);font-family:'Fira Code',monospace;font-size:10px;cursor:pointer;transition:var(--t);}
+.term-btn:hover{background:rgba(0,240,255,0.12);}
+.term-body{
+  padding:16px 20px;height:220px;overflow-y:auto;
+  font-family:'Fira Code',monospace;font-size:12px;line-height:1.9;
+}
+.term-body::-webkit-scrollbar{width:3px;}
+.term-body::-webkit-scrollbar-thumb{background:rgba(0,240,255,0.2);border-radius:2px;}
+.t-log{display:flex;gap:10px;opacity:0;animation:log-in .3s var(--e) forwards;}
+@keyframes log-in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.t-ts{color:var(--dim);flex-shrink:0;font-size:11px;}
+.t-level{flex-shrink:0;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;}
+.t-level.info{background:rgba(0,240,255,0.15);color:var(--neon);}
+.t-level.ok{background:rgba(6,255,165,0.15);color:var(--green);}
+.t-level.warn{background:rgba(255,214,10,0.15);color:var(--amber);}
+.t-level.error{background:rgba(255,45,120,0.15);color:var(--rose);}
+.t-msg{color:var(--sub);flex:1;}
+.t-msg b{color:var(--txt);}
+
+/* ── CHART SECTION ── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;}
+.chart-card{
+  background:linear-gradient(145deg,rgba(6,14,36,0.92),rgba(3,8,22,0.96));
+  border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:24px;
+  position:relative;overflow:hidden;
+}
+.chart-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--chart-line,linear-gradient(90deg,var(--neon),var(--blue)));}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.chart-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--txt);}
+.chart-badge{font-family:'Fira Code',monospace;font-size:9.5px;padding:3px 9px;border-radius:99px;background:rgba(0,240,255,0.08);color:var(--neon);border:1px solid rgba(0,240,255,0.15);}
+canvas.chart-canvas{width:100%!important;}
+
+/* ── COUNTER ANIMATION ── */
+.m-val.counting{
+  transition:none;
+}
+
+/* ── FULLSCREEN CARD OVERLAY ── */
+.fullscreen-overlay{
+  position:fixed;inset:0;z-index:99998;
+  background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);
+  display:none;align-items:center;justify-content:center;
+  animation:modal-pop .4s var(--e);
+}
+.fullscreen-overlay.show{display:flex;}
+.fs-card{
+  background:linear-gradient(145deg,rgba(5,14,38,0.98),rgba(2,7,22,0.99));
+  border:1px solid rgba(0,240,255,0.2);border-radius:28px;
+  padding:52px 60px;text-align:center;min-width:380px;
+  position:relative;
+  box-shadow:0 40px 100px rgba(0,0,0,0.8),0 0 60px rgba(0,240,255,0.08);
+}
+.fs-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--fs-line,linear-gradient(90deg,var(--neon),var(--blue)));border-radius:28px 28px 0 0;}
+.fs-val{font-family:'Bebas Neue',sans-serif;font-size:120px;line-height:.9;letter-spacing:4px;margin-bottom:16px;}
+.fs-lbl{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--sub);margin-bottom:8px;}
+.fs-note{font-family:'Fira Code',monospace;font-size:12px;color:var(--dim);}
+.fs-close{position:absolute;top:18px;right:20px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--sub);font-size:14px;cursor:pointer;transition:var(--t);display:flex;align-items:center;justify-content:center;}
+.fs-close:hover{color:var(--rose);border-color:rgba(255,45,120,0.3);}
+
+/* fullscreen button on m-card */
+.m-fs-btn{
+  position:absolute;bottom:14px;right:14px;
+  width:24px;height:24px;border-radius:6px;
+  border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);
+  color:var(--dim);font-size:10px;cursor:pointer;transition:var(--t);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;
+}
+.m-card:hover .m-fs-btn{opacity:1;}
+.m-fs-btn:hover{color:var(--neon);border-color:rgba(0,240,255,0.25);}
+
+/* ── EXPORT BUTTON ── */
+.export-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:0 48px;margin-bottom:24px;
+}
+.export-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 18px;border-radius:10px;cursor:pointer;
+  font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;transition:var(--t);
+  border:1px solid;
+}
+.export-btn.csv{background:rgba(6,255,165,0.08);border-color:rgba(6,255,165,0.25);color:var(--green);}
+.export-btn.csv:hover{background:rgba(6,255,165,0.16);box-shadow:0 0 14px rgba(6,255,165,0.2);}
+.export-btn.json{background:rgba(0,240,255,0.08);border-color:rgba(0,240,255,0.25);color:var(--neon);}
+.export-btn.json:hover{background:rgba(0,240,255,0.16);box-shadow:0 0 14px rgba(0,240,255,0.2);}
+.export-btn.pdf{background:rgba(255,45,120,0.08);border-color:rgba(255,45,120,0.25);color:var(--rose);}
+.export-btn.pdf:hover{background:rgba(255,45,120,0.16);box-shadow:0 0 14px rgba(255,45,120,0.2);}
+.export-lbl{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);letter-spacing:1px;margin-left:4px;}
+
+@media(max-width:900px){
+  .charts-grid{grid-template-columns:1fr;}
+  .search-wrap,.export-bar{padding:0 16px;}
+  .notif-dropdown{right:-100px;width:300px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-box"><i class="fa-solid fa-database"></i></div>
+    <div class="logo-txt"><b>PAC System</b><span>Management Dashboard</span></div>
+  </a>
+
+  <nav class="hdr-nav" id="mainMenu">
+    <!-- Filled by Firestore nav loader -->
+  </nav>
+
+  <div class="hdr-right">
+    <div class="hdr-badge"><span class="dot"></span> Admin Mode</div>
+    <div class="notif-bell" id="notifBell" onclick="toggleNotifDropdown()">
+      <i class="fa-solid fa-bell nb-ring" id="bellIcon"></i>
+      <span class="nb-count" id="notifCount">0</span>
+      <div class="notif-dropdown" id="notifDropdown">
+        <div class="nd-head">
+          <div class="nd-title">Notifications</div>
+          <span class="nd-clear" onclick="clearNotifs(event)">Clear all</span>
+        </div>
+        <div class="nd-list" id="notifList">
+          <div class="nd-empty">No notifications yet</div>
+        </div>
+      </div>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<div id="mob-nav"></div>
+
+<!-- ══ PAGE HERO ══ -->
+<div class="page-hero">
+  <div class="ph-inner">
+    <div class="ph-left">
+      <div class="ph-kicker">System Intelligence</div>
+      <div class="ph-title">Database<br><span>Control Panel</span></div>
+      <div class="ph-sub">Real-time monitoring of all Firestore collections, UCL accounts, PAC entries, and system health.</div>
+    </div>
+    <div class="ph-chips">
+      <div class="ph-chip">
+        <div class="chi chi-g"><i class="fa-solid fa-circle-check"></i></div>
+        <div><div class="ph-chip-val" id="chipUptime">—</div><div class="ph-chip-lbl">Uptime</div></div>
+      </div>
+      <div class="ph-chip">
+        <div class="chi chi-c"><i class="fa-solid fa-database"></i></div>
+        <div><div class="ph-chip-val" id="chipPac">0</div><div class="ph-chip-lbl">PAC Records</div></div>
+      </div>
+      <div class="ph-chip">
+        <div class="chi chi-v"><i class="fa-solid fa-users"></i></div>
+        <div><div class="ph-chip-val" id="chipUcl">0</div><div class="ph-chip-lbl">UCL Owners</div></div>
+      </div>
+      <div class="ph-chip">
+        <div class="chi chi-a"><i class="fa-solid fa-shield-halved"></i></div>
+        <div><div class="ph-chip-val" id="chipThreat">0%</div><div class="ph-chip-lbl">Threat Level</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEARCH BAR ══ -->
+<div class="search-wrap">
+  <div class="search-pos" style="flex:1;max-width:500px;">
+    <div class="search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="globalSearch" placeholder="Search PAC no, UCL ID, name…" oninput="handleSearch(this.value)" autocomplete="off">
+      <i class="fa-solid fa-xmark" id="searchClear" style="cursor:pointer;display:none;" onclick="clearSearch()"></i>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<!-- ══ EXPORT BAR ══ -->
+<div class="export-bar">
+  <button class="export-btn csv" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+  <button class="export-btn json" onclick="exportJSON()"><i class="fa-solid fa-file-code"></i> Export JSON</button>
+  <button class="export-btn pdf" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> Print / PDF</button>
+  <span class="export-lbl" id="exportStatus"></span>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main-wrap">
+
+  <!-- METRIC CARDS -->
+  <div class="sec-label"><i class="fa-solid fa-chart-bar"></i> Live Metrics</div>
+  <div class="metrics-grid">
+
+    <!-- Active PAC -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--neon),var(--blue))">
+      <div class="m-card-top"><div class="m-icon mi-c"><i class="fa-solid fa-file-invoice"></i></div></div>
+      <div class="m-val" id="livePacCount">0</div>
+      <div class="m-lbl">Active PAC Entries</div>
+      <div class="m-note">live firestore listener</div>
+      <button class="m-fs-btn" onclick="openFullscreen('livePacCount','Active PAC Entries','live firestore listener','linear-gradient(90deg,var(--neon),var(--blue))','')"><i class="fa-solid fa-expand"></i></button>
+    </div>
+
+    <!-- Used PAC -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--blue),var(--violet))">
+      <div class="m-card-top"><div class="m-icon mi-b"><i class="fa-solid fa-check-double"></i></div></div>
+      <div class="m-val violet" id="usedPacCount">0</div>
+      <div class="m-lbl">Used PAC Count</div>
+      <div class="m-note">confirmed records</div>
+      <button class="m-fs-btn" onclick="openFullscreen('usedPacCount','Used PAC Count','confirmed records','linear-gradient(90deg,var(--blue),var(--violet))','violet')"><i class="fa-solid fa-expand"></i></button>
+    </div>
+
+    <!-- Deleted PAC -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--rose),#c0205a)">
+      <div class="m-card-top"><div class="m-icon mi-r"><i class="fa-solid fa-trash-can"></i></div></div>
+      <div class="m-val danger" id="deletePacCount">0</div>
+      <div class="m-lbl">Deleted PAC Records</div>
+      <div class="m-note">soft-deleted archive</div>
+      <button class="m-fs-btn" onclick="openFullscreen('deletePacCount','Deleted PAC Records','soft-deleted archive','linear-gradient(90deg,var(--rose),#c0205a)','danger')"><i class="fa-solid fa-expand"></i></button>
+    </div>
+
+    <!-- Duplicate IDs -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--amber),#e58000)">
+      <div class="m-card-top"><div class="m-icon mi-a"><i class="fa-solid fa-clone"></i></div></div>
+      <div class="m-val warn" id="duplicateDeleteIdCount">0</div>
+      <div class="m-lbl">Duplicate Delete IDs</div>
+      <div class="m-note">requires attention</div>
+    </div>
+
+    <!-- UCL Accounts -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--green),var(--neon))">
+      <div class="m-card-top">
+        <div class="m-icon mi-g"><i class="fa-solid fa-users"></i></div>
+        <button class="m-action-btn" title="View UCL Owners" onclick="document.getElementById('uclModal').classList.add('show');loadUclTable()"><i class="fa-solid fa-eye"></i></button>
+      </div>
+      <div class="m-val ok" id="userAccountCount">0</div>
+      <div class="m-lbl">Registered UCL Accounts</div>
+      <div class="m-note">active + deactive</div>
+      <button class="m-fs-btn" onclick="openFullscreen('userAccountCount','Registered UCL Accounts','active + deactive','linear-gradient(90deg,var(--green),var(--neon))','ok')"><i class="fa-solid fa-expand"></i></button>
+    </div>
+
+    <!-- UCL Requests -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--amber),var(--rose))">
+      <div class="m-card-top">
+        <div class="m-icon mi-a"><i class="fa-solid fa-inbox"></i></div>
+        <button class="m-action-btn" title="View UCL Requests" onclick="document.getElementById('uclRequestPopup').classList.add('show');renderUclRequestTable()"><i class="fa-solid fa-eye"></i></button>
+      </div>
+      <div class="m-val warn" id="uclRequestCount">0</div>
+      <div class="m-lbl">UCL ID Requests</div>
+      <div class="m-note">pending review</div>
+    </div>
+
+    <!-- PAC Nav -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--violet),var(--blue))">
+      <div class="m-card-top">
+        <div class="m-icon mi-v"><i class="fa-solid fa-compass"></i></div>
+        <div class="m-action-btn-row">
+          <button class="m-action-btn" title="View Nav" onclick="window.openPacNavList()"><i class="fa-solid fa-eye"></i></button>
+          <button class="m-action-btn add" title="Add Nav" onclick="document.getElementById('pacNavModal').classList.add('show')"><i class="fa-solid fa-plus"></i></button>
+        </div>
+      </div>
+      <div class="m-val violet" id="pacNavCount">0</div>
+      <div class="m-lbl">PAC Navigation Items</div>
+      <div class="m-note">active menu entries</div>
+    </div>
+
+    <!-- Threat Level -->
+    <div class="m-card threat" style="--card-line:linear-gradient(90deg,var(--rose),var(--amber))">
+      <div class="m-card-top"><div class="m-icon mi-r"><i class="fa-solid fa-triangle-exclamation"></i></div></div>
+      <div class="m-val danger" id="threatLevel">0%</div>
+      <div class="m-lbl">System Threat Level</div>
+      <div class="m-note" id="threatNote">analyzing…</div>
+    </div>
+
+    <!-- PAC Amount -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--green),var(--blue))">
+      <div class="m-card-top">
+        <div class="m-icon mi-g"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+        <button class="m-action-btn edit" title="Edit PAC Amount" onclick="document.getElementById('pacAmountModal').classList.add('show');document.getElementById('newPacAmountInput').value=document.getElementById('uclPacAmount').textContent"><i class="fa-solid fa-pen-to-square"></i></button>
+      </div>
+      <div class="m-val ok" id="uclPacAmount">0</div>
+      <div class="m-lbl">UCL PAC Amount (Global)</div>
+      <div class="m-note">₹ per entry</div>
+    </div>
+
+    <!-- Temp Links -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--neon),var(--violet))">
+      <div class="m-card-top">
+        <div class="m-icon mi-c"><i class="fa-solid fa-link"></i></div>
+        <button class="m-action-btn" title="View Temp Links" onclick="window.openTempLinksModal?openTempLinksModal():null;document.getElementById('tempLinksModal').classList.add('show');document.getElementById('tempLinksModal').style.display='flex';"><i class="fa-solid fa-eye"></i></button>
+      </div>
+      <div class="m-val" id="tempLinkCount">0</div>
+      <div class="m-lbl">Active Temp Links</div>
+      <div class="m-note">session tokens</div>
+    </div>
+
+    <!-- Audit Logs -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--violet),var(--rose))">
+      <div class="m-card-top">
+        <div class="m-icon mi-v"><i class="fa-solid fa-shield-halved"></i></div>
+        <button class="m-action-btn" title="View Audit Logs" onclick="openAuditLogs()"><i class="fa-solid fa-eye"></i></button>
+      </div>
+      <div class="m-val violet"><i class="fa-solid fa-shield-halved" style="font-size:32px;"></i></div>
+      <div class="m-lbl">Admin Audit Logs</div>
+      <div class="m-note">security events</div>
+    </div>
+
+    <!-- Students -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--blue),var(--green))">
+      <div class="m-card-top">
+        <div class="m-icon mi-b"><i class="fa-solid fa-graduation-cap"></i></div>
+        <button class="m-action-btn" title="Student Insights" onclick="openStudentInsights()"><i class="fa-solid fa-chart-pie"></i></button>
+      </div>
+      <div class="m-val" id="studentCount">0</div>
+      <div class="m-lbl">Total Students</div>
+      <div class="m-note">enrolled records</div>
+    </div>
+
+    <!-- Version -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--amber),var(--violet))">
+      <div class="m-card-top">
+        <div class="m-icon mi-a"><i class="fa-solid fa-rocket"></i></div>
+        <div class="m-action-btn-row">
+          <button class="m-action-btn" title="Version History" onclick="openVersionHistory()"><i class="fa-solid fa-clock-rotate-left"></i></button>
+          <button class="m-action-btn" title="View Version" onclick="openVersionView()"><i class="fa-solid fa-eye"></i></button>
+          <button class="m-action-btn add" title="Update Version" onclick="autoUpdateVersion()"><i class="fa-solid fa-rocket"></i></button>
+        </div>
+      </div>
+      <div class="m-val warn" id="currentVersion">v0.0</div>
+      <div class="m-lbl">Build <span id="currentBuild">#0</span> · <span id="currentDate">—</span></div>
+      <div class="m-note">Next: <span id="nextVersion">—</span></div>
+    </div>
+
+    <!-- Query -->
+    <div class="m-card" style="--card-line:linear-gradient(90deg,var(--neon),var(--green))">
+      <div class="m-card-top">
+        <div class="m-icon mi-c"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <button class="m-action-btn" title="Open Query Panel" onclick="openQueryPanel()"><i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <div class="m-val" style="font-size:36px;"><i class="fa-solid fa-database"></i></div>
+      <div class="m-lbl">Query Records</div>
+      <div class="m-note">search PAC, UCL, students</div>
+    </div>
+
+  </div>
+
+  <!-- SYSTEM STATUS PANEL -->
+  <div class="sec-label"><i class="fa-solid fa-chart-line"></i> Live System Insights</div>
+  <div class="status-panel">
+    <div class="sp-head">
+      <div class="sp-title"><i class="fa-solid fa-chart-line"></i> System Health</div>
+      <div class="sp-live"><span class="sp-live-dot"></span> Live Feed</div>
+    </div>
+    <div class="status-grid">
+
+      <div class="s-item">
+        <div class="s-item-left">
+          <div class="s-item-label"><i class="fa-solid fa-trash-can" style="margin-right:4px;"></i> Last Deleted PAC</div>
+          <div class="s-item-val"><b id="lastDeletedPac">Loading…</b></div>
+        </div>
+        <button class="s-view-btn" id="viewLastDeletedBtn" title="View Details" disabled onclick="openLastDeleteModal()"><i class="fa-solid fa-eye"></i></button>
+      </div>
+
+      <div class="s-item">
+        <div class="s-item-left">
+          <div class="s-item-label"><i class="fa-solid fa-stopwatch" style="margin-right:4px;"></i> System Uptime</div>
+          <div class="s-item-val"><b id="systemUptime">0s</b></div>
+        </div>
+      </div>
+
+      <div class="s-item">
+        <div class="s-item-left">
+          <div class="s-item-label"><i class="fa-solid fa-power-off" style="margin-right:4px;"></i> Last Restart</div>
+          <div class="s-item-val"><b id="lastRestartTime">—</b></div>
+        </div>
+      </div>
+
+      <div class="s-item">
+        <div class="s-item-left">
+          <div class="s-item-label"><i class="fa-solid fa-clipboard" style="margin-right:4px;"></i> Last PAC Copy Code</div>
+          <div class="s-item-val"><b id="lastPacCopyCode">—</b></div>
+        </div>
+        <button class="s-view-btn" id="viewLastPacCopyBtn" title="View Details" disabled><i class="fa-solid fa-eye"></i></button>
+      </div>
+
+      <div class="s-item">
+        <div class="s-item-left">
+          <div class="s-item-label"><i class="fa-solid fa-hard-drive" style="margin-right:4px;"></i> Firestore Storage</div>
+          <div class="s-item-val"><b id="storageStatusText">Calculating…</b></div>
+          <div class="storage-bar"><div class="storage-fill" id="storageFill" style="width:0%"></div></div>
+        </div>
+        <span class="badge ok" id="storageBadge"><span class="badge-dot" style="background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse-s 2s ease-in-out infinite;"></span> OK</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DUPLICATE DELETE ID TABLE -->
+  <div class="sec-label"><i class="fa-solid fa-clone"></i> Duplicate Delete ID Registry</div>
+  <div class="table-wrap">
+    <div class="tw-head">
+      <div class="tw-title"><i class="fa-solid fa-clone"></i> Duplicate Registry</div>
+      <button class="tw-fix-btn" onclick="fixAllDuplicates()"><i class="fa-solid fa-triangle-exclamation"></i> Fix All Duplicates</button>
+    </div>
+    <div class="table-scroll">
+      <table class="pac-table">
+        <thead><tr>
+          <th>Delete ID</th><th>CSC Ref</th><th>PAC</th><th>Amount</th>
+          <th>Date</th><th>Time</th><th>Deleted</th><th>IP</th><th>New Delete ID</th>
+        </tr></thead>
+        <tbody id="duplicateTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAC AMOUNT MISMATCH TABLE (hidden until mismatch) -->
+  <div id="pacAmountTableBox">
+    <div class="sec-label"><i class="fa-solid fa-triangle-exclamation"></i> Amount Mismatch Alert</div>
+    <div class="table-wrap">
+      <div class="tw-head">
+        <div class="tw-title"><i class="fa-solid fa-indian-rupee-sign"></i> <span id="pacAlertTitle">PAC Amount Alert</span></div>
+      </div>
+      <div class="table-scroll">
+        <table class="pac-table">
+          <thead><tr>
+            <th>PAC No</th><th>UCL Owner</th><th>UCL</th><th>CSC Ref</th>
+            <th>Amount</th><th>Expected</th><th>Date</th><th>Time</th><th>IP</th><th>Purpose</th><th>Action</th>
+          </tr></thead>
+          <tbody id="pacAmountTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- CHARTS -->
+  <div class="sec-label"><i class="fa-solid fa-chart-area"></i> Analytics Overview</div>
+  <div class="charts-grid">
+    <div class="chart-card" style="--chart-line:linear-gradient(90deg,var(--neon),var(--blue))">
+      <div class="chart-head">
+        <div class="chart-title">PAC Entry Trend</div>
+        <span class="chart-badge">Last 7 Days</span>
+      </div>
+      <canvas class="chart-canvas" id="pacTrendChart" height="160"></canvas>
+    </div>
+    <div class="chart-card" style="--chart-line:linear-gradient(90deg,var(--green),var(--violet))">
+      <div class="chart-head">
+        <div class="chart-title">Collection Sizes</div>
+        <span class="chart-badge">Live Firestore</span>
+      </div>
+      <canvas class="chart-canvas" id="collectionChart" height="160"></canvas>
+    </div>
+  </div>
+
+  <!-- LIVE TERMINAL -->
+  <div class="sec-label"><i class="fa-solid fa-terminal"></i> System Activity Log</div>
+  <div class="terminal-panel">
+    <div class="term-head">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="term-dots">
+          <div class="term-dot td-r"></div>
+          <div class="term-dot td-y"></div>
+          <div class="term-dot td-g"></div>
+        </div>
+        <div class="term-title">pac-system ~ live-monitor</div>
+      </div>
+      <div class="term-controls">
+        <button class="term-btn" onclick="clearTerminal()"><i class="fa-solid fa-trash"></i> Clear</button>
+        <button class="term-btn" onclick="toggleTerminalPause()" id="termPauseBtn"><i class="fa-solid fa-pause"></i> Pause</button>
+      </div>
+    </div>
+    <div class="term-body" id="termBody"></div>
+  </div>
+
+</div><!-- /main-wrap -->
+
+<!-- FULLSCREEN OVERLAY -->
+<div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
+  <div class="fs-card" id="fsCard" onclick="event.stopPropagation()">
+    <button class="fs-close" onclick="closeFullscreen()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="fs-val" id="fsVal">0</div>
+    <div class="fs-lbl" id="fsLbl">—</div>
+    <div class="fs-note" id="fsNote">—</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODALS
+══════════════════════════════════════ -->
+
+<!-- UCL OWNERS -->
+<div id="uclModal" class="pac-modal">
+  <div class="pac-modal-box wide">
+    <div class="modal-head">
+      <div class="modal-title">UCL Owners</div>
+      <button class="modal-close" onclick="(()=>{const m=document.getElementById('uclModal');if(m){m.classList.remove('show');m.style.display='none';}})()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-table-wrap">
+      <table class="modal-table">
+        <thead><tr><th>UCL ID</th><th>Name</th><th>Amount</th><th>Count</th><th>IP</th><th>Address</th><th>Verified At</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="uclTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- UCL EDIT -->
+<div id="uclEditModal" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Edit UCL Owner</div>
+      <button class="modal-close" onclick="(()=>{const m=document.getElementById('uclEditModal');if(m){m.classList.remove('show');m.style.display='none';}})()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <label class="m-label">Name</label>
+    <input id="editUclName" class="m-input" type="text">
+    <label class="m-label">PAC Amount</label>
+    <input id="editUclAmount" class="m-input" type="number">
+    <label class="m-label">IP Address</label>
+    <input id="editUclIp" class="m-input" type="text">
+    <label class="m-label">Address</label>
+    <input id="editUclAddress" class="m-input" type="text">
+    <button class="btn-primary" id="saveUclEditBtn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+  </div>
+</div>
+
+<!-- UCL REQUESTS -->
+<div id="uclRequestPopup" class="pac-modal">
+  <div class="pac-modal-box wide">
+    <div class="modal-head">
+      <div class="modal-title">UCL ID Requests</div>
+      <button class="modal-close" onclick="(()=>{const m=document.getElementById('uclRequestPopup');if(m){m.classList.remove('show');m.style.display='none';}})()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="uclRequestTable"></div>
+  </div>
+</div>
+
+<!-- PAC NAV ADD -->
+<div id="pacNavModal" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Add PAC Navigation</div>
+      <button class="modal-close" onclick="(()=>{const m=document.getElementById('pacNavModal');if(m){m.classList.remove('show');m.style.display='none';}})()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <label class="m-label">Title</label><input id="navTitle" class="m-input">
+    <label class="m-label">URL</label><input id="navUrl" class="m-input">
+    <label class="m-label">Icon Class</label><input id="navIcon" class="m-input" placeholder="fa-solid fa-house">
+    <label class="m-label">Order</label><input id="navOrder" type="number" class="m-input">
+    <label class="m-label">Roles</label>
+    <div class="role-row">
+      <label class="role-chip"><input type="checkbox" class="nav-role-add" value="admin"> Admin</label>
+      <label class="role-chip"><input type="checkbox" class="nav-role-add" value="ucl"> UCL</label>
+      <label class="role-chip"><input type="checkbox" class="nav-role-add" value="public"> Public</label>
+    </div>
+    <button class="btn-primary" onclick="savePacNav()"><i class="fa-solid fa-floppy-disk"></i> Save Navigation</button>
+  </div>
+</div>
+
+<!-- PAC NAV LIST -->
+<div id="pacNavListModal" class="pac-modal">
+  <div class="pac-modal-box wide">
+    <div class="modal-head">
+      <div class="modal-title">PAC Navigation Manager</div>
+      <button class="modal-close" onclick="closePacNavList()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-table-wrap">
+      <table class="modal-table">
+        <thead><tr><th>Order</th><th>Title</th><th>URL</th><th>Icon</th><th>Roles</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="pacNavTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PAC NAV EDIT -->
+<div id="pacNavEditModal" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Edit Navigation</div>
+      <button class="modal-close" onclick="closeEditPacNav()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <label class="m-label">Title</label><input id="editNavTitle" class="m-input">
+    <label class="m-label">URL</label><input id="editNavUrl" class="m-input">
+    <label class="m-label">Icon Class</label><input id="editNavIcon" class="m-input">
+    <label class="m-label">Order</label><input id="editNavOrder" type="number" class="m-input">
+    <label class="m-label">Roles</label>
+    <div class="role-row">
+      <label class="role-chip"><input type="checkbox" class="nav-role-edit" value="admin"> Admin</label>
+      <label class="role-chip"><input type="checkbox" class="nav-role-edit" value="ucl"> UCL</label>
+      <label class="role-chip"><input type="checkbox" class="nav-role-edit" value="public"> Public</label>
+    </div>
+    <label class="m-label">Status</label>
+    <select id="editNavActive" class="m-input">
+      <option value="true">Active</option>
+      <option value="false">Inactive</option>
+    </select>
+    <button class="btn-primary" onclick="saveEditPacNav()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+  </div>
+</div>
+
+<!-- PAC AMOUNT GLOBAL EDIT -->
+<div id="pacAmountModal" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Update Global PAC Amount</div>
+      <button class="modal-close" onclick="(()=>{const m=document.getElementById('pacAmountModal');if(m){m.classList.remove('show');m.style.display='none';}})()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="detail-row"><span class="dr-lbl">Current Amount</span><span class="dr-val"><b id="currentAmountDisplay">—</b></span></div>
+    <label class="m-label" style="margin-top:14px;">New Amount (₹)</label>
+    <input id="newPacAmountInput" type="number" class="m-input" placeholder="Enter amount">
+    <button class="btn-primary" id="savePacAmountBtn" style="margin-top:4px;"><i class="fa-solid fa-floppy-disk"></i> Update All UCL Owners</button>
+  </div>
+</div>
+
+<!-- PAC AMOUNT ENTRY EDIT -->
+<div id="pacEditModal" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Edit PAC Amount</div>
+      <button class="modal-close" onclick="closePacAmountEditor()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="detail-row"><span class="dr-lbl">PAC No</span><span class="dr-val"><b id="editPacNo">—</b></span></div>
+    <div class="detail-row"><span class="dr-lbl">Current Amount</span><span class="dr-val"><b id="editPacCurrentAmount">—</b></span></div>
+    <label class="m-label" style="margin-top:14px;">New Amount</label>
+    <input id="editPacNewAmount" type="number" class="m-input">
+    <label class="m-label">Correction Reason</label>
+    <input id="editPacReason" class="m-input" placeholder="Mandatory">
+    <button class="btn-primary" onclick="savePacAmountEdit()"><i class="fa-solid fa-floppy-disk"></i> Save Correction</button>
+  </div>
+</div>
+
+<!-- QUERY PANEL -->
+<div id="queryPanel" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Quick Query</div>
+      <button class="modal-close" onclick="closeQueryPanel()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <label class="m-label">Query Type</label>
+    <select id="queryType" class="m-input">
+      <option value="pac">PAC Entry</option>
+      <option value="ucl">UCL Account</option>
+      <option value="student">Student</option>
+      <option value="temp">Temp Link</option>
+    </select>
+    <label class="m-label">Enter ID / Code</label>
+    <input id="queryValue" class="m-input" placeholder="PAC No / UCL ID / Doc ID">
+    <button class="btn-primary" onclick="runQuery()"><i class="fa-solid fa-magnifying-glass"></i> Run Query</button>
+  </div>
+</div>
+
+<!-- QUERY RESULT -->
+<div id="queryResultModal" class="pac-modal">
+  <div class="pac-modal-box medium">
+    <div class="modal-head">
+      <div class="modal-title">Query Result</div>
+      <button class="modal-close" onclick="closeQueryResult()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="queryResultBody" class="query-result-box">—</div>
+  </div>
+</div>
+
+<!-- AUDIT LOG -->
+<div id="auditLogModal" class="pac-modal">
+  <div class="pac-modal-box wide">
+    <div class="modal-head">
+      <div class="modal-title">Admin Audit Logs</div>
+      <button class="modal-close" onclick="closeAuditLogs()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-table-wrap">
+      <table class="modal-table">
+        <thead><tr><th>Time</th><th>Action</th><th>Module</th><th>Target</th><th>Severity</th><th>Status</th><th>IP</th><th>Page</th></tr></thead>
+        <tbody id="auditLogBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- LAST DELETED PAC -->
+<div id="lastDeleteModal" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Last Deleted PAC</div>
+      <button class="modal-close" onclick="closeLastDeleteModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="lastDeleteDetails">Loading…</div>
+  </div>
+</div>
+
+<!-- LAST COPY -->
+<div id="lastCopyModal" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Last Copied PAC</div>
+      <button class="modal-close" onclick="closeLastCopyModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="lastCopyDetails">Loading…</div>
+  </div>
+</div>
+
+<!-- TEMP LINKS -->
+<div id="tempLinksModal" class="pac-modal">
+  <div class="pac-modal-box wide">
+    <div class="modal-head">
+      <div class="modal-title">Temporary Access Links</div>
+      <button class="modal-close" onclick="closeTempLinksModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-table-wrap">
+      <table class="modal-table">
+        <thead><tr><th>Token</th><th>Status</th><th>Main URL</th><th>Device</th><th>Access</th><th>Reload</th><th>Fingerprint</th><th>Created</th><th>Expires</th><th>Last Access</th></tr></thead>
+        <tbody id="tempLinksTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- VERSION VIEW -->
+<div id="versionViewModal" class="pac-modal">
+  <div class="pac-modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Version Details</div>
+      <button class="modal-close" onclick="closeVersionView()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="detail-row"><span class="dr-lbl">Current</span><span class="dr-val"><b id="viewCurrentVersion">—</b></span></div>
+    <div class="detail-row"><span class="dr-lbl">Build</span><span class="dr-val"><b id="viewBuildNumber">—</b></span></div>
+    <div class="detail-row"><span class="dr-lbl">Last Updated</span><span class="dr-val"><b id="viewBuildDate">—</b></span></div>
+    <div class="detail-row"><span class="dr-lbl">Next Version</span><span class="dr-val"><b id="viewNextVersion">—</b></span></div>
+    <div class="detail-row"><span class="dr-lbl">Next Build</span><span class="dr-val"><b id="viewNextBuild">—</b></span></div>
+  </div>
+</div>
+
+<!-- VERSION HISTORY -->
+<div id="versionHistoryModal" class="pac-modal">
+  <div class="pac-modal-box wide">
+    <div class="modal-head">
+      <div class="modal-title">Version History</div>
+      <button class="modal-close" onclick="closeVersionHistory()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-table-wrap">
+      <table class="modal-table">
+        <thead><tr><th>Date</th><th>Version</th><th>Build</th><th>Env</th><th>IP</th><th>Action</th></tr></thead>
+        <tbody id="versionHistoryBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT INSIGHTS -->
+<div id="studentInsightsModal" class="pac-modal">
+  <div class="pac-modal-box medium">
+    <div class="modal-head">
+      <div class="modal-title">Student Insights</div>
+      <button class="modal-close" onclick="closeStudentInsights()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="studentInsightsContent">Loading…</div>
+  </div>
+</div>
+
+<!-- STUDENT LIST -->
+<div id="studentModal" class="pac-modal">
+  <div class="pac-modal-box wide">
+    <div class="modal-head">
+      <div class="modal-title">Students List</div>
+      <button class="modal-close" onclick="closeStudentModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-table-wrap">
+      <table class="modal-table">
+        <thead><tr><th>Student UID</th><th>Name</th><th>Course</th><th>Year</th><th>DOB</th><th>Action</th></tr></thead>
+        <tbody id="studentTableBody"></tbody>
+      </table>
+    </div>
+    <div class="pag-bar">
+      <button class="pag-btn" id="prevStudentsBtn" disabled>⬅ Prev</button>
+      <span class="pag-info" id="studentPageInfo">Page 1</span>
+      <button class="pag-btn" id="nextStudentsBtn">Next ➡</button>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT VIEW -->
+<div id="studentViewModal" class="pac-modal">
+  <div class="pac-modal-box medium">
+    <div class="modal-head">
+      <div class="modal-title">Student Details</div>
+      <button class="modal-close" onclick="closeStudentView()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="studentViewBody">Loading…</div>
+  </div>
+</div>
+
+<!-- ALERTS -->
+<div id="globalAlerts"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-bottom">
+    <div class="f-meta">
+      <span class="f-badge"><i class="fa-solid fa-clock"></i><span id="live-time">--</span></span>
+      <span class="f-badge"><i class="fa-solid fa-code-branch"></i><span class="dashboard-version"></span></span>
+    </div>
+    <p class="f-copy">&copy; 2025 PAC Management System · All rights reserved</p>
+  </div>
+</footer>
+
+<!-- ══ SCRIPTS — all original logic preserved ══ -->
+<script type="module" src="./assets/js/temp-link-monitor.js"></script>
+<script type="module" src="./assets/js/students-monitor.js"></script>
+<script type="module" src="/assets/js/temp-link-access.js"></script>
+<script type="module" src="./assets/js/query-engine.js"></script>
+<script type="module" src="./assets/js/firestore-storage-status.js"></script>
+<script type="module" src="./assets/js/pac-amount-edit.js"></script>
+
+<script type="module">
+import {
+  db, collection, doc, setDoc, getDocs, updateDoc,
+  onSnapshot, deleteDoc, query, orderBy, limit, addDoc, where, getDoc
+} from "./assets/js/firebase-config.js";
+
+import "./assets/js/system-uptime.js";
+import "./assets/js/last-pac-copy-code.js";
+import { loadDashboardVersion } from "./assets/js/dashboard-version.js";
+import "./assets/js/duplicate-delete-registry.js";
+import { initLastDeletedPac } from "./assets/js/last-deleted-pac.js";
+import { logAdminAction } from "./assets/js/admin-audit-log.js";
+import {
+  bindVersionCard, openVersionView, closeVersionView,
+  openVersionHistory, closeVersionHistory, autoUpdateVersion
+} from "./assets/js/version-control.js";
+
+window.openVersionHistory  = openVersionHistory;
+window.closeVersionHistory = closeVersionHistory;
+window.autoUpdateVersion   = autoUpdateVersion;
+window.openVersionView     = openVersionView;
+window.closeVersionView    = closeVersionView;
+
+loadDashboardVersion();
+bindVersionCard();
+
+/* ── NAV LOADER ── */
+function loadNav(userRole="admin"){
+  const menu    = document.getElementById("mainMenu");
+  const mobNav  = document.getElementById("mob-nav");
+  const navQ    = query(collection(db,"pacnav"), orderBy("order","asc"));
+  onSnapshot(navQ, snap=>{
+    let html="";
+    snap.forEach(d=>{
+      const v=d.data();
+      if(v.active===false)return;
+      if(Array.isArray(v.roles)&&v.roles.length&&!v.roles.includes(userRole))return;
+      html+=`<a href="${v.url||'#'}"><i class="${v.icon||'fa-solid fa-circle'}"></i> ${v.title||'—'}</a>`;
+    });
+    if(menu) menu.innerHTML=html;
+    if(mobNav) mobNav.innerHTML=html;
+  });
+}
+loadNav("admin");
+
+/* ── STATE ── */
+let uclRequestsData=[], currentPacNavEditId=null, uclAmountMap={}, uclLoaded=false;
+
+/* ── LIVE COUNTERS ── */
+onSnapshot(collection(db,"pac_entries"), snap=>{
+  document.getElementById("livePacCount").textContent=snap.size;
+  document.getElementById("chipPac").textContent=snap.size;
+});
+onSnapshot(collection(db,"used_pac"), snap=>document.getElementById("usedPacCount").textContent=snap.size);
+onSnapshot(collection(db,"pacnav"),  snap=>document.getElementById("pacNavCount").textContent=snap.size);
+
+async function updateUclCount(){
+  const a=await getDocs(collection(db,"ucl_owners"));
+  const d=await getDocs(collection(db,"ucl_owners_deactive"));
+  const total=a.size+d.size;
+  document.getElementById("userAccountCount").textContent=total;
+  document.getElementById("chipUcl").textContent=total;
+}
+setInterval(updateUclCount,3000); updateUclCount();
+
+/* UCL PAC Amount */
+onSnapshot(collection(db,"ucl_owners"),snap=>{
+  uclAmountMap={};
+  let pacVal=0, uniqueAmounts=new Set();
+  snap.forEach(d=>{
+    const v=d.data();
+    const key=(v.uclId||"").trim();
+    if(!key)return;
+    const amt=Number(v.pacAmount||0);
+    uclAmountMap[key]=amt;
+    uniqueAmounts.add(amt);
+    pacVal=v.pacAmount||pacVal;
+  });
+  uclLoaded=true;
+  document.getElementById("uclPacAmount").textContent=pacVal;
+  document.getElementById("currentAmountDisplay").textContent="₹"+pacVal;
+  // update alert title
+  const t=document.getElementById("pacAlertTitle");
+  if(uniqueAmounts.size===1) t.textContent=`PAC Amount Alert (≠ ₹${[...uniqueAmounts][0]})`;
+  else t.textContent="PAC Amount Alert (≠ UCL PAC Amount)";
+});
+
+/* ── PAC AMOUNT MISMATCH CHECKER ── */
+let pacCountMap={};
+onSnapshot(collection(db,"pac_entries"),snap=>{
+  pacCountMap={};
+  snap.forEach(d=>{
+    const v=d.data();
+    const ucl=(v.uclNo||"").trim();
+    if(!ucl)return;
+    pacCountMap[ucl]=(pacCountMap[ucl]||0)+1;
+  });
+});
+
+const mismatchTimer=setInterval(()=>{
+  if(!uclLoaded)return;
+  clearInterval(mismatchTimer);
+  onSnapshot(collection(db,"pac_entries"),snap=>{
+    const box=document.getElementById("pacAmountTableBox");
+    const table=document.getElementById("pacAmountTable");
+    table.innerHTML="";
+    let list=[];
+    snap.forEach(d=>{
+      const v={id:d.id,...d.data()};
+      const ucl=(v.uclNo||"").trim();
+      const ea=Number(v.amount||0);
+      const exp=uclAmountMap[ucl];
+      if(exp===undefined)return;
+      if(ea!==exp)list.push({...v,expectedAmount:exp});
+    });
+    if(!list.length){box.style.display="none";return;}
+    box.style.display="block";
+    list.forEach(r=>{
+      const bg=r.amount>r.expectedAmount?"rgba(255,45,120,0.12)":"rgba(255,214,10,0.08)";
+      table.innerHTML+=`<tr style="background:${bg}">
+        <td>${r.pacNo||"-"}</td><td>${r.uclOwnerName||"-"}</td><td>${r.uclNo||"-"}</td>
+        <td>${r.cscRef||"-"}</td><td><b style="color:var(--rose)">${r.amount}</b></td>
+        <td style="color:var(--green)"><b>${r.expectedAmount}</b></td>
+        <td>${r.entryDate||"-"}</td><td>${r.entryTime||"-"}</td>
+        <td>${r.savedFromIp||r.copyIP||"-"}</td><td>${r.purpose||"-"}</td>
+        <td>
+          <div class="btn-row">
+            <button class="btn-sm edit" onclick="openPacAmountEditor('${r.id}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn-sm del" onclick="deletePacEntry('${r.id}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>`;
+    });
+  });
+},300);
+
+/* ── THREAT ANALYZER ── */
+function analyzeThreats(){
+  const del=Number(document.getElementById("deletePacCount").textContent);
+  const dup=Number(document.getElementById("duplicateDeleteIdCount").textContent);
+  const live=Number(document.getElementById("livePacCount").textContent);
+  let score=0;
+  if(del>100)score+=20;if(del>400)score+=20;
+  if(dup>10)score+=20;if(dup>40)score+=20;
+  if(live>500)score+=15;if(live>1500)score+=25;
+  if(score>100)score=100;
+  document.getElementById("threatLevel").textContent=score+"%";
+  document.getElementById("chipThreat").textContent=score+"%";
+  const note=document.getElementById("threatNote");
+  const card=document.querySelector(".m-card.threat");
+  if(score<30){note.textContent="Safe — System stable.";if(card)card.style.setProperty("--card-line","linear-gradient(90deg,var(--green),var(--neon))");}
+  else if(score<60){note.textContent="Warning — Monitor activity.";}
+  else if(score<80){note.textContent="Danger — Unusual patterns detected.";}
+  else{note.textContent="CRITICAL — Immediate action required!";}
+}
+setInterval(analyzeThreats,2000);
+
+/* ── PAC AMOUNT SAVE ── */
+document.getElementById("savePacAmountBtn").onclick=async()=>{
+  const newAmt=Number(document.getElementById("newPacAmountInput").value);
+  const oldAmt=Number(document.getElementById("uclPacAmount").textContent);
+  if(!newAmt||newAmt<=0){alert("Enter a valid amount!");return;}
+  if(!confirm(`Update PAC Amount to ₹${newAmt} for ALL UCL owners?`))return;
+  const start=performance.now();
+  const [aSnap,dSnap]=await Promise.all([getDocs(collection(db,"ucl_owners")),getDocs(collection(db,"ucl_owners_deactive"))]);
+  await Promise.all([
+    ...aSnap.docs.map(d=>updateDoc(doc(db,"ucl_owners",d.id),{pacAmount:newAmt,updatedAt:Date.now()})),
+    ...dSnap.docs.map(d=>updateDoc(doc(db,"ucl_owners_deactive",d.id),{pacAmount:newAmt,updatedAt:Date.now()}))
+  ]);
+  await logAdminAction({action:"UPDATE_PAC_AMOUNT",module:"UCL",targetId:"ALL",description:"Updated PAC amount for all UCL owners",before:{pacAmount:oldAmt},after:{pacAmount:newAmt},severity:"CRITICAL",durationMs:Math.round(performance.now()-start)});
+  document.getElementById("pacAmountModal").classList.remove("show");
+  showAlert("PAC Amount updated — Active: "+aSnap.size+", Deactive: "+dSnap.size,"success");
+};
+
+/* ── UCL TABLE ── */
+window.loadUclTable=async function(){
+  const body=document.getElementById("uclTableBody");
+  body.innerHTML="";
+  const aSnap=await getDocs(collection(db,"ucl_owners"));
+  const dSnap=await getDocs(collection(db,"ucl_owners_deactive"));
+  aSnap.forEach(d=>renderUclRow(d.id,d.data(),true));
+  dSnap.forEach(d=>renderUclRow(d.id,d.data(),false));
+};
+
+function renderUclRow(id,d,isActive){
+  const body=document.getElementById("uclTableBody");
+  const cnt=pacCountMap[d.uclId]||0;
+  body.innerHTML+=`<tr>
+    <td>${d.uclId||"-"}</td><td>${d.name||"-"}</td><td>₹${d.pacAmount??"-"}</td>
+    <td style="color:var(--neon);font-weight:600">${cnt}</td>
+    <td>${d.ip||"-"}</td><td>${d.address||"-"}</td>
+    <td>${d.lastVerifiedAt?new Date(d.lastVerifiedAt).toLocaleString():"-"}</td>
+    <td><span class="badge ${isActive?"active":"inactive"}"><span class="badge-dot"></span>${isActive?"ACTIVE":"DEACTIVE"}</span></td>
+    <td><div class="btn-row">
+      <button class="btn-sm edit" onclick="openUclEditor('${id}')"><i class="fa-solid fa-pen"></i></button>
+      ${isActive
+        ?`<button class="btn-sm deact" onclick="toggleUclStatus('${id}',true)"><i class="fa-solid fa-user-slash"></i></button>`
+        :`<button class="btn-sm act"  onclick="toggleUclStatus('${id}',false)"><i class="fa-solid fa-user-check"></i></button>`
+      }
+    </div></td>
+  </tr>`;
+}
+
+window.toggleUclStatus=async(docId,curr)=>{
+  if(!confirm(`${curr?"Deactivate":"Activate"} this UCL? All related PACs will be moved.`))return;
+  async function movePac(uclId,from,to,reason){
+    const q=query(collection(db,from),where("uclNo","==",uclId));
+    const s=await getDocs(q);
+    for(const d of s.docs){await setDoc(doc(db,to,d.id),{...d.data(),movedReason:reason,movedAt:Date.now()});await deleteDoc(d.ref);}
+    return s.size;
+  }
+  try{
+    if(curr){
+      const ref=doc(db,"ucl_owners",docId);const s=await getDoc(ref);if(!s.exists())return;
+      const d=s.data();const moved=await movePac(d.uclId,"pac_entries","inactive_pac_entries","UCL_DEACTIVATED");
+      await setDoc(doc(db,"ucl_owners_deactive",docId),{...d,deactivatedAt:Date.now()});await deleteDoc(ref);
+      showAlert(`UCL deactivated. PACs moved: ${moved}`,"warn");
+    }else{
+      const ref=doc(db,"ucl_owners_deactive",docId);const s=await getDoc(ref);if(!s.exists())return;
+      const d=s.data();const restored=await movePac(d.uclId,"inactive_pac_entries","pac_entries","UCL_REACTIVATED");
+      await setDoc(doc(db,"ucl_owners",docId),{...d,restoredAt:Date.now()});await deleteDoc(ref);
+      showAlert(`UCL activated. PACs restored: ${restored}`,"success");
+    }
+    await loadUclTable();
+  }catch(e){console.error(e);showAlert("Operation failed","error");}
+};
+
+let currentUclDocId=null;
+window.openUclEditor=async id=>{
+  currentUclDocId=id;
+  const s=await getDoc(doc(db,"ucl_owners",id));
+  if(!s.exists()){showAlert("UCL not found","error");return;}
+  const d=s.data();
+  document.getElementById("editUclName").value=d.name||"";
+  document.getElementById("editUclAmount").value=d.pacAmount||0;
+  document.getElementById("editUclIp").value=d.ip||"";
+  document.getElementById("editUclAddress").value=d.address||"";
+  document.getElementById("uclEditModal").classList.add("show");
+};
+document.getElementById("saveUclEditBtn").onclick=async()=>{
+  if(!currentUclDocId)return;
+  await updateDoc(doc(db,"ucl_owners",currentUclDocId),{
+    name:document.getElementById("editUclName").value.trim(),
+    pacAmount:Number(document.getElementById("editUclAmount").value),
+    ip:document.getElementById("editUclIp").value.trim(),
+    address:document.getElementById("editUclAddress").value.trim(),
+    lastVerifiedAt:Date.now()
+  });
+  document.getElementById("uclEditModal").classList.remove("show");
+  showAlert("UCL updated successfully","success");
+};
+
+/* ── UCL REQUESTS ── */
+onSnapshot(collection(db,"ucl_requests"),snap=>{
+  uclRequestsData=snap.docs.map(d=>({id:d.id,...d.data()}));
+  document.getElementById("uclRequestCount").textContent=snap.size;
+});
+
+window.renderUclRequestTable=function(){
+  const html=`<div class="modal-table-wrap"><table class="modal-table">
+    <thead><tr><th>Request ID</th><th>Name</th><th>Phone</th><th>District</th><th>Village</th><th>Pin</th><th>UCL ID</th><th>Status</th><th>IP</th><th>Created</th><th>Actions</th></tr></thead>
+    <tbody>${uclRequestsData.map(r=>`<tr>
+      <td>${r.requestId||r.id}</td><td>${r.name||"—"}</td><td>${r.phone||"—"}</td>
+      <td>${r.district||"—"}</td><td>${r.village||"—"}</td><td>${r.pinCode||"—"}</td>
+      <td>${r.uclId||"—"}</td>
+      <td><span class="badge ${r.status==="suspended"?"inactive":r.status==="accepted"?"active":"pending"}"><span class="badge-dot"></span>${r.status||"pending"}</span></td>
+      <td>${r.ip||"—"}</td><td>${fmtDate(r.createdAt)}</td>
+      <td><div class="btn-row">
+        <button class="btn-sm act" onclick="acceptUclRequest('${r.id}')"><i class="fa-solid fa-check"></i></button>
+        <button class="btn-sm sus" onclick="suspendUclRequest('${r.id}')"><i class="fa-solid fa-pause"></i></button>
+        <button class="btn-sm del" onclick="deleteUclRequest('${r.id}')"><i class="fa-solid fa-trash"></i></button>
+      </div></td>
+    </tr>`).join("")}</tbody>
+  </table></div>`;
+  document.getElementById("uclRequestTable").innerHTML=html;
+};
+
+window.acceptUclRequest=async id=>{
+  const s=await getDoc(doc(db,"ucl_requests",id));if(!s.exists())return;
+  const r=s.data();
+  const fullAddr=`${r.landmark||""}, ${r.village||""}, ${r.postOffice||""}, ${r.district||""}, ${r.state||""} - ${r.pinCode||""}`;
+  await setDoc(doc(db,"ucl_owners",r.uclId),{uclId:r.uclId,name:r.name,phone:r.phone,landmark:r.landmark||"",village:r.village||"",postOffice:r.postOffice||"",district:r.district||"",state:r.state||"",pinCode:r.pinCode||"",address:fullAddr,ip:r.ip||"",createdAt:Date.now(),lastVerifiedAt:Date.now(),editedBy:"system-auto",pacAmount:r.pacAmount||75,requestData:r},{merge:true});
+  await deleteDoc(doc(db,"ucl_requests",id));
+  showAlert("UCL Request accepted!","success");
+};
+window.suspendUclRequest=async id=>{await updateDoc(doc(db,"ucl_requests",id),{status:"suspended",suspendedAt:Date.now()});showAlert("Request suspended","warn");};
+window.deleteUclRequest=async id=>{await deleteDoc(doc(db,"ucl_requests",id));showAlert("Request deleted","error");};
+
+/* ── PAC NAV ── */
+window.openPacNavList=()=>document.getElementById("pacNavListModal").classList.add("show");
+window.closePacNavList=()=>document.getElementById("pacNavListModal").classList.remove("show");
+window.closePacNavModal=()=>document.getElementById("pacNavModal").classList.remove("show");
+window.savePacNav=async()=>{
+  const title=navTitle.value.trim(),url=navUrl.value.trim(),icon=navIcon.value.trim(),order=Number(navOrder.value);
+  const roles=Array.from(document.querySelectorAll(".nav-role-add:checked")).map(c=>c.value);
+  if(!title||!url||!icon||!order){showAlert("All fields required","error");return;}
+  if(!roles.length){showAlert("Select at least one role","error");return;}
+  await addDoc(collection(db,"pacnav"),{title,url,icon,order,roles,active:true,createdAt:Date.now()});
+  showAlert("Navigation added!","success");
+  [navTitle,navUrl,navIcon,navOrder].forEach(el=>el.value="");
+  document.querySelectorAll(".nav-role-add").forEach(c=>c.checked=false);
+  closePacNavModal();
+};
+
+onSnapshot(query(collection(db,"pacnav"),orderBy("order","asc")),snap=>{
+  const body=document.getElementById("pacNavTableBody");
+  body.innerHTML="";
+  snap.forEach(d=>{
+    const v=d.data(),id=d.id,active=v.active!==false;
+    body.innerHTML+=`<tr>
+      <td>${v.order??"-"}</td><td>${v.title||"-"}</td><td>${v.url||"-"}</td>
+      <td><i class="${v.icon||"fa-solid fa-circle"}"></i></td>
+      <td>${(v.roles||[]).join(", ")||"-"}</td>
+      <td><span class="badge ${active?"active":"inactive"}"><span class="badge-dot"></span>${active?"ACTIVE":"INACTIVE"}</span></td>
+      <td><div class="btn-row">
+        <button class="btn-sm edit" onclick="openEditPacNav('${id}')"><i class="fa-solid fa-pen"></i></button>
+        ${active
+          ?`<button class="btn-sm deact" onclick="togglePacNav('${id}',true,this)"><i class="fa-solid fa-eye-slash"></i></button>`
+          :`<button class="btn-sm act"   onclick="togglePacNav('${id}',false,this)"><i class="fa-solid fa-eye"></i></button>`
+        }
+        <button class="btn-sm sus" onclick="archivePacNav('${id}',this)"><i class="fa-solid fa-box-archive"></i></button>
+      </div></td>
+    </tr>`;
+  });
+});
+
+window.togglePacNav=async(id,curr,btn)=>{
+  if(!confirm(`${curr?"Deactivate":"Activate"} this nav item?`))return;
+  btn.disabled=true;
+  await updateDoc(doc(db,"pacnav",id),{active:!curr,updatedAt:Date.now()});
+  showAlert(`Nav item ${curr?"deactivated":"activated"}`,"success");
+  btn.disabled=false;
+};
+window.archivePacNav=async(id,btn)=>{
+  if(!confirm("Archive this nav item?"))return;
+  btn.disabled=true;
+  await updateDoc(doc(db,"pacnav",id),{active:false,archived:true,archivedAt:Date.now()});
+  showAlert("Nav item archived","warn");
+  btn.disabled=false;
+};
+
+window.openEditPacNav=async id=>{
+  currentPacNavEditId=id;
+  const s=await getDoc(doc(db,"pacnav",id));if(!s.exists())return;
+  const v=s.data();
+  editNavTitle.value=v.title||"";editNavUrl.value=v.url||"";editNavIcon.value=v.icon||"";
+  editNavOrder.value=v.order??0;editNavActive.value=String(v.active!==false);
+  document.querySelectorAll(".nav-role-edit").forEach(c=>c.checked=(v.roles||[]).includes(c.value));
+  document.getElementById("pacNavEditModal").classList.add("show");
+};
+window.closeEditPacNav=()=>{document.getElementById("pacNavEditModal").classList.remove("show");currentPacNavEditId=null;};
+window.saveEditPacNav=async()=>{
+  if(!currentPacNavEditId)return;
+  const roles=Array.from(document.querySelectorAll(".nav-role-edit:checked")).map(c=>c.value);
+  await updateDoc(doc(db,"pacnav",currentPacNavEditId),{
+    title:editNavTitle.value.trim(),url:editNavUrl.value.trim(),icon:editNavIcon.value.trim(),
+    order:Number(editNavOrder.value),roles,active:editNavActive.value==="true",updatedAt:Date.now()
+  });
+  showAlert("Navigation updated","success");closeEditPacNav();
+};
+
+/* ── AUDIT LOGS ── */
+window.openAuditLogs=()=>{
+  document.getElementById("auditLogModal").classList.add("show");
+  onSnapshot(query(collection(db,"admin_logs"),orderBy("createdAt","desc"),limit(200)),snap=>{
+    const body=document.getElementById("auditLogBody");body.innerHTML="";
+    snap.forEach(d=>{
+      const v=d.data();const sCol=v.severity==="CRITICAL"?"var(--rose)":v.severity==="HIGH"?"var(--amber)":v.severity==="MEDIUM"?"#ffee55":"var(--green)";
+      body.innerHTML+=`<tr><td>${v.createdAt?.toDate().toLocaleString()||"-"}</td><td><b>${v.action}</b></td><td>${v.module}</td><td class="mono">${v.targetId}</td><td style="color:${sCol}">${v.severity}</td><td>${v.status||"SUCCESS"}</td><td class="mono">${v.ip||"-"}</td><td class="mono">${v.page||"-"}</td></tr>`;
+    });
+  });
+};
+window.closeAuditLogs=()=>document.getElementById("auditLogModal").classList.remove("show");
+
+/* ── STUDENT INSIGHTS ── */
+window.openStudentInsights=async()=>{
+  document.getElementById("studentInsightsModal").classList.add("show");
+  const snap=await getDocs(collection(db,"StudentsDetails"));
+  let campMap={},latestDate=null;
+  snap.forEach(d=>{const v=d.data();const camp=v.campus||"Unknown";campMap[camp]=(campMap[camp]||0)+1;if(v.createdAt){const dt=new Date(v.createdAt);if(!latestDate||dt>latestDate)latestDate=dt;}});
+  const total=snap.size;
+  let html=`<div class="insight-grid">
+    <div class="insight-card"><h4>Total Campuses</h4><div class="iv">${Object.keys(campMap).length}</div></div>
+    <div class="insight-card"><h4>Total Students</h4><div class="iv">${total}</div></div>
+    <div class="insight-card"><h4>Last Added</h4><div class="iv" style="font-size:18px;">${latestDate?latestDate.toLocaleDateString():"—"}</div></div>
+  </div><div class="sec-label" style="margin:20px 0 12px;"><i class="fa-solid fa-chart-bar"></i> Campus Distribution</div>`;
+  Object.entries(campMap).forEach(([camp,cnt])=>{const pct=((cnt/total)*100).toFixed(1);html+=`<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-family:'Fira Code',monospace;font-size:11px;color:var(--sub);margin-bottom:5px;"><span>${camp}</span><span>${cnt} (${pct}%)</span></div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;});
+  document.getElementById("studentInsightsContent").innerHTML=html;
+};
+window.closeStudentInsights=()=>document.getElementById("studentInsightsModal").classList.remove("show");
+window.closeStudentModal=()=>document.getElementById("studentModal").classList.remove("show");
+window.closeStudentView=()=>document.getElementById("studentViewModal").classList.remove("show");
+
+/* ── QUERY PANEL ── */
+window.openQueryPanel=()=>document.getElementById("queryPanel").classList.add("show");
+window.closeQueryPanel=()=>document.getElementById("queryPanel").classList.remove("show");
+window.closeQueryResult=()=>document.getElementById("queryResultModal").classList.remove("show");
+
+/* ── LAST DELETE MODAL ── */
+window.openLastDeleteModal=()=>document.getElementById("lastDeleteModal").classList.add("show");
+window.closeLastDeleteModal=()=>document.getElementById("lastDeleteModal").classList.remove("show");
+window.closeLastCopyModal=()=>document.getElementById("lastCopyModal").classList.remove("show");
+window.closeTempLinksModal=()=>{
+  const m=document.getElementById('tempLinksModal');
+  if(m){ m.classList.remove('show'); m.style.display='none'; }
+};
+window.closePacAmountEditor=()=>document.getElementById("pacEditModal").classList.remove("show");
+
+/* ── MISC ── */
+function fmtDate(d){
+  if(!d)return"—";let dt;
+  if(typeof d==="number")dt=new Date(d);
+  else if(typeof d==="string"&&d.includes("T"))dt=new Date(d);
+  else return String(d);
+  return dt.toLocaleString();
+}
+
+/* ── ALERT SYSTEM ── */
+window.showAlert=(msg,type="info")=>{
+  const div=document.createElement("div");
+  div.className=`alert ${type}`;
+  div.innerHTML=`${msg}<button class="close" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById("globalAlerts").appendChild(div);
+  setTimeout(()=>div.remove(),4000);
+};
+
+document.addEventListener("DOMContentLoaded",()=>initLastDeletedPac());
+
+/* ── CLOCK ── */
+function tick(){
+  const el=document.getElementById("live-time");if(!el)return;
+  const n=new Date();const d=String(n.getDate()).padStart(2,"0"),m=String(n.getMonth()+1).padStart(2,"0"),y=n.getFullYear();
+  let h=n.getHours();const mn=String(n.getMinutes()).padStart(2,"0"),s=String(n.getSeconds()).padStart(2,"0");
+  const ap=h>=12?"PM":"AM";h=h%12||12;
+  el.textContent=`${d}-${m}-${y} ${String(h).padStart(2,"0")}:${mn}:${s} ${ap}`;
+}
+setInterval(tick,1000);tick();
+</script>
+
+<script>
+function toggleNav(){
+  const mob=document.getElementById('mob-nav'),hb=document.getElementById('hamburger');
+  const open=mob.classList.toggle('open');hb.classList.toggle('open',open);
+}
+document.querySelectorAll('.pac-modal').forEach(m=>{
+  m.addEventListener('click',e=>{
+    if(e.target===m){
+      m.classList.remove('show');
+      m.style.display='none';
+    }
+  });
+});
+
+/* ══════════════════════════════════════
+   ANIMATED COUNTER
+══════════════════════════════════════ */
+function animateCounter(el, target, suffix='', duration=1600){
+  if(!el) return;
+  const start = 0;
+  const t0 = performance.now();
+  function step(now){
+    const p = Math.min((now - t0) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 4);
+    el.textContent = Math.floor(ease * target) + suffix;
+    if(p < 1) requestAnimationFrame(step);
+    else el.textContent = target + suffix;
+  }
+  requestAnimationFrame(step);
+}
+
+// Observe metric cards for entrance animation
+const mio = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if(!en.isIntersecting) return;
+    const val = en.target.querySelector('.m-val');
+    if(!val || val.dataset.animated) return;
+    const raw = parseInt(val.textContent.replace(/[^0-9]/g,'')) || 0;
+    if(raw > 0){ val.dataset.animated = '1'; animateCounter(val, raw); }
+  });
+}, {threshold: 0.3});
+document.querySelectorAll('.m-card').forEach(c => mio.observe(c));
+
+// Re-animate when value updates
+const origSet = Object.getOwnPropertyDescriptor(Element.prototype,'textContent').set;
+['livePacCount','usedPacCount','deletePacCount','duplicateDeleteIdCount',
+ 'userAccountCount','uclRequestCount','tempLinkCount','studentCount']
+.forEach(id => {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const obs = new MutationObserver(()=>{
+    const v = parseInt(el.textContent)||0;
+    if(v > 0) animateCounter(el, v);
+    // sync fullscreen if open
+    if(document.getElementById('fullscreenOverlay').classList.contains('show')){
+      const fsId = document.getElementById('fsCard').dataset.srcId;
+      if(fsId === id) document.getElementById('fsVal').textContent = el.textContent;
+    }
+  });
+  obs.observe(el, {childList:true,characterData:true,subtree:true});
+});
+
+/* ══════════════════════════════════════
+   FULLSCREEN CARD
+══════════════════════════════════════ */
+window.openFullscreen = (srcId, lbl, note, line, colorClass) => {
+  const src = document.getElementById(srcId);
+  const overlay = document.getElementById('fullscreenOverlay');
+  const card    = document.getElementById('fsCard');
+  const fsVal   = document.getElementById('fsVal');
+  const fsLbl   = document.getElementById('fsLbl');
+  const fsNote  = document.getElementById('fsNote');
+  card.dataset.srcId = srcId;
+  card.style.setProperty('--fs-line', line);
+  fsVal.textContent = src ? src.textContent : '—';
+  fsVal.className = 'fs-val ' + (colorClass||'');
+  // apply color
+  const colors = {danger:'#ff6b8e',warn:'#ffd60a',ok:'#06ffa5',violet:'#a78bfa'};
+  fsVal.style.color = colors[colorClass] || '#e4f0ff';
+  fsVal.style.textShadow = colorClass === 'danger' ? '0 0 40px rgba(255,45,120,0.6)' :
+    colorClass === 'ok' ? '0 0 40px rgba(6,255,165,0.6)' :
+    colorClass === 'warn' ? '0 0 40px rgba(255,214,10,0.6)' :
+    colorClass === 'violet' ? '0 0 40px rgba(139,92,246,0.6)' :
+    '0 0 40px rgba(0,240,255,0.5)';
+  fsLbl.textContent = lbl;
+  fsNote.textContent = note;
+  overlay.classList.add('show');
+};
+window.closeFullscreen = () => {
+  document.getElementById('fullscreenOverlay').classList.remove('show');
+};
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeFullscreen();
+});
+
+/* ══════════════════════════════════════
+   NOTIFICATION SYSTEM
+══════════════════════════════════════ */
+let notifications = [];
+let notifOpen = false;
+
+window.toggleNotifDropdown = () => {
+  const dd = document.getElementById('notifDropdown');
+  notifOpen = !notifOpen;
+  dd.classList.toggle('open', notifOpen);
+  if(notifOpen){
+    // mark all read
+    notifications.forEach(n => n.read = true);
+    renderNotifs();
+  }
+};
+
+window.clearNotifs = (e) => {
+  e.stopPropagation();
+  notifications = [];
+  renderNotifs();
+  document.getElementById('notifBell').classList.remove('has-notif');
+};
+
+function addNotif(type, msg){
+  const n = {id: Date.now(), type, msg, time: new Date(), read: false};
+  notifications.unshift(n);
+  if(notifications.length > 30) notifications.pop();
+  renderNotifs();
+  // bell animation
+  const bell = document.getElementById('notifBell');
+  const icon = document.getElementById('bellIcon');
+  bell.classList.add('has-notif');
+  document.getElementById('notifCount').textContent = notifications.filter(x=>!x.read).length;
+  icon.classList.remove('nb-ring');
+  void icon.offsetWidth;
+  icon.classList.add('nb-ring');
+  // also log to terminal
+  termLog(msg, type === 'threat' ? 'error' : type === 'dup' ? 'warn' : 'info');
+}
+
+function renderNotifs(){
+  const list = document.getElementById('notifList');
+  const unread = notifications.filter(n => !n.read).length;
+  document.getElementById('notifCount').textContent = unread;
+  if(!notifications.length){
+    list.innerHTML = '<div class="nd-empty">No notifications yet</div>';
+    return;
+  }
+  const icoMap = {pac:'fa-file-invoice pac',ucl:'fa-users ucl',threat:'fa-triangle-exclamation threat',dup:'fa-clone dup'};
+  list.innerHTML = notifications.map(n => `
+    <div class="nd-item ${n.read?'':'unread'}">
+      <div class="nd-ico ${n.type}"><i class="fa-solid ${(icoMap[n.type]||'fa-bell pac').split(' ')[0]}"></i></div>
+      <div class="nd-body">
+        <div class="nd-msg">${n.msg}</div>
+        <div class="nd-time">${n.time.toLocaleTimeString()}</div>
+      </div>
+    </div>`).join('');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  if(notifOpen && !e.target.closest('#notifBell')){
+    notifOpen = false;
+    document.getElementById('notifDropdown').classList.remove('open');
+  }
+});
+
+// Watch for changes and trigger notifications
+let _prevPac=0, _prevUcl=0, _prevDup=0, _prevReq=0;
+setInterval(()=>{
+  const pac = parseInt(document.getElementById('livePacCount')?.textContent)||0;
+  const ucl = parseInt(document.getElementById('userAccountCount')?.textContent)||0;
+  const dup = parseInt(document.getElementById('duplicateDeleteIdCount')?.textContent)||0;
+  const req = parseInt(document.getElementById('uclRequestCount')?.textContent)||0;
+  if(_prevPac && pac > _prevPac) addNotif('pac', `<b>+${pac-_prevPac}</b> new PAC ${pac-_prevPac===1?'entry':'entries'} added`);
+  if(_prevUcl && ucl > _prevUcl) addNotif('ucl', `<b>${ucl-_prevUcl}</b> new UCL account registered`);
+  if(_prevDup && dup > _prevDup) addNotif('dup', `<b>+${dup-_prevDup}</b> duplicate Delete IDs detected`);
+  if(_prevReq && req > _prevReq) addNotif('ucl', `<b>${req-_prevReq}</b> new UCL ID request pending`);
+  if(dup > 20) addNotif('threat', `Threat: <b>${dup}</b> duplicate IDs — action needed`);
+  _prevPac=pac; _prevUcl=ucl; _prevDup=dup; _prevReq=req;
+}, 5000);
+
+/* ══════════════════════════════════════
+   LIVE TERMINAL
+══════════════════════════════════════ */
+let termPaused = false;
+let termLines = 0;
+const MAX_TERM_LINES = 80;
+
+function termLog(msg, level='info'){
+  if(termPaused) return;
+  const body = document.getElementById('termBody');
+  if(!body) return;
+  termLines++;
+  if(termLines > MAX_TERM_LINES){
+    body.removeChild(body.firstChild);
+  }
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  const line = document.createElement('div');
+  line.className = 't-log';
+  line.innerHTML = `<span class="t-ts">[${ts}]</span><span class="t-level ${level}">${level.toUpperCase()}</span><span class="t-msg">${msg}</span>`;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+}
+
+window.clearTerminal = () => {
+  document.getElementById('termBody').innerHTML = '';
+  termLines = 0;
+  termLog('Terminal cleared', 'info');
+};
+
+window.toggleTerminalPause = () => {
+  termPaused = !termPaused;
+  const btn = document.getElementById('termPauseBtn');
+  btn.innerHTML = termPaused
+    ? '<i class="fa-solid fa-play"></i> Resume'
+    : '<i class="fa-solid fa-pause"></i> Pause';
+  termLog(termPaused ? 'Log paused' : 'Log resumed', 'info');
+};
+
+// Boot messages
+setTimeout(()=>termLog('PAC Database Monitor initialized','ok'),300);
+setTimeout(()=>termLog('Firestore listeners attached — real-time sync active','ok'),800);
+setTimeout(()=>termLog('Connecting to collections: pac_entries, ucl_owners, pacnav…','info'),1400);
+setTimeout(()=>termLog('All systems operational','ok'),2000);
+
+/* ══════════════════════════════════════
+   SEARCH SYSTEM
+══════════════════════════════════════ */
+let searchTimeout;
+window.handleSearch = (val) => {
+  const clear = document.getElementById('searchClear');
+  const results = document.getElementById('searchResults');
+  clear.style.display = val ? 'block' : 'none';
+  clearTimeout(searchTimeout);
+  if(!val.trim()){ results.classList.remove('open'); return; }
+  searchTimeout = setTimeout(() => doSearch(val.trim()), 300);
+};
+
+window.clearSearch = () => {
+  document.getElementById('globalSearch').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  document.getElementById('searchResults').classList.remove('open');
+};
+
+async function doSearch(q){
+  const results = document.getElementById('searchResults');
+  results.innerHTML = '<div class="sr-item"><span class="sr-text" style="color:var(--dim)">Searching…</span></div>';
+  results.classList.add('open');
+  const db = window.__searchDb;
+  if(!db){ results.innerHTML='<div class="sr-item"><span class="sr-text" style="color:var(--dim)">DB not ready</span></div>'; return; }
+  try {
+    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js');
+    let found = [];
+    // search pac_entries
+    const pacSnap = await getDocs(collection(db,'pac_entries'));
+    pacSnap.forEach(d => {
+      const v = d.data();
+      const haystack = [v.pacNo,v.cscRef,v.uclOwnerName,v.uclNo,v.deleteId].join(' ').toLowerCase();
+      if(haystack.includes(q.toLowerCase())) found.push({type:'pac',id:d.id,main:v.pacNo||d.id,sub:v.uclOwnerName||'—',data:v});
+    });
+    // search ucl_owners
+    const uclSnap = await getDocs(collection(db,'ucl_owners'));
+    uclSnap.forEach(d => {
+      const v = d.data();
+      const haystack = [v.uclId,v.name,v.address,v.ip].join(' ').toLowerCase();
+      if(haystack.includes(q.toLowerCase())) found.push({type:'ucl',id:d.id,main:v.name||d.id,sub:v.uclId||'—',data:v});
+    });
+    if(!found.length){
+      results.innerHTML='<div class="sr-item"><span class="sr-text" style="color:var(--dim)">No results found for &quot;<b style="color:var(--txt)">'+q+'</b>&quot;</span></div>';
+      return;
+    }
+    results.innerHTML = found.slice(0,12).map(r => `
+      <div class="sr-item" onclick="showSearchDetail('${r.id}','${r.type}')">
+        <span class="sr-type ${r.type}">${r.type.toUpperCase()}</span>
+        <div>
+          <div class="sr-text">${r.main}</div>
+          <div class="sr-sub">${r.sub}</div>
+        </div>
+      </div>`).join('');
+    termLog(`Search: "${q}" → ${found.length} result(s)`, 'info');
+  } catch(e){ console.error(e); }
+}
+
+window.showSearchDetail = async (id, type) => {
+  clearSearch();
+  window.openQueryPanel();
+  document.getElementById('queryType').value = type === 'ucl' ? 'ucl' : 'pac';
+  document.getElementById('queryValue').value = id;
+  window.runQuery && window.runQuery();
+};
+
+/* ══════════════════════════════════════
+   EXPORT SYSTEM
+══════════════════════════════════════ */
+function setExportStatus(msg, ok=true){
+  const el = document.getElementById('exportStatus');
+  el.textContent = msg;
+  el.style.color = ok ? 'var(--green)' : 'var(--rose)';
+  setTimeout(()=>el.textContent='', 3000);
+}
+
+window.exportCSV = async () => {
+  const db = window.__searchDb;
+  if(!db){ setExportStatus('DB not ready',false); return; }
+  try {
+    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js');
+    const snap = await getDocs(collection(db,'pac_entries'));
+    const rows = [];
+    const headers = ['PAC No','UCL Owner','UCL No','CSC Ref','Amount','Date','Time','IP','Purpose','Delete ID'];
+    rows.push(headers.join(','));
+    snap.forEach(d => {
+      const v = d.data();
+      rows.push([v.pacNo,v.uclOwnerName,v.uclNo,v.cscRef,v.amount,v.entryDate,v.entryTime,v.savedFromIp||v.copyIP,v.purpose,v.deleteId].map(x=>`"${(x||'').toString().replace(/"/g,'""')}"`).join(','));
+    });
+    const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `pac-entries-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    setExportStatus(`✓ Exported ${snap.size} records`);
+    termLog(`CSV export: ${snap.size} PAC entries downloaded`, 'ok');
+    addNotif('pac', `CSV exported — <b>${snap.size}</b> records`);
+  } catch(e){ setExportStatus('Export failed',false); console.error(e); }
+};
+
+window.exportJSON = async () => {
+  const db = window.__searchDb;
+  if(!db){ setExportStatus('DB not ready',false); return; }
+  try {
+    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js');
+    const snap = await getDocs(collection(db,'pac_entries'));
+    const data = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `pac-data-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    setExportStatus(`✓ Exported ${snap.size} records`);
+    termLog(`JSON export: ${snap.size} entries`, 'ok');
+  } catch(e){ setExportStatus('Export failed',false); }
+};
+
+window.exportPDF = () => {
+  termLog('Opening print dialog…','info');
+  setExportStatus('Opening print…');
+  window.print();
+};
+
+/* ══════════════════════════════════════
+   CHARTS (Chart.js)
+══════════════════════════════════════ */
+function initCharts(){
+  if(typeof Chart === 'undefined') return;
+  Chart.defaults.color = 'rgba(180,210,250,0.55)';
+  Chart.defaults.font.family = "'Fira Code', monospace";
+  Chart.defaults.font.size = 11;
+
+  // PAC Trend — bar chart (last 7 simulated days, updated with live count)
+  const trendCtx = document.getElementById('pacTrendChart');
+  if(trendCtx){
+    const days = [];
+    for(let i=6;i>=0;i--){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      days.push(d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
+    }
+    window._trendChart = new Chart(trendCtx, {
+      type:'bar',
+      data:{
+        labels: days,
+        datasets:[{
+          label:'PAC Entries',
+          data:[0,0,0,0,0,0,0],
+          backgroundColor: days.map((_,i)=>i<6?'rgba(0,240,255,0.15)':'rgba(0,240,255,0.5)'),
+          borderColor: days.map((_,i)=>i<6?'rgba(0,240,255,0.4)':'rgba(0,240,255,0.9)'),
+          borderWidth:1,
+          borderRadius:6,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{
+          backgroundColor:'rgba(2,8,30,0.95)',
+          borderColor:'rgba(0,240,255,0.2)',borderWidth:1,
+          titleColor:'#e4f0ff',bodyColor:'rgba(0,240,255,0.8)',
+        }},
+        scales:{
+          x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(180,210,250,0.5)'}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(180,210,250,0.5)'}}
+        }
+      }
+    });
+  }
+
+  // Collection sizes doughnut
+  const colCtx = document.getElementById('collectionChart');
+  if(colCtx){
+    window._colChart = new Chart(colCtx, {
+      type:'doughnut',
+      data:{
+        labels:['PAC Entries','Used PAC','Deleted PAC','UCL Owners','Students'],
+        datasets:[{
+          data:[0,0,0,0,0],
+          backgroundColor:[
+            'rgba(0,240,255,0.7)','rgba(139,92,246,0.7)',
+            'rgba(255,45,120,0.7)','rgba(6,255,165,0.7)',
+            'rgba(26,107,255,0.7)'
+          ],
+          borderColor:'rgba(2,6,20,0.8)',
+          borderWidth:2,
+          hoverOffset:6,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        cutout:'68%',
+        plugins:{
+          legend:{position:'right',labels:{boxWidth:10,padding:14,color:'rgba(180,210,250,0.6)'}},
+          tooltip:{backgroundColor:'rgba(2,8,30,0.95)',borderColor:'rgba(0,240,255,0.2)',borderWidth:1,titleColor:'#e4f0ff',bodyColor:'rgba(0,240,255,0.8)'}
+        }
+      }
+    });
+  }
+}
+
+// Update charts when counts change
+function updateCharts(){
+  const pac  = parseInt(document.getElementById('livePacCount')?.textContent)||0;
+  const used = parseInt(document.getElementById('usedPacCount')?.textContent)||0;
+  const del  = parseInt(document.getElementById('deletePacCount')?.textContent)||0;
+  const ucl  = parseInt(document.getElementById('userAccountCount')?.textContent)||0;
+  const stu  = parseInt(document.getElementById('studentCount')?.textContent)||0;
+
+  if(window._colChart){
+    window._colChart.data.datasets[0].data = [pac,used,del,ucl,stu];
+    window._colChart.update('none');
+  }
+  if(window._trendChart){
+    // set today's bar to live count
+    const d = window._trendChart.data.datasets[0].data;
+    d[6] = pac;
+    window._trendChart.update('none');
+  }
+}
+
+setInterval(updateCharts, 3000);
+
+// Init charts after a short delay
+setTimeout(initCharts, 600);
+</script>
+</body>
+</html>
