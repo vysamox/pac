@@ -389,8 +389,29 @@ canvas#bg-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:no
 @keyframes etag{0%{transform:translateY(0)}100%{transform:translateY(-10px)}}
 .et-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);margin-right:5px;vertical-align:middle;animation:pulse 2s ease-in-out infinite;}
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ MOBILE */
+/* ━━━━━━ MOBILE BRAND (card top, replaces card-head on mobile) ━━━━━━ */
+.mob-brand{display:none;}
 @media(max-width:900px){
+  .mob-brand{
+    display:flex;align-items:center;gap:12px;
+    padding:14px 0 16px;margin-bottom:4px;
+    border-bottom:1px solid rgba(0,240,255,0.08);
+  }
+  .mob-brand-icon{
+    width:36px;height:36px;border-radius:10px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:15px;
+    background:rgba(0,240,255,0.1);color:var(--neon);
+    border:1px solid rgba(0,240,255,0.2);
+  }
+  .mob-brand-text b{
+    display:block;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;color:var(--txt);
+  }
+  .mob-brand-text span{
+    display:block;font-family:'Fira Code',monospace;font-size:9px;letter-spacing:2px;color:var(--neon);opacity:.75;text-transform:uppercase;
+  }
+}
+@media(max-width:900px){
+  #earth-wrap{display:none !important;}
   #c-dot,#c-ring{display:none;}
   body{cursor:auto;}
   .fi,.btn-primary,.eye,.remember,.forgot,.otp-box,.otp-resend-btn,.otp-back{cursor:pointer;}
@@ -458,10 +479,7 @@ canvas#bg-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:no
     background:rgba(0,240,255,0.6);
   }
 
-  .card-head{margin-bottom:18px;}
-  .ci-wrap{width:54px;height:54px;margin-bottom:12px;}
-  .ci{width:42px;height:42px;font-size:17px;}
-  .card-title{font-size:22px;}
+  .card-head{display:none;}
   .ht{display:none;}
   .ver-bar{position:relative;border-radius:0;padding-bottom:env(safe-area-inset-bottom,0px);}
   .otp-box{width:44px;height:54px;font-size:24px;}
@@ -595,6 +613,11 @@ canvas#bg-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:no
     <div class="login-card" id="login-card">
       <!-- Pull handle (mobile only) — tap or swipe down to close -->
       <div class="pull-handle" id="pull-handle-login" title="Tap to close"></div>
+      <!-- Mobile compact brand — only visible on mobile -->
+      <div class="mob-brand">
+        <div class="mob-brand-icon"><i class="fa-solid fa-fingerprint"></i></div>
+        <div class="mob-brand-text"><b>PAC SYSTEM</b><span>Secure Access</span></div>
+      </div>
       <div class="cc"></div><div class="ccb"></div>
       <span class="ht ht-tl">SYS::AUTH</span>
       <span class="ht ht-tr" id="hud-time">--:--:--</span>
@@ -631,7 +654,7 @@ canvas#bg-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:no
         </div>
         <div class="form-row">
           <label class="remember"><input type="checkbox" id="rem"><div class="cb"><i class="fa-solid fa-check cbx"></i></div>Remember me</label>
-          <a href="#" class="forgot" id="fp-btn">Forgot password?</a>
+          <a href="Reset_Password.html" class="forgot" id="fp-btn">Change password?</a>
         </div>
         <button type="submit" class="btn-primary" id="btn-login">
           <span class="bt"><i class="fa-solid fa-right-to-bracket"></i>&nbsp; Sign In</span>
@@ -648,6 +671,11 @@ canvas#bg-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:no
       </div>
 
       <div class="pull-handle" id="pull-handle-otp" title="Tap to close"></div>
+      <!-- Mobile compact brand for OTP -->
+      <div class="mob-brand">
+        <div class="mob-brand-icon" style="background:rgba(0,136,204,0.12);color:#29b6f6;border-color:rgba(0,136,204,0.3);"><i class="fa-brands fa-telegram"></i></div>
+        <div class="mob-brand-text"><b>2FA VERIFY</b><span>OTP via Telegram</span></div>
+      </div>
       <div class="cc"></div><div class="ccb"></div>
       <span class="ht ht-tl">SYS::2FA</span>
       <span class="ht ht-tr" id="otp-hud-time">--:--:--</span>
@@ -776,7 +804,7 @@ window.__doRedirect=function(){
   document.getElementById('hud-status').style.color='rgba(6,255,165,0.75)';
   document.getElementById('otp-hud-status').textContent='● VERIFIED';
   document.getElementById('otp-hud-status').style.color='rgba(6,255,165,0.75)';
-  setTimeout(()=>{ window.location.href='dasboard.html'; },1800);
+  setTimeout(()=>{ window.location.href='index.html'; },1800);
 };
 
 document.getElementById('login-form').addEventListener('submit',async e=>{
@@ -794,18 +822,6 @@ document.getElementById('login-form').addEventListener('submit',async e=>{
     showErr(ERRS[err.code]||'Authentication failed. Please try again.');
     setLoading(false);
   }
-});
-
-document.getElementById('fp-btn').addEventListener('click',async e=>{
-  e.preventDefault();
-  const email=document.getElementById('email').value.trim();
-  if(!email){showErr('Enter your email above first, then click Forgot Password.');return;}
-  try{
-    await sendPasswordResetEmail(auth,email);
-    document.getElementById('a-ok-msg').textContent='Password reset email sent! Check your inbox.';
-    document.getElementById('a-ok').classList.add('show');
-    document.getElementById('a-err').classList.remove('show');
-  }catch(err){showErr('Could not send reset email. Check the address and try again.');}
 });
 
 const saved=localStorage.getItem('pac_email');
@@ -1023,51 +1039,15 @@ let _timerInt=null,_resendInt=null;
 
 function genOTP(){return String(Math.floor(100000+Math.random()*900000));}
 
-async function sendTelegramOTP(otp, userEmail){
-
-  const time = new Date().toLocaleTimeString('en-IN');
-
-  const msg = `
-🚀 *PAC MANAGEMENT SYSTEM*
-
-━━━━━━━━━━━━━━━━━━━━━━
-🔐 *SECURE OTP VERIFICATION*
-━━━━━━━━━━━━━━━━━━━━━━
-
-📟 *Your One-Time Password:*
-\`\`\`
-${otp}
-\`\`\`
-
-👤 *User:* \`${userEmail}\`
-
-━━━━━━━━━━━━━━━━━━━━━━
-⏰ *Valid:* 5 Minutes
-🕐 *Time:* ${time}
-🛡️ *Security:* Encrypted Channel
-━━━━━━━━━━━━━━━━━━━━━━
-
-⚠️ _Do NOT share this code with anyone._
-🤖 _System: PAC Auto-Auth Engine_
-`;
-
-  const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      chat_id: TG_CHAT_ID,
-      text: msg,
-      parse_mode: 'Markdown'
-    })
-  });
-
-  const data = await res.json();
-  if(!data.ok) throw new Error(data.description || 'Telegram error');
-
+async function sendTelegramOTP(otp,userEmail){
+  const msg=`🔐 *PAC Management System — OTP Verification*\n\nYour one-time password:\n\n\`\`\`\n${otp}\n\`\`\`\n\n👤 User: \`${userEmail}\`\n⏰ Valid for: *5 minutes*\n🕐 Sent at: ${new Date().toLocaleTimeString('en-IN')}\n\n⚠️ Do not share this code with anyone.\n_PAC System Auto-Auth_`;
+  const url=`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
+  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:TG_CHAT_ID,text:msg,parse_mode:'Markdown'})});
+  const data=await res.json();
+  if(!data.ok) throw new Error(data.description||'Telegram error');
   return data;
 }
+
 function showOTPCard(){
   const loginCard=document.getElementById('login-card');
   const otpCard=document.getElementById('otp-card');

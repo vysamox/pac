@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Features | PAC Management System</title>
+<meta name="description" content="Explore all features of the PAC Management System — real-time analytics, center management, agent tracking, and more.">
+<meta name="author" content="Samrat">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Features | PAC Management System">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cscpac.vercel.app/features.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#02040c">
+<link rel="icon" type="image/png" href="assets/fav.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:    #02040c;
+  --ink2:   #050b1a;
+  --ink3:   #07112a;
+  --surface: rgba(5,12,30,0.7);
+  --surf2:   rgba(255,255,255,0.03);
+  --rim:     rgba(255,255,255,0.07);
+  --rim-hi:  rgba(0,229,255,0.3);
+  --neon:    #00f0ff;
+  --blue:    #1a6bff;
+  --violet:  #8b5cf6;
+  --green:   #06ffa5;
+  --rose:    #ff2d78;
+  --amber:   #ffd60a;
+  --indigo:  #4f46e5;
+  --txt:  #e4f0ff;
+  --sub:  rgba(180,210,250,0.55);
+  --dim:  rgba(120,160,210,0.28);
+  --r:  20px;
+  --r2: 14px;
+  --e:  cubic-bezier(0.16,1,0.3,1);
+  --t:  0.45s var(--e);
+  --glow-neon: 0 0 30px rgba(0,240,255,0.4), 0 0 90px rgba(0,240,255,0.12);
+  --card-shadow: 0 30px 70px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.4);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--ink);color:var(--txt);overflow-x:hidden;line-height:1.6;cursor:none;}
+::selection{background:rgba(0,240,255,0.25);color:#fff;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-track{background:rgba(2,4,12,0.95);border-left:1px solid rgba(0,240,255,0.08);}
+::-webkit-scrollbar-thumb{background:linear-gradient(to bottom,rgba(0,240,255,0.9),rgba(26,107,255,0.85),rgba(139,92,246,0.8),rgba(0,240,255,0.9));border-radius:6px;border:2px solid rgba(2,4,12,0.8);box-shadow:0 0 8px rgba(0,240,255,0.5),0 0 16px rgba(0,240,255,0.2);}
+::-webkit-scrollbar-thumb:hover{box-shadow:0 0 14px rgba(0,240,255,0.8),0 0 30px rgba(0,240,255,0.35);}
+html,*{scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.7) rgba(2,4,12,0.95);}
+
+/* CURSOR */
+#c-dot{position:fixed;width:6px;height:6px;background:var(--neon);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--neon),0 0 20px rgba(0,240,255,0.5);opacity:0;transition:opacity .3s;}
+#c-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,240,255,0.5);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%);opacity:0;transition:width .3s var(--e),height .3s var(--e),border-color .25s,opacity .3s;}
+#c-ring.expand{width:52px;height:52px;border-color:var(--neon);}
+#c-dot.active,#c-ring.active{opacity:1;}
+
+/* GRAIN */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.18;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 52px;background:rgba(2,4,12,0.75);backdrop-filter:blur(40px) saturate(180%);border-bottom:1px solid rgba(255,255,255,0.06);}
+header::after{content:"";position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.3),transparent);}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-box{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--neon),var(--blue));}
+.logo-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.25) 50%,transparent 70%);animation:logo-shine 3s ease-in-out infinite;}
+@keyframes logo-shine{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.logo-box i{position:relative;z-index:1;}
+.logo-txt{line-height:1.15;}
+.logo-txt b{display:block;font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:18px;letter-spacing:3px;color:var(--txt);}
+.logo-txt span{display:block;font-family:'Fira Code',monospace;font-size:9px;font-weight:300;letter-spacing:4px;color:var(--neon);text-transform:uppercase;opacity:.8;}
+nav{display:flex;align-items:center;gap:2px;}
+nav a{font-family:'Rajdhani',sans-serif;font-size:14.5px;font-weight:600;color:var(--sub);text-decoration:none;padding:7px 15px;border-radius:99px;border:1px solid transparent;transition:var(--t);letter-spacing:1px;text-transform:uppercase;}
+nav a:hover,nav a.active{color:var(--neon);background:rgba(0,240,255,0.06);border-color:rgba(0,240,255,0.18);}
+.hdr-right{display:flex;align-items:center;gap:14px;}
+.hdr-btn{display:flex;align-items:center;gap:7px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:8px 18px;border-radius:99px;cursor:none;transition:var(--t);text-decoration:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#01080f;box-shadow:0 0 20px rgba(0,240,255,0.25);}
+.hdr-btn:hover{transform:scale(1.04);box-shadow:0 0 30px rgba(0,240,255,0.45);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:1px solid rgba(0,240,255,0.2);border-radius:10px;background:none;}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--neon);border-radius:2px;transition:var(--t);}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+#mob-nav{position:fixed;top:66px;left:0;right:0;z-index:999;background:rgba(2,4,12,0.97);backdrop-filter:blur(40px);border-bottom:1px solid rgba(0,240,255,0.1);max-height:0;overflow:hidden;transition:max-height .4s var(--e),padding .3s;display:flex;flex-direction:column;}
+#mob-nav.open{max-height:500px;padding:16px 0 24px;}
+#mob-nav a{padding:14px 28px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--sub);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.04);transition:var(--t);}
+#mob-nav a:hover{color:var(--neon);padding-left:36px;}
+
+/* TICKER */
+.ticker-bar{position:fixed;top:66px;left:0;right:0;z-index:998;background:rgba(0,20,50,0.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,240,255,0.07);padding:7px 0;overflow:hidden;white-space:nowrap;}
+.ticker-track{display:inline-flex;animation:ticker 35s linear infinite;}
+.t-item{display:inline-flex;align-items:center;gap:7px;font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--sub);padding:0 26px;letter-spacing:1px;}
+.t-item .t-dot{width:4px;height:4px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px var(--neon);}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* STATUS */
+.status-strip{position:fixed;top:calc(66px + 34px);left:0;right:0;z-index:997;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:7px 40px;background:rgba(2,4,12,0.6);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.04);}
+.s-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);letter-spacing:.5px;}
+.s-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:pulse-s 2.2s ease-in-out infinite;}
+.s-dot.green{background:var(--green);box-shadow:0 0 8px var(--green);}
+.s-dot.amber{background:var(--amber);box-shadow:0 0 8px var(--amber);}
+@keyframes pulse-s{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.65)}}
+.page-offset{height:calc(66px + 34px + 36px);}
+
+/* HERO */
+.feat-hero{position:relative;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;overflow:hidden;background:radial-gradient(ellipse 130% 100% at 50% -10%,#071e30 0%,#04101e 35%,#02040c 100%);}
+.feat-hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.aurora{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.aurora-blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.13;animation:blob-float 14s ease-in-out infinite alternate;}
+.ab1{width:700px;height:500px;background:radial-gradient(#00564a,transparent 70%);top:-200px;left:-180px;}
+.ab2{width:600px;height:500px;background:radial-gradient(#2e1065,transparent 70%);top:-140px;right:-160px;animation-delay:-5s;}
+.ab3{width:500px;height:380px;background:radial-gradient(#003858,transparent 70%);bottom:-80px;left:50%;transform:translateX(-50%);animation-delay:-9s;}
+@keyframes blob-float{0%{transform:translate(0,0) scale(1);}50%{transform:translate(18px,-28px) scale(1.05);}100%{transform:translate(-12px,12px) scale(.96);}}
+.feat-hero-inner{position:relative;z-index:2;max-width:800px;margin:0 auto;}
+.feat-hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);opacity:.18;}
+.breadcrumb{display:inline-flex;align-items:center;gap:8px;font-family:'Fira Code',monospace;font-size:11px;font-weight:300;color:var(--sub);margin-bottom:28px;letter-spacing:1px;}
+.breadcrumb a{color:var(--neon);text-decoration:none;transition:var(--t);}
+.breadcrumb a:hover{opacity:.7;}
+.breadcrumb i{font-size:9px;color:var(--dim);}
+
+/* SECTION UTILS */
+.sec{padding:100px 52px;}
+.sec.alt{background:var(--ink2);}
+.sec.alt2{background:var(--ink3);}
+.sec-head{text-align:center;margin-bottom:72px;}
+.kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;padding:6px 18px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--neon);background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.16);}
+.kicker i{font-size:9px;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(36px,5.5vw,68px);line-height:1.0;letter-spacing:3px;margin-bottom:16px;}
+.sec-title .hi{background:linear-gradient(120deg,#fff 20%,var(--neon) 60%,var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(0,240,255,0.25));}
+.sec-desc{font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,1.5vw,16px);color:var(--sub);max-width:560px;margin:0 auto;line-height:1.8;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.2),transparent);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .75s var(--e),transform .75s var(--e);}
+.reveal.left{transform:translateX(-32px);}
+.reveal.right{transform:translateX(32px);}
+.reveal.scale{transform:scale(.94);}
+.reveal.visible{opacity:1;transform:none;}
+.stagger>.reveal:nth-child(1){transition-delay:.04s}
+.stagger>.reveal:nth-child(2){transition-delay:.12s}
+.stagger>.reveal:nth-child(3){transition-delay:.20s}
+.stagger>.reveal:nth-child(4){transition-delay:.28s}
+.stagger>.reveal:nth-child(5){transition-delay:.36s}
+.stagger>.reveal:nth-child(6){transition-delay:.44s}
+.stagger>.reveal:nth-child(7){transition-delay:.52s}
+.stagger>.reveal:nth-child(8){transition-delay:.60s}
+
+/* HERO TITLE */
+.page-title{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(54px,10vw,110px);line-height:.96;letter-spacing:4px;margin-bottom:8px;text-transform:uppercase;}
+.pt-w{display:block;background:linear-gradient(160deg,#fff 20%,rgba(200,230,255,0.75) 55%,rgba(140,190,255,0.45));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.pt-p{background:linear-gradient(135deg,var(--neon) 0%,#40a9ff 45%,var(--violet) 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(0,240,255,0.4));}
+.page-sub{font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,1.8vw,18px);color:var(--sub);margin:18px 0 44px;line-height:1.7;max-width:640px;margin-left:auto;margin-right:auto;}
+.hero-meta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.h-chip{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:99px;font-family:'Fira Code',monospace;font-size:11px;font-weight:300;letter-spacing:1px;background:rgba(5,12,30,0.8);border:1px solid rgba(255,255,255,0.08);color:var(--sub);backdrop-filter:blur(16px);}
+.h-chip i{font-size:12px;}
+.h-chip.c1 i{color:var(--neon);}
+.h-chip.c2 i{color:var(--green);}
+.h-chip.c3 i{color:var(--violet);}
+.h-chip.c4 i{color:var(--amber);}
+
+/* FEATURE FILTER TABS */
+.filter-tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:60px;}
+.f-tab{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:9px 22px;border-radius:99px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:var(--sub);cursor:none;transition:var(--t);}
+.f-tab:hover,.f-tab.active{color:var(--neon);background:rgba(0,240,255,0.08);border-color:rgba(0,240,255,0.25);box-shadow:0 0 16px rgba(0,240,255,0.1);}
+
+/* MAIN FEATURE GRID */
+.feat-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px;max-width:1280px;margin:0 auto;}
+.fg-card{background:var(--surface);border:1px solid var(--rim);border-radius:var(--r);padding:36px 32px;overflow:hidden;position:relative;backdrop-filter:blur(24px);transition:var(--t);cursor:default;}
+.fg-card:hover{border-color:var(--rim-hi);transform:translateY(-6px);box-shadow:var(--card-shadow);}
+.fg-card::after{content:"";position:absolute;top:0;left:-100%;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--neon),var(--violet),var(--neon),transparent);transition:.6s var(--e);}
+.fg-card:hover::after{left:0;}
+.fg-card::before{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.025),transparent);transition:.7s;transform:skewX(-12deg);}
+.fg-card:hover::before{left:130%;}
+.fg-hero{grid-column:1/8;min-height:420px;}
+.fg-side{grid-column:8/13;}
+.fg-third{grid-column:span 4;}
+.fg-half{grid-column:span 6;}
+.fg-full{grid-column:1/-1;}
+
+/* CARD INTERNALS */
+.fc-badge{display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;padding:4px 12px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;}
+.badge-flagship{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.2);}
+.badge-core{background:rgba(0,240,255,0.08);color:var(--neon);border:1px solid rgba(0,240,255,0.15);}
+.badge-new{background:rgba(255,214,10,0.1);color:var(--amber);border:1px solid rgba(255,214,10,0.2);}
+.badge-security{background:rgba(139,92,246,0.1);color:var(--violet);border:1px solid rgba(139,92,246,0.2);}
+.badge-pro{background:rgba(255,45,120,0.1);color:var(--rose);border:1px solid rgba(255,45,120,0.2);}
+.fc-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:22px;flex-shrink:0;transition:var(--t);}
+.fg-card:hover .fc-icon{transform:rotate(-8deg) scale(1.1);}
+.ic-c{background:rgba(0,240,255,0.1);color:var(--neon);border:1px solid rgba(0,240,255,0.2);}
+.ic-g{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.2);}
+.ic-v{background:rgba(139,92,246,0.1);color:var(--violet);border:1px solid rgba(139,92,246,0.2);}
+.ic-b{background:rgba(26,107,255,0.1);color:#6ea8fe;border:1px solid rgba(26,107,255,0.2);}
+.ic-r{background:rgba(255,45,120,0.1);color:var(--rose);border:1px solid rgba(255,45,120,0.2);}
+.ic-a{background:rgba(255,214,10,0.1);color:var(--amber);border:1px solid rgba(255,214,10,0.2);}
+.fg-card h3{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;margin-bottom:11px;color:var(--txt);letter-spacing:1px;text-transform:uppercase;}
+.fg-card p{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--sub);line-height:1.8;}
+.fc-num{font-family:'Bebas Neue',sans-serif;font-size:110px;letter-spacing:6px;color:rgba(0,240,255,0.04);position:absolute;bottom:-18px;right:14px;line-height:1;pointer-events:none;transition:var(--t);}
+.fg-card:hover .fc-num{color:rgba(0,240,255,0.09);}
+.fc-link{display:inline-flex;align-items:center;gap:7px;margin-top:22px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--neon);text-decoration:none;letter-spacing:2px;text-transform:uppercase;opacity:0;transform:translateY(8px);transition:var(--t);}
+.fg-card:hover .fc-link{opacity:1;transform:translateY(0);}
+.fc-link i{font-size:11px;transition:transform .25s;}
+.fc-link:hover i{transform:translateX(4px);}
+
+/* VISUAL DEMO INSIDE HERO CARD */
+.fc-visual{width:100%;height:160px;border-radius:14px;margin:24px 0 0;background:linear-gradient(135deg,rgba(0,240,255,0.06),rgba(139,92,246,0.06));border:1px solid rgba(0,240,255,0.1);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:0;}
+.fcv-chart{display:flex;gap:10px;align-items:flex-end;height:110px;padding:0 20px;}
+.fcv-bar{width:12px;border-radius:4px 4px 0 0;background:linear-gradient(to top,var(--blue),var(--neon));animation:bar-pulse 1.8s ease-in-out infinite alternate;}
+@keyframes bar-pulse{0%{opacity:.4;transform:scaleY(.55);}100%{opacity:1;transform:scaleY(1);}}
+.fcv-bar:nth-child(1){height:50px;animation-delay:0s;}
+.fcv-bar:nth-child(2){height:80px;animation-delay:.2s;}
+.fcv-bar:nth-child(3){height:60px;animation-delay:.4s;}
+.fcv-bar:nth-child(4){height:95px;animation-delay:.1s;}
+.fcv-bar:nth-child(5){height:70px;animation-delay:.35s;}
+.fcv-bar:nth-child(6){height:88px;animation-delay:.15s;}
+.fcv-bar:nth-child(7){height:55px;animation-delay:.5s;}
+.fcv-bar:nth-child(8){height:100px;animation-delay:.08s;}
+.fcv-bar:nth-child(9){height:65px;animation-delay:.28s;}
+.fcv-bar:nth-child(10){height:82px;animation-delay:.42s;}
+.fcv-line{position:absolute;bottom:18px;left:20px;right:20px;height:2px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.3),transparent);}
+.fcv-dot{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--neon);box-shadow:0 0 10px var(--neon);animation:fcv-dot-move 4s ease-in-out infinite;}
+@keyframes fcv-dot-move{0%{left:20px;top:50%;}25%{left:30%;top:25%;}50%{left:60%;top:40%;}75%{left:80%;top:20%;}100%{left:20px;top:50%;}}
+.fcv-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.04) 1px,transparent 1px);background-size:30px 30px;}
+
+/* AGENT TRACKER VISUAL */
+.agent-vis{display:flex;flex-direction:column;gap:10px;padding:16px;width:100%;}
+.agent-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.05);}
+.agent-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.agent-dot.on{background:var(--green);box-shadow:0 0 6px var(--green);}
+.agent-dot.off{background:rgba(255,255,255,0.2);}
+.agent-name{font-family:'Fira Code',monospace;font-size:10px;color:var(--sub);flex:1;letter-spacing:.5px;}
+.agent-role{font-family:'Fira Code',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
+.agent-bar-wrap{width:70px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.agent-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--neon));}
+
+/* SECURITY VISUAL */
+.sec-vis{display:flex;flex-direction:column;gap:12px;padding:14px 18px;width:100%;}
+.sec-row{display:flex;align-items:center;gap:10px;}
+.sec-row-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.sec-row-ico.ok{background:rgba(6,255,165,0.12);color:var(--green);}
+.sec-row-ico.warn{background:rgba(255,214,10,0.12);color:var(--amber);}
+.sec-row-txt{flex:1;font-family:'Fira Code',monospace;font-size:10px;color:var(--sub);letter-spacing:.5px;}
+.sec-row-status{font-family:'Fira Code',monospace;font-size:9px;font-weight:300;letter-spacing:1px;padding:3px 8px;border-radius:5px;}
+.status-ok{background:rgba(6,255,165,0.1);color:var(--green);}
+.status-warn{background:rgba(255,214,10,0.1);color:var(--amber);}
+
+/* BACKUP VISUAL */
+.backup-vis{display:flex;align-items:center;justify-content:center;gap:28px;height:100%;padding:12px;}
+.bv-node{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.bv-circle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.bv-circle.c1{background:rgba(0,240,255,0.1);color:var(--neon);border:1.5px solid rgba(0,240,255,0.25);}
+.bv-circle.c2{background:rgba(26,107,255,0.1);color:#6ea8fe;border:1.5px solid rgba(26,107,255,0.25);}
+.bv-circle.c3{background:rgba(6,255,165,0.1);color:var(--green);border:1.5px solid rgba(6,255,165,0.25);}
+.bv-label{font-family:'Fira Code',monospace;font-size:9px;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;text-align:center;}
+.bv-arrow{font-size:14px;color:var(--neon);opacity:.5;animation:bv-arrow-pulse 1.8s ease-in-out infinite;margin-top:-8px;}
+@keyframes bv-arrow-pulse{0%,100%{opacity:.3}50%{opacity:.9}}
+
+/* REPORT CARD VISUAL */
+.report-vis{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;width:100%;}
+.rv-item{padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;border:1px solid rgba(255,255,255,0.05);}
+.rv-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;line-height:1;margin-bottom:3px;}
+.rv-lbl{font-family:'Fira Code',monospace;font-size:9px;font-weight:300;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
+.rv-v1{background:linear-gradient(135deg,#fff,var(--neon));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.rv-v2{background:linear-gradient(135deg,#fff,var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.rv-v3{background:linear-gradient(135deg,#fff,var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.rv-v4{background:linear-gradient(135deg,#fff,var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* FEATURE LIST BULLETS */
+.fc-bullets{display:flex;flex-direction:column;gap:10px;margin-top:22px;}
+.fc-bullet{display:flex;align-items:flex-start;gap:10px;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--sub);line-height:1.6;}
+.fc-bullet i{color:var(--neon);font-size:11px;margin-top:4px;flex-shrink:0;}
+
+/* INTEGRATIONS */
+.int-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;max-width:1100px;margin:0 auto;}
+.int-card{background:rgba(5,12,30,0.85);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:26px 20px;text-align:center;transition:var(--t);backdrop-filter:blur(20px);}
+.int-card:hover{border-color:rgba(0,240,255,0.25);transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,0.5);}
+.int-ico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 14px;}
+.int-name{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt);margin-bottom:5px;}
+.int-desc{font-family:'Fira Code',monospace;font-size:10px;font-weight:300;color:var(--dim);letter-spacing:.5px;}
+.int-status{display:inline-flex;align-items:center;gap:5px;margin-top:12px;font-family:'Fira Code',monospace;font-size:9px;color:var(--green);letter-spacing:1px;}
+.int-status::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);}
+
+/* COMPARE TABLE */
+.compare-wrap{max-width:900px;margin:0 auto;overflow-x:auto;}
+.compare-table{width:100%;border-collapse:separate;border-spacing:0;}
+.compare-table th{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;padding:20px 28px;text-align:left;color:var(--txt);background:rgba(5,12,30,0.9);border-bottom:1px solid rgba(0,240,255,0.12);}
+.compare-table th:first-child{border-radius:16px 0 0 0;}
+.compare-table th:last-child{border-radius:0 16px 0 0;}
+.compare-table th.hi-col{background:rgba(0,240,255,0.07);color:var(--neon);}
+.compare-table td{padding:16px 28px;font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--sub);border-bottom:1px solid rgba(255,255,255,0.04);transition:var(--t);}
+.compare-table tr:hover td{background:rgba(0,240,255,0.02);}
+.compare-table td.feat-name{font-weight:600;color:var(--txt);font-size:14px;}
+.compare-table td.hi-col{background:rgba(0,240,255,0.03);}
+.check-yes{color:var(--green);font-size:15px;}
+.check-no{color:rgba(255,255,255,0.18);font-size:15px;}
+.check-partial{color:var(--amber);font-size:13px;font-family:'Fira Code',monospace;}
+.compare-table tbody tr:last-child td:first-child{border-radius:0 0 0 16px;}
+.compare-table tbody tr:last-child td:last-child{border-radius:0 0 16px 0;}
+
+/* ROADMAP */
+.roadmap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1100px;margin:0 auto;}
+.rm-card{padding:28px 24px;border-radius:18px;background:rgba(5,12,30,0.85);border:1px solid rgba(255,255,255,0.07);backdrop-filter:blur(20px);transition:var(--t);}
+.rm-card:hover{border-color:rgba(0,240,255,0.2);transform:translateY(-5px);}
+.rm-quarter{font-family:'Fira Code',monospace;font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.rm-q1{color:var(--green);}
+.rm-q2{color:var(--neon);}
+.rm-q3{color:var(--violet);}
+.rm-q4{color:var(--amber);}
+.rm-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--txt);margin-bottom:12px;}
+.rm-items{display:flex;flex-direction:column;gap:8px;}
+.rm-item{display:flex;align-items:center;gap:9px;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--sub);}
+.rm-item-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.rm-dot-done{background:var(--green);box-shadow:0 0 6px var(--green);}
+.rm-dot-active{background:var(--neon);box-shadow:0 0 6px var(--neon);animation:pulse-s 1.5s ease-in-out infinite;}
+.rm-dot-upcoming{background:rgba(255,255,255,0.2);}
+.rm-status{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:2px;padding:4px 10px;border-radius:6px;margin-top:16px;display:inline-block;}
+.rm-live{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.2);}
+.rm-inprog{background:rgba(0,240,255,0.08);color:var(--neon);border:1px solid rgba(0,240,255,0.15);}
+.rm-soon{background:rgba(139,92,246,0.08);color:var(--violet);border:1px solid rgba(139,92,246,0.15);}
+.rm-planned{background:rgba(255,214,10,0.08);color:var(--amber);border:1px solid rgba(255,214,10,0.15);}
+
+/* CTA BANNER */
+.cta-banner{position:relative;overflow:hidden;padding:90px 52px;text-align:center;background:linear-gradient(135deg,#040e24 0%,#071830 50%,#030b1c 100%);border-top:1px solid rgba(0,240,255,0.08);border-bottom:1px solid rgba(0,240,255,0.08);}
+.cta-banner::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 20% 50%,rgba(0,240,255,0.07),transparent),radial-gradient(ellipse 50% 70% at 80% 50%,rgba(139,92,246,0.07),transparent);}
+.cta-banner-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.025) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 10%,transparent 70%);}
+.cta-banner-inner{position:relative;z-index:1;max-width:700px;margin:0 auto;}
+.cta-banner h2{font-family:'Bebas Neue',sans-serif;font-weight:400;letter-spacing:4px;text-transform:uppercase;font-size:clamp(36px,6vw,72px);line-height:1.0;margin-bottom:16px;}
+.cta-banner h2 span{background:linear-gradient(135deg,var(--neon),var(--blue),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 24px rgba(0,240,255,0.35));}
+.cta-banner p{font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--sub);margin-bottom:40px;line-height:1.75;}
+.cta-banner-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.cta-big{display:inline-flex;align-items:center;gap:10px;padding:16px 40px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;border:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#010810;box-shadow:0 0 40px rgba(0,240,255,0.4),0 12px 30px rgba(0,0,0,0.4);transition:var(--t);position:relative;overflow:hidden;}
+.cta-big::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.22) 55%,transparent 70%);transform:translateX(-100%);transition:.5s;}
+.cta-big:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 0 60px rgba(0,240,255,0.55),0 16px 40px rgba(0,0,0,0.5);}
+.cta-big:hover::before{transform:translateX(100%);}
+.cta-soft{display:inline-flex;align-items:center;gap:10px;padding:15px 36px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;color:var(--txt);border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);transition:var(--t);backdrop-filter:blur(10px);}
+.cta-soft:hover{border-color:rgba(0,240,255,0.4);background:rgba(0,240,255,0.06);transform:translateY(-4px);}
+.cta-trust{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;margin-top:36px;}
+.trust-item{display:inline-flex;align-items:center;gap:7px;font-family:'Fira Code',monospace;font-size:11px;font-weight:300;color:var(--sub);letter-spacing:.5px;}
+.trust-item i{color:var(--green);font-size:13px;}
+
+/* FOOTER */
+footer{background:rgba(1,3,10,0.98);border-top:1px solid rgba(255,255,255,0.06);}
+footer::before{content:"";display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.25),transparent);}
+.footer-body{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:52px;max-width:1200px;margin:0 auto;padding:72px 52px 56px;}
+.f-brand p{font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:var(--sub);line-height:1.8;max-width:270px;margin:16px 0 26px;}
+.f-socials{display:flex;gap:10px;}
+.f-soc{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.09);display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:14px;text-decoration:none;transition:var(--t);}
+.f-soc:hover{color:var(--neon);border-color:rgba(0,240,255,0.35);background:rgba(0,240,255,0.07);transform:translateY(-3px);}
+.f-col h6{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:4px;text-transform:uppercase;color:var(--txt);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.f-col a{display:block;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--sub);text-decoration:none;margin-bottom:11px;transition:var(--t);}
+.f-col a:hover{color:var(--neon);transform:translateX(5px);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.04);padding:20px 52px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;}
+.f-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);letter-spacing:.5px;}
+.f-badge i{color:var(--neon);font-size:10px;}
+.f-copy{font-family:'Fira Code',monospace;font-size:10.5px;color:var(--dim);letter-spacing:.5px;}
+.f-meta{display:flex;flex-wrap:wrap;gap:10px;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .fg-hero{grid-column:1/-1;}
+  .fg-side{grid-column:1/-1;}
+  .fg-third{grid-column:span 6;}
+  .footer-body{grid-template-columns:1fr 1fr;gap:36px;}
+}
+@media(max-width:768px){
+  #c-dot,#c-ring{display:none;}
+  body{cursor:auto;}
+  .cta-big,.cta-soft,.hdr-btn{cursor:pointer;}
+  header{padding:0 20px;height:60px;}
+  #mob-nav{top:60px;}
+  .ticker-bar{top:60px;}
+  .status-strip{top:calc(60px + 34px);}
+  .page-offset{height:calc(60px + 34px + 36px);}
+  nav{display:none!important;}
+  .hdr-right .hdr-btn{display:none;}
+  .hamburger{display:flex;}
+  .sec{padding:70px 20px;}
+  .feat-hero{padding:80px 20px 70px;}
+  .feat-grid{display:flex;flex-direction:column;}
+  .fg-third,.fg-half{grid-column:auto;}
+  .int-grid{grid-template-columns:repeat(2,1fr);}
+  .footer-body{grid-template-columns:1fr 1fr;gap:28px;padding:48px 24px 40px;}
+  .footer-bottom{padding:18px 24px;flex-direction:column;align-items:flex-start;}
+  .cta-banner{padding:70px 20px;}
+  .cta-big,.cta-soft{width:100%;justify-content:center;}
+  .cta-banner-btns{flex-direction:column;align-items:center;}
+  .compare-wrap{font-size:12px;}
+}
+@media(max-width:480px){
+  .int-grid{grid-template-columns:1fr;}
+  .roadmap-grid{grid-template-columns:1fr;}
+  .footer-body{grid-template-columns:1fr;}
+  .hero-meta{flex-direction:column;align-items:center;}
+}
+</style>
+</head>
+<body>
+
+<div id="c-dot"></div>
+<div id="c-ring"></div>
+
+<!-- ━━━━━━ HEADER ━━━━━━ -->
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-box"><i class="fa-solid fa-database"></i></div>
+    <div class="logo-txt"><b>PAC System</b><span>Management Dashboard</span></div>
+  </a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="features.html" class="active">Features</a>
+    <a href="docs.html">Documentation</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="hdr-right">
+    <a href="/login.html" class="hdr-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<div id="mob-nav">
+  <a href="index.html" onclick="toggleNav()">Home</a>
+  <a href="features.html" onclick="toggleNav()">Features</a>
+  <a href="docs.html" onclick="toggleNav()">Documentation</a>
+  <a href="contact.html" onclick="toggleNav()">Contact</a>
+  <a href="/login.html" onclick="toggleNav()">Login</a>
+</div>
+
+<!-- ━━━━━━ TICKER ━━━━━━ -->
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <span class="t-item"><span class="t-dot"></span>PAC System v2.0 — Now Live</span>
+    <span class="t-item"><span class="t-dot"></span>Real-Time Analytics Engine Active</span>
+    <span class="t-item"><span class="t-dot"></span>12 Active UCL Owners Registered</span>
+    <span class="t-item"><span class="t-dot"></span>Auto Backup — Firestore Cloud Active</span>
+    <span class="t-item"><span class="t-dot"></span>Role-Based Access Control Enabled</span>
+    <span class="t-item"><span class="t-dot"></span>PWA Support — Mobile Ready</span>
+    <span class="t-item"><span class="t-dot"></span>PAC System v2.0 — Now Live</span>
+    <span class="t-item"><span class="t-dot"></span>Real-Time Analytics Engine Active</span>
+    <span class="t-item"><span class="t-dot"></span>12 Active UCL Owners Registered</span>
+    <span class="t-item"><span class="t-dot"></span>Auto Backup — Firestore Cloud Active</span>
+    <span class="t-item"><span class="t-dot"></span>Role-Based Access Control Enabled</span>
+    <span class="t-item"><span class="t-dot"></span>PWA Support — Mobile Ready</span>
+  </div>
+</div>
+
+<!-- ━━━━━━ STATUS STRIP ━━━━━━ -->
+<div class="status-strip">
+  <div class="s-chip"><span class="s-dot green"></span><span>All Systems Operational</span></div>
+  <div class="s-chip"><span class="s-dot green"></span><span>Database Online</span></div>
+  <div class="s-chip"><span class="s-dot amber"></span><span id="sync-t">Sync: 0s ago</span></div>
+  <div class="s-chip"><span id="lat-t">⚡ Latency: -- ms</span></div>
+</div>
+
+<div class="page-offset"></div>
+
+<!-- ━━━━━━ HERO ━━━━━━ -->
+<section class="feat-hero">
+  <canvas id="feat-canvas"></canvas>
+  <div class="aurora">
+    <div class="aurora-blob ab1"></div>
+    <div class="aurora-blob ab2"></div>
+    <div class="aurora-blob ab3"></div>
+  </div>
+  <div class="feat-hero-inner" id="hero-inner">
+    <div class="breadcrumb"><a href="index.html">Home</a><i class="fa-solid fa-chevron-right"></i>Features</div>
+    <div class="kicker"><i class="fa-solid fa-layer-group"></i> Full Feature Set</div>
+    <h1 class="page-title">
+      <span class="pt-w">Everything</span>
+      <span class="pt-p">You Need</span>
+    </h1>
+    <p class="page-sub">A complete overview of every capability built into the PAC Management System — from real-time data sync to enterprise-grade security and deep analytics.</p>
+    <div class="hero-meta">
+      <div class="h-chip c1"><i class="fa-solid fa-chart-area"></i> Real-Time Analytics</div>
+      <div class="h-chip c2"><i class="fa-solid fa-shield-halved"></i> Role-Based Security</div>
+      <div class="h-chip c3"><i class="fa-solid fa-cloud-arrow-up"></i> Auto Backup</div>
+      <div class="h-chip c4"><i class="fa-solid fa-mobile-screen"></i> PWA Ready</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ━━━━━━ CORE FEATURES GRID ━━━━━━ -->
+<section class="sec alt">
+  <div class="sec-head reveal">
+    <div class="kicker"><i class="fa-solid fa-layer-group"></i> Core Features</div>
+    <h2 class="sec-title"><span class="hi">Built-In Capabilities</span><br>At Every Layer</h2>
+    <p class="sec-desc">Every feature in PAC Management is production-grade, tightly integrated, and designed to eliminate manual work at scale.</p>
+  </div>
+
+  <!-- FILTER TABS -->
+  <div class="filter-tabs reveal" id="filter-tabs">
+    <button class="f-tab active" onclick="filterFeats(this,'all')">All Features</button>
+    <button class="f-tab" onclick="filterFeats(this,'data')">Data &amp; Sync</button>
+    <button class="f-tab" onclick="filterFeats(this,'security')">Security</button>
+    <button class="f-tab" onclick="filterFeats(this,'analytics')">Analytics</button>
+    <button class="f-tab" onclick="filterFeats(this,'management')">Management</button>
+    <button class="f-tab" onclick="filterFeats(this,'mobile')">Mobile &amp; PWA</button>
+  </div>
+
+  <div class="feat-grid stagger" id="feat-grid">
+
+    <!-- HERO CARD: Analytics -->
+    <div class="fg-card fg-hero reveal scale" data-cat="analytics">
+      <span class="fc-badge badge-flagship"><i class="fa-solid fa-star"></i> Flagship Feature</span>
+      <div class="fc-icon ic-c"><i class="fa-solid fa-chart-area"></i></div>
+      <h3 style="font-size:26px;">Real-Time Analytics Engine</h3>
+      <p>Monitor your entire PAC network live — every submission, every operator, every center — all reflected in milliseconds using Firestore streaming listeners. Zero polling, zero delay.</p>
+      <div class="fc-bullets">
+        <div class="fc-bullet"><i class="fa-solid fa-circle-check"></i><span>Live dashboard updates under 500ms across all connected clients</span></div>
+        <div class="fc-bullet"><i class="fa-solid fa-circle-check"></i><span>Interactive charts with trend detection and period comparison</span></div>
+        <div class="fc-bullet"><i class="fa-solid fa-circle-check"></i><span>Per-operator and per-center performance breakdowns</span></div>
+        <div class="fc-bullet"><i class="fa-solid fa-circle-check"></i><span>Exportable to PDF / XLSX with a single click</span></div>
+      </div>
+      <div class="fc-visual">
+        <div class="fcv-grid"></div>
+        <div class="fcv-chart">
+          <div class="fcv-bar"></div><div class="fcv-bar"></div><div class="fcv-bar"></div>
+          <div class="fcv-bar"></div><div class="fcv-bar"></div><div class="fcv-bar"></div>
+          <div class="fcv-bar"></div><div class="fcv-bar"></div><div class="fcv-bar"></div>
+          <div class="fcv-bar"></div>
+        </div>
+        <div class="fcv-dot"></div>
+        <div class="fcv-line"></div>
+      </div>
+      <span class="fc-num">01</span>
+    </div>
+
+    <!-- SIDE: Agent Tracking -->
+    <div class="fg-card fg-side reveal" data-cat="management">
+      <span class="fc-badge badge-core">Core</span>
+      <div class="fc-icon ic-g"><i class="fa-solid fa-users-gear"></i></div>
+      <h3>Agent Tracking</h3>
+      <p>Monitor every operator's real-time status, verify profiles, assign permissions, and audit all activity across your entire registered operator base.</p>
+      <div class="agent-vis">
+        <div class="agent-row"><div class="agent-dot on"></div><div class="agent-name">Meheraj Chowdhuri</div><div class="agent-role">Operator</div><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:82%"></div></div></div>
+        <div class="agent-row"><div class="agent-dot on"></div><div class="agent-name">Sabir Chowdhury</div><div class="agent-role">Owner</div><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:91%"></div></div></div>
+        <div class="agent-row"><div class="agent-dot off"></div><div class="agent-name">Sk Samrat</div><div class="agent-role">Admin</div><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:100%"></div></div></div>
+        <div class="agent-row"><div class="agent-dot on"></div><div class="agent-name">Rahul Banerjee</div><div class="agent-role">UCL Owner</div><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:67%"></div></div></div>
+      </div>
+      <a href="/login.html" class="fc-link">View Agents <i class="fa-solid fa-arrow-right"></i></a>
+      <span class="fc-num">02</span>
+    </div>
+
+    <!-- CENTER MANAGEMENT -->
+    <div class="fg-card fg-third reveal" data-cat="management">
+      <span class="fc-badge badge-core">Core</span>
+      <div class="fc-icon ic-b"><i class="fa-solid fa-building"></i></div>
+      <h3>Center Management</h3>
+      <p>Manage Aadhaar enrollment centers with live dashboards, role-based access, and instant report generation across your entire network.</p>
+      <div class="fc-bullets">
+        <div class="fc-bullet"><i class="fa-solid fa-check"></i><span>Unique center IDs with geo-tags</span></div>
+        <div class="fc-bullet"><i class="fa-solid fa-check"></i><span>Live center status monitoring</span></div>
+        <div class="fc-bullet"><i class="fa-solid fa-check"></i><span>Multi-center unified view</span></div>
+      </div>
+      <span class="fc-num">03</span>
+    </div>
+
+    <!-- PAC ENTRIES -->
+    <div class="fg-card fg-third reveal" data-cat="data">
+      <span class="fc-badge badge-core">Core</span>
+      <div class="fc-icon ic-c"><i class="fa-solid fa-file-invoice"></i></div>
+      <h3>PAC Entries</h3>
+      <p>Securely add, review, and track PAC records with a full audit trail, digital timestamps, and real-time validation on submission.</p>
+      <div class="fc-bullets">
+        <div class="fc-bullet"><i class="fa-solid fa-check"></i><span>Instant validation on submit</span></div>
+        <div class="fc-bullet"><i class="fa-solid fa-check"></i><span>Full audit trail per record</span></div>
+        <div class="fc-bullet"><i class="fa-solid fa-check"></i><span>Bulk CSV import support</span></div>
+      </div>
+      <span class="fc-num">04</span>
+    </div>
+
+    <!-- ROLE SECURITY -->
+    <div class="fg-card fg-third reveal" data-cat="security">
+      <span class="fc-badge badge-security">Security</span>
+      <div class="fc-icon ic-v"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3>Role-Based Security</h3>
+      <p>Granular RBAC ensures every operator sees only what they're permitted to — enforced at the Firebase Security Rules database level, not just UI.</p>
+      <div class="sec-vis">
+        <div class="sec-row"><div class="sec-row-ico ok"><i class="fa-solid fa-lock"></i></div><div class="sec-row-txt">AES-256 Encryption</div><div class="sec-row-status status-ok">ACTIVE</div></div>
+        <div class="sec-row"><div class="sec-row-ico ok"><i class="fa-solid fa-shield-check"></i></div><div class="sec-row-txt">Firebase Rules</div><div class="sec-row-status status-ok">ENFORCED</div></div>
+        <div class="sec-row"><div class="sec-row-ico warn"><i class="fa-solid fa-eye"></i></div><div class="sec-row-txt">Audit Logs</div><div class="sec-row-status status-warn">REVIEW</div></div>
+      </div>
+      <span class="fc-num">05</span>
+    </div>
+
+    <!-- AUTO BACKUP -->
+    <div class="fg-card fg-half reveal" data-cat="data">
+      <span class="fc-badge badge-new"><i class="fa-solid fa-bolt"></i> Enhanced</span>
+      <div class="fc-icon ic-b"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+      <h3>Auto Backup System</h3>
+      <p>Every PAC record syncs to Google Firestore every 30 seconds. Full daily snapshots with 30-day retention stored in Cloud Storage — zero data loss, zero manual effort.</p>
+      <div class="fc-visual" style="height:110px;">
+        <div class="backup-vis">
+          <div class="bv-node">
+            <div class="bv-circle c1"><i class="fa-solid fa-laptop-code"></i></div>
+            <div class="bv-label">Operator</div>
+          </div>
+          <div class="bv-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="bv-node">
+            <div class="bv-circle c2"><i class="fa-solid fa-server"></i></div>
+            <div class="bv-label">Firestore</div>
+          </div>
+          <div class="bv-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="bv-node">
+            <div class="bv-circle c3"><i class="fa-solid fa-cloud"></i></div>
+            <div class="bv-label">Cloud Storage</div>
+          </div>
+        </div>
+      </div>
+      <a href="/login.html" class="fc-link">View Backups <i class="fa-solid fa-arrow-right"></i></a>
+      <span class="fc-num">06</span>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="fg-card fg-half reveal" data-cat="analytics">
+      <span class="fc-badge badge-core">Core</span>
+      <div class="fc-icon ic-a"><i class="fa-solid fa-file-chart-column"></i></div>
+      <h3>Reports &amp; Exports</h3>
+      <p>Generate monthly performance summaries, filtered datasets, and audit exports in PDF, XLSX, or CSV — with scheduled email delivery for admin accounts.</p>
+      <div class="report-vis">
+        <div class="rv-item"><div class="rv-val rv-v1">8.2K</div><div class="rv-lbl">Records</div></div>
+        <div class="rv-item"><div class="rv-val rv-v2">142</div><div class="rv-lbl">Today</div></div>
+        <div class="rv-item"><div class="rv-val rv-v3">12</div><div class="rv-lbl">Centers</div></div>
+        <div class="rv-item"><div class="rv-val rv-v4">99.7%</div><div class="rv-lbl">Uptime</div></div>
+      </div>
+      <a href="/login.html" class="fc-link">Open Reports <i class="fa-solid fa-arrow-right"></i></a>
+      <span class="fc-num">07</span>
+    </div>
+
+    <!-- OFFLINE MODE -->
+    <div class="fg-card fg-third reveal" data-cat="data">
+      <span class="fc-badge badge-new"><i class="fa-solid fa-wifi"></i> Offline</span>
+      <div class="fc-icon ic-r"><i class="fa-solid fa-tower-broadcast"></i></div>
+      <h3>Offline Persistence</h3>
+      <p>Firestore's offline cache ensures all pending writes queue locally and sync automatically when the connection is restored — no data loss on poor connectivity.</p>
+      <span class="fc-num">08</span>
+    </div>
+
+    <!-- PWA -->
+    <div class="fg-card fg-third reveal" data-cat="mobile">
+      <span class="fc-badge badge-new"><i class="fa-solid fa-mobile"></i> Mobile</span>
+      <div class="fc-icon ic-g"><i class="fa-solid fa-mobile-screen"></i></div>
+      <h3>PWA &amp; Mobile</h3>
+      <p>Fully responsive Progressive Web App. Operators can submit PAC entries, check statuses, and receive push notifications from any mobile browser — no install required.</p>
+      <span class="fc-num">09</span>
+    </div>
+
+    <!-- UCL OVERVIEW -->
+    <div class="fg-card fg-third reveal" data-cat="management">
+      <span class="fc-badge badge-core">Core</span>
+      <div class="fc-icon ic-a"><i class="fa-solid fa-chart-pie"></i></div>
+      <h3>UCL Overview</h3>
+      <p>Live snapshot of all UCL owner registrations, active states, verification statuses, and pending approvals across the entire network.</p>
+      <span class="fc-num">10</span>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="fg-card fg-third reveal" data-cat="mobile">
+      <span class="fc-badge badge-new"><i class="fa-solid fa-bell"></i> New</span>
+      <div class="fc-icon ic-v"><i class="fa-solid fa-bell"></i></div>
+      <h3>Push Notifications</h3>
+      <p>Real-time push alerts for UCL approval requests, sync errors, backup completions, and daily summary reports — delivered instantly to all subscribed devices.</p>
+      <span class="fc-num">11</span>
+    </div>
+
+    <!-- AUDIT LOGS -->
+    <div class="fg-card fg-third reveal" data-cat="security">
+      <span class="fc-badge badge-security">Security</span>
+      <div class="fc-icon ic-c"><i class="fa-solid fa-scroll"></i></div>
+      <h3>Audit Logs</h3>
+      <p>Every action — from logins to record edits — is timestamped and stored in an immutable audit trail, accessible to admins for compliance and investigation.</p>
+      <span class="fc-num">12</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ━━━━━━ INTEGRATIONS ━━━━━━ -->
+<section class="sec">
+  <div class="sec-head reveal">
+    <div class="kicker"><i class="fa-solid fa-puzzle-piece"></i> Integrations</div>
+    <h2 class="sec-title"><span class="hi">Powered By</span><br>Best-in-Class Tools</h2>
+    <p class="sec-desc">Every service in the PAC stack is production-grade and battle-tested — chosen for reliability, performance, and long-term SLA guarantees.</p>
+  </div>
+  <div class="int-grid stagger">
+    <div class="int-card reveal"><div class="int-ico" style="background:rgba(26,107,255,0.12);"><i class="fa-brands fa-google" style="color:#4285f4;font-size:22px;"></i></div><div class="int-name">Firestore</div><div class="int-desc">NoSQL realtime DB</div><div class="int-status">CONNECTED</div></div>
+    <div class="int-card reveal"><div class="int-ico" style="background:rgba(255,68,68,0.1);"><i class="fa-solid fa-fire" style="color:#ff4444;font-size:22px;"></i></div><div class="int-name">Firebase Auth</div><div class="int-desc">Secure authentication</div><div class="int-status">CONNECTED</div></div>
+    <div class="int-card reveal"><div class="int-ico" style="background:rgba(0,240,255,0.1);"><i class="fa-solid fa-cloud" style="color:var(--neon);font-size:22px;"></i></div><div class="int-name">Cloud Storage</div><div class="int-desc">File & backup storage</div><div class="int-status">CONNECTED</div></div>
+    <div class="int-card reveal"><div class="int-ico" style="background:rgba(255,255,255,0.05);"><i class="fa-brands fa-vercel" style="color:#fff;font-size:22px;"></i></div><div class="int-name">Vercel</div><div class="int-desc">Edge deployment</div><div class="int-status">CONNECTED</div></div>
+    <div class="int-card reveal"><div class="int-ico" style="background:rgba(139,92,246,0.1);"><i class="fa-solid fa-shield-halved" style="color:var(--violet);font-size:22px;"></i></div><div class="int-name">Firebase Rules</div><div class="int-desc">DB-level RBAC</div><div class="int-status">ENFORCED</div></div>
+    <div class="int-card reveal"><div class="int-ico" style="background:rgba(245,166,35,0.1);"><i class="fa-brands fa-js" style="color:#f5a623;font-size:22px;"></i></div><div class="int-name">JS ES2024</div><div class="int-desc">Core runtime</div><div class="int-status">ACTIVE</div></div>
+    <div class="int-card reveal"><div class="int-ico" style="background:rgba(6,255,165,0.1);"><i class="fa-brands fa-node-js" style="color:var(--green);font-size:22px;"></i></div><div class="int-name">Node.js</div><div class="int-desc">Server runtime</div><div class="int-status">ACTIVE</div></div>
+    <div class="int-card reveal"><div class="int-ico" style="background:rgba(255,68,68,0.1);"><i class="fa-brands fa-git-alt" style="color:#f05032;font-size:22px;"></i></div><div class="int-name">Git</div><div class="int-desc">Version control</div><div class="int-status">ACTIVE</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ━━━━━━ COMPARE TABLE ━━━━━━ -->
+<section class="sec alt2">
+  <div class="sec-head reveal">
+    <div class="kicker"><i class="fa-solid fa-table-columns"></i> Feature Comparison</div>
+    <h2 class="sec-title"><span class="hi">PAC vs</span><br>Traditional Systems</h2>
+    <p class="sec-desc">See exactly how PAC Management outperforms legacy spreadsheet-based and manual tracking workflows on every dimension.</p>
+  </div>
+  <div class="compare-wrap reveal">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th class="hi-col">PAC Management</th>
+          <th>Legacy Spreadsheet</th>
+          <th>Manual Tracking</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="feat-name">Real-Time Data Sync</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Sub-500ms</td><td><i class="fa-solid fa-xmark check-no"></i></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Role-Based Access Control</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Granular</td><td><span class="check-partial">Partial</span></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Automatic Backup</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Every 30s</td><td><span class="check-partial">Manual</span></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Audit Trail</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Immutable</td><td><span class="check-partial">Limited</span></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Offline Support</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Native</td><td><i class="fa-solid fa-xmark check-no"></i></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Mobile / PWA</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Full PWA</td><td><span class="check-partial">Limited</span></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Multi-Center Support</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Unlimited</td><td><span class="check-partial">Manual merge</span></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Analytics &amp; Reports</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Live + Export</td><td><span class="check-partial">Static only</span></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Push Notifications</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> Real-Time</td><td><i class="fa-solid fa-xmark check-no"></i></td><td><i class="fa-solid fa-xmark check-no"></i></td></tr>
+        <tr><td class="feat-name">Uptime SLA</td><td class="hi-col"><i class="fa-solid fa-circle-check check-yes"></i> 99.7%</td><td><span class="check-partial">N/A</span></td><td><span class="check-partial">N/A</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ━━━━━━ ROADMAP ━━━━━━ -->
+<section class="sec alt">
+  <div class="sec-head reveal">
+    <div class="kicker"><i class="fa-solid fa-road"></i> Roadmap</div>
+    <h2 class="sec-title"><span class="hi">What's Coming</span><br>Next in PAC</h2>
+    <p class="sec-desc">A transparent view of shipped features, active development, and planned enhancements for the PAC platform.</p>
+  </div>
+  <div class="roadmap-grid stagger">
+    <div class="rm-card reveal">
+      <div class="rm-quarter rm-q1">Q1 2025</div>
+      <div class="rm-title">Foundation Release</div>
+      <div class="rm-items">
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Core PAC entry system</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Firebase Auth integration</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Basic role-based access</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Center management module</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Firestore real-time sync</div>
+      </div>
+      <div class="rm-status rm-live">✓ Shipped</div>
+    </div>
+    <div class="rm-card reveal">
+      <div class="rm-quarter rm-q2">Q2–Q3 2025</div>
+      <div class="rm-title">Analytics &amp; Scale</div>
+      <div class="rm-items">
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Real-time analytics engine</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Auto backup every 30s</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>UCL owner overview module</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Bulk CSV import</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Export to PDF / XLSX</div>
+      </div>
+      <div class="rm-status rm-live">✓ Shipped</div>
+    </div>
+    <div class="rm-card reveal">
+      <div class="rm-quarter rm-q3">Q4 2025 — Now</div>
+      <div class="rm-title">v2.0 — Live</div>
+      <div class="rm-items">
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>PWA offline support</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-active"></div>Push notifications (active)</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>Immutable audit logs</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-done"></div>HUD live status panels</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-active"></div>Performance optimizations</div>
+      </div>
+      <div class="rm-status rm-inprog">⚡ In Progress</div>
+    </div>
+    <div class="rm-card reveal">
+      <div class="rm-quarter rm-q4">Q1–Q2 2026</div>
+      <div class="rm-title">Intelligence Layer</div>
+      <div class="rm-items">
+        <div class="rm-item"><div class="rm-item-dot rm-dot-upcoming"></div>AI anomaly detection</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-upcoming"></div>Predictive analytics</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-upcoming"></div>Multi-language support</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-upcoming"></div>API for 3rd-party tools</div>
+        <div class="rm-item"><div class="rm-item-dot rm-dot-upcoming"></div>Advanced RBAC policies</div>
+      </div>
+      <div class="rm-status rm-planned">◦ Planned</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ━━━━━━ CTA BANNER ━━━━━━ -->
+<section class="cta-banner">
+  <div class="cta-banner-grid"></div>
+  <div class="cta-banner-inner reveal">
+    <div class="kicker" style="margin-bottom:20px;"><i class="fa-solid fa-rocket"></i> Start Using PAC</div>
+    <h2>Ready to Put These <span>Features to Work?</span></h2>
+    <p>12+ UCL owners and 9 active operators are already running smarter, faster operations. Login and experience every feature live today.</p>
+    <div class="cta-banner-btns">
+      <a href="/login.html" class="cta-big"><i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard</a>
+      <a href="docs.html" class="cta-soft"><i class="fa-solid fa-book-open"></i> Read the Docs</a>
+    </div>
+    <div class="cta-trust">
+      <span class="trust-item"><i class="fa-solid fa-shield-check"></i> Secure &amp; Encrypted</span>
+      <span class="trust-item"><i class="fa-solid fa-circle-check"></i> 99.7% Uptime SLA</span>
+      <span class="trust-item"><i class="fa-solid fa-bolt"></i> Sub-500ms Sync</span>
+      <span class="trust-item"><i class="fa-solid fa-cloud"></i> Firestore Backed</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ━━━━━━ FOOTER ━━━━━━ -->
+<footer>
+  <div class="footer-body">
+    <div class="f-brand">
+      <a class="logo" href="index.html">
+        <div class="logo-box" style="width:34px;height:34px;font-size:14px;"><i class="fa-solid fa-database"></i></div>
+        <div class="logo-txt"><b>PAC System</b><span style="font-size:9px;">Management Dashboard</span></div>
+      </a>
+      <p>A centralized management platform for PAC records, Aadhaar center operations, and UCL owner networks — secure, fast, and built for professionals.</p>
+      <div class="f-socials">
+        <a class="f-soc" href="#"><i class="fa-brands fa-github"></i></a>
+        <a class="f-soc" href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a class="f-soc" href="#"><i class="fa-brands fa-telegram"></i></a>
+        <a class="f-soc" href="#"><i class="fa-brands fa-whatsapp"></i></a>
+        <a class="f-soc" href="#"><i class="fa-solid fa-envelope"></i></a>
+      </div>
+    </div>
+    <div class="f-col">
+      <h6>Platform</h6>
+      <a href="/login.html">Login</a>
+      <a href="features.html">Features</a>
+      <a href="index.html#features">Center Manager</a>
+      <a href="index.html#features">Agent Tracker</a>
+      <a href="index.html#features">Analytics</a>
+    </div>
+    <div class="f-col">
+      <h6>System</h6>
+      <a href="#">UCL Overview</a>
+      <a href="#">Backup Status</a>
+      <a href="#">Audit Logs</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </div>
+    <div class="f-col">
+      <h6>Support</h6>
+      <a href="docs.html">Documentation</a>
+      <a href="#">Contact Admin</a>
+      <a href="#">Report a Bug</a>
+      <a href="#">Changelog</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="f-meta">
+      <span class="f-badge"><i class="fa-solid fa-clock"></i><span id="live-time">--</span></span>
+      <span class="f-badge"><i class="fa-solid fa-globe"></i><span id="user-ip">Loading...</span></span>
+      <span class="f-badge"><i class="fa-solid fa-code-branch"></i> v2.0.0</span>
+    </div>
+    <p class="f-copy">&copy; 2025 PAC Management System · All rights reserved · Designed by Samrat</p>
+  </div>
+</footer>
+
+<!-- ━━━━━━ SCRIPTS ━━━━━━ -->
+<script>
+/* CURSOR */
+const cd=document.getElementById('c-dot'),cr=document.getElementById('c-ring');
+let mx=-200,my=-200,rx=-200,ry=-200,ready=false;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cd.style.left=mx+'px';cd.style.top=my+'px';
+  if(!ready){ready=true;cd.classList.add('active');cr.classList.add('active');}
+});
+document.querySelectorAll('a,button,.fg-card,.int-card,.rm-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cr.classList.add('expand'));
+  el.addEventListener('mouseleave',()=>cr.classList.remove('expand'));
+});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop);})();
+
+/* MOBILE NAV */
+function toggleNav(){
+  const mob=document.getElementById('mob-nav'),hb=document.getElementById('hamburger');
+  const o=mob.classList.toggle('open');hb.classList.toggle('open',o);
+}
+
+/* FILTER TABS */
+function filterFeats(btn,cat){
+  document.querySelectorAll('.f-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.fg-card').forEach(c=>{
+    const match=cat==='all'||c.dataset.cat===cat;
+    c.style.transition='opacity .35s ease, transform .35s ease';
+    if(match){c.style.opacity='1';c.style.transform='';c.style.pointerEvents='';}
+    else{c.style.opacity='.15';c.style.transform='scale(.97)';c.style.pointerEvents='none';}
+  });
+}
+
+/* HERO ENTRANCE */
+const hi=document.getElementById('hero-inner');
+if(hi){hi.style.cssText='opacity:0;transform:translateY(40px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{hi.style.opacity='1';hi.style.transform='translateY(0)';}));}
+
+/* CLOCK */
+function tick(){
+  const el=document.getElementById('live-time');if(!el)return;
+  const n=new Date(),d=String(n.getDate()).padStart(2,'0'),m=String(n.getMonth()+1).padStart(2,'0'),y=n.getFullYear();
+  let h=n.getHours();const mn=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
+  const ap=h>=12?'PM':'AM';h=h%12||12;
+  el.textContent=`${d}-${m}-${y} ${String(h).padStart(2,'0')}:${mn}:${s} ${ap}`;
+}
+setInterval(tick,1000);tick();
+
+/* IP */
+fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>{document.getElementById('user-ip').textContent=d.ip;}).catch(()=>{document.getElementById('user-ip').textContent='Unavailable';});
+
+/* STATUS */
+let lSync=Date.now();
+setInterval(()=>{
+  const sec=Math.floor((Date.now()-lSync)/1000);
+  const st=document.getElementById('sync-t');if(st)st.textContent=`Sync: ${sec}s ago`;
+  const lat=Math.floor(Math.random()*100)+80;
+  const lt=document.getElementById('lat-t');if(lt)lt.textContent=`⚡ Latency: ${lat}ms`;
+},1000);
+
+/* PARTICLE CANVAS */
+(function(){
+  const c=document.getElementById('feat-canvas');if(!c)return;
+  const ctx=c.getContext('2d');let W,H;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
+  window.addEventListener('resize',resize);resize();
+  const pts=[];
+  for(let i=0;i<90;i++)pts.push({x:Math.random()*1800,y:Math.random()*700,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*1.2+.3});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,240,255,0.6)';ctx.fill();});
+    pts.forEach((a,i)=>{pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<110){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,240,255,${(1-d/110)*.1})`;ctx.lineWidth=1;ctx.stroke();}});});
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* REVEAL OBSERVER */
+const io=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');io.unobserve(en.target);}});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
