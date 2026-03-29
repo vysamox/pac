@@ -2,1299 +2,1552 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Bank Account Manager</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vault • Bank Account Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+
+/* ============================================================
+   ROOT VARIABLES
+   ============================================================ */
 :root{
-  --primary:#2563eb;
-  --success:#16a34a;
-  --danger:#dc2626;
-  --dark:#0f172a;
-  --bg:#f1f5f9;
-  --card:#ffffff;
-  --muted:#64748b;
+  --bg:#07101f;
+  --surface:#0b1729;
+  --card:#0f1e34;
+  --card2:#121f36;
+  --gold:#c8981e;
+  --gold2:#e8b830;
+  --gold3:#f5d06a;
+  --gold-bg:rgba(200,152,30,.1);
+  --gold-border:rgba(200,152,30,.22);
+  --text:#dce9f7;
+  --text2:#b8cce0;
+  --muted:#6a849e;
+  --dim:rgba(255,255,255,.055);
+  --dim2:rgba(255,255,255,.03);
+  --ok:#22c55e;
+  --err:#ef4444;
+  --blue:#3b82f6;
+  --r:18px;
+  --r-sm:12px;
+  --shadow:0 30px 70px rgba(0,0,0,.55),0 10px 25px rgba(0,0,0,.4);
+  --shadow-sm:0 8px 24px rgba(0,0,0,.35);
 }
 
-*{box-sizing:border-box}
-
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{
-  font-family:Poppins,sans-serif;
-  background:linear-gradient(135deg,#e0e7ff,#f8fafc);
-  margin:0;
-  padding:24px;
-}
-
-
-/* ========================= */
-/* PREMIUM GLASS HEADER */
-/* ========================= */
-
-.main-header{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
   position:relative;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:28px 36px;
-  margin-bottom:50px;
-  border-radius:28px;
-  background:rgba(255,255,255,0.75);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-  box-shadow:
-    0 25px 60px rgba(0,0,0,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.6);
-  overflow:hidden;
-  transition:all .4s ease;
 }
 
-/* Gradient border glow */
-.main-header::before{
+/* Background atmosphere */
+body::before{
   content:"";
-  position:absolute;
-  inset:0;
-  border-radius:28px;
-  padding:1px;
-  background:linear-gradient(
-    135deg,
-    rgba(37,99,235,.4),
-    rgba(124,58,237,.4),
-    rgba(16,185,129,.4)
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 0%,rgba(200,152,30,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 60% at 90% 100%,rgba(59,130,246,.05) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--gold-border);border-radius:3px}
+
+/* ============================================================
+   TOAST SYSTEM
+   ============================================================ */
+#toastWrap{
+  position:fixed;top:20px;right:20px;
+  z-index:9999;
+  display:flex;flex-direction:column;gap:10px;
   pointer-events:none;
 }
 
-/* Floating animation */
-.main-header{
-  animation:floatHeader 6s ease-in-out infinite;
+.toast{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 18px;border-radius:var(--r-sm);
+  background:var(--card2);
+  border:1px solid var(--dim);
+  border-left:3px solid var(--ok);
+  box-shadow:var(--shadow-sm);
+  font-size:14px;font-weight:500;
+  min-width:250px;max-width:340px;
+  pointer-events:all;
+  animation:toastIn .3s cubic-bezier(.34,1.56,.64,1) forwards;
 }
+.toast.error{border-left-color:var(--err)}
+.toast.info{border-left-color:var(--blue)}
+.toast.out{animation:toastOut .25s ease forwards}
+.toast-icon{font-size:17px;flex-shrink:0}
+.toast-msg{color:var(--text2);line-height:1.3}
 
-@keyframes floatHeader{
-  0%{ transform:translateY(0px); }
-  50%{ transform:translateY(-6px); }
-  100%{ transform:translateY(0px); }
-}
+@keyframes toastIn{from{opacity:0;transform:translateX(110%)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(110%)}}
 
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-
-.logo-circle{
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#2563eb,#7c3aed);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:26px;
-  color:#fff;
-  box-shadow:
-    0 15px 35px rgba(37,99,235,0.35);
-  transition:all .4s ease;
-}
-
-.logo-circle:hover{
-  transform:rotate(12deg) scale(1.05);
-}
-
-.brand-title{
-  font-weight:700;
-  font-size:22px;
-  letter-spacing:.5px;
-}
-
-.brand-subtitle{
-  font-size:13px;
-  color:#64748b;
-  margin-top:4px;
-}
-
-.header-badge{
-  background:linear-gradient(135deg,#2563eb,#7c3aed);
-  color:#fff;
-  padding:8px 18px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:600;
-  box-shadow:0 8px 20px rgba(124,58,237,.35);
-  transition:all .3s ease;
-}
-
-.header-badge:hover{
-  transform:translateY(-3px);
-  box-shadow:0 14px 30px rgba(124,58,237,.45);
-}
-
-
-/* ========================= */
-/* PREMIUM FOOTER */
-/* ========================= */
-
-.main-footer{
-  margin-top:80px;
-  padding:40px 36px;
-  border-radius:28px;
-  background:linear-gradient(135deg,#0f172a,#1e293b);
-  color:#f1f5f9;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 30px 70px rgba(0,0,0,0.25);
-}
-
-/* Soft top glow line */
-.main-footer::before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:2px;
-  background:linear-gradient(
-    90deg,
-    transparent,
-    #2563eb,
-    #7c3aed,
-    transparent
-  );
-}
-
-.footer-content{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:30px;
-}
-
-.footer-left{
-  display:flex;
-  align-items:center;
-  gap:16px;
-}
-
-.footer-logo{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#2563eb,#16a34a);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-  box-shadow:0 10px 25px rgba(16,185,129,.35);
-}
-
-.footer-title{
-  font-weight:600;
-  font-size:15px;
-}
-
-.footer-sub{
-  font-size:12px;
-  opacity:0.7;
-  margin-top:4px;
-}
-
-.footer-center{
-  font-size:13px;
-  opacity:0.8;
-}
-
-.footer-right .footer-badge{
-  background:linear-gradient(135deg,#16a34a,#22c55e);
-  padding:8px 18px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:600;
-  box-shadow:0 8px 20px rgba(16,185,129,.35);
-  transition:all .3s ease;
-}
-
-.footer-right .footer-badge:hover{
-  transform:translateY(-3px);
-}
-
-
-/* ========================= */
-/* RESPONSIVE IMPROVEMENT */
-/* ========================= */
-
-@media(max-width:768px){
-
-  .main-header{
-    flex-direction:column;
-    text-align:center;
-    gap:20px;
-  }
-
-  .header-left{
-    flex-direction:column;
-  }
-
-  .footer-content{
-    flex-direction:column;
-    text-align:center;
-  }
-
-}
-h1{
-  text-align:center;
-  margin-bottom:6px;
-}
-
-.subtitle{
-  text-align:center;
-  color:var(--muted);
-  font-size:14px;
-  margin-bottom:26px;
-}
-
-.container{
-  margin:auto;
-  background:var(--card);
-  padding:28px;
-  border-radius:18px;
-  box-shadow:0 25px 50px rgba(0,0,0,.1);
-}
-
-.section-title{
-  font-size:17px;
-  font-weight:700;
-  margin:16px 0;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:16px;
-}
-
-.form-group{
-  display:flex;
-  flex-direction:column;
-}
-
-label{
-  font-size:13px;
-  font-weight:600;
-  margin-bottom:6px;
-}
-
-input,select{
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #cbd5f5;
-  font-size:14px;
-}
-
-input:focus,select:focus{
-  outline:none;
-  border-color:var(--primary);
-  box-shadow:0 0 0 3px rgba(37,99,235,.2);
-}
-
-input[readonly]{
-  background:#f8fafc;
-}
-
-.actions{
-  display:flex;
-  gap:12px;
-  margin-top:18px;
-  flex-wrap:wrap;
-}
-
-button{
-  border:none;
-  padding:12px 22px;
-  border-radius:12px;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.primary{background:var(--primary);color:#fff}
-.secondary{background:var(--dark);color:#fff}
-.danger{background:var(--danger);color:#fff}
-
-.status{
-  margin-top:12px;
-  font-size:13px;
-}
-.status.success{color:var(--success)}
-.status.error{color:var(--danger)}
-
-
-.badge{
-  background:#e0e7ff;
-  color:#1e40af;
-  padding:4px 12px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:600;
-}
-
-.empty{
-  text-align:center;
+/* ============================================================
+   MODAL SYSTEM
+   ============================================================ */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(2,8,20,.75);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  z-index:1000;
+  display:flex;align-items:center;justify-content:center;
   padding:20px;
-  color:var(--muted);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
 }
+.modal-overlay.open{opacity:1;pointer-events:all}
 
-@media(max-width:600px){
-  table,thead,tbody,tr,th,td{display:block}
-  thead{display:none}
-  tr{
-    margin-bottom:14px;
-    background:#fff;
-    padding:16px;
-    border-radius:14px;
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
-  }
-  td{border:none}
-}
-
-.card-container{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;
-  margin-top:20px;
-}
-
-.bank-card{
-  background:rgba(255,255,255,0.85);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  padding:24px;
+.modal-panel{
+  background:var(--surface);
   border-radius:24px;
-  position:relative;
-  overflow:hidden;
-  transition:all .35s ease;
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.08),
-    inset 0 1px 0 rgba(255,255,255,.6);
-  border:1px solid rgba(255,255,255,0.4);
+  border:1px solid var(--gold-border);
+  box-shadow:var(--shadow);
+  width:100%;max-width:580px;
+  transform:translateY(30px) scale(.97);
+  transition:transform .38s cubic-bezier(.34,1.5,.64,1);
+  position:relative;overflow:hidden;
+  max-height:92vh;overflow-y:auto;
+}
+.modal-overlay.open .modal-panel{transform:translateY(0) scale(1)}
+
+/* Gold top line */
+.modal-panel::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
 }
 
-/* Soft gradient border glow */
-.bank-card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:24px;
-  padding:1px;
-  background:linear-gradient(
-    135deg,
-    rgba(37,99,235,.4),
-    rgba(124,58,237,.4),
-    rgba(16,185,129,.4)
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
+.modal-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:22px 26px 18px;
+  border-bottom:1px solid var(--dim);
+}
+.modal-title{
+  font-family:'Playfair Display',serif;
+  font-size:19px;color:var(--gold3);
+}
+.modal-close{
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--dim);background:transparent;
+  color:var(--muted);cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.modal-close:hover{background:var(--dim);color:var(--text)}
+
+.modal-body{padding:22px 26px}
+
+.modal-footer{
+  padding:18px 26px;border-top:1px solid var(--dim);
+  display:flex;gap:10px;justify-content:flex-end;
+}
+
+/* Add/Edit modal wider */
+#addModal .modal-panel{max-width:720px}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  padding:11px 22px;border-radius:var(--r-sm);
+  font-size:14px;font-weight:600;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;border:none;
+  transition:all .22s ease;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-gold{
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  color:#060f1c;
+  box-shadow:0 6px 18px rgba(200,152,30,.3);
+}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(200,152,30,.4)}
+.btn-ghost{
+  background:var(--dim);color:var(--muted);border:1px solid var(--dim);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.btn-danger{
+  background:rgba(239,68,68,.13);color:#ef4444;
+  border:1px solid rgba(239,68,68,.25);
+}
+.btn-danger:hover{background:#ef4444;color:#fff}
+
+/* ============================================================
+   DELETE MODAL
+   ============================================================ */
+.delete-center{text-align:center;padding:8px 0 4px}
+.delete-emoji{font-size:52px;margin-bottom:14px;display:block}
+.delete-head{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:8px}
+.delete-sub{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* ============================================================
+   QR MODAL
+   ============================================================ */
+.qr-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:18px;
+  padding:6px 0;
+}
+.qr-frame{
+  padding:10px;background:#fff;border-radius:16px;
+  border:3px solid var(--gold);
+  box-shadow:0 0 30px rgba(200,152,30,.25);
+}
+.qr-frame img{display:block;width:210px;height:210px;border-radius:8px}
+.qr-caption{
+  text-align:center;font-size:13px;color:var(--muted);line-height:1.8;
+}
+.qr-caption strong{color:var(--text);font-size:15px;display:block;margin-bottom:2px}
+
+/* ============================================================
+   DETAIL MODAL
+   ============================================================ */
+.detail-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+.detail-item{
+  background:var(--dim2);border:1px solid var(--dim);
+  border-radius:var(--r-sm);padding:14px 16px;
+}
+.detail-label{
+  font-size:10px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.8px;
+  color:var(--gold);margin-bottom:5px;
+}
+.detail-value{
+  font-size:14px;font-weight:500;color:var(--text);
+  word-break:break-all;line-height:1.4;
+}
+.detail-item.span2{grid-column:1/-1}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+
+.form-label{
+  font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.7px;color:var(--muted);
+}
+.form-input{
+  background:var(--card);border:1px solid var(--dim);
+  border-radius:var(--r-sm);padding:12px 15px;
+  color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:14px;outline:none;width:100%;
+  transition:border-color .2s,box-shadow .2s;
+}
+.form-input:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(200,152,30,.12);
+}
+.form-input[readonly]{
+  background:rgba(255,255,255,.025);color:var(--muted);cursor:default;
+}
+.form-input::placeholder{color:rgba(106,132,158,.45)}
+select.form-input option{background:var(--surface);color:var(--text)}
+
+.ifsc-row{display:flex;gap:8px}
+.ifsc-row .form-input{flex:1}
+
+.fetch-btn{
+  background:var(--gold-bg);border:1px solid var(--gold-border);
+  color:var(--gold2);padding:12px 16px;border-radius:var(--r-sm);
+  font-size:13px;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap;
+}
+.fetch-btn:hover{background:var(--gold);color:#060f1c}
+
+.form-hint{font-size:11px;color:var(--muted);margin-top:-2px;min-height:14px}
+.form-divider{grid-column:1/-1;height:1px;background:var(--dim);margin:2px 0}
+.form-status{
+  font-size:13px;margin-top:12px;min-height:18px;
+  padding:0 2px;
+}
+
+/* ============================================================
+   APP HEADER
+   ============================================================ */
+.app-header{
+  position:relative;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 28px;
+  background:var(--surface);
+  border-bottom:1px solid var(--dim);
+}
+.app-header::after{
+  content:"";position:absolute;bottom:-1px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{
+  width:46px;height:46px;border-radius:14px;
+  background:linear-gradient(135deg,var(--gold2),#8a6010);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  box-shadow:0 8px 22px rgba(200,152,30,.35);
+  flex-shrink:0;
+  transition:transform .3s;
+}
+.brand-logo:hover{transform:rotate(8deg) scale(1.05)}
+.brand-name{
+  font-family:'Playfair Display',serif;
+  font-size:21px;font-weight:700;color:var(--gold3);
+  letter-spacing:.3px;
+}
+.brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+.header-actions{display:flex;align-items:center;gap:10px}
+.header-pill{
+  background:var(--gold-bg);color:var(--gold2);
+  border:1px solid var(--gold-border);
+  padding:7px 16px;border-radius:999px;
+  font-size:12px;font-weight:600;letter-spacing:.4px;
+}
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+main{
+  position:relative;z-index:1;
+  padding:28px 24px 60px;
+  max-width:1240px;margin:0 auto;
+}
+
+/* ============================================================
+   STATS GRID
+   ============================================================ */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  margin-bottom:28px;
+}
+.stat-card{
+  background:var(--card);border-radius:var(--r);
+  padding:22px 20px;
+  border:1px solid var(--dim);
+  position:relative;overflow:hidden;
+  transition:transform .3s,box-shadow .3s;
+  cursor:default;
+}
+.stat-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 16px 36px rgba(0,0,0,.35),0 0 20px rgba(200,152,30,.06);
+}
+.stat-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.stat-card:hover::before{opacity:1}
+
+/* Subtle grid bg */
+.stat-card::after{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:20px 20px;
   pointer-events:none;
 }
 
-/* Light reflection effect */
-.bank-card::after{
-  content:"";
-  position:absolute;
-  top:-50%;
-  left:-50%;
-  width:200%;
-  height:200%;
-  background:linear-gradient(
-    120deg,
-    transparent 40%,
-    rgba(255,255,255,.4) 50%,
-    transparent 60%
-  );
-  transform:rotate(25deg);
-  transition:all .6s ease;
-  opacity:0;
+.stat-icon{font-size:26px;margin-bottom:12px;display:block;position:relative;z-index:1}
+.stat-value{
+  font-family:'Playfair Display',serif;
+  font-size:34px;font-weight:700;
+  color:var(--gold3);line-height:1;
+  margin-bottom:4px;position:relative;z-index:1;
+}
+.stat-label{
+  font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.7px;
+  color:var(--muted);position:relative;z-index:1;
+}
+.stat-sub{
+  font-size:12px;color:var(--muted);
+  margin-top:6px;position:relative;z-index:1;
 }
 
-/* Hover Animation */
+/* ============================================================
+   CONTROLS BAR
+   ============================================================ */
+.controls-bar{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:18px;flex-wrap:wrap;
+}
+
+.search-wrap{
+  flex:1;min-width:200px;
+  display:flex;align-items:center;gap:10px;
+  background:var(--card);border:1px solid var(--dim);
+  border-radius:999px;padding:10px 18px;
+  transition:border-color .2s;
+}
+.search-wrap:focus-within{border-color:var(--gold)}
+.search-wrap svg{color:var(--muted);flex-shrink:0}
+.search-wrap input{
+  flex:1;background:none;border:none;outline:none;
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;
+}
+.search-wrap input::placeholder{color:var(--muted)}
+.clear-search{
+  cursor:pointer;color:var(--muted);display:none;
+  padding:2px;transition:color .2s;flex-shrink:0;
+}
+.clear-search:hover{color:var(--text)}
+
+.ctrl-select{
+  background:var(--card);border:1px solid var(--dim);
+  border-radius:999px;padding:10px 16px;
+  color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:13px;cursor:pointer;outline:none;
+  transition:border-color .2s;appearance:none;
+  padding-right:24px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236a849e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.ctrl-select:focus{border-color:var(--gold)}
+.ctrl-select option{background:var(--surface)}
+
+.add-btn{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  color:#060f1c;border:none;
+  padding:11px 22px;border-radius:999px;
+  font-size:14px;font-weight:700;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;white-space:nowrap;
+  box-shadow:0 6px 18px rgba(200,152,30,.35);
+  transition:all .25s;
+}
+.add-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(200,152,30,.45);
+}
+.add-btn svg{flex-shrink:0}
+
+.result-info{
+  font-size:13px;color:var(--muted);
+  margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+.result-badge{
+  background:var(--gold-bg);color:var(--gold2);
+  border:1px solid var(--gold-border);
+  padding:2px 10px;border-radius:999px;
+  font-size:11px;font-weight:600;
+}
+
+/* ============================================================
+   CARDS GRID
+   ============================================================ */
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:20px;
+}
+
+/* ============================================================
+   BANK CARD
+   ============================================================ */
+.bank-card{
+  position:relative;
+  background:var(--card);border-radius:22px;
+  border:1px solid var(--dim);overflow:hidden;
+  transition:all .35s ease;
+  animation:cardIn .4s ease both;
+}
+
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Stagger animation */
+.bank-card:nth-child(1){animation-delay:0ms}
+.bank-card:nth-child(2){animation-delay:60ms}
+.bank-card:nth-child(3){animation-delay:120ms}
+.bank-card:nth-child(4){animation-delay:180ms}
+.bank-card:nth-child(5){animation-delay:240ms}
+.bank-card:nth-child(6){animation-delay:300ms}
+
+/* Gradient border on hover */
+.bank-card::before{
+  content:"";position:absolute;inset:0;border-radius:22px;
+  padding:1px;
+  background:linear-gradient(135deg,rgba(200,152,30,.5),rgba(200,152,30,.1) 50%,rgba(200,152,30,.4));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .35s;pointer-events:none;
+}
 .bank-card:hover{
-  transform:translateY(-10px) scale(1.02);
-  box-shadow:
-    0 25px 50px rgba(0,0,0,.15),
-    0 10px 20px rgba(37,99,235,.2);
+  transform:translateY(-7px);
+  box-shadow:0 24px 48px rgba(0,0,0,.45),0 0 30px rgba(200,152,30,.07);
 }
+.bank-card:hover::before{opacity:1}
 
-.bank-card:hover::after{
-  opacity:1;
-  animation:shine 1.2s ease forwards;
-}
+/* Color accent bar at top */
+.card-bar{height:3px;background:linear-gradient(90deg,var(--gold),var(--gold3),transparent)}
 
-@keyframes shine{
-  from{
-    transform:translateX(-100%) rotate(25deg);
-  }
-  to{
-    transform:translateX(100%) rotate(25deg);
-  }
-}
+.card-body{padding:20px 20px 0}
 
-
-.card-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.card-row1{
+  display:flex;justify-content:space-between;align-items:center;
   margin-bottom:14px;
 }
-
-.customer-id{
-  font-size:13px;
-  font-weight:600;
-  color:#64748b;
+.card-cid{
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.8px;
+  color:var(--gold);
+}
+.card-badge{
+  background:var(--gold-bg);color:var(--gold2);
+  border:1px solid var(--gold-border);
+  padding:3px 10px;border-radius:999px;
+  font-size:10px;font-weight:600;
 }
 
-.account-type{
-  background:#e0e7ff;
-  color:#1e40af;
-  padding:5px 12px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:600;
+.card-holder{
+  font-size:16px;font-weight:600;color:var(--text);
+  margin-bottom:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.card-bank{font-size:13px;color:var(--text2);margin-bottom:2px}
+.card-branch{
+  font-size:12px;color:var(--muted);margin-bottom:14px;
+  line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 
-.account-number{
-  font-size:22px;
-  font-weight:700;
-  letter-spacing:3px;
-  color:#111827;
-}
-
-
-.holder-name{
-  font-weight:600;
-  margin-bottom:10px;
-}
-
-.bank-name{
-  font-size:14px;
-  color:#334155;
-}
-
-.branch{
-  font-size:13px;
-  color:#64748b;
+/* Account number row */
+.acc-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--dim2);border:1px solid var(--dim);
+  border-radius:var(--r-sm);padding:11px 15px;
   margin-bottom:12px;
 }
+.acc-num{
+  font-size:17px;font-weight:700;
+  letter-spacing:2px;color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  transition:opacity .3s;
+}
+.acc-controls{display:flex;align-items:center;gap:6px}
 
-.ifsc-badge{
-  display:inline-block;
-  background:#2563eb;
-  color:#fff;
-  padding:6px 14px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:600;
+/* Countdown timer ring */
+.timer-ring{position:relative;width:28px;height:28px;display:none}
+.timer-ring.show{display:block}
+.timer-ring svg{transform:rotate(-90deg)}
+.timer-bg{fill:none;stroke:var(--dim);stroke-width:2.5}
+.timer-fg{
+  fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linecap:round;
+  stroke-dasharray:75.4;stroke-dashoffset:0;
+  transition:stroke-dashoffset 1s linear;
 }
 
+.reveal-btn{
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);display:flex;align-items:center;justify-content:center;
+  padding:5px;border-radius:8px;transition:all .2s;
+}
+.reveal-btn:hover{color:var(--gold2);background:var(--gold-bg)}
+
+.ifsc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.ifsc-chip{
+  background:rgba(59,130,246,.12);color:#7cb4f5;
+  border:1px solid rgba(59,130,246,.2);
+  padding:4px 12px;border-radius:999px;
+  font-size:10px;font-weight:600;font-family:monospace;letter-spacing:.5px;
+}
+
+/* ============================================================
+   CARD ACTIONS
+   ============================================================ */
 .card-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-  margin-top:22px;
-  padding-top:14px;
-  border-top:1px solid rgba(0,0,0,0.06);
+  display:flex;border-top:1px solid var(--dim);
+}
+.ca-btn{
+  flex:1;padding:12px 4px;background:none;border:none;
+  border-right:1px solid var(--dim);
+  cursor:pointer;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;position:relative;
+}
+.ca-btn:last-child{border-right:none}
+.ca-btn:hover{background:var(--dim);color:var(--text)}
+.ca-btn.ca-copy:hover{color:var(--blue)}
+.ca-btn.ca-share:hover{color:var(--ok)}
+.ca-btn.ca-view:hover{color:var(--gold2)}
+.ca-btn.ca-edit:hover{color:#f97316}
+.ca-btn.ca-qr:hover{color:#a78bfa}
+.ca-btn.ca-del:hover{color:var(--err);background:rgba(239,68,68,.07)}
+
+/* Tooltip */
+.ca-btn[title]:hover::after{
+  content:attr(title);
+  position:absolute;bottom:calc(100% + 6px);left:50%;
+  transform:translateX(-50%);
+  background:var(--card2);color:var(--text2);
+  font-size:10px;white-space:nowrap;
+  padding:4px 8px;border-radius:6px;
+  border:1px solid var(--dim);pointer-events:none;
+  font-family:'DM Sans',sans-serif;
+  z-index:10;
 }
 
-/* Base Style */
-.card-actions span{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  font-size:15px;
-  cursor:pointer;
-  transition:all .25s ease;
-  background:#ffffff;
-  box-shadow:0 4px 10px rgba(0,0,0,0.05);
-  border:2px solid transparent;
+/* ============================================================
+   EMPTY / LOADING
+   ============================================================ */
+.empty-state{
+  grid-column:1/-1;text-align:center;
+  padding:80px 20px;
+}
+.empty-icon{font-size:64px;margin-bottom:16px;display:block;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.empty-title{
+  font-family:'Playfair Display',serif;font-size:22px;
+  color:var(--text);margin-bottom:8px;
+}
+.empty-sub{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+
+.loading-wrap{
+  grid-column:1/-1;text-align:center;padding:70px 20px;
+}
+.spinner{
+  width:42px;height:42px;border:3px solid var(--dim);
+  border-top-color:var(--gold);border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 14px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--muted)}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.app-footer{
+  position:relative;z-index:1;
+  margin-top:60px;padding:26px 28px;
+  border-top:1px solid var(--dim);
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;
+}
+.app-footer::before{
+  content:"";position:absolute;top:-1px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.footer-brand{display:flex;align-items:center;gap:12px}
+.footer-logo{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--gold2),#8a6010);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.footer-name{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold3)}
+.footer-copy{font-size:11px;color:var(--muted);margin-top:2px}
+.footer-mid{font-size:13px;color:var(--muted);text-align:center}
+.footer-secure{
+  background:rgba(34,197,94,.1);color:#4ade80;
+  border:1px solid rgba(34,197,94,.2);
+  padding:6px 14px;border-radius:999px;
+  font-size:11px;font-weight:600;letter-spacing:.4px;
 }
 
-/* ========================= */
-/* SHARE - Green */
-/* ========================= */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:768px){
+  .app-header{padding:14px 18px}
+  .brand-name{font-size:17px}
+  .brand-sub{display:none}
+  .header-pill{display:none}
 
-.card-actions span:nth-child(1){
-  color:#16a34a;
-  border-color:#16a34a;
-}
+  main{padding:20px 16px 50px}
 
-.card-actions span:nth-child(1):hover{
-  background:#16a34a;
-  color:#fff;
-  transform:translateY(-3px);
-  box-shadow:0 10px 18px rgba(22,163,74,.35);
-}
+  .stats-grid{grid-template-columns:repeat(3,1fr);gap:10px}
+  .stat-card{padding:16px 12px}
+  .stat-value{font-size:26px}
+  .stat-icon{font-size:20px;margin-bottom:8px}
+  .stat-label{font-size:9px}
+  .stat-sub{display:none}
 
-/* ========================= */
-/* VIEW - Blue */
-/* ========================= */
+  .controls-bar{gap:8px}
+  .search-wrap{min-width:100%;order:-1}
+  .ctrl-select{flex:1}
+  .add-btn .add-label{display:none}
+  .add-btn{padding:11px 16px}
 
-.card-actions span:nth-child(2){
-  color:#2563eb;
-  border-color:#2563eb;
-}
+  .cards-grid{grid-template-columns:1fr}
 
-.card-actions span:nth-child(2):hover{
-  background:#2563eb;
-  color:#fff;
-  transform:translateY(-3px);
-  box-shadow:0 10px 18px rgba(37,99,235,.35);
-}
+  /* Bottom sheet modals on mobile */
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal-panel{
+    border-radius:24px 24px 0 0;max-width:100%;width:100%;
+    max-height:96vh;
+    transform:translateY(100%);
+    transition:transform .4s cubic-bezier(.34,1,.64,1);
+  }
+  .modal-overlay.open .modal-panel{transform:translateY(0)}
 
-/* ========================= */
-/* EDIT - Orange */
-/* ========================= */
-
-.card-actions span:nth-child(3){
-  color:#f97316;
-  border-color:#f97316;
-}
-
-.card-actions span:nth-child(3):hover{
-  background:#f97316;
-  color:#fff;
-  transform:translateY(-3px);
-  box-shadow:0 10px 18px rgba(249,115,22,.35);
-}
-
-/* Click press effect */
-.card-actions span:active{
-  transform:scale(0.95);
-}
-
-/* QR - Purple */
-.card-actions span:nth-child(4){
-  color:#7c3aed;
-  border-color:#7c3aed;
-}
-
-.card-actions span:nth-child(4):hover{
-  background:#7c3aed;
-  color:#fff;
-  transform:translateY(-3px);
-  box-shadow:0 10px 18px rgba(124,58,237,.35);
-}
-
-/* DELETE - Red */
-.card-actions span:nth-child(5){
-  color:#dc2626;
-  border-color:#dc2626;
-}
-
-.card-actions span:nth-child(5):hover{
-  background:#dc2626;
-  color:#fff;
-  transform:translateY(-3px);
-  box-shadow:0 10px 18px rgba(220,38,38,.35);
-}
-
-/* COPY - Teal */
-.card-actions span:nth-child(6){
-  color:#0ea5e9;
-  border-color:#0ea5e9;
-}
-
-.card-actions span:nth-child(6):hover{
-  background:#0ea5e9;
-  color:#fff;
-  transform:translateY(-3px);
-  box-shadow:0 10px 18px rgba(14,165,233,.35);
-}
-
-.add-bank-wrapper{
-  overflow:hidden;
-  max-height:0;
-  opacity:0;
-  transform:translateY(-10px);
-  transition:all .4s ease;
-}
-
-.add-bank-wrapper.active{
-  max-height:1200px;
-  opacity:1;
-  transform:translateY(0);
-  margin-top:20px;
-}
-
-.search-wrapper{
-  width:100%;
-  max-width:320px;
-}
-
-.search-box{
-  display:flex;
-  align-items:center;
-  background:#ffffff;
-  padding:10px 14px;
-  border-radius:999px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
-  border:1px solid #e2e8f0;
-  width:100%;
-}
-
-.search-box input{
-  border:none;
-  outline:none;
-  flex:1;
-  font-size:14px;
-  background:transparent;
-  padding:6px;
-}
-
-.search-icon{
-  color:#64748b;
-  margin-right:8px;
-}
-
-.clear-btn{
-  cursor:pointer;
-  font-size:14px;
-  color:#94a3b8;
-  display:none;
-}
-
-@media(max-width:600px){
-
-  .section-title{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:14px;
+  /* Add drag handle */
+  .modal-panel::after{
+    content:"";display:block;
+    width:40px;height:4px;border-radius:2px;
+    background:var(--dim);
+    position:absolute;top:12px;left:50%;transform:translateX(-50%);
   }
 
-  .search-wrapper{
-    width:100%;
-    max-width:100%;
-  }
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:auto}
+  .detail-grid{grid-template-columns:1fr}
+  .detail-item.span2{grid-column:auto}
 
-  #toggleFormBtn{
-    width:100%;
-  }
+  .modal-body{padding:18px 20px}
+  .modal-head{padding:26px 20px 16px}
+  .modal-footer{padding:14px 20px}
 
+  .app-footer{flex-direction:column;text-align:center;gap:10px}
+  .footer-brand{justify-content:center}
+}
+
+@media(max-width:420px){
+  .stats-grid{grid-template-columns:1fr;gap:10px}
+  .stat-card{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 18px;
+  }
+  .stat-icon{margin-bottom:0;font-size:26px;flex-shrink:0}
+  .stat-value{font-size:26px;margin-bottom:0}
+  .stat-sub{display:none}
 }
 
 </style>
 </head>
-
 <body>
 
-  <header class="main-header">
-  <div class="header-left">
-    <div class="logo-circle">🏦</div>
-    <div>
-      <div class="brand-title">Bank Account Manager</div>
-      <div class="brand-subtitle">Secure • Organized • Professional</div>
+<!-- ===================== TOASTS ===================== -->
+<div id="toastWrap"></div>
+
+<!-- ===================== ADD / EDIT MODAL ===================== -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div class="modal-title" id="addModalTitle">Add Bank Account</div>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label class="form-label">IFSC Code *</label>
+          <div class="ifsc-row">
+            <input class="form-input" id="f-ifsc" placeholder="e.g. SBIN0000001" maxlength="11"
+              oninput="this.value=this.value.toUpperCase()"
+              onkeypress="if(event.key==='Enter') fetchIFSC()">
+            <button class="fetch-btn" onclick="fetchIFSC()">Verify →</button>
+          </div>
+          <span class="form-hint" id="ifscHint"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bank Name</label>
+          <input class="form-input" id="f-bank" readonly placeholder="Auto-filled after verify">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Branch Name</label>
+          <input class="form-input" id="f-branch" readonly placeholder="Auto-filled">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Branch Address</label>
+          <input class="form-input" id="f-address" readonly placeholder="Auto-filled">
+        </div>
+
+        <div class="form-divider"></div>
+
+        <div class="form-group">
+          <label class="form-label">Account Holder Name *</label>
+          <input class="form-input" id="f-holder" placeholder="Full legal name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Customer ID *</label>
+          <input class="form-input" id="f-cid" placeholder="e.g. CUST1001">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Number *</label>
+          <input class="form-input" id="f-account" placeholder="Enter account number" type="tel">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Type</label>
+          <select class="form-input" id="f-type">
+            <option value="Savings">Savings</option>
+            <option value="Current">Current</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone (Optional)</label>
+          <input class="form-input" id="f-phone" placeholder="+91 99999 99999" type="tel">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes (Optional)</label>
+          <input class="form-input" id="f-notes" placeholder="e.g. Primary salary account">
+        </div>
+
+      </div>
+      <div class="form-status" id="formStatus"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+      <button class="btn btn-gold" id="saveBtn" onclick="saveBank()">💾 Save Account</button>
     </div>
   </div>
+</div>
 
-  <div class="header-right">
-    <span class="header-badge">Admin Panel</span>
+<!-- ===================== DELETE MODAL ===================== -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-panel" style="max-width:400px">
+    <div class="modal-head">
+      <div class="modal-title">Delete Account</div>
+      <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="delete-center">
+        <span class="delete-emoji">🗑️</span>
+        <div class="delete-head">Are you sure?</div>
+        <div class="delete-sub">This bank account will be permanently removed. This action cannot be undone.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== QR MODAL ===================== -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal-panel" style="max-width:380px">
+    <div class="modal-head">
+      <div class="modal-title">Account QR Code</div>
+      <button class="modal-close" onclick="closeQRModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="qr-wrap">
+        <div class="qr-frame"><img id="qrImg" src="" alt="QR Code"></div>
+        <div id="qrCaption" class="qr-caption"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeQRModal()">Close</button>
+      <button class="btn btn-gold" onclick="downloadQR()">⬇ Download</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== DETAIL MODAL ===================== -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div class="modal-title" id="detailTitle">Account Details</div>
+      <button class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid" id="detailGrid"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDetailModal()">Close</button>
+      <button class="btn btn-gold" id="detailCopyBtn">📋 Copy All Details</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== HEADER ===================== -->
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-logo">🏦</div>
+    <div>
+      <div class="brand-name">Vault</div>
+      <div class="brand-sub">Bank Account Manager</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <span class="header-pill">⚙️ Admin Panel</span>
   </div>
 </header>
 
-<div class="container">
 
-  <!-- Header with Toggle Button -->
-  <div class="section-title" style="display:flex; align-items:center; justify-content:space-between;">
-    <span>🏦 Bank Accounts</span>
-    <button id="toggleFormBtn" class="primary">+ Add Bank</button>
+<!-- ===================== MAIN ===================== -->
+<main>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon">🏦</span>
+      <div class="stat-value" id="stat-total">0</div>
+      <div class="stat-label">Total Accounts</div>
+      <div class="stat-sub" id="stat-banks">0 unique banks</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">💰</span>
+      <div class="stat-value" id="stat-savings">0</div>
+      <div class="stat-label">Savings</div>
+      <div class="stat-sub" id="stat-savings-pct">—</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🔄</span>
+      <div class="stat-value" id="stat-current">0</div>
+      <div class="stat-label">Current</div>
+      <div class="stat-sub" id="stat-current-pct">—</div>
+    </div>
   </div>
 
-  <!-- Hidden Add Bank Form -->
-  <div id="addBankSection" class="add-bank-wrapper">
-
-    <div class="section-title">➕ Add Bank Account</div>
-
-    <div class="grid">
-      <div class="form-group">
-        <label>IFSC Code</label>
-        <input id="ifsc" placeholder="SBIN0000001" onblur="fetchIFSC()">
-      </div>
-
-      <div class="form-group">
-        <label>Bank Name</label>
-        <input id="bank" readonly>
-      </div>
-
-      <div class="form-group">
-        <label>Branch Name</label>
-        <input id="branch" readonly>
-      </div>
-
-      <div class="form-group">
-  <label>Branch Full Details</label>
-  <input id="branchDetails" readonly>
-</div>
-
-
-      <div class="form-group">
-        <label>Account Holder Name</label>
-        <input id="holder">
-      </div>
-
-      <div class="form-group">
-        <label>Customer ID</label>
-        <input id="customerId" placeholder="e.g. CUST1001">
-      </div>
-
-      <div class="form-group">
-        <label>Account Number</label>
-        <input id="account">
-      </div>
-
-      <div class="form-group">
-        <label>Account Type</label>
-        <select id="type">
-          <option>Savings</option>
-          <option>Current</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="primary" onclick="addBank()">Save Bank</button>
-      <button class="secondary" onclick="clearForm()">Clear</button>
-    </div>
-
-    <div id="status" class="status"></div>
-
-  </div>
-
-  <!-- Saved Banks Section -->
- <!-- Saved Banks Header + Search -->
-<div class="section-title" style="margin-top:28px; justify-content:space-between;">
-  <span>📋 Saved Bank Accounts</span>
-
-  <div class="search-wrapper">
-    <div class="search-box">
-      <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18"
-           fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  <!-- CONTROLS -->
+  <div class="controls-bar">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
+      <input type="text" id="searchInput" placeholder="Search name, bank, IFSC, account...">
+      <svg id="clearSearchBtn" class="clear-search" width="13" height="13" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2.5" onclick="clearSearch()">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </div>
 
-      <input type="text" id="searchInput"
-             placeholder="Search by Customer ID, Bank, Holder...">
+    <select class="ctrl-select" id="typeFilter" onchange="filterCards()">
+      <option value="all">All Types</option>
+      <option value="Savings">💰 Savings</option>
+      <option value="Current">🔄 Current</option>
+    </select>
 
-      <span id="clearSearch" class="clear-btn">✖</span>
+    <select class="ctrl-select" id="sortSelect" onchange="filterCards()">
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="name">Name A–Z</option>
+      <option value="bank">Bank A–Z</option>
+    </select>
+
+    <button class="add-btn" onclick="openAddModal()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      <span class="add-label">Add Bank</span>
+    </button>
+  </div>
+
+  <div class="result-info" id="resultInfo"></div>
+
+  <!-- CARDS -->
+  <div class="cards-grid" id="bankCards">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading your accounts…</div>
     </div>
   </div>
-</div>
 
-<!-- Cards Container OUTSIDE -->
-<div id="bankCards" class="card-container"></div>
+</main>
 
 
+<!-- ===================== FOOTER ===================== -->
+<footer class="app-footer">
+  <div class="footer-brand">
+    <div class="footer-logo">🏦</div>
+    <div>
+      <div class="footer-name">Vault</div>
+      <div class="footer-copy">© 2026 Designed by Samrat</div>
+    </div>
+  </div>
+  <div class="footer-mid">Secure Bank Record Maintenance System</div>
+  <div class="footer-secure">🔒 Secure System</div>
+</footer>
 
 
+<!-- ===================== FIREBASE + APP LOGIC ===================== -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  updateDoc,
-  deleteDoc,
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
   authDomain: "mrsamrat08.firebaseapp.com",
   projectId: "mrsamrat08"
 };
-
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db  = getFirestore(app);
 
-let editingId = null;
+/* ─── STATE ─── */
+let allBanks   = [];
+let editingId  = null;
+let deleteTargetId = null;
+let revealTimers   = {};
+let currentQRUrl   = null;
 
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════════════ */
+function toast(msg, type = 'success'){
+  const icons = {success:'✅', error:'❌', info:'ℹ️'};
+  const wrap  = document.getElementById('toastWrap');
+  const el    = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span class="toast-icon">${icons[type]||'📢'}</span><span class="toast-msg">${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),280); }, 3200);
+}
+window.toast = toast;
 
-const statusBox = document.getElementById("status");
+/* ═══════════════════════════════════════════════════════════
+   MODAL HELPERS
+   ═══════════════════════════════════════════════════════════ */
+function openModal(id){
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow='';
+}
 
-window.fetchIFSC = async () => {
+/* Click-outside to close */
+['addModal','deleteModal','qrModal','detailModal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click', function(e){
+    if(e.target===this){
+      if(id==='addModal')    closeAddModal();
+      else if(id==='deleteModal') closeDeleteModal();
+      else if(id==='qrModal')     closeQRModal();
+      else if(id==='detailModal') closeDetailModal();
+    }
+  });
+});
 
-  if(!ifsc.value) return;
+/* ─── Add/Edit Modal ─── */
+window.openAddModal = ()=>{
+  editingId = null;
+  document.getElementById('addModalTitle').textContent = 'Add Bank Account';
+  document.getElementById('saveBtn').innerHTML = '💾 Save Account';
+  clearForm();
+  openModal('addModal');
+};
+window.closeAddModal = ()=>{ closeModal('addModal'); };
 
-  statusBox.textContent = "Checking IFSC...";
-  statusBox.className = "status";
+/* ─── Delete Modal ─── */
+window.openDeleteModal = (id)=>{ deleteTargetId=id; openModal('deleteModal'); };
+window.closeDeleteModal= ()=>{ deleteTargetId=null; closeModal('deleteModal'); };
 
+window.confirmDelete = async ()=>{
+  if(!deleteTargetId) return;
   try{
-    const res = await fetch(`https://ifsc.razorpay.com/${ifsc.value.trim().toUpperCase()}`);
-    if(!res.ok) throw "";
-
-    const d = await res.json();
-
-    bank.value = d.BANK || "";
-    branch.value = d.BRANCH || "";
-
-    // ALL details in ONE field
-    branchDetails.value = d.ADDRESS || "";
-
-
-    statusBox.textContent = "IFSC verified ✔";
-    statusBox.className = "status success";
-
-  }catch{
-
-    bank.value = "";
-    branch.value = "";
-    branchDetails.value = "";
-
-    statusBox.textContent = "Invalid IFSC";
-    statusBox.className = "status error";
-  }
+    await deleteDoc(doc(db,'bankAccounts',deleteTargetId));
+    toast('Account deleted successfully');
+    closeDeleteModal();
+    loadBanks();
+  }catch(e){ toast('Failed to delete','error'); }
 };
 
-window.addBank = async () => {
+/* ─── QR Modal ─── */
+window.openQRModal = async (id)=>{
+  const snap = await getDoc(doc(db,'bankAccounts',id));
+  if(!snap.exists()) return;
+  const b = snap.data();
 
-  if(!ifsc.value || !holder.value || !account.value || !customerId.value){
-    statusBox.textContent = "Fill all required fields";
-    statusBox.className = "status error";
-    return;
-  }
+  const text = [
+    `Holder: ${b.holder}`,
+    `Bank: ${b.bank}`,
+    `Account: ${b.account}`,
+    `IFSC: ${b.ifsc}`,
+    `Branch: ${b.branch}`,
+    `Type: ${b.type}`
+  ].join('\n');
 
-  const data = {
-    customerId: customerId.value.trim(),
-    ifsc: ifsc.value.trim(),
-    bank: bank.value,
-    branch: branch.value,
-    branchDetails: branchDetails.value,
-    holder: holder.value.trim(),
-    account: account.value.trim(),
-    type: type.value,
-    updatedAt: new Date()
+  const url = `https://api.qrserver.com/v1/create-qr-code/?size=210x210&data=${encodeURIComponent(text)}&bgcolor=ffffff&color=07101f&qzone=1&margin=5`;
+  currentQRUrl = url;
+
+  const img = document.getElementById('qrImg');
+  img.src = '';
+  img.onload = null;
+  img.src = url;
+
+  document.getElementById('qrCaption').innerHTML =
+    `<strong>${b.holder}</strong>${b.bank} • ${b.ifsc}<br>•••• ${b.account.slice(-4)} (${b.type})`;
+
+  openModal('qrModal');
+};
+window.closeQRModal = ()=>{ closeModal('qrModal'); };
+
+window.downloadQR = ()=>{
+  if(!currentQRUrl) return;
+  window.open(currentQRUrl, '_blank');
+  toast('QR opened in new tab – right-click to save', 'info');
+};
+
+/* ─── Detail Modal ─── */
+window.openDetailModal = async (id)=>{
+  const snap = await getDoc(doc(db,'bankAccounts',id));
+  if(!snap.exists()) return;
+  const b = snap.data();
+
+  document.getElementById('detailTitle').textContent = b.holder;
+
+  const rows = [
+    ['Account Holder', b.holder],
+    ['Customer ID',    b.customerId||'—'],
+    ['Bank Name',      b.bank],
+    ['Branch',         b.branch],
+    ['IFSC Code',      b.ifsc],
+    ['Account Number', b.account],
+    ['Account Type',   b.type],
+    ['Phone',          b.phone||'—'],
+    ['Branch Address', b.branchDetails||'—','span2'],
+    ['Notes',          b.notes||'—','span2'],
+  ];
+
+  document.getElementById('detailGrid').innerHTML = rows.map(([l,v,cls])=>`
+    <div class="detail-item ${cls||''}">
+      <div class="detail-label">${l}</div>
+      <div class="detail-value">${v}</div>
+    </div>`).join('');
+
+  const copyText = `BANK ACCOUNT INFORMATION\n${'─'.repeat(32)}\n`
+    + rows.map(([l,v])=>`${l}: ${v}`).join('\n')
+    + `\n${'─'.repeat(32)}\nGenerated by Vault — Bank Account Manager`;
+
+  document.getElementById('detailCopyBtn').onclick = async ()=>{
+    await navigator.clipboard.writeText(copyText);
+    toast('All details copied!');
   };
 
-  try {
+  openModal('detailModal');
+};
+window.closeDetailModal = ()=>{ closeModal('detailModal'); };
 
+/* ═══════════════════════════════════════════════════════════
+   IFSC FETCH
+   ═══════════════════════════════════════════════════════════ */
+window.fetchIFSC = async ()=>{
+  const code = document.getElementById('f-ifsc').value.trim().toUpperCase();
+  if(!code){ toast('Enter an IFSC code first','info'); return; }
+
+  const hint = document.getElementById('ifscHint');
+  hint.textContent = '⏳ Verifying IFSC…';
+  hint.style.color = 'var(--muted)';
+
+  try{
+    const r = await fetch(`https://ifsc.razorpay.com/${code}`);
+    if(!r.ok) throw '';
+    const d = await r.json();
+
+    document.getElementById('f-bank').value    = d.BANK    || '';
+    document.getElementById('f-branch').value  = d.BRANCH  || '';
+    document.getElementById('f-address').value = d.ADDRESS || '';
+    document.getElementById('f-ifsc').value    = code;
+
+    hint.textContent = '✓ IFSC verified successfully';
+    hint.style.color = 'var(--ok)';
+    toast(`Verified: ${d.BANK}`);
+  }catch{
+    ['f-bank','f-branch','f-address'].forEach(id=>document.getElementById(id).value='');
+    hint.textContent = '✗ Invalid IFSC code';
+    hint.style.color = 'var(--err)';
+    toast('Invalid IFSC code','error');
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   SAVE / UPDATE BANK
+   ═══════════════════════════════════════════════════════════ */
+window.saveBank = async ()=>{
+  const v = id=>document.getElementById(id).value.trim();
+  const ifsc    = v('f-ifsc');
+  const holder  = v('f-holder');
+  const cid     = v('f-cid');
+  const account = v('f-account');
+  const bank    = v('f-bank');
+  const status  = document.getElementById('formStatus');
+
+  if(!ifsc||!holder||!cid||!account){
+    status.textContent = '⚠️ Please fill in all required fields (marked with *)';
+    status.style.color = 'var(--err)';
+    return;
+  }
+  if(!bank){
+    status.textContent = '⚠️ Please click "Verify →" to validate the IFSC code first';
+    status.style.color = 'var(--err)';
+    return;
+  }
+
+  const btn = document.getElementById('saveBtn');
+  btn.innerHTML = '⏳ Saving…';
+  btn.disabled  = true;
+
+  const data = {
+    ifsc,
+    bank,
+    branch:      v('f-branch'),
+    branchDetails: v('f-address'),
+    holder,
+    customerId:  cid,
+    account,
+    type:        document.getElementById('f-type').value,
+    phone:       v('f-phone'),
+    notes:       v('f-notes'),
+    updatedAt:   new Date()
+  };
+
+  try{
     if(editingId){
-      // 🔄 UPDATE MODE
-      await updateDoc(doc(db,"bankAccounts",editingId), data);
-
-      statusBox.textContent = "Bank account updated successfully";
+      await updateDoc(doc(db,'bankAccounts',editingId), data);
+      toast('Account updated successfully!');
       editingId = null;
-
-      document.querySelector(".primary").textContent = "Save Bank";
-
-    } else {
-      // ➕ CREATE MODE
+    }else{
       data.createdAt = new Date();
-      await addDoc(collection(db,"bankAccounts"), data);
-
-      statusBox.textContent = "Bank account saved successfully";
+      await addDoc(collection(db,'bankAccounts'), data);
+      toast('Account saved successfully!');
     }
-
-    statusBox.className = "status success";
-
+    closeAddModal();
     clearForm();
     loadBanks();
-
-  } catch(error){
-    statusBox.textContent = "Something went wrong";
-    statusBox.className = "status error";
-    console.error(error);
+  }catch(err){
+    toast('Something went wrong. Try again.','error');
+    console.error(err);
+  }finally{
+    btn.innerHTML = editingId ? '✏️ Update Account' : '💾 Save Account';
+    btn.disabled  = false;
   }
 };
 
-
-window.clearForm = () => {
-
-  ["ifsc","bank","branch","branchDetails","holder","account","customerId"]
-  .forEach(i=>document.getElementById(i).value="");
-
-  editingId = null;
-  document.querySelector(".primary").textContent = "Save Bank";
+window.clearForm = ()=>{
+  ['f-ifsc','f-bank','f-branch','f-address','f-holder','f-cid','f-account','f-phone','f-notes']
+    .forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-type').value = 'Savings';
+  document.getElementById('formStatus').textContent = '';
+  document.getElementById('ifscHint').textContent = '';
 };
 
-ifsc.addEventListener("input", ()=>{
-  ifsc.value = ifsc.value.toUpperCase();
-});
-
-
-
-async function loadBanks(){
-  const snap = await getDocs(collection(db,"bankAccounts"));
-  const container = document.getElementById("bankCards");
-  container.innerHTML="";
-
-  if(snap.empty){
-    container.innerHTML = `
-      <div class="empty">
-        No bank accounts added yet
-      </div>`;
-    return;
-  }
-
-  snap.forEach(doc=>{
-    const b = doc.data();
-
-container.innerHTML += `
-<div class="bank-card">
-  
-  <div class="card-header">
-    <div class="customer-id">Customer ID: ${b.customerId || '-'}</div>
-    <div class="account-type">${b.type}</div>
-  </div>
-
-  <!-- Bank Info Section -->
-  <div class="bank-name">
-    <strong>Bank:</strong> ${b.bank}
-  </div>
-
-  <div class="branch">
-    <strong>Branch:</strong> ${b.branch}
-  </div>
-
-  <div class="branch">
-    <strong>Address:</strong> ${b.branchDetails || "-"}
-  </div>
-
-  <!-- Account Info Section -->
-  <div class="holder-name">
-    <strong>Account Holder:</strong> ${b.holder}
-  </div>
-
-  <div class="account-number" id="acc-${doc.id}">
-    •••• ${b.account.slice(-4)}
-  </div>
-
-  <div class="ifsc-badge">
-    IFSC: ${b.ifsc}
-  </div>
-
-
-   <div class="card-actions">
-  
-  <span onclick="shareSingle('${doc.id}')">
-    <!-- Share Icon -->
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/>
-      <polyline points="16 6 12 2 8 6"/>
-      <line x1="12" y1="2" x2="12" y2="15"/>
-    </svg>
-  </span>
-
-<span onclick="viewAccount('${doc.id}', this)">
-  <svg id="eye-${doc.id}" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
-  </svg>
-</span>
-
-
-
-  <span onclick="editAccount('${doc.id}')">
-    <!-- Edit Icon -->
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 20h9"/>
-      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
-    </svg>
-  </span>
-
-  <span onclick="generateQR('${doc.id}')">
-  <!-- QR Icon -->
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="3" y="3" width="5" height="5"/>
-    <rect x="16" y="3" width="5" height="5"/>
-    <rect x="3" y="16" width="5" height="5"/>
-    <path d="M16 16h5v5h-5z"/>
-  </svg>
-</span>
-
-<span onclick="deleteAccount('${doc.id}')">
-  <!-- Delete Icon -->
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-    <polyline points="3 6 5 6 21 6"/>
-    <path d="M19 6l-2 14H7L5 6"/>
-    <path d="M10 11v6"/>
-    <path d="M14 11v6"/>
-    <path d="M9 6V4h6v2"/>
-  </svg>
-</span>
-
-<span onclick="copyAccount('${doc.id}', this)">
-  <svg id="copy-${doc.id}" viewBox="0 0 24 24" width="18" height="18"
-       fill="none" stroke="currentColor" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round">
-    <rect x="9" y="9" width="13" height="13" rx="2"/>
-    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-  </svg>
-</span>
-
-
-
-</div>
-
-
-  </div>
-`;
-
-  });
-}
-
-
-window.shareSingle = async (id) => {
-
-  const ref = doc(db,"bankAccounts",id);
-  const snap = await getDoc(ref);
-
-  if(!snap.exists()) return;
-
-  const b = snap.data();
-
-let text = 
-`BANK ACCOUNT INFORMATION
-
-Customer ID: ${b.customerId || '-'}
-Account Holder: ${b.holder}
-
-Bank: ${b.bank}
-Branch: ${b.branch}
-
-Account Number: ${b.account}
-IFSC: ${b.ifsc}
-Account Type: ${b.type}
-
-This information is confidential and intended for authorized use only.
-Generated by Bank Account Manager System.`;
-;
-
-
-  if(navigator.share){
-    try{
-      await navigator.share({
-        title:"Bank Account",
-        text:text
-      });
-    }catch{}
-  } else {
-    await navigator.clipboard.writeText(text);
-    alert("Copied to clipboard");
-  }
-};
-
-window.viewAccount = async (id, el)=>{
-
-  const snap = await getDoc(doc(db,"bankAccounts",id));
-  if(!snap.exists()) return;
-
-  const b = snap.data();
-  const accElement = document.getElementById(`acc-${id}`);
-  const eyeIcon = document.getElementById(`eye-${id}`);
-
-  if(accElement.dataset.visible === "true"){
-    hideAccount(id, b.account);
-    return;
-  }
-
-  // Show full account
-  accElement.innerHTML = b.account;
-  accElement.dataset.visible = "true";
-
-  // Change icon to eye-off
- eyeIcon.innerHTML = `
-  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12a21.77 21.77 0 0 1 5.06-7.94"/>
-  <path d="M9.9 4.24A9.77 9.77 0 0 1 12 4c7 0 11 8 11 8a21.94 21.94 0 0 1-2.06 3.19"/>
-  <line x1="1" y1="1" x2="23" y2="23"/>
-`;
-
-
-  // Auto hide after 5 seconds
-  setTimeout(()=>{
-    hideAccount(id, b.account);
-  }, 5000);
-};
-
-function hideAccount(id, fullAccount){
-  const accElement = document.getElementById(`acc-${id}`);
-  const eyeIcon = document.getElementById(`eye-${id}`);
-
-  accElement.innerHTML = `•••• ${fullAccount.slice(-4)}`;
-  accElement.dataset.visible = "false";
-
-  // Restore normal eye icon
-  eyeIcon.innerHTML = `
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
-  `;
-}
-
-
-
+/* ═══════════════════════════════════════════════════════════
+   EDIT ACCOUNT
+   ═══════════════════════════════════════════════════════════ */
 window.editAccount = async (id)=>{
-
-  const snap = await getDoc(doc(db,"bankAccounts",id));
+  const snap = await getDoc(doc(db,'bankAccounts',id));
   if(!snap.exists()) return;
-
   const b = snap.data();
-
-  // Fill form with existing values
-  ifsc.value = b.ifsc || "";
-  bank.value = b.bank || "";
-  branch.value = b.branch || "";
-  branchDetails.value = b.branchDetails || "";
-  holder.value = b.holder || "";
-  customerId.value = b.customerId || "";
-  account.value = b.account || "";
-  type.value = b.type || "Savings";
-
   editingId = id;
 
-  // Open form automatically
-  addSection.classList.add("active");
-  toggleBtn.textContent = "✖ Close";
+  document.getElementById('addModalTitle').textContent = 'Edit Bank Account';
+  document.getElementById('saveBtn').innerHTML = '✏️ Update Account';
 
-  // Change button text
-  document.querySelector(".primary").textContent = "Update Bank";
+  const set = (fid,val)=>{ document.getElementById(fid).value = val||''; };
+  set('f-ifsc',    b.ifsc);
+  set('f-bank',    b.bank);
+  set('f-branch',  b.branch);
+  set('f-address', b.branchDetails);
+  set('f-holder',  b.holder);
+  set('f-cid',     b.customerId);
+  set('f-account', b.account);
+  set('f-phone',   b.phone);
+  set('f-notes',   b.notes);
+  document.getElementById('f-type').value = b.type||'Savings';
+
+  const hint = document.getElementById('ifscHint');
+  hint.textContent = '✓ IFSC previously verified';
+  hint.style.color = 'var(--ok)';
+
+  openModal('addModal');
 };
 
+/* ═══════════════════════════════════════════════════════════
+   REVEAL ACCOUNT NUMBER
+   ═══════════════════════════════════════════════════════════ */
+window.toggleReveal = (id, account)=>{
+  const accEl = document.getElementById(`acc-${id}`);
+  const ring  = document.getElementById(`ring-${id}`);
+  const timer = document.getElementById(`timer-${id}`);
+  const circumference = 75.4;
 
-window.generateQR = (id)=>{
-  alert("QR feature coming later...");
+  if(accEl.dataset.vis==='1'){
+    /* Hide */
+    clearTimeout(revealTimers[id]);
+    clearInterval(revealTimers[id+'_tick']);
+    accEl.textContent = `•••• •••• ${account.slice(-4)}`;
+    accEl.dataset.vis = '0';
+    timer.classList.remove('show');
+    ring.style.strokeDashoffset = '0';
+    return;
+  }
+
+  /* Show */
+  accEl.textContent = account;
+  accEl.dataset.vis = '1';
+  timer.classList.add('show');
+
+  const SECS = 5;
+  let elapsed = 0;
+  ring.style.strokeDashoffset = '0';
+
+  const tick = setInterval(()=>{
+    elapsed++;
+    ring.style.strokeDashoffset = (circumference * elapsed / SECS).toFixed(2);
+    if(elapsed >= SECS) clearInterval(tick);
+  }, 1000);
+  revealTimers[id+'_tick'] = tick;
+
+  revealTimers[id] = setTimeout(()=>{
+    accEl.textContent = `•••• •••• ${account.slice(-4)}`;
+    accEl.dataset.vis = '0';
+    timer.classList.remove('show');
+    ring.style.strokeDashoffset = '0';
+    clearInterval(tick);
+  }, SECS * 1000);
 };
 
-
-window.copyAccount = async (id, el)=>{
-
-  const snap = await getDoc(doc(db,"bankAccounts",id));
+/* ═══════════════════════════════════════════════════════════
+   COPY ALL DETAILS
+   ═══════════════════════════════════════════════════════════ */
+window.copyAllDetails = async (id)=>{
+  const snap = await getDoc(doc(db,'bankAccounts',id));
   if(!snap.exists()) return;
-
   const b = snap.data();
-  const copyIcon = document.getElementById(`copy-${id}`);
-
-  // Same professional format as share
-  let text = 
-`BANK ACCOUNT INFORMATION
-
-Customer ID: ${b.customerId || '-'}
-Account Holder: ${b.holder}
-
-Bank: ${b.bank}
-Branch: ${b.branch}
-
-Account Number: ${b.account}
-IFSC: ${b.ifsc}
-Account Type: ${b.type}
-
-This information is confidential and intended for authorized use only.
-Generated by Bank Account Manager System.`;
-
+  const text = `BANK ACCOUNT INFORMATION\n${'─'.repeat(32)}\n`
+    +`Account Holder : ${b.holder}\n`
+    +`Customer ID    : ${b.customerId||'—'}\n`
+    +`Bank           : ${b.bank}\n`
+    +`Branch         : ${b.branch}\n`
+    +`IFSC Code      : ${b.ifsc}\n`
+    +`Account Number : ${b.account}\n`
+    +`Account Type   : ${b.type}\n`
+    +(b.phone ? `Phone          : ${b.phone}\n` : '')
+    +(b.notes ? `Notes          : ${b.notes}\n` : '')
+    +`${'─'.repeat(32)}\nGenerated by Vault — Bank Account Manager`;
   await navigator.clipboard.writeText(text);
-
-  // Change icon to checkmark
-  copyIcon.innerHTML = `<polyline points="20 6 9 17 4 12"/>`;
-
-  el.style.color = "#16a34a";
-  el.style.borderColor = "#16a34a";
-
-  // Auto revert after 2 sec
-  setTimeout(()=>{
-    copyIcon.innerHTML = `
-      <rect x="9" y="9" width="13" height="13" rx="2"/>
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-    `;
-    el.style.color = "";
-    el.style.borderColor = "";
-  }, 2000);
+  toast('Account details copied to clipboard!');
 };
 
-const toggleBtn = document.getElementById("toggleFormBtn");
-const addSection = document.getElementById("addBankSection");
-
-toggleBtn.addEventListener("click", () => {
-  addSection.classList.toggle("active");
-
-  if(addSection.classList.contains("active")){
-    toggleBtn.textContent = "✖ Close";
-  } else {
-    toggleBtn.textContent = "+ Add Bank";
+/* ═══════════════════════════════════════════════════════════
+   SHARE ACCOUNT
+   ═══════════════════════════════════════════════════════════ */
+window.shareAccount = async (id)=>{
+  const snap = await getDoc(doc(db,'bankAccounts',id));
+  if(!snap.exists()) return;
+  const b = snap.data();
+  const text = `Account Holder: ${b.holder}\nBank: ${b.bank}\nIFSC: ${b.ifsc}\nAccount No: ${b.account}\nType: ${b.type}`;
+  if(navigator.share){
+    try{ await navigator.share({title:'Bank Account Details', text}); }catch{}
+  }else{
+    await navigator.clipboard.writeText(text);
+    toast('Copied to clipboard for sharing','info');
   }
-});
+};
 
-const searchInput = document.getElementById("searchInput");
+/* ═══════════════════════════════════════════════════════════
+   LOAD & RENDER
+   ═══════════════════════════════════════════════════════════ */
+async function loadBanks(){
+  try{
+    const snap = await getDocs(collection(db,'bankAccounts'));
+    allBanks = [];
+    snap.forEach(d=>allBanks.push({id:d.id, ...d.data()}));
+    allBanks.sort((a,b)=>( b.createdAt?.toMillis?.()??0 )-(a.createdAt?.toMillis?.()??0));
+    updateStats(allBanks);
+    filterCards();
+  }catch(err){
+    console.error(err);
+    toast('Failed to load accounts','error');
+    document.getElementById('bankCards').innerHTML=`<div class="empty-state"><span class="empty-icon">⚠️</span><div class="empty-title">Connection Error</div><div class="empty-sub">Could not connect to database. Check your network.</div></div>`;
+  }
+}
 
-searchInput.addEventListener("input", ()=>{
-  const searchValue = searchInput.value.toLowerCase();
+function updateStats(banks){
+  const total   = banks.length;
+  const uniq    = new Set(banks.map(b=>b.bank)).size;
+  const savings = banks.filter(b=>b.type==='Savings').length;
+  const current = banks.filter(b=>b.type==='Current').length;
 
-  const cards = document.querySelectorAll(".bank-card");
+  countUp('stat-total',    total);
+  countUp('stat-savings',  savings);
+  countUp('stat-current',  current);
 
-  cards.forEach(card=>{
-    const text = card.innerText.toLowerCase();
+  document.getElementById('stat-banks').textContent       = `${uniq} unique bank${uniq!==1?'s':''}`;
+  document.getElementById('stat-savings-pct').textContent = total ? `${Math.round(savings/total*100)}% of total` : '—';
+  document.getElementById('stat-current-pct').textContent = total ? `${Math.round(current/total*100)}% of total` : '—';
+}
 
-    if(text.includes(searchValue)){
-      card.style.display = "block";
-    } else {
-      card.style.display = "none";
-    }
+function countUp(id, target){
+  const el = document.getElementById(id);
+  const start = parseInt(el.textContent)||0;
+  const dur = 500, t0 = performance.now();
+  const tick = now=>{
+    const p = Math.min((now-t0)/dur,1);
+    el.textContent = Math.round(start+(target-start)*p);
+    if(p<1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+window.filterCards = ()=>{
+  const q    = document.getElementById('searchInput').value.toLowerCase();
+  const type = document.getElementById('typeFilter').value;
+  const sort = document.getElementById('sortSelect').value;
+
+  document.getElementById('clearSearchBtn').style.display = q?'block':'none';
+
+  let list = [...allBanks];
+  if(type!=='all') list = list.filter(b=>b.type===type);
+  if(q) list = list.filter(b=>
+    `${b.holder} ${b.bank} ${b.branch} ${b.ifsc} ${b.account} ${b.customerId} ${b.notes||''}`
+      .toLowerCase().includes(q)
+  );
+
+  list.sort((a,b)=>{
+    if(sort==='newest') return (b.createdAt?.toMillis?.()??0)-(a.createdAt?.toMillis?.()??0);
+    if(sort==='oldest') return (a.createdAt?.toMillis?.()??0)-(b.createdAt?.toMillis?.()??0);
+    if(sort==='name')   return a.holder.localeCompare(b.holder);
+    if(sort==='bank')   return a.bank.localeCompare(b.bank);
+    return 0;
   });
-});
 
-window.deleteAccount = async (id) => {
+  const ri = document.getElementById('resultInfo');
+  ri.innerHTML = allBanks.length
+    ? `<span>Showing</span><span class="result-badge">${list.length} of ${allBanks.length}</span><span>account${allBanks.length!==1?'s':''}</span>`
+    : '';
 
-  const confirmDelete = confirm("Are you sure you want to delete this account?");
-  if(!confirmDelete) return;
-
-  try {
-    await deleteDoc(doc(db,"bankAccounts",id));
-    loadBanks();
-  } catch(err){
-    alert("Failed to delete");
-  }
+  renderCards(list);
 };
-loadBanks();
-</script>
 
-<footer class="main-footer">
-  <div class="footer-content">
+function renderCards(banks){
+  const c = document.getElementById('bankCards');
 
-    <div class="footer-left">
-      <div class="footer-logo">🏦</div>
-      <div>
-        <div class="footer-title">Bank Account Manager</div>
-        <div class="footer-sub">
-          Secure Bank Record Maintenance System
+  if(!banks.length){
+    c.innerHTML = allBanks.length===0
+      ? `<div class="empty-state">
+           <span class="empty-icon">🏦</span>
+           <div class="empty-title">No Accounts Yet</div>
+           <div class="empty-sub">Add your first bank account to start managing your finances securely.</div>
+           <button class="btn btn-gold" onclick="openAddModal()">+ Add Your First Account</button>
+         </div>`
+      : `<div class="empty-state">
+           <span class="empty-icon">🔍</span>
+           <div class="empty-title">No Results Found</div>
+           <div class="empty-sub">Try a different search term or adjust your filters.</div>
+         </div>`;
+    return;
+  }
+
+  c.innerHTML = banks.map((b,i)=>`
+<div class="bank-card" style="animation-delay:${i*55}ms">
+  <div class="card-bar"></div>
+  <div class="card-body">
+
+    <div class="card-row1">
+      <div class="card-cid">${b.customerId||'—'}</div>
+      <div class="card-badge">${b.type}</div>
+    </div>
+
+    <div class="card-holder">${b.holder}</div>
+    <div class="card-bank">🏛️ ${b.bank}</div>
+    <div class="card-branch">📍 ${b.branch}${b.branchDetails?' — '+b.branchDetails.substring(0,55)+(b.branchDetails.length>55?'…':''):''}</div>
+
+    <div class="acc-row">
+      <div class="acc-num" id="acc-${b.id}" data-vis="0">•••• •••• ${b.account.slice(-4)}</div>
+      <div class="acc-controls">
+        <div class="timer-ring" id="timer-${b.id}">
+          <svg width="28" height="28" viewBox="0 0 28 28">
+            <circle class="timer-bg" cx="14" cy="14" r="12"/>
+            <circle class="timer-fg" cx="14" cy="14" r="12" id="ring-${b.id}"
+              style="transform:rotate(-90deg);transform-origin:14px 14px"/>
+          </svg>
         </div>
+        <button class="reveal-btn" onclick="toggleReveal('${b.id}','${b.account}')" title="Reveal account number">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
       </div>
     </div>
 
-    <div class="footer-center">
-      <span>© 2026 All Rights Reserved</span>
-      <span> | </span>
-      <span>Designed by Samrat</span>
-    </div>
-
-    <div class="footer-right">
-      <span class="footer-badge">Secure System</span>
+    <div class="ifsc-row">
+      <div class="ifsc-chip">IFSC: ${b.ifsc}</div>
+      ${b.phone ? `<div style="font-size:12px;color:var(--muted)">📞 ${b.phone}</div>` : ''}
     </div>
 
   </div>
-</footer>
 
+  <div class="card-actions">
+    <button class="ca-btn ca-copy" onclick="copyAllDetails('${b.id}')" title="Copy All">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+    </button>
+    <button class="ca-btn ca-share" onclick="shareAccount('${b.id}')" title="Share">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/>
+        <polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+      </svg>
+    </button>
+    <button class="ca-btn ca-view" onclick="openDetailModal('${b.id}')" title="Full Details">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </button>
+    <button class="ca-btn ca-edit" onclick="editAccount('${b.id}')" title="Edit">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+      </svg>
+    </button>
+    <button class="ca-btn ca-qr" onclick="openQRModal('${b.id}')" title="QR Code">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="5" height="5"/>
+        <rect x="16" y="3" width="5" height="5"/>
+        <rect x="3" y="16" width="5" height="5"/>
+        <rect x="16" y="16" width="5" height="5"/>
+      </svg>
+    </button>
+    <button class="ca-btn ca-del" onclick="openDeleteModal('${b.id}')" title="Delete">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-2 14H7L5 6"/>
+        <path d="M10 11v6"/><path d="M14 11v6"/>
+        <path d="M9 6V4h6v2"/>
+      </svg>
+    </button>
+  </div>
+</div>`).join('');
+}
+
+/* ─── Search input events ─── */
+document.getElementById('searchInput').addEventListener('input', filterCards);
+window.clearSearch = ()=>{
+  document.getElementById('searchInput').value='';
+  document.getElementById('clearSearchBtn').style.display='none';
+  filterCards();
+};
+
+/* ─── Init ─── */
+loadBanks();
+
+</script>
 </body>
 </html>

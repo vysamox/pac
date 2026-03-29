@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAN Card Correction Portal | PAC System</title>
+<meta name="theme-color" content="#02040c">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#02040c;--ink2:#050b1a;--ink3:#07112a;
+  --surface:rgba(5,12,30,0.7);--rim:rgba(255,255,255,0.07);--rim-hi:rgba(0,229,255,0.3);
+  --neon:#00f0ff;--blue:#1a6bff;--violet:#8b5cf6;--green:#06ffa5;
+  --rose:#ff2d78;--amber:#ffd60a;
+  --txt:#e4f0ff;--sub:rgba(180,210,250,0.55);--dim:rgba(120,160,210,0.28);
+  --r:16px;--r2:10px;
+  --e:cubic-bezier(0.16,1,0.3,1);--t:0.4s var(--e);
+  --ib:rgba(3,8,24,0.8);--ibr:rgba(0,240,255,0.15);--ibf:rgba(0,240,255,0.5);
+  --err:#ff2d78;--ok:#06ffa5;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--ink);color:var(--txt);overflow-x:hidden;line-height:1.6;}
+::selection{background:rgba(0,240,255,0.25);color:#fff;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:rgba(2,4,12,0.95);}
+::-webkit-scrollbar-thumb{background:linear-gradient(to bottom,var(--neon),var(--blue));border-radius:3px;}
+html{scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.6) rgba(2,4,12,0.95);}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.11;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");}
+
+/* HEADER */
+.site-header{position:sticky;top:0;z-index:100;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;
+  background:rgba(2,4,12,0.88);backdrop-filter:blur(40px);border-bottom:1px solid rgba(255,255,255,0.06);}
+.site-header::after{content:"";position:absolute;bottom:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.3),transparent);}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-box{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--neon),var(--blue));display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;overflow:hidden;position:relative;}
+.logo-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.25)50%,transparent 70%);animation:shine 3s ease-in-out infinite;}
+@keyframes shine{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.logo-txt b{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--txt);}
+.logo-txt span{display:block;font-family:'Fira Code',monospace;font-size:8px;letter-spacing:3px;color:var(--neon);opacity:.8;text-transform:uppercase;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.hdr-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10px;color:var(--sub);background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.12);}
+.hdr-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+.track-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);color:var(--violet);cursor:pointer;transition:var(--t);}
+.track-btn:hover{background:rgba(139,92,246,0.18);transform:translateY(-1px);}
+
+/* COMPACT HERO */
+.page-hero{text-align:center;padding:28px 24px 22px;position:relative;overflow:hidden;
+  background:linear-gradient(to bottom,rgba(7,30,48,0.8),rgba(2,4,12,0));}
+.page-hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,0.015)1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.015)1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:99px;
+  background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.18);
+  font-family:'Fira Code',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--neon);}
+.hero-kicker-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);box-shadow:0 0 7px var(--amber);animation:pulse 2s ease-in-out infinite;}
+.app-id-badge{margin-top:10px;display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:8px;
+  background:rgba(5,12,30,0.9);border:1px solid rgba(0,240,255,0.18);
+  font-family:'Fira Code',monospace;font-size:11px;color:var(--neon);letter-spacing:1px;}
+
+/* FORM */
+.form-wrapper{max-width:880px;margin:0 auto;padding:20px 24px 80px;}
+
+/* PROGRESS */
+.progress-strip{display:flex;gap:0;margin-bottom:28px;border-radius:12px;overflow:hidden;border:1px solid rgba(0,240,255,0.1);}
+.prog-step{flex:1;padding:10px 6px;text-align:center;font-family:'Fira Code',monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);background:rgba(5,12,30,0.6);border-right:1px solid rgba(0,240,255,0.06);transition:var(--t);cursor:default;position:relative;}
+.prog-step:last-child{border-right:none;}
+.prog-step.done{background:rgba(6,255,165,0.06);color:var(--green);}
+.prog-step.done::after{content:"✓";position:absolute;top:3px;right:5px;font-size:7px;color:var(--green);}
+.prog-step.active{background:rgba(0,240,255,0.08);color:var(--neon);}
+.prog-num{display:block;font-size:14px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;margin-bottom:1px;}
+
+/* SECTION CARDS */
+.form-section{background:rgba(5,12,30,0.7);border:1px solid var(--rim);border-radius:var(--r);margin-bottom:16px;overflow:hidden;backdrop-filter:blur(20px);transition:border-color .3s;}
+.form-section:focus-within{border-color:rgba(0,240,255,0.22);}
+.sec-header{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;user-select:none;}
+.sec-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.si-c{background:rgba(0,240,255,0.1);color:var(--neon);border:1px solid rgba(0,240,255,0.2);}
+.si-g{background:rgba(6,255,165,0.1);color:var(--green);border:1px solid rgba(6,255,165,0.2);}
+.si-v{background:rgba(139,92,246,0.1);color:var(--violet);border:1px solid rgba(139,92,246,0.2);}
+.si-b{background:rgba(26,107,255,0.1);color:#6ea8fe;border:1px solid rgba(26,107,255,0.2);}
+.si-a{background:rgba(255,214,10,0.1);color:var(--amber);border:1px solid rgba(255,214,10,0.2);}
+.si-r{background:rgba(255,45,120,0.1);color:var(--rose);border:1px solid rgba(255,45,120,0.2);}
+.sec-head-text{flex:1;}
+.sec-num{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:3px;color:var(--neon);opacity:.7;text-transform:uppercase;margin-bottom:1px;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--txt);text-transform:uppercase;}
+.sec-toggle{color:var(--dim);font-size:12px;transition:transform .35s var(--e);}
+.sec-body{padding:20px 22px;display:grid;gap:14px;}
+.form-section.collapsed .sec-body{display:none;}
+.form-section.collapsed .sec-toggle{transform:rotate(-90deg);}
+
+/* FIELDS */
+.field-row{display:grid;grid-template-columns:1fr;gap:6px;}
+.field-row.two{grid-template-columns:1fr 1fr;}
+.field-row.three{grid-template-columns:1fr 1fr 1fr;}
+.field-label{font-family:'Rajdhani',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);display:flex;align-items:center;gap:4px;}
+.req{color:var(--rose);font-size:10px;}
+.field-wrap{position:relative;}
+.field-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--dim);pointer-events:none;z-index:1;transition:color .2s;}
+.field-wrap:focus-within .field-icon{color:var(--neon);}
+
+input,select,textarea{width:100%;padding:11px 12px 11px 38px;background:var(--ib);border:1px solid var(--ibr);border-radius:var(--r2);color:var(--txt);font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:400;transition:border-color .25s,box-shadow .25s;outline:none;-webkit-appearance:none;appearance:none;}
+input::placeholder{color:var(--dim);font-size:12.5px;}
+input:focus,select:focus{border-color:var(--ibf);box-shadow:0 0 0 3px rgba(0,240,255,0.07);}
+input.error,select.error{border-color:var(--err);box-shadow:0 0 0 3px rgba(255,45,120,0.07);}
+input.ok,select.ok{border-color:var(--ok);box-shadow:0 0 0 3px rgba(6,255,165,0.05);}
+input[readonly]{background:rgba(0,240,255,0.03);color:rgba(0,240,255,0.7);cursor:not-allowed;border-color:rgba(0,240,255,0.1);}
+select{cursor:pointer;}
+select option{background:#050b1a;color:var(--txt);}
+input[type="date"]{color-scheme:dark;}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.4);cursor:pointer;}
+.no-icon{padding-left:12px !important;}
+
+.field-err{font-family:'Fira Code',monospace;font-size:10px;color:var(--err);margin-top:3px;display:none;letter-spacing:.3px;}
+.field-err.show{display:block;}
+.field-ok{font-family:'Fira Code',monospace;font-size:9.5px;color:var(--ok);margin-top:2px;display:none;}
+.field-ok.show{display:block;}
+.field-hint{font-family:'Fira Code',monospace;font-size:9.5px;color:var(--dim);margin-top:2px;letter-spacing:.3px;}
+
+.read-group{padding:9px 12px;background:rgba(0,240,255,0.04);border:1px solid rgba(0,240,255,0.1);border-radius:var(--r2);display:flex;gap:5px;align-items:center;font-family:'Fira Code',monospace;font-size:11.5px;color:rgba(0,240,255,0.8);letter-spacing:.5px;}
+.read-group i{font-size:9px;opacity:.6;}
+.sub-label{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--neon);opacity:.6;padding-bottom:5px;border-bottom:1px solid rgba(0,240,255,0.08);margin-bottom:2px;}
+
+/* AGE BADGE */
+.age-badge{display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:4px 10px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);color:var(--violet);letter-spacing:.5px;}
+
+/* CHECKBOXES */
+.check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:9px;}
+.check-item{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);cursor:pointer;transition:var(--t);}
+.check-item:hover{border-color:rgba(0,240,255,0.2);background:rgba(0,240,255,0.04);}
+.check-input{display:none;}
+.check-box{width:17px;height:17px;border-radius:5px;border:1.5px solid rgba(0,240,255,0.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:var(--t);background:transparent;}
+.check-item:has(.check-input:checked) .check-box{background:var(--neon);border-color:var(--neon);box-shadow:0 0 8px rgba(0,240,255,0.4);}
+.check-item:has(.check-input:checked) .check-box::after{content:"✓";font-size:10px;color:#01080f;font-weight:800;}
+.check-label{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:var(--sub);transition:color .2s;}
+.check-item:has(.check-input:checked) .check-label{color:var(--txt);}
+
+/* PIN STATUS */
+.pin-status{display:flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:10px;margin-top:4px;letter-spacing:.3px;}
+.pin-status.loading{color:var(--amber);}
+.pin-status.success{color:var(--ok);}
+.pin-status.fail{color:var(--err);}
+
+/* SUMMARY TABLE */
+.summary-table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;}
+.summary-table th{padding:10px 14px;font-family:'Rajdhani',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--neon);background:rgba(0,240,255,0.05);border-bottom:1px solid rgba(0,240,255,0.1);text-align:left;}
+.summary-table td{padding:9px 14px;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--sub);border-bottom:1px solid rgba(255,255,255,0.04);}
+.summary-table td:first-child{color:var(--dim);font-family:'Fira Code',monospace;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;width:40%;}
+.summary-table td:last-child{color:var(--txt);font-weight:500;}
+.summary-table tr:last-child td{border-bottom:none;}
+.summary-table tr:hover td{background:rgba(0,240,255,0.02);}
+
+/* DECLARATION */
+.decl-box{padding:18px 20px;border-radius:14px;border:1px solid rgba(255,214,10,0.2);background:rgba(255,214,10,0.03);display:flex;gap:12px;align-items:flex-start;cursor:pointer;}
+.decl-box-visual{width:21px;height:21px;border-radius:5px;border:1.5px solid rgba(255,214,10,0.4);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:var(--t);}
+.decl-box-visual.checked{background:var(--amber);border-color:var(--amber);box-shadow:0 0 10px rgba(255,214,10,0.4);}
+.decl-box-visual.checked::after{content:"✓";font-size:12px;color:#01080f;font-weight:800;}
+.decl-text{font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:var(--sub);line-height:1.7;}
+.decl-text strong{color:var(--amber);}
+
+/* SUBMIT */
+.submit-wrap{text-align:center;padding-top:8px;}
+.submit-btn{display:inline-flex;align-items:center;gap:9px;padding:14px 44px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:var(--t);position:relative;overflow:hidden;background:linear-gradient(135deg,var(--neon),var(--blue));color:#010810;box-shadow:0 0 36px rgba(0,240,255,0.28);}
+.submit-btn::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.2)55%,transparent 70%);transform:translateX(-100%);transition:.5s;}
+.submit-btn:hover:not(:disabled){transform:translateY(-3px) scale(1.02);box-shadow:0 0 55px rgba(0,240,255,0.48);}
+.submit-btn:hover:not(:disabled)::before{transform:translateX(100%);}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed;transform:none !important;}
+.submit-hint{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);margin-top:10px;letter-spacing:.5px;}
+
+/* SUCCESS OVERLAY */
+.success-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(2,4,12,0.97);backdrop-filter:blur(30px);opacity:0;pointer-events:none;transition:opacity .5s;overflow-y:auto;}
+.success-overlay.show{opacity:1;pointer-events:all;}
+.success-card{max-width:560px;width:92%;text-align:center;padding:44px 32px 36px;border-radius:24px;border:1px solid rgba(6,255,165,0.25);background:rgba(3,12,30,0.96);margin:auto;}
+
+.success-icon{width:76px;height:76px;border-radius:50%;background:rgba(6,255,165,0.1);border:2px solid rgba(6,255,165,0.3);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--green);margin:0 auto 22px;animation:spulse 2s ease-in-out infinite;}
+@keyframes spulse{0%,100%{box-shadow:0 0 36px rgba(6,255,165,0.2)}50%{box-shadow:0 0 60px rgba(6,255,165,0.45)}}
+.success-title{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:3px;color:var(--green);margin-bottom:8px;}
+.success-sub{font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:var(--sub);line-height:1.7;margin-bottom:20px;}
+.success-appid{font-family:'Fira Code',monospace;font-size:14px;color:var(--neon);padding:10px 20px;border-radius:8px;background:rgba(0,240,255,0.07);border:1px solid rgba(0,240,255,0.2);display:inline-block;margin-bottom:24px;letter-spacing:1.5px;}
+
+/* WHATSAPP BOX */
+.wa-box{margin:0 0 24px;border-radius:16px;border:1.5px solid rgba(37,211,102,0.35);background:rgba(37,211,102,0.06);padding:20px 22px;text-align:left;}
+.wa-box-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.wa-box-icon{width:40px;height:40px;border-radius:11px;background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;color:#25d366;flex-shrink:0;}
+.wa-box-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#25d366;}
+.wa-box-sub{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(37,211,102,0.6);}
+.wa-doc-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.wa-doc-item{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:9px;background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.15);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:rgba(220,255,230,0.8);}
+.wa-doc-item i{font-size:11px;color:#25d366;flex-shrink:0;}
+.wa-number-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);}
+.wa-number-label{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(37,211,102,0.6);display:block;margin-bottom:2px;}
+.wa-number{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:#25d366;}
+.wa-name{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;color:rgba(37,211,102,0.7);letter-spacing:1px;}
+.wa-open-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:99px;background:linear-gradient(135deg,#25d366,#128c47);border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:var(--t);text-decoration:none;margin-top:12px;}
+.wa-open-btn:hover{transform:scale(1.02);box-shadow:0 0 24px rgba(37,211,102,0.4);}
+.wa-note{font-family:'Fira Code',monospace;font-size:9px;color:rgba(37,211,102,0.5);letter-spacing:.4px;margin-top:10px;text-align:center;}
+
+.success-close{padding:11px 30px;border-radius:99px;background:linear-gradient(135deg,var(--green),#00bfa5);border:none;color:#010810;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:var(--t);}
+.success-close:hover{transform:scale(1.04);}
+
+/* TRACK MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;background:rgba(2,4,12,0.96);backdrop-filter:blur(30px);opacity:0;pointer-events:none;transition:opacity .4s;}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal-card{max-width:560px;width:92%;border-radius:20px;border:1px solid rgba(0,240,255,0.2);background:rgba(3,10,28,0.98);overflow:hidden;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--neon);}
+.modal-close{width:30px;height:30px;border-radius:8px;border:1px solid rgba(0,240,255,0.15);background:rgba(0,240,255,0.05);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--dim);cursor:pointer;transition:var(--t);}
+.modal-close:hover{color:var(--neon);border-color:rgba(0,240,255,0.4);}
+.modal-body{padding:22px;}
+.modal-search-row{display:flex;gap:10px;margin-bottom:18px;}
+.modal-search-row input{flex:1;padding:10px 14px;background:rgba(3,8,24,0.9);border:1px solid rgba(0,240,255,0.15);border-radius:10px;color:var(--txt);font-family:'Fira Code',monospace;font-size:12px;outline:none;transition:border-color .25s;letter-spacing:1px;}
+.modal-search-row input:focus{border-color:rgba(0,240,255,0.45);}
+.modal-search-row input::placeholder{color:var(--dim);}
+.modal-search-btn{padding:10px 18px;border-radius:10px;background:linear-gradient(135deg,var(--neon),var(--blue));border:none;color:#010810;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:var(--t);}
+.modal-search-btn:hover{transform:scale(1.03);}
+.track-result{display:none;}
+.track-result.show{display:block;}
+.track-status-bar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;margin-bottom:16px;}
+.tsb-pending{background:rgba(255,214,10,0.07);border:1px solid rgba(255,214,10,0.2);}
+.tsb-approved{background:rgba(6,255,165,0.07);border:1px solid rgba(6,255,165,0.2);}
+.tsb-rejected{background:rgba(255,45,120,0.07);border:1px solid rgba(255,45,120,0.2);}
+.tsb-icon{font-size:22px;}
+.tsb-pending .tsb-icon{color:var(--amber);}
+.tsb-approved .tsb-icon{color:var(--green);}
+.tsb-rejected .tsb-icon{color:var(--rose);}
+.tsb-info .tsb-lbl{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:3px;}
+.tsb-info .tsb-val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
+.tsb-pending .tsb-val{color:var(--amber);}
+.tsb-approved .tsb-val{color:var(--green);}
+.tsb-rejected .tsb-val{color:var(--rose);}
+.track-table{width:100%;border-collapse:collapse;}
+.track-table td{padding:8px 10px;font-size:12.5px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.track-table td:first-child{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);width:45%;}
+.track-table td:last-child{color:var(--txt);font-weight:500;}
+.track-table tr:last-child td{border-bottom:none;}
+.track-no-result{text-align:center;padding:28px;font-family:'Fira Code',monospace;font-size:11px;color:var(--dim);letter-spacing:1px;display:none;}
+.track-no-result.show{display:block;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:20px;z-index:10000;padding:12px 18px;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;backdrop-filter:blur(20px);transform:translateY(80px);opacity:0;transition:transform .35s var(--e),opacity .35s;display:flex;align-items:center;gap:8px;max-width:300px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{background:rgba(6,255,165,0.1);border:1px solid rgba(6,255,165,0.3);color:var(--green);}
+.toast.warn{background:rgba(255,214,10,0.1);border:1px solid rgba(255,214,10,0.3);color:var(--amber);}
+.toast.err{background:rgba(255,45,120,0.1);border:1px solid rgba(255,45,120,0.3);color:var(--rose);}
+.spinner{width:16px;height:16px;border:2px solid rgba(1,8,16,0.3);border-top-color:#010810;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:680px){
+  .site-header{padding:0 14px;height:54px;}
+  .form-wrapper{padding:16px 12px 60px;}
+  .field-row.two,.field-row.three{grid-template-columns:1fr;}
+  .check-grid{grid-template-columns:1fr 1fr;}
+  .sec-body{padding:14px 14px;}
+  .progress-strip{display:none;}
+  .wa-doc-list{grid-template-columns:1fr;}
+}
+@media(max-width:420px){.check-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <a class="logo" href="index.html">
+    <div class="logo-box"><i class="fa-solid fa-id-card"></i></div>
+    <div class="logo-txt"><b>PAC System</b><span>PAN Correction</span></div>
+  </a>
+  <div class="hdr-right">
+    <button class="track-btn" onclick="openTrack()"><i class="fa-solid fa-magnifying-glass"></i> Track Application</button>
+    <div class="hdr-badge"><span class="hdr-dot"></span> Portal Live</div>
+  </div>
+</header>
+
+<!-- COMPACT HERO -->
+<div class="page-hero">
+  <div class="hero-kicker"><span class="hero-kicker-dot"></span> PAN Card Correction · Official Portal</div>
+  <div class="app-id-badge"><i class="fa-solid fa-hashtag" style="color:var(--neon);"></i> Application No: <span id="app-id-display" style="font-weight:600;">—</span></div>
+</div>
+
+<!-- FORM -->
+<div class="form-wrapper">
+  <div class="progress-strip">
+    <div class="prog-step active" id="ps1"><span class="prog-num">01</span>Title</div>
+    <div class="prog-step" id="ps2"><span class="prog-num">02</span>Personal</div>
+    <div class="prog-step" id="ps3"><span class="prog-num">03</span>Contact</div>
+    <div class="prog-step" id="ps4"><span class="prog-num">04</span>Family</div>
+    <div class="prog-step" id="ps5"><span class="prog-num">05</span>Address</div>
+    <div class="prog-step" id="ps6"><span class="prog-num">06</span>Type</div>
+    <div class="prog-step" id="ps7"><span class="prog-num">07</span>Submit</div>
+  </div>
+
+  <form id="pan-form" novalidate>
+
+    <!-- S1: TITLE & NAME -->
+    <div class="form-section" id="sec1">
+      <div class="sec-header" onclick="toggleSec('sec1')">
+        <div class="sec-icon si-c"><i class="fa-solid fa-user"></i></div>
+        <div class="sec-head-text"><div class="sec-num">Section 01</div><div class="sec-title">Title & Name</div></div>
+        <i class="fa-solid fa-chevron-down sec-toggle"></i>
+      </div>
+      <div class="sec-body">
+        <div class="field-row two">
+          <div>
+            <div class="field-label">Title <span class="req">*</span></div>
+            <div class="field-wrap">
+              <i class="fa-solid fa-chevron-down field-icon"></i>
+              <select id="title" required onchange="handleTitle()">
+                <option value="">Select Title</option>
+                <option value="Mr">Mr</option>
+                <option value="Mrs">Mrs</option>
+                <option value="Ms">Ms</option>
+              </select>
+            </div>
+            <div class="field-err" id="err-title">Please select a title.</div>
+          </div>
+          <div>
+            <div class="field-label">Gender (Auto)</div>
+            <div class="field-wrap">
+              <i class="fa-solid fa-lock field-icon"></i>
+              <input type="text" id="gender" readonly placeholder="Auto-filled from Title" style="padding-left:36px;">
+            </div>
+          </div>
+        </div>
+        <div class="sub-label">Applicant Name</div>
+        <div class="field-row three">
+          <div>
+            <div class="field-label">First Name <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="first-name" placeholder="First" oninput="buildName()" onblur="vField('first-name')">
+            </div>
+            <div class="field-err" id="err-first-name">First name is required.</div>
+          </div>
+          <div>
+            <div class="field-label">Middle Name</div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="middle-name" placeholder="Optional" oninput="buildName()">
+            </div>
+          </div>
+          <div>
+            <div class="field-label">Last Name <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="last-name" placeholder="Last" oninput="buildName()" onblur="vField('last-name')">
+            </div>
+            <div class="field-err" id="err-last-name">Last name is required.</div>
+          </div>
+        </div>
+        <div class="field-row two">
+          <div>
+            <div class="field-label">Name on PAN Card (Auto)</div>
+            <div class="read-group"><i class="fa-solid fa-lock"></i><span id="name-on-card-display">—</span></div>
+            <input type="hidden" id="name-on-card">
+          </div>
+          <div>
+            <div class="field-label">Aadhaar Name (Auto)</div>
+            <div class="read-group"><i class="fa-solid fa-lock"></i><span id="aadhaar-name-display">—</span></div>
+            <input type="hidden" id="aadhaar-name">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2: PERSONAL DETAILS -->
+    <div class="form-section" id="sec2">
+      <div class="sec-header" onclick="toggleSec('sec2')">
+        <div class="sec-icon si-g"><i class="fa-solid fa-id-badge"></i></div>
+        <div class="sec-head-text"><div class="sec-num">Section 02</div><div class="sec-title">Personal Details</div></div>
+        <i class="fa-solid fa-chevron-down sec-toggle"></i>
+      </div>
+      <div class="sec-body">
+        <div class="sub-label">PAN Number (Enter Twice to Confirm)</div>
+        <div class="field-row two">
+          <div>
+            <div class="field-label">PAN Number <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-credit-card field-icon"></i>
+              <input type="text" id="pan-number" placeholder="ABCDE1234F" maxlength="10" oninput="fmtPAN(this)" onblur="vPAN()">
+            </div>
+            <div class="field-err" id="err-pan">Invalid PAN. Format: 5 letters + 4 digits + 1 letter.</div>
+            <div class="field-ok" id="ok-pan">✓ Valid PAN format</div>
+          </div>
+          <div>
+            <div class="field-label">Confirm PAN <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-credit-card field-icon"></i>
+              <input type="text" id="pan-confirm" placeholder="Re-enter PAN" maxlength="10" oninput="fmtPAN(this)" onblur="vPANConfirm()">
+            </div>
+            <div class="field-err" id="err-pan-confirm">PAN numbers do not match.</div>
+            <div class="field-ok" id="ok-pan-confirm">✓ PAN confirmed</div>
+          </div>
+        </div>
+        <div class="sub-label">Aadhaar Number (Enter Twice to Confirm)</div>
+        <div class="field-row two">
+          <div>
+            <div class="field-label">Aadhaar Number <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-fingerprint field-icon"></i>
+              <input type="text" id="aadhaar-number" placeholder="12-digit Aadhaar" maxlength="12" oninput="numOnly(this);vAadhaar()" onblur="vAadhaar()">
+            </div>
+            <div class="field-err" id="err-aadhaar">Aadhaar must be exactly 12 digits.</div>
+            <div class="field-ok" id="ok-aadhaar">✓ Valid Aadhaar</div>
+          </div>
+          <div>
+            <div class="field-label">Confirm Aadhaar <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-fingerprint field-icon"></i>
+              <input type="text" id="aadhaar-confirm" placeholder="Re-enter Aadhaar" maxlength="12" oninput="numOnly(this)" onblur="vAadhaarConfirm()">
+            </div>
+            <div class="field-err" id="err-aadhaar-confirm">Aadhaar numbers do not match.</div>
+            <div class="field-ok" id="ok-aadhaar-confirm">✓ Aadhaar confirmed</div>
+          </div>
+        </div>
+        <div>
+          <div class="field-label">Date of Birth <span class="req">*</span></div>
+          <div class="field-wrap"><i class="fa-solid fa-calendar field-icon"></i>
+            <input type="date" id="dob" max="" onchange="calcAge()" onblur="vField('dob')">
+          </div>
+          <div id="age-display"></div>
+          <div class="field-err" id="err-dob">Date of birth is required.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3: CONTACT -->
+    <div class="form-section" id="sec3">
+      <div class="sec-header" onclick="toggleSec('sec3')">
+        <div class="sec-icon si-b"><i class="fa-solid fa-phone"></i></div>
+        <div class="sec-head-text"><div class="sec-num">Section 03</div><div class="sec-title">Contact Details</div></div>
+        <i class="fa-solid fa-chevron-down sec-toggle"></i>
+      </div>
+      <div class="sec-body">
+        <div class="field-row two">
+          <div>
+            <div class="field-label">Mobile Number <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-mobile-screen field-icon"></i>
+              <input type="text" id="mobile" placeholder="10-digit mobile" maxlength="10" oninput="numOnly(this)" onblur="vMobile()">
+            </div>
+            <div class="field-err" id="err-mobile">Valid 10-digit number starting with 6–9.</div>
+            <div class="field-ok" id="ok-mobile">✓ Valid mobile</div>
+          </div>
+          <div>
+            <div class="field-label">Email Address <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-envelope field-icon"></i>
+              <input type="email" id="email" placeholder="your@email.com" onblur="vEmail()">
+            </div>
+            <div class="field-err" id="err-email">Enter a valid email address.</div>
+            <div class="field-ok" id="ok-email">✓ Valid email</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4: FAMILY -->
+    <div class="form-section" id="sec4">
+      <div class="sec-header" onclick="toggleSec('sec4')">
+        <div class="sec-icon si-v"><i class="fa-solid fa-people-group"></i></div>
+        <div class="sec-head-text"><div class="sec-num">Section 04</div><div class="sec-title">Family Details</div></div>
+        <i class="fa-solid fa-chevron-down sec-toggle"></i>
+      </div>
+      <div class="sec-body">
+        <div class="sub-label">Father's Name <span class="req">*</span></div>
+        <div class="field-row three">
+          <div>
+            <div class="field-label">First Name <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="father-first" placeholder="Father first" oninput="buildFather()" onblur="vField('father-first')">
+            </div>
+            <div class="field-err" id="err-father-first">Father's first name required.</div>
+          </div>
+          <div>
+            <div class="field-label">Middle Name</div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="father-middle" placeholder="Optional" oninput="buildFather()">
+            </div>
+          </div>
+          <div>
+            <div class="field-label">Last Name <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="father-last" placeholder="Father last" oninput="buildFather()" onblur="vField('father-last')">
+            </div>
+            <div class="field-err" id="err-father-last">Father's last name required.</div>
+          </div>
+        </div>
+        <div>
+          <div class="field-label">Father's Full Name (Auto)</div>
+          <div class="read-group"><i class="fa-solid fa-lock"></i><span id="father-full-display">—</span></div>
+          <input type="hidden" id="father-full">
+        </div>
+        <div class="sub-label" style="margin-top:6px;">Mother's Name <span style="font-size:9px;color:var(--dim);">(Optional)</span></div>
+        <div class="field-row three">
+          <div>
+            <div class="field-label">First Name</div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="mother-first" placeholder="Mother first" oninput="buildMother()">
+            </div>
+          </div>
+          <div>
+            <div class="field-label">Middle Name</div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="mother-middle" placeholder="Optional" oninput="buildMother()">
+            </div>
+          </div>
+          <div>
+            <div class="field-label">Last Name</div>
+            <div class="field-wrap"><i class="fa-solid fa-font field-icon"></i>
+              <input type="text" id="mother-last" placeholder="Mother last" oninput="buildMother()">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="field-label">Mother's Full Name (Auto)</div>
+          <div class="read-group"><i class="fa-solid fa-lock"></i><span id="mother-full-display">—</span></div>
+          <input type="hidden" id="mother-full">
+        </div>
+      </div>
+    </div>
+
+    <!-- S5: ADDRESS -->
+    <div class="form-section" id="sec5">
+      <div class="sec-header" onclick="toggleSec('sec5')">
+        <div class="sec-icon si-a"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="sec-head-text"><div class="sec-num">Section 05</div><div class="sec-title">Address Details</div></div>
+        <i class="fa-solid fa-chevron-down sec-toggle"></i>
+      </div>
+      <div class="sec-body">
+        <div class="field-row two">
+          <div>
+            <div class="field-label">Flat / Room / Door / Block No <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-door-open field-icon"></i>
+              <input type="text" id="house" placeholder="e.g. Flat 4B, Block C" onblur="vField('house')">
+            </div>
+            <div class="field-err" id="err-house">This field is required.</div>
+          </div>
+          <div>
+            <div class="field-label">Building / Village Name <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-building field-icon"></i>
+              <input type="text" id="building" placeholder="Building or Village name" onblur="vField('building')">
+            </div>
+            <div class="field-err" id="err-building">This field is required.</div>
+          </div>
+        </div>
+        <div class="field-row two">
+          <div>
+            <div class="field-label">Area / Locality / Sub-Division <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-map field-icon"></i>
+              <input type="text" id="area" placeholder="Locality or Sub-Division" onblur="vField('area')">
+            </div>
+            <div class="field-err" id="err-area">This field is required.</div>
+          </div>
+          <div>
+            <div class="field-label">Landmark</div>
+            <div class="field-wrap"><i class="fa-solid fa-flag field-icon"></i>
+              <input type="text" id="landmark" placeholder="Near...">
+            </div>
+          </div>
+        </div>
+        <div class="field-row three">
+          <div>
+            <div class="field-label">PIN Code <span class="req">*</span></div>
+            <div class="field-wrap"><i class="fa-solid fa-location-crosshairs field-icon"></i>
+              <input type="text" id="pin" placeholder="6-digit PIN" maxlength="6" oninput="numOnly(this);onPinInput()" onblur="vPin()">
+            </div>
+            <div class="field-err" id="err-pin">PIN must be exactly 6 digits.</div>
+            <div id="pin-status" class="pin-status" style="display:none;"></div>
+          </div>
+          <div>
+            <div class="field-label">Post Office (Auto)</div>
+            <div class="field-wrap"><i class="fa-solid fa-envelope-open-text field-icon"></i>
+              <select id="post-office" style="padding-left:36px;">
+                <option value="">Auto-filled from PIN</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="field-label">City / District (Auto)</div>
+            <div class="field-wrap"><i class="fa-solid fa-city field-icon"></i>
+              <input type="text" id="city" readonly placeholder="Auto-filled" style="padding-left:36px;">
+            </div>
+          </div>
+        </div>
+        <div class="field-row two">
+          <div>
+            <div class="field-label">State (Auto)</div>
+            <div class="field-wrap"><i class="fa-solid fa-map-location field-icon"></i>
+              <input type="text" id="state" readonly placeholder="Auto-filled" style="padding-left:36px;">
+            </div>
+          </div>
+          <div>
+            <div class="field-label">Country</div>
+            <div class="field-wrap"><i class="fa-solid fa-globe field-icon"></i>
+              <input type="text" id="country" readonly value="India" style="padding-left:36px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S6: CORRECTION TYPE -->
+    <div class="form-section" id="sec6">
+      <div class="sec-header" onclick="toggleSec('sec6')">
+        <div class="sec-icon si-r"><i class="fa-solid fa-pen-to-square"></i></div>
+        <div class="sec-head-text"><div class="sec-num">Section 06</div><div class="sec-title">Correction Type</div></div>
+        <i class="fa-solid fa-chevron-down sec-toggle"></i>
+      </div>
+      <div class="sec-body">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--sub);margin-bottom:10px;">Select all corrections needed — at least one required. <span class="req">*</span></div>
+        <div class="check-grid" id="correction-checks">
+          <label class="check-item"><input class="check-input" type="checkbox" value="Name Correction"><div class="check-box"></div><span class="check-label"><i class="fa-solid fa-user-pen" style="font-size:10px;margin-right:4px;"></i>Name Correction</span></label>
+          <label class="check-item"><input class="check-input" type="checkbox" value="DOB Correction"><div class="check-box"></div><span class="check-label"><i class="fa-solid fa-calendar-xmark" style="font-size:10px;margin-right:4px;"></i>DOB Correction</span></label>
+          <label class="check-item"><input class="check-input" type="checkbox" value="Father Name Correction"><div class="check-box"></div><span class="check-label"><i class="fa-solid fa-person" style="font-size:10px;margin-right:4px;"></i>Father Name</span></label>
+          <label class="check-item"><input class="check-input" type="checkbox" value="Address Correction"><div class="check-box"></div><span class="check-label"><i class="fa-solid fa-map-pin" style="font-size:10px;margin-right:4px;"></i>Address Correction</span></label>
+          <label class="check-item"><input class="check-input" type="checkbox" value="Gender Correction"><div class="check-box"></div><span class="check-label"><i class="fa-solid fa-venus-mars" style="font-size:10px;margin-right:4px;"></i>Gender Correction</span></label>
+         <label class="check-item">
+  <input class="check-input" type="checkbox" value="Photo Update" checked disabled>
+  <div class="check-box"></div>
+  <span class="check-label">
+    <i class="fa-solid fa-camera" style="font-size:10px;margin-right:4px;"></i>
+    Photo (Mandatory)
+  </span>
+</label>
+
+<label class="check-item">
+  <input class="check-input" type="checkbox" value="Signature Update" checked disabled>
+  <div class="check-box"></div>
+  <span class="check-label">
+    <i class="fa-solid fa-signature" style="font-size:10px;margin-right:4px;"></i>
+    Signature (Mandatory)
+  </span>
+</label>
+        </div>
+        <div class="field-err" id="err-correction" style="margin-top:6px;">Please select at least one correction type.</div>
+      </div>
+    </div>
+
+    <!-- S7: SUMMARY + DECLARATION -->
+    <div class="form-section" id="sec7">
+      <div class="sec-header" onclick="toggleSec('sec7')">
+        <div class="sec-icon si-a"><i class="fa-solid fa-file-contract"></i></div>
+        <div class="sec-head-text"><div class="sec-num">Section 07</div><div class="sec-title">Review & Declaration</div></div>
+        <i class="fa-solid fa-chevron-down sec-toggle"></i>
+      </div>
+      <div class="sec-body">
+        <div style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--neon);opacity:.7;margin-bottom:12px;">Application Summary</div>
+        <table class="summary-table" id="summary-table">
+          <tbody>
+            <tr><td>Application No</td><td id="sum-appid">—</td></tr>
+            <tr><td>Full Name</td><td id="sum-name">—</td></tr>
+            <tr><td>PAN Number</td><td id="sum-pan">—</td></tr>
+            <tr><td>Date of Birth</td><td id="sum-dob">—</td></tr>
+            <tr><td>Age</td><td id="sum-age">—</td></tr>
+            <tr><td>Mobile</td><td id="sum-mobile">—</td></tr>
+            <tr><td>Email</td><td id="sum-email">—</td></tr>
+            <tr><td>Address</td><td id="sum-address">—</td></tr>
+            <tr><td>Correction Type</td><td id="sum-correction">—</td></tr>
+            <tr><td>Status</td><td style="color:var(--amber);font-weight:600;">Pending</td></tr>
+          </tbody>
+        </table>
+        <div style="height:14px;"></div>
+        <div class="decl-box" onclick="toggleDecl()">
+          <div class="decl-box-visual" id="decl-visual"></div>
+          <div class="decl-text">I, <strong id="decl-name">the applicant</strong>, solemnly declare that all information is <strong>true, correct, and complete</strong>. I understand that false information may result in rejection and legal consequences.</div>
+        </div>
+        <div class="field-err" id="err-declaration" style="margin-top:6px;">You must accept the declaration to submit.</div>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-wrap">
+      <button type="button" class="submit-btn" id="submit-btn" onclick="submitForm()" disabled>
+        <span id="btn-content"><i class="fa-solid fa-paper-plane"></i> Submit Application</span>
+      </button>
+      <div class="submit-hint" id="submit-hint">Complete all required fields to enable submission.</div>
+    </div>
+
+  </form>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-card">
+    <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="success-title">Application Submitted!</div>
+    <div class="success-sub">Your PAN correction application has been received successfully. Use your PAN number to track status anytime.</div>
+    <div class="success-appid" id="success-appid">—</div>
+
+    <!-- WHATSAPP BOX -->
+    <div class="wa-box">
+      <div class="wa-box-head">
+        <div class="wa-box-icon"><i class="fa-brands fa-whatsapp"></i></div>
+        <div>
+          <div class="wa-box-title">Send Documents on WhatsApp</div>
+          <div class="wa-box-sub">Next Step — Required to Process Your Application</div>
+        </div>
+      </div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;color:rgba(200,240,215,0.75);margin-bottom:12px;line-height:1.6;">
+        Please send the following documents as <strong style="color:#25d366;">clear photos / scanned copies</strong> on WhatsApp:
+      </div>
+      <div class="wa-doc-list">
+        <div class="wa-doc-item"><i class="fa-solid fa-image"></i> Photo (Passport Size)</div>
+        <div class="wa-doc-item"><i class="fa-solid fa-signature"></i> Signature (Clear)</div>
+        <div class="wa-doc-item"><i class="fa-solid fa-fingerprint"></i> Aadhaar Card</div>
+        <div class="wa-doc-item"><i class="fa-solid fa-id-card"></i> PAN Card (Scan)</div>
+        <div class="wa-doc-item" style="grid-column:1/-1;"><i class="fa-solid fa-file-pdf"></i> e-Aadhaar — Original Colour PDF (downloaded from UIDAI)</div>
+      </div>
+      <div class="wa-number-row">
+        <div style="flex:1;">
+          <span class="wa-number-label">Send To</span>
+          <div class="wa-number">+91 87100 90805</div>
+          <div class="wa-name">SK SAMRAT</div>
+        </div>
+        <i class="fa-brands fa-whatsapp" style="font-size:32px;color:#25d366;opacity:.5;"></i>
+      </div>
+      <a class="wa-open-btn" href="https://wa.me/918710090805?text=Hello%2C%20I%20have%20submitted%20my%20PAN%20Correction%20Application.%20Sending%20my%20documents%20now." target="_blank" rel="noopener">
+        <i class="fa-brands fa-whatsapp"></i> Open WhatsApp Now
+      </a>
+      <div class="wa-note">⚠ Your application will only be processed after documents are received on WhatsApp.</div>
+    </div>
+
+    <button class="success-close" onclick="closeSuccess()">Submit Another Application</button>
+  </div>
+</div>
+
+<!-- TRACK MODAL -->
+<div class="modal-overlay" id="track-modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="modal-title"><i class="fa-solid fa-magnifying-glass" style="font-size:16px;margin-right:8px;"></i>Track Application</div>
+      <button class="modal-close" onclick="closeTrack()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-search-row">
+        <input type="text" id="track-pan-input" placeholder="Enter your PAN number (e.g. ABCDE1234F)" maxlength="10" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')trackSearch()">
+        <button class="modal-search-btn" onclick="trackSearch()"><i class="fa-solid fa-search"></i> Track</button>
+      </div>
+      <div class="track-no-result" id="track-no-result"><i class="fa-solid fa-circle-xmark" style="color:var(--rose);font-size:20px;display:block;margin-bottom:8px;"></i>No application found for this PAN number.</div>
+      <div class="track-result" id="track-result">
+        <div class="track-status-bar" id="tsb">
+          <div class="tsb-icon"><i class="fa-solid fa-clock"></i></div>
+          <div class="tsb-info"><div class="tsb-lbl">Application Status</div><div class="tsb-val" id="tsb-val">Pending</div></div>
+        </div>
+        <table class="track-table">
+          <tr><td>Application No</td><td id="tr-appid">—</td></tr>
+          <tr><td>Full Name</td><td id="tr-name">—</td></tr>
+          <tr><td>PAN Number</td><td id="tr-pan">—</td></tr>
+          <tr><td>Date of Birth</td><td id="tr-dob">—</td></tr>
+          <tr><td>Mobile</td><td id="tr-mobile">—</td></tr>
+          <tr><td>Submitted On</td><td id="tr-date">—</td></tr>
+          <tr><td>Correction Type</td><td id="tr-corr">—</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i id="toast-icon" class="fa-solid fa-check"></i><span id="toast-msg">Done</span></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg = {
+  apiKey:"AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain:"mrsamrat08.firebaseapp.com",
+  projectId:"mrsamrat08",
+  storageBucket:"mrsamrat08.appspot.com",
+  messagingSenderId:"525481767881",
+  appId:"1:525481767881:web:6fd53162b242709890ae18"
+};
+const app = initializeApp(cfg);
+const db = getFirestore(app);
+window._db=db; window._addDoc=addDoc; window._collection=collection;
+window._query=query; window._where=where; window._getDocs=getDocs;
+window._Timestamp=Timestamp; window._fbReady=true;
+</script>
+
+<script>
+// ─── TELEGRAM ────────────────────────────────────────────────────
+const TG_BOT_TOKEN = '7607621792:AAHhgqpQ-ZK4Sf1iZySZHrKHoF9eGaBbxDs';
+const TG_CHAT_ID   = '-1003045536794';
+
+// ─── STATE ───────────────────────────────────────────────────────
+let appId = '';
+let userIP = '';
+let calcedAge = '';
+let pinPostOffices = [];
+
+// ─── INIT ────────────────────────────────────────────────────────
+document.getElementById('dob').max = new Date().toISOString().split('T')[0];
+document.getElementById('country').value = 'India';
+
+fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>userIP=d.ip).catch(()=>{userIP='Unknown';});
+
+function setAppId(pan) {
+  appId = pan || '—';
+  document.getElementById('app-id-display').textContent = appId;
+  document.getElementById('sum-appid').textContent = appId;
+}
+setAppId('');
+
+// ─── SECTION TOGGLE ──────────────────────────────────────────────
+function toggleSec(id){document.getElementById(id).classList.toggle('collapsed');}
+window.toggleSec=toggleSec;
+
+// ─── TITLE → GENDER ──────────────────────────────────────────────
+function handleTitle(){
+  const t=document.getElementById('title').value;
+  document.getElementById('gender').value=t==='Mr'?'Male':(t?'Female':'');
+  cErr('title'); checkReady();
+}
+window.handleTitle=handleTitle;
+
+// ─── NAME BUILDERS ───────────────────────────────────────────────
+function buildName(){
+  const f=g('first-name').value.trim().toUpperCase();
+  const m=g('middle-name').value.trim().toUpperCase();
+  const l=g('last-name').value.trim().toUpperCase();
+  const full=[f,m,l].filter(Boolean).join(' ');
+  g('name-on-card').value=full; g('aadhaar-name').value=full;
+  g('name-on-card-display').textContent=full||'—';
+  g('aadhaar-name-display').textContent=full||'—';
+  g('decl-name').textContent=full||'the applicant';
+  g('sum-name').textContent=full||'—';
+  checkReady();
+}
+window.buildName=buildName;
+
+function buildFather(){
+  const f=[g('father-first').value.trim(),g('father-middle').value.trim(),g('father-last').value.trim()].filter(Boolean).join(' ').toUpperCase();
+  g('father-full').value=f; g('father-full-display').textContent=f||'—'; checkReady();
+}
+window.buildFather=buildFather;
+
+function buildMother(){
+  const f=[g('mother-first').value.trim(),g('mother-middle').value.trim(),g('mother-last').value.trim()].filter(Boolean).join(' ').toUpperCase();
+  g('mother-full').value=f; g('mother-full-display').textContent=f||'—';
+}
+window.buildMother=buildMother;
+
+// ─── HELPERS ─────────────────────────────────────────────────────
+function g(id){return document.getElementById(id);}
+function numOnly(el){el.value=el.value.replace(/\D/g,'');}
+window.numOnly=numOnly;
+
+function fmtPAN(el){el.value=el.value.toUpperCase().replace(/[^A-Z0-9]/g,''); vPAN(); checkReady();}
+window.fmtPAN=fmtPAN;
+
+// ─── VALIDATORS ──────────────────────────────────────────────────
+function vField(id){
+  const v=g(id)?.value.trim()||'';
+  if(!v){sErr(id);return false;} cErr(id); checkReady(); return true;
+}
+window.vField=vField;
+
+function vPAN(){
+  const v=g('pan-number').value;
+  const ok=/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v);
+  if(!v){hOk('pan');cErr('pan');}
+  else if(!ok){shErr('pan');hOk('pan');}
+  else{cErr('pan');shOk('pan'); setAppId(v); g('sum-pan').textContent=v;}
+  checkReady(); return ok&&!!v;
+}
+window.vPAN=vPAN;
+
+function vPANConfirm(){
+  const a=g('pan-number').value, b=g('pan-confirm').value;
+  if(!b){hOk('pan-confirm');cErr('pan-confirm');return false;}
+  if(a!==b){shErr('pan-confirm');hOk('pan-confirm');return false;}
+  cErr('pan-confirm');shOk('pan-confirm'); checkReady(); return true;
+}
+window.vPANConfirm=vPANConfirm;
+
+function vAadhaar(){
+  const v=g('aadhaar-number').value;
+  const ok=/^\d{12}$/.test(v);
+  if(!v){hOk('aadhaar');cErr('aadhaar');}
+  else if(!ok){shErr('aadhaar');hOk('aadhaar');}
+  else{cErr('aadhaar');shOk('aadhaar');}
+  checkReady(); return ok&&!!v;
+}
+window.vAadhaar=vAadhaar;
+
+function vAadhaarConfirm(){
+  const a=g('aadhaar-number').value, b=g('aadhaar-confirm').value;
+  if(!b){hOk('aadhaar-confirm');cErr('aadhaar-confirm');return false;}
+  if(a!==b){shErr('aadhaar-confirm');hOk('aadhaar-confirm');return false;}
+  cErr('aadhaar-confirm');shOk('aadhaar-confirm'); checkReady(); return true;
+}
+window.vAadhaarConfirm=vAadhaarConfirm;
+
+function vMobile(){
+  const v=g('mobile').value;
+  const ok=/^[6-9]\d{9}$/.test(v);
+  if(!v){hOk('mobile');cErr('mobile');}
+  else if(!ok){shErr('mobile');hOk('mobile');}
+  else{cErr('mobile');shOk('mobile'); g('sum-mobile').textContent=v;}
+  checkReady(); return ok&&!!v;
+}
+window.vMobile=vMobile;
+
+function vEmail(){
+  const v=g('email').value;
+  const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  if(!v){hOk('email');cErr('email');}
+  else if(!ok){shErr('email');hOk('email');}
+  else{cErr('email');shOk('email'); g('sum-email').textContent=v;}
+  checkReady(); return ok&&!!v;
+}
+window.vEmail=vEmail;
+
+function vPin(){
+  const v=g('pin').value;
+  if(!/^\d{6}$/.test(v)){sErr('pin');return false;}
+  cErr('pin'); return true;
+}
+window.vPin=vPin;
+
+function sErr(id){g(`err-${id}`)?.classList.add('show');g(id)?.classList.add('error');}
+function cErr(id){g(`err-${id}`)?.classList.remove('show');const el=g(id);if(el){el.classList.remove('error');el.classList.add('ok');}}
+function shErr(id){g(`err-${id}`)?.classList.add('show');g(id)?.classList.add('error');g(id)?.classList.remove('ok');}
+function shOk(id){g(`ok-${id}`)?.classList.add('show');g(id)?.classList.remove('error');g(id)?.classList.add('ok');}
+function hOk(id){g(`ok-${id}`)?.classList.remove('show');}
+
+// ─── AGE CALCULATOR ──────────────────────────────────────────────
+function calcAge(){
+  const dob=g('dob').value; if(!dob)return;
+  const d=new Date(dob), now=new Date();
+  let age=now.getFullYear()-d.getFullYear();
+  if(now<new Date(now.getFullYear(),d.getMonth(),d.getDate())) age--;
+  calcedAge=age+'';
+  g('age-display').innerHTML=`<div class="age-badge"><i class="fa-solid fa-cake-candles"></i> Age: ${age} years</div>`;
+  g('sum-dob').textContent=dob; g('sum-age').textContent=age+' years';
+  cErr('dob'); checkReady();
+}
+window.calcAge=calcAge;
+
+// ─── PIN CODE API ────────────────────────────────────────────────
+let pinTimer=null;
+function onPinInput(){
+  const v=g('pin').value;
+  clearTimeout(pinTimer);
+  g('city').value=''; g('state').value='';
+  const sel=g('post-office'); sel.innerHTML='<option value="">Auto-filled from PIN</option>';
+  pinPostOffices=[];
+  if(v.length===6) pinTimer=setTimeout(()=>fetchPin(v),550);
+}
+window.onPinInput=onPinInput;
+
+async function fetchPin(pin){
+  const st=g('pin-status'); st.style.display='flex';
+  st.className='pin-status loading'; st.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Fetching...';
+  try{
+    const r=await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+    const data=await r.json();
+    if(data[0].Status==='Success'&&data[0].PostOffice.length>0){
+      const pos=data[0].PostOffice;
+      pinPostOffices=pos;
+      const sel=g('post-office');
+      sel.innerHTML='<option value="">Select Post Office</option>';
+      pos.forEach(po=>{const opt=document.createElement('option');opt.value=po.Name;opt.textContent=po.Name;sel.appendChild(opt);});
+      if(pos.length>0){sel.value=pos[0].Name; g('city').value=pos[0].District; g('state').value=pos[0].State;}
+      st.className='pin-status success'; st.innerHTML=`<i class="fa-solid fa-circle-check"></i>&nbsp;${pos[0].District}, ${pos[0].State}`;
+      cErr('pin');
+      updateAddressSummary();
+    } else {
+      st.className='pin-status fail'; st.innerHTML='<i class="fa-solid fa-circle-xmark"></i>&nbsp;PIN not found.';
+    }
+  }catch(e){
+    st.className='pin-status fail'; st.innerHTML='<i class="fa-solid fa-wifi"></i>&nbsp;Network error.';
+  }
+  checkReady();
+}
+
+g('post-office').addEventListener('change',function(){
+  const po=pinPostOffices.find(p=>p.Name===this.value);
+  if(po){g('city').value=po.District; g('state').value=po.State; updateAddressSummary();}
+});
+
+function updateAddressSummary(){
+  const parts=[g('house').value,g('building').value,g('area').value,g('post-office').value,g('city').value,g('state').value,g('pin').value].filter(Boolean);
+  g('sum-address').textContent=parts.join(', ')||'—';
+}
+['house','building','area','landmark'].forEach(id=>{
+  g(id)?.addEventListener('input',updateAddressSummary);
+});
+
+// ─── CORRECTION TYPES ────────────────────────────────────────────
+document.querySelectorAll('#correction-checks .check-input').forEach(cb=>{
+  cb.addEventListener('change',()=>{
+    const types=getCorrTypes();
+    if(types.length>0) g('err-correction').classList.remove('show');
+    g('sum-correction').textContent=types.join(', ')||'—';
+    checkReady();
+  });
+});
+
+function getCorrTypes(){return[...document.querySelectorAll('#correction-checks .check-input:checked')].map(c=>c.value);}
+
+// ─── DECLARATION ────────────────────────────────────────────────
+function toggleDecl(){
+  g('decl-visual').classList.toggle('checked');
+  g('err-declaration').classList.remove('show');
+  checkReady();
+}
+window.toggleDecl=toggleDecl;
+function isDeclChecked(){return g('decl-visual').classList.contains('checked');}
+
+// ─── CHECK SUBMIT READY ──────────────────────────────────────────
+function checkReady(){
+  const pan=g('pan-number').value;
+  const checks=[
+    !!g('title').value,
+    !!g('first-name').value.trim(),
+    !!g('last-name').value.trim(),
+    /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan),
+    pan===g('pan-confirm').value,
+    /^\d{12}$/.test(g('aadhaar-number').value),
+    g('aadhaar-number').value===g('aadhaar-confirm').value,
+    !!g('dob').value,
+    /^[6-9]\d{9}$/.test(g('mobile').value),
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g('email').value),
+    !!g('father-first').value.trim(),
+    !!g('father-last').value.trim(),
+    !!g('house').value.trim(),
+    !!g('building').value.trim(),
+    !!g('area').value.trim(),
+    /^\d{6}$/.test(g('pin').value),
+    getCorrTypes().length>0,
+    isDeclChecked()
+  ];
+  const ready=checks.every(Boolean);
+  g('submit-btn').disabled=!ready;
+  g('submit-hint').textContent=ready?'✓ All fields complete. Ready to submit.':'Complete all required fields to enable submission.';
+}
+
+// ─── FULL VALIDATION ─────────────────────────────────────────────
+function runValidation(){
+  let ok=true;
+  if(!g('title').value){sErr('title');ok=false;}
+  if(!g('first-name').value.trim()){sErr('first-name');ok=false;}
+  if(!g('last-name').value.trim()){sErr('last-name');ok=false;}
+  if(!vPAN())ok=false;
+  if(!vPANConfirm())ok=false;
+  if(!vAadhaar())ok=false;
+  if(!vAadhaarConfirm())ok=false;
+  if(!g('dob').value){sErr('dob');ok=false;}
+  if(!vMobile())ok=false;
+  if(!vEmail())ok=false;
+  if(!g('father-first').value.trim()){sErr('father-first');ok=false;}
+  if(!g('father-last').value.trim()){sErr('father-last');ok=false;}
+  if(!g('house').value.trim()){sErr('house');ok=false;}
+  if(!g('building').value.trim()){sErr('building');ok=false;}
+  if(!g('area').value.trim()){sErr('area');ok=false;}
+  if(!vPin())ok=false;
+  if(getCorrTypes().length===0){g('err-correction').classList.add('show');ok=false;}
+  if(!isDeclChecked()){g('err-declaration').classList.add('show');ok=false;}
+  return ok;
+}
+
+// ─── TELEGRAM NOTIFY ─────────────────────────────────────────────
+async function sendTelegram(data){
+  if(!TG_BOT_TOKEN||TG_BOT_TOKEN==='YOUR_TELEGRAM_BOT_TOKEN') return;
+  const msg=`🆕 *New PAN Correction Application*\n\n`+
+    `📋 *App No:* ${data.pan_number}\n`+
+    `👤 *Name:* ${data.full_name}\n`+
+    `🪪 *PAN:* ${data.pan_number}\n`+
+    `📱 *Mobile:* ${data.mobile}\n`+
+    `📧 *Email:* ${data.email}\n`+
+    `🗓 *DOB:* ${data.dob}\n`+
+    `📍 *City:* ${data.address?.city||'—'}, ${data.address?.state||'—'}\n`+
+    `🔧 *Correction:* ${(data.correction_type||[]).join(', ')}\n`+
+    `🌐 *IP:* ${data.ip_address}\n`+
+    `⏰ *Time:* ${new Date().toLocaleString('en-IN')}`;
+  try{
+    await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:TG_CHAT_ID,text:msg,parse_mode:'Markdown'})
+    });
+  }catch(e){console.warn('Telegram error:',e);}
+}
+
+// ─── SUBMIT ──────────────────────────────────────────────────────
+async function submitForm(){
+  if(!runValidation()){showToast('Fix all errors before submitting.','err');return;}
+  const btn=g('submit-btn'); btn.disabled=true;
+  g('btn-content').innerHTML='<div class="spinner"></div>&nbsp;Submitting...';
+
+  const panNum=g('pan-number').value;
+  const now=new Date();
+  const payload={
+    application_id:panNum,
+    pan_number:panNum,
+    status:'pending',
+    created_at:window._Timestamp?window._Timestamp.fromDate(now):now.toISOString(),
+    ip_address:userIP,
+    title:g('title').value, gender:g('gender').value,
+    first_name:g('first-name').value.trim().toUpperCase(),
+    middle_name:g('middle-name').value.trim().toUpperCase(),
+    last_name:g('last-name').value.trim().toUpperCase(),
+    full_name:g('name-on-card').value,
+    name_on_card:g('name-on-card').value,
+    aadhaar_name:g('aadhaar-name').value,
+    aadhaar_number:g('aadhaar-number').value,
+    dob:g('dob').value, age:calcedAge,
+    mobile:g('mobile').value, email:g('email').value,
+    father:{first_name:g('father-first').value.trim().toUpperCase(),middle_name:g('father-middle').value.trim().toUpperCase(),last_name:g('father-last').value.trim().toUpperCase(),full_name:g('father-full').value},
+    mother:{first_name:g('mother-first').value.trim().toUpperCase(),middle_name:g('mother-middle').value.trim().toUpperCase(),last_name:g('mother-last').value.trim().toUpperCase(),full_name:g('mother-full').value},
+    address:{house:g('house').value.trim(),building:g('building').value.trim(),area:g('area').value.trim(),landmark:g('landmark').value.trim(),post_office:g('post-office').value,pin:g('pin').value,city:g('city').value,state:g('state').value,country:'India'},
+    correction_type:getCorrTypes(),
+    declaration_accepted:true
+  };
+
+  try{
+    if(window._fbReady){
+      await window._addDoc(window._collection(window._db,'panApplications'),payload);
+    }
+    sendTelegram(payload);
+    g('success-appid').textContent=panNum;
+    g('success-overlay').classList.add('show');
+    document.querySelector('.success-overlay').scrollTop=0;
+  }catch(e){
+    console.error(e); showToast('Submission failed: '+e.message,'err');
+    btn.disabled=false;
+    g('btn-content').innerHTML='<i class="fa-solid fa-paper-plane"></i> Submit Application';
+  }
+}
+window.submitForm=submitForm;
+
+// ─── CLOSE SUCCESS ───────────────────────────────────────────────
+function closeSuccess(){
+  g('success-overlay').classList.remove('show');
+  g('pan-form').reset();
+  g('decl-visual').classList.remove('checked');
+  g('gender').value=''; g('age-display').innerHTML='';
+  ['name-on-card-display','aadhaar-name-display','father-full-display','mother-full-display'].forEach(id=>{const el=g(id);if(el)el.textContent='—';});
+  g('city').value=''; g('state').value=''; g('post-office').innerHTML='<option>Auto-filled from PIN</option>';
+  g('pin-status').style.display='none';
+  document.querySelectorAll('.field-err.show').forEach(e=>e.classList.remove('show'));
+  document.querySelectorAll('input.ok,select.ok,input.error,select.error').forEach(e=>{e.classList.remove('ok','error');});
+  document.querySelectorAll('.field-ok.show').forEach(e=>e.classList.remove('show'));
+  ['sum-appid','sum-name','sum-pan','sum-dob','sum-age','sum-mobile','sum-email','sum-address','sum-correction'].forEach(id=>{const el=g(id);if(el)el.textContent='—';});
+  calcedAge=''; setAppId('');
+  g('submit-btn').disabled=true;
+  g('btn-content').innerHTML='<i class="fa-solid fa-paper-plane"></i> Submit Application';
+  g('submit-hint').textContent='Complete all required fields to enable submission.';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+window.closeSuccess=closeSuccess;
+
+// ─── TRACK APPLICATION ───────────────────────────────────────────
+function openTrack(){g('track-modal').classList.add('show'); g('track-pan-input').focus();}
+function closeTrack(){g('track-modal').classList.remove('show'); resetTrack();}
+function resetTrack(){g('track-result').classList.remove('show');g('track-no-result').classList.remove('show');g('track-pan-input').value='';}
+window.openTrack=openTrack; window.closeTrack=closeTrack;
+
+async function trackSearch(){
+  const pan=g('track-pan-input').value.trim().toUpperCase();
+  if(!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan)){showToast('Enter a valid PAN number.','err');return;}
+  g('track-result').classList.remove('show');
+  g('track-no-result').classList.remove('show');
+  if(!window._fbReady){showToast('Connecting...','warn');return;}
+  try{
+    const q=window._query(window._collection(window._db,'panApplications'),window._where('pan_number','==',pan));
+    const snap=await window._getDocs(q);
+    if(snap.empty){g('track-no-result').classList.add('show');return;}
+    const d=snap.docs[0].data();
+    const status=d.status||'pending';
+    const tsb=g('tsb');
+    tsb.className='track-status-bar tsb-'+status;
+    const icons={pending:'fa-clock',approved:'fa-circle-check',rejected:'fa-circle-xmark'};
+    tsb.querySelector('.tsb-icon').innerHTML=`<i class="fa-solid ${icons[status]||'fa-clock'}"></i>`;
+    g('tsb-val').textContent=status.charAt(0).toUpperCase()+status.slice(1);
+    g('tr-appid').textContent=d.pan_number||'—';
+    g('tr-name').textContent=d.full_name||'—';
+    g('tr-pan').textContent=d.pan_number||'—';
+    g('tr-dob').textContent=d.dob||(d.age?`Age: ${d.age} yrs`:'—');
+    g('tr-mobile').textContent=d.mobile||'—';
+    g('tr-corr').textContent=(d.correction_type||[]).join(', ')||'—';
+    const dateStr=d.created_at?.seconds?new Date(d.created_at.seconds*1000).toLocaleString('en-IN'):(d.created_at||'—');
+    g('tr-date').textContent=dateStr;
+    g('track-result').classList.add('show');
+  }catch(e){showToast('Error: '+e.message,'err');}
+}
+window.trackSearch=trackSearch;
+
+// ─── TOAST ───────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg,type='ok'){
+  const t=g('toast'); g('toast-msg').textContent=msg;
+  const icons={ok:'fa-check',warn:'fa-triangle-exclamation',err:'fa-triangle-exclamation'};
+  g('toast-icon').className=`fa-solid ${icons[type]||'fa-check'}`;
+  t.className=`toast ${type} show`;
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+window.showToast=showToast;
+
+// ─── PROGRESS STRIP ──────────────────────────────────────────────
+const secMap={sec1:'ps1',sec2:'ps2',sec3:'ps3',sec4:'ps4',sec5:'ps5',sec6:'ps6',sec7:'ps7'};
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){const ps=secMap[en.target.id];if(ps){document.querySelectorAll('.prog-step').forEach(s=>s.classList.remove('active'));g(ps)?.classList.add('active');}}
+  });
+},{threshold:.35});
+document.querySelectorAll('.form-section').forEach(s=>io.observe(s));
+</script>
+</body>
+</html>

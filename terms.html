@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms & Conditions | PAC Management System</title>
+<meta name="description" content="Terms and Conditions for the PAC Management System — read before accessing the platform.">
+<meta name="author" content="Samrat">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#02040c">
+<link rel="icon" type="image/png" href="assets/fav.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:    #02040c;
+  --ink2:   #050b1a;
+  --ink3:   #07112a;
+  --surface: rgba(5,12,30,0.7);
+  --rim:     rgba(255,255,255,0.07);
+  --rim-hi:  rgba(0,229,255,0.3);
+  --neon:    #00f0ff;
+  --blue:    #1a6bff;
+  --violet:  #8b5cf6;
+  --green:   #06ffa5;
+  --rose:    #ff2d78;
+  --amber:   #ffd60a;
+  --txt:  #e4f0ff;
+  --sub:  rgba(180,210,250,0.55);
+  --dim:  rgba(120,160,210,0.28);
+  --r:  20px;
+  --e:  cubic-bezier(0.16,1,0.3,1);
+  --t:  0.45s var(--e);
+  --card-shadow: 0 30px 70px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.4);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--ink);color:var(--txt);overflow-x:hidden;line-height:1.6;cursor:none;}
+::selection{background:rgba(0,240,255,0.25);color:#fff;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-track{background:rgba(2,4,12,0.95);border-left:1px solid rgba(0,240,255,0.08);}
+::-webkit-scrollbar-thumb{background:linear-gradient(to bottom,rgba(0,240,255,0.9),rgba(26,107,255,0.85),rgba(139,92,246,0.8));border-radius:6px;border:2px solid rgba(2,4,12,0.8);box-shadow:0 0 8px rgba(0,240,255,0.5);}
+::-webkit-scrollbar-thumb:hover{box-shadow:0 0 14px rgba(0,240,255,0.8);}
+html,*{scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.7) rgba(2,4,12,0.95);}
+
+/* CURSOR */
+#c-dot{position:fixed;width:6px;height:6px;background:var(--neon);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--neon);opacity:0;transition:opacity .3s;}
+#c-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,240,255,0.5);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%);opacity:0;transition:width .3s var(--e),height .3s var(--e),opacity .3s;}
+#c-ring.expand{width:52px;height:52px;border-color:var(--neon);}
+#c-dot.active,#c-ring.active{opacity:1;}
+
+/* GRAIN */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.18;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 52px;background:rgba(2,4,12,0.75);backdrop-filter:blur(40px) saturate(180%);border-bottom:1px solid rgba(255,255,255,0.06);}
+header::after{content:"";position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.3),transparent);}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-box{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--neon),var(--blue));}
+.logo-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.25) 50%,transparent 70%);animation:logo-shine 3s ease-in-out infinite;}
+@keyframes logo-shine{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.logo-box i{position:relative;z-index:1;}
+.logo-txt b{display:block;font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:18px;letter-spacing:3px;color:var(--txt);}
+.logo-txt span{display:block;font-family:'Fira Code',monospace;font-size:9px;font-weight:300;letter-spacing:4px;color:var(--neon);text-transform:uppercase;opacity:.8;}
+nav{display:flex;align-items:center;gap:2px;}
+nav a{font-family:'Rajdhani',sans-serif;font-size:14.5px;font-weight:600;color:var(--sub);text-decoration:none;padding:7px 15px;border-radius:99px;border:1px solid transparent;transition:var(--t);letter-spacing:1px;text-transform:uppercase;}
+nav a:hover,nav a.active{color:var(--neon);background:rgba(0,240,255,0.06);border-color:rgba(0,240,255,0.18);}
+.hdr-right{display:flex;align-items:center;gap:14px;}
+.hdr-btn{display:flex;align-items:center;gap:7px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:8px 18px;border-radius:99px;cursor:none;transition:var(--t);text-decoration:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#01080f;box-shadow:0 0 20px rgba(0,240,255,0.25);}
+.hdr-btn:hover{transform:scale(1.04);box-shadow:0 0 30px rgba(0,240,255,0.45);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:1px solid rgba(0,240,255,0.2);border-radius:10px;background:none;}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--neon);border-radius:2px;transition:var(--t);}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+#mob-nav{position:fixed;top:66px;left:0;right:0;z-index:999;background:rgba(2,4,12,0.97);backdrop-filter:blur(40px);border-bottom:1px solid rgba(0,240,255,0.1);max-height:0;overflow:hidden;transition:max-height .4s var(--e);display:flex;flex-direction:column;}
+#mob-nav.open{max-height:500px;padding:16px 0 24px;}
+#mob-nav a{padding:14px 28px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--sub);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.04);transition:var(--t);}
+#mob-nav a:hover{color:var(--neon);padding-left:36px;}
+
+/* TICKER */
+.ticker-bar{position:fixed;top:66px;left:0;right:0;z-index:998;background:rgba(0,20,50,0.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,240,255,0.07);padding:7px 0;overflow:hidden;white-space:nowrap;}
+.ticker-track{display:inline-flex;animation:ticker 35s linear infinite;}
+.t-item{display:inline-flex;align-items:center;gap:7px;font-family:'Fira Code',monospace;font-size:10.5px;color:var(--sub);padding:0 26px;letter-spacing:1px;}
+.t-item .t-dot{width:4px;height:4px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px var(--neon);}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* STATUS */
+.status-strip{position:fixed;top:calc(66px + 34px);left:0;right:0;z-index:997;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:7px 40px;background:rgba(2,4,12,0.6);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.04);}
+.s-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);}
+.s-dot{width:6px;height:6px;border-radius:50%;animation:pulse-s 2.2s ease-in-out infinite;}
+.s-dot.green{background:var(--green);box-shadow:0 0 8px var(--green);}
+.s-dot.amber{background:var(--amber);box-shadow:0 0 8px var(--amber);}
+@keyframes pulse-s{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.65)}}
+.page-offset{height:calc(66px + 34px + 36px);}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.2),transparent);}
+
+/* HERO */
+.terms-hero{position:relative;padding:90px 52px 70px;text-align:center;overflow:hidden;background:radial-gradient(ellipse 130% 100% at 50% -10%,#071e30 0%,#04101e 35%,#02040c 100%);}
+.terms-hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.aurora{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.aurora-blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.11;animation:blob-float 14s ease-in-out infinite alternate;}
+.ab1{width:600px;height:400px;background:radial-gradient(#00564a,transparent 70%);top:-150px;left:-180px;}
+.ab2{width:500px;height:400px;background:radial-gradient(#2e1065,transparent 70%);top:-100px;right:-150px;animation-delay:-5s;}
+@keyframes blob-float{0%{transform:translate(0,0) scale(1);}50%{transform:translate(16px,-20px) scale(1.04);}100%{transform:translate(-10px,10px) scale(.97);}}
+.terms-hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);opacity:.16;}
+.terms-hero-inner{position:relative;z-index:4;max-width:800px;margin:0 auto;}
+.breadcrumb{display:inline-flex;align-items:center;gap:8px;font-family:'Fira Code',monospace;font-size:11px;color:var(--sub);margin-bottom:28px;letter-spacing:1px;}
+.breadcrumb a{color:var(--neon);text-decoration:none;transition:var(--t);}
+.breadcrumb i{font-size:9px;color:var(--dim);}
+.kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;padding:6px 18px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;letter-spacing:3px;text-transform:uppercase;color:var(--neon);background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.16);}
+.page-title{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(52px,9vw,100px);line-height:.96;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;}
+.pt-w{display:block;background:linear-gradient(160deg,#fff 20%,rgba(200,230,255,0.75) 55%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.pt-p{background:linear-gradient(135deg,var(--neon) 0%,#40a9ff 45%,var(--violet) 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 28px rgba(0,240,255,0.35));}
+.page-sub{font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,1.6vw,17px);color:var(--sub);margin:18px auto 36px;line-height:1.75;max-width:600px;}
+.hero-meta-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.h-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:99px;font-family:'Fira Code',monospace;font-size:11px;color:var(--sub);background:rgba(5,12,30,0.8);border:1px solid rgba(255,255,255,0.08);letter-spacing:.5px;}
+.h-chip i{font-size:12px;}
+.h-chip.c1 i{color:var(--neon);}
+.h-chip.c2 i{color:var(--green);}
+.h-chip.c3 i{color:var(--amber);}
+
+/* LAYOUT */
+.terms-layout{display:grid;grid-template-columns:280px 1fr;gap:40px;max-width:1200px;margin:0 auto;padding:80px 52px 100px;align-items:start;}
+
+/* STICKY TOC */
+.toc-panel{position:sticky;top:calc(66px + 34px + 36px + 24px);background:rgba(5,12,30,0.85);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:28px 22px;backdrop-filter:blur(24px);}
+.toc-head{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;color:var(--txt);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(0,240,255,0.1);display:flex;align-items:center;gap:8px;}
+.toc-head i{color:var(--neon);font-size:13px;}
+.toc-list{display:flex;flex-direction:column;gap:4px;}
+.toc-link{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:400;color:var(--sub);text-decoration:none;transition:var(--t);border:1px solid transparent;cursor:none;}
+.toc-link:hover,.toc-link.active{color:var(--neon);background:rgba(0,240,255,0.06);border-color:rgba(0,240,255,0.15);}
+.toc-link i{font-size:10px;width:14px;text-align:center;flex-shrink:0;}
+.toc-link .toc-num{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);min-width:18px;}
+.toc-divider{height:1px;background:rgba(255,255,255,0.05);margin:8px 0;}
+.toc-accept{margin-top:20px;padding-top:18px;border-top:1px solid rgba(0,240,255,0.08);}
+.accept-bar{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-bottom:10px;}
+.accept-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--neon),var(--blue));transition:width .4s ease;width:0%;}
+.accept-label{font-family:'Fira Code',monospace;font-size:10px;color:var(--dim);letter-spacing:.5px;}
+
+/* MAIN CONTENT */
+.terms-content{}
+.terms-intro-card{background:rgba(5,12,30,0.7);border:1px solid rgba(0,240,255,0.15);border-radius:20px;padding:32px 34px;margin-bottom:32px;position:relative;overflow:hidden;backdrop-filter:blur(20px);}
+.terms-intro-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--neon),var(--blue),var(--violet));}
+.intro-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;}
+.intro-ico{width:48px;height:48px;border-radius:14px;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--neon);flex-shrink:0;}
+.intro-txt h3{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--txt);margin-bottom:6px;}
+.intro-txt p{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--sub);line-height:1.75;}
+.intro-meta{display:flex;flex-wrap:wrap;gap:10px;}
+.imeta{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);}
+.imeta i{font-size:10px;color:var(--neon);}
+
+/* SECTION BLOCKS */
+.t-section{margin-bottom:28px;background:rgba(5,12,30,0.65);border:1px solid rgba(255,255,255,0.07);border-radius:20px;overflow:hidden;backdrop-filter:blur(20px);transition:var(--t);}
+.t-section:hover{border-color:rgba(0,240,255,0.15);}
+.t-sec-head{display:flex;align-items:center;gap:14px;padding:24px 28px;cursor:pointer;transition:var(--t);border-bottom:1px solid transparent;user-select:none;}
+.t-section.open .t-sec-head{border-bottom-color:rgba(0,240,255,0.08);}
+.t-sec-head:hover{background:rgba(0,240,255,0.03);}
+.t-sec-num{font-family:'Fira Code',monospace;font-size:11px;font-weight:400;color:var(--neon);letter-spacing:2px;opacity:.7;min-width:28px;}
+.t-sec-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:var(--t);}
+.t-section:hover .t-sec-ico{transform:rotate(-6deg) scale(1.08);}
+.ico-c{background:rgba(0,240,255,0.09);color:var(--neon);border:1px solid rgba(0,240,255,0.18);}
+.ico-b{background:rgba(26,107,255,0.09);color:#6ea8fe;border:1px solid rgba(26,107,255,0.18);}
+.ico-g{background:rgba(6,255,165,0.09);color:var(--green);border:1px solid rgba(6,255,165,0.18);}
+.ico-v{background:rgba(139,92,246,0.09);color:var(--violet);border:1px solid rgba(139,92,246,0.18);}
+.ico-r{background:rgba(255,45,120,0.09);color:var(--rose);border:1px solid rgba(255,45,120,0.18);}
+.ico-a{background:rgba(255,214,10,0.09);color:var(--amber);border:1px solid rgba(255,214,10,0.18);}
+.t-sec-title{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt);flex:1;}
+.t-sec-toggle{width:28px;height:28px;border-radius:50%;background:rgba(0,240,255,0.07);border:1px solid rgba(0,240,255,0.14);display:flex;align-items:center;justify-content:center;color:var(--neon);font-size:11px;transition:transform .4s var(--e);}
+.t-section.open .t-sec-toggle{transform:rotate(45deg);}
+.t-sec-body{max-height:0;overflow:hidden;transition:max-height .5s var(--e),padding .35s;}
+.t-section.open .t-sec-body{max-height:2000px;padding:0 28px 28px;}
+.t-sec-body p{font-family:'Space Grotesk',sans-serif;font-size:14.5px;color:var(--sub);line-height:1.85;margin-bottom:14px;}
+.t-sec-body p:last-child{margin-bottom:0;}
+.t-sec-body ul,.t-sec-body ol{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.t-sec-body li{display:flex;align-items:flex-start;gap:10px;font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--sub);line-height:1.75;}
+.t-sec-body li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px var(--neon);flex-shrink:0;margin-top:8px;}
+.t-sec-body ol{counter-reset:ord;}
+.t-sec-body ol li::before{content:counter(ord);counter-increment:ord;font-family:'Fira Code',monospace;font-size:11px;color:var(--neon);background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.2);border-radius:6px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px;}
+.t-highlight{background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.14);border-left:3px solid var(--neon);border-radius:0 12px 12px 0;padding:14px 18px;margin:16px 0;font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:var(--sub);line-height:1.75;}
+.t-highlight strong{color:var(--neon);}
+.t-warn{background:rgba(255,214,10,0.05);border:1px solid rgba(255,214,10,0.15);border-left:3px solid var(--amber);border-radius:0 12px 12px 0;padding:14px 18px;margin:16px 0;font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:rgba(255,214,10,0.75);line-height:1.75;}
+.t-warn strong{color:var(--amber);}
+.t-danger{background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.15);border-left:3px solid var(--rose);border-radius:0 12px 12px 0;padding:14px 18px;margin:16px 0;font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:rgba(255,100,150,0.8);line-height:1.75;}
+.t-danger strong{color:var(--rose);}
+.t-table{width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;overflow:hidden;border-radius:12px;border:1px solid rgba(255,255,255,0.07);}
+.t-table th{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:13px 16px;background:rgba(0,240,255,0.07);color:var(--neon);text-align:left;border-bottom:1px solid rgba(0,240,255,0.1);}
+.t-table td{padding:12px 16px;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--sub);border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.6;}
+.t-table tr:last-child td{border-bottom:none;}
+.t-table tr:hover td{background:rgba(0,240,255,0.02);}
+.t-code{font-family:'Fira Code',monospace;font-size:12px;background:rgba(0,240,255,0.07);color:var(--neon);padding:2px 7px;border-radius:5px;letter-spacing:.5px;}
+
+/* ACCEPT SECTION */
+.accept-section{margin-top:32px;background:linear-gradient(135deg,rgba(0,15,35,0.9),rgba(5,20,50,0.85));border:1px solid rgba(0,240,255,0.2);border-radius:22px;padding:36px 34px;position:relative;overflow:hidden;}
+.accept-section::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--neon),var(--blue),var(--violet),var(--neon));background-size:200%;animation:accent-slide 3s linear infinite;}
+@keyframes accent-slide{0%{background-position:0%}100%{background-position:200%}}
+.accept-inner{display:flex;gap:22px;align-items:flex-start;margin-bottom:28px;}
+.accept-ico{width:56px;height:56px;border-radius:16px;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.25);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--neon);flex-shrink:0;}
+.accept-txt h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;text-transform:uppercase;color:var(--txt);margin-bottom:8px;}
+.accept-txt p{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--sub);line-height:1.75;}
+.accept-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.btn-accept{display:inline-flex;align-items:center;gap:9px;padding:14px 34px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#010810;box-shadow:0 0 30px rgba(0,240,255,0.3),0 8px 24px rgba(0,0,0,0.4);transition:var(--t);border:none;position:relative;overflow:hidden;}
+.btn-accept::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.2) 55%,transparent 70%);transform:translateX(-100%);transition:.5s;}
+.btn-accept:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 0 50px rgba(0,240,255,0.5),0 12px 32px rgba(0,0,0,0.5);}
+.btn-accept:hover::before{transform:translateX(100%);}
+.btn-decline{display:inline-flex;align-items:center;gap:9px;padding:13px 30px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;color:var(--sub);border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);transition:var(--t);}
+.btn-decline:hover{border-color:rgba(255,45,120,0.4);color:var(--rose);background:rgba(255,45,120,0.05);}
+.accept-note{margin-top:18px;font-family:'Fira Code',monospace;font-size:10.5px;color:var(--dim);letter-spacing:.5px;display:flex;align-items:center;gap:7px;}
+.accept-note i{color:var(--green);font-size:11px;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s var(--e),transform .7s var(--e);}
+.reveal.visible{opacity:1;transform:none;}
+
+/* CTA */
+.cta-banner{position:relative;overflow:hidden;padding:80px 52px;text-align:center;background:linear-gradient(135deg,#040e24,#071830,#030b1c);border-top:1px solid rgba(0,240,255,0.08);}
+.cta-banner::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 20% 50%,rgba(0,240,255,0.07),transparent),radial-gradient(ellipse 50% 70% at 80% 50%,rgba(139,92,246,0.07),transparent);}
+.cta-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.025) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 10%,transparent 70%);}
+.cta-inner{position:relative;z-index:1;max-width:620px;margin:0 auto;}
+.cta-inner h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,5.5vw,64px);letter-spacing:4px;text-transform:uppercase;line-height:1;margin-bottom:14px;}
+.cta-inner h2 span{background:linear-gradient(135deg,var(--neon),var(--blue),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 22px rgba(0,240,255,0.35));}
+.cta-inner p{font-family:'Space Grotesk',sans-serif;font-size:15px;color:var(--sub);margin-bottom:36px;line-height:1.75;}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.cta-big{display:inline-flex;align-items:center;gap:9px;padding:14px 36px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#010810;box-shadow:0 0 36px rgba(0,240,255,0.35),0 10px 28px rgba(0,0,0,0.4);transition:var(--t);border:none;overflow:hidden;position:relative;}
+.cta-big:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 0 55px rgba(0,240,255,0.5);}
+.cta-soft{display:inline-flex;align-items:center;gap:9px;padding:13px 32px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;color:var(--txt);border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.03);transition:var(--t);}
+.cta-soft:hover{border-color:rgba(0,240,255,0.35);background:rgba(0,240,255,0.05);transform:translateY(-3px);}
+
+/* FOOTER */
+footer{background:rgba(1,3,10,0.98);border-top:1px solid rgba(255,255,255,0.06);}
+footer::before{content:"";display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.25),transparent);}
+.footer-body{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:52px;max-width:1200px;margin:0 auto;padding:72px 52px 56px;}
+.f-brand p{font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:var(--sub);line-height:1.8;max-width:270px;margin:16px 0 26px;}
+.f-socials{display:flex;gap:10px;}
+.f-soc{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.09);display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:14px;text-decoration:none;transition:var(--t);}
+.f-soc:hover{color:var(--neon);border-color:rgba(0,240,255,0.35);background:rgba(0,240,255,0.07);transform:translateY(-3px);}
+.f-col h6{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:4px;text-transform:uppercase;color:var(--txt);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.f-col a{display:block;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--sub);text-decoration:none;margin-bottom:11px;transition:var(--t);}
+.f-col a:hover{color:var(--neon);transform:translateX(5px);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.04);padding:20px 52px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;}
+.f-meta{display:flex;flex-wrap:wrap;gap:10px;}
+.f-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+.f-badge i{color:var(--neon);font-size:10px;}
+.f-copy{font-family:'Fira Code',monospace;font-size:10.5px;color:var(--dim);}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .terms-layout{grid-template-columns:1fr;}
+  .toc-panel{position:static;margin-bottom:28px;}
+  .toc-list{flex-direction:row;flex-wrap:wrap;gap:8px;}
+  .toc-link{padding:7px 14px;}
+  .toc-link .toc-num{display:none;}
+  .footer-body{grid-template-columns:1fr 1fr;gap:36px;}
+}
+@media(max-width:768px){
+  #c-dot,#c-ring{display:none;}
+  body{cursor:auto;}
+  header{padding:0 20px;height:60px;}
+  #mob-nav{top:60px;}
+  .ticker-bar{top:60px;}
+  .status-strip{top:calc(60px + 34px);}
+  .page-offset{height:calc(60px + 34px + 36px);}
+  nav{display:none!important;}
+  .hdr-right .hdr-btn{display:none;}
+  .hamburger{display:flex;}
+  .terms-hero{padding:70px 20px 60px;}
+  .terms-layout{padding:50px 20px 70px;}
+  .cta-banner{padding:60px 20px;}
+  .footer-body{grid-template-columns:1fr 1fr;padding:48px 24px 40px;gap:28px;}
+  .footer-bottom{padding:18px 24px;flex-direction:column;align-items:flex-start;}
+  .accept-inner{flex-direction:column;gap:14px;}
+  .btn-accept,.btn-decline{width:100%;justify-content:center;}
+  .accept-actions{flex-direction:column;}
+}
+@media(max-width:480px){
+  .footer-body{grid-template-columns:1fr;}
+  .cta-btns{flex-direction:column;align-items:center;}
+  .cta-big,.cta-soft{width:100%;justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<div id="c-dot"></div>
+<div id="c-ring"></div>
+
+<!-- ━━━━━━ HEADER ━━━━━━ -->
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-box"><i class="fa-solid fa-database"></i></div>
+    <div class="logo-txt"><b>PAC System</b><span>Management Dashboard</span></div>
+  </a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="features.html">Features</a>
+    <a href="docs.html">Documentation</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="hdr-right">
+    <a href="/login.html" class="hdr-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<div id="mob-nav">
+  <a href="index.html" onclick="toggleNav()">Home</a>
+  <a href="features.html" onclick="toggleNav()">Features</a>
+  <a href="docs.html" onclick="toggleNav()">Documentation</a>
+  <a href="contact.html" onclick="toggleNav()">Contact</a>
+  <a href="/login.html" onclick="toggleNav()">Login</a>
+</div>
+
+<!-- ━━━━━━ TICKER ━━━━━━ -->
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <span class="t-item"><span class="t-dot"></span>PAC System v2.0 — Legal Documents Updated</span>
+    <span class="t-item"><span class="t-dot"></span>Terms Effective: January 1, 2025</span>
+    <span class="t-item"><span class="t-dot"></span>AES-256 Encryption Active on All Data</span>
+    <span class="t-item"><span class="t-dot"></span>RBAC Policy: Firebase Security Rules Enforced</span>
+    <span class="t-item"><span class="t-dot"></span>Data Stored in Google Cloud India Region</span>
+    <span class="t-item"><span class="t-dot"></span>Support: contact via admin panel</span>
+    <span class="t-item"><span class="t-dot"></span>PAC System v2.0 — Legal Documents Updated</span>
+    <span class="t-item"><span class="t-dot"></span>Terms Effective: January 1, 2025</span>
+    <span class="t-item"><span class="t-dot"></span>AES-256 Encryption Active on All Data</span>
+    <span class="t-item"><span class="t-dot"></span>RBAC Policy: Firebase Security Rules Enforced</span>
+    <span class="t-item"><span class="t-dot"></span>Data Stored in Google Cloud India Region</span>
+    <span class="t-item"><span class="t-dot"></span>Support: contact via admin panel</span>
+  </div>
+</div>
+
+<!-- STATUS STRIP -->
+<div class="status-strip">
+  <div class="s-chip"><span class="s-dot green"></span><span>All Systems Operational</span></div>
+  <div class="s-chip"><span class="s-dot green"></span><span>Database Online</span></div>
+  <div class="s-chip"><span class="s-dot amber"></span><span id="sync-t">Sync: 0s ago</span></div>
+  <div class="s-chip"><span id="lat-t">⚡ Latency: -- ms</span></div>
+</div>
+
+<div class="page-offset"></div>
+
+<!-- ━━━━━━ HERO ━━━━━━ -->
+<section class="terms-hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="aurora">
+    <div class="aurora-blob ab1"></div>
+    <div class="aurora-blob ab2"></div>
+  </div>
+  <div class="terms-hero-inner" id="hero-inner">
+    <div class="breadcrumb"><a href="index.html">Home</a><i class="fa-solid fa-chevron-right"></i>Terms &amp; Conditions</div>
+    <div class="kicker"><i class="fa-solid fa-scale-balanced"></i> Legal Agreement</div>
+    <h1 class="page-title">
+      <span class="pt-w">Terms &amp;</span>
+      <span class="pt-p">Conditions</span>
+    </h1>
+    <p class="page-sub">Please read these terms carefully before accessing or using the PAC Management System platform. By logging in, you agree to be bound by all conditions described below.</p>
+    <div class="hero-meta-row">
+      <div class="h-chip c1"><i class="fa-solid fa-calendar"></i> Effective: Jan 1, 2025</div>
+      <div class="h-chip c2"><i class="fa-solid fa-clock-rotate-left"></i> Last Updated: Dec 28, 2024</div>
+      <div class="h-chip c3"><i class="fa-solid fa-globe"></i> Jurisdiction: India</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ━━━━━━ LAYOUT ━━━━━━ -->
+<div class="terms-layout">
+
+  <!-- TOC -->
+  <aside>
+    <div class="toc-panel reveal">
+      <div class="toc-head"><i class="fa-solid fa-list"></i> On This Page</div>
+      <div class="toc-list">
+        <a class="toc-link active" href="#s1" onclick="scrollTo(this,'s1')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">01</span>Acceptance of Terms</a>
+        <a class="toc-link" href="#s2" onclick="scrollTo(this,'s2')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">02</span>Platform Access &amp; Eligibility</a>
+        <a class="toc-link" href="#s3" onclick="scrollTo(this,'s3')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">03</span>User Accounts &amp; Credentials</a>
+        <a class="toc-link" href="#s4" onclick="scrollTo(this,'s4')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">04</span>Permitted Use</a>
+        <a class="toc-link" href="#s5" onclick="scrollTo(this,'s5')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">05</span>Data &amp; Privacy</a>
+        <a class="toc-link" href="#s6" onclick="scrollTo(this,'s6')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">06</span>PAC Records &amp; Entries</a>
+        <a class="toc-link" href="#s7" onclick="scrollTo(this,'s7')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">07</span>Role-Based Access &amp; Permissions</a>
+        <a class="toc-link" href="#s8" onclick="scrollTo(this,'s8')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">08</span>Prohibited Activities</a>
+        <a class="toc-link" href="#s9" onclick="scrollTo(this,'s9')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">09</span>Intellectual Property</a>
+        <a class="toc-link" href="#s10" onclick="scrollTo(this,'s10')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">10</span>Liability &amp; Disclaimers</a>
+        <a class="toc-link" href="#s11" onclick="scrollTo(this,'s11')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">11</span>Termination</a>
+        <a class="toc-link" href="#s12" onclick="scrollTo(this,'s12')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">12</span>Governing Law</a>
+        <a class="toc-link" href="#s13" onclick="scrollTo(this,'s13')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">13</span>Changes to Terms</a>
+        <a class="toc-link" href="#s14" onclick="scrollTo(this,'s14')"><i class="fa-solid fa-circle-dot"></i><span class="toc-num">14</span>Contact &amp; Support</a>
+      </div>
+      <div class="toc-accept">
+        <div class="accept-bar"><div class="accept-fill" id="read-prog"></div></div>
+        <div class="accept-label" id="read-label">0% read · Scroll to track progress</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="terms-content">
+
+    <!-- INTRO CARD -->
+    <div class="terms-intro-card reveal">
+      <div class="intro-top">
+        <div class="intro-ico"><i class="fa-solid fa-file-contract"></i></div>
+        <div class="intro-txt">
+          <h3>Legal Agreement — Read Before Using</h3>
+          <p>These Terms &amp; Conditions ("Agreement") govern your access to and use of the PAC Management System ("Platform"), operated by Sk Samrat ("Administrator"). By creating an account, logging in, or accessing any part of the Platform, you confirm that you have read, understood, and agreed to be bound by this Agreement in its entirety.</p>
+        </div>
+      </div>
+      <div class="intro-meta">
+        <div class="imeta"><i class="fa-solid fa-file-shield"></i> Version 2.0</div>
+        <div class="imeta"><i class="fa-solid fa-calendar-check"></i> Effective: January 1, 2025</div>
+        <div class="imeta"><i class="fa-solid fa-pen-to-square"></i> Last Revised: December 28, 2024</div>
+        <div class="imeta"><i class="fa-solid fa-location-dot"></i> Singi, Bolpur, Birbhum, WB — India</div>
+      </div>
+    </div>
+
+    <!-- SECTION 01 -->
+    <div class="t-section open reveal" id="s1">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">01</span>
+        <div class="t-sec-ico ico-c"><i class="fa-solid fa-handshake"></i></div>
+        <div class="t-sec-title">Acceptance of Terms</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>By accessing, browsing, or using the PAC Management System in any way — including but not limited to creating an account, submitting PAC entries, viewing dashboards, or downloading reports — you acknowledge that you have read these Terms &amp; Conditions and agree to be legally bound by them.</p>
+        <p>If you are accessing this Platform on behalf of a UCL owner, center, or organization, you represent and warrant that you have the authority to bind that organization to these terms. If you do not agree with any part of these terms, you must immediately discontinue use of the Platform.</p>
+        <div class="t-highlight"><strong>Important:</strong> Continued use of the Platform after any modification to these Terms constitutes acceptance of the revised Terms. You are responsible for reviewing updates periodically.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 02 -->
+    <div class="t-section reveal" id="s2">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">02</span>
+        <div class="t-sec-ico ico-b"><i class="fa-solid fa-door-open"></i></div>
+        <div class="t-sec-title">Platform Access &amp; Eligibility</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>Access to the PAC Management System is restricted to authorized individuals only. Eligibility requirements include:</p>
+        <ul>
+          <li>You must be at least 18 years of age or the legal age of majority in your jurisdiction.</li>
+          <li>You must be a registered UCL owner, Aadhaar enrollment center operator, or an administrator explicitly approved by the Platform administrator.</li>
+          <li>You must not be located in any jurisdiction where access to or use of this Platform would be prohibited by applicable law.</li>
+          <li>You must have a valid, active invitation or credential issued by the Platform administrator (Sk Samrat).</li>
+        </ul>
+        <p>The Platform reserves the right to refuse access, suspend accounts, or revoke credentials at any time without notice, at the sole discretion of the administrator, particularly in cases of policy violation, misuse, or inactivity exceeding 90 days.</p>
+        <div class="t-warn"><strong>Note:</strong> Unauthorized access attempts are logged, tracked via Firestore audit records, and may be reported to relevant authorities under the Information Technology Act, 2000 (India).</div>
+      </div>
+    </div>
+
+    <!-- SECTION 03 -->
+    <div class="t-section reveal" id="s3">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">03</span>
+        <div class="t-sec-ico ico-g"><i class="fa-solid fa-user-lock"></i></div>
+        <div class="t-sec-title">User Accounts &amp; Credentials</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>Each authorized user is issued a unique account consisting of a registered email address and a password managed through Firebase Authentication. You agree to the following regarding your account:</p>
+        <ul>
+          <li>You are solely responsible for maintaining the confidentiality of your login credentials.</li>
+          <li>You must not share your login credentials with any third party, including colleagues, family members, or other operators, unless explicitly authorized by the Platform administrator in writing.</li>
+          <li>You must notify the administrator immediately upon discovering any unauthorized access to your account.</li>
+          <li>All actions taken under your account are deemed to have been performed by you and you accept full liability for those actions.</li>
+          <li>You must use a strong, unique password and enable two-factor authentication if made available on the Platform.</li>
+        </ul>
+        <div class="t-highlight"><strong>Account Security:</strong> The Platform uses Firebase Authentication, which stores credentials in accordance with Google's security standards. Your password is never stored in plain text.</div>
+        <p>The Platform reserves the right to enforce password resets, lock accounts, or require re-verification at any time to maintain security standards across the network.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 04 -->
+    <div class="t-section reveal" id="s4">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">04</span>
+        <div class="t-sec-ico ico-c"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="t-sec-title">Permitted Use</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>The PAC Management System is a purpose-built internal tool. Authorized users may use the Platform solely for the following purposes:</p>
+        <ul>
+          <li>Submitting, reviewing, editing, and tracking PAC records related to Aadhaar enrollment activities.</li>
+          <li>Managing and monitoring assigned Aadhaar enrollment centers within your jurisdiction.</li>
+          <li>Viewing analytics, performance reports, and dashboards relevant to your assigned role and center(s).</li>
+          <li>Generating and downloading reports in approved formats (PDF, XLSX, CSV) for official operational use.</li>
+          <li>Managing operator profiles and UCL registrations, subject to your assigned permission level.</li>
+          <li>Communicating operational status changes through Platform-provided tools.</li>
+        </ul>
+        <p>Any use of the Platform outside the scope described above — or any use that contravenes applicable law, regulatory guidance, or UIDAI (Unique Identification Authority of India) protocols — is strictly prohibited and may result in immediate account termination.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 05 -->
+    <div class="t-section reveal" id="s5">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">05</span>
+        <div class="t-sec-ico ico-v"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="t-sec-title">Data &amp; Privacy</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>The Platform processes and stores operational data related to PAC activities using Google Cloud Firestore. By using the Platform, you acknowledge and agree to the following data practices:</p>
+        <table class="t-table">
+          <thead><tr><th>Data Type</th><th>Storage Location</th><th>Retention</th></tr></thead>
+          <tbody>
+            <tr><td>PAC Entry Records</td><td>Google Firestore (India Region)</td><td>Indefinite (admin-controlled)</td></tr>
+            <tr><td>User Account Data</td><td>Firebase Authentication</td><td>Until account deletion</td></tr>
+            <tr><td>Audit Logs</td><td>Google Firestore</td><td>90 days rolling</td></tr>
+            <tr><td>Backup Snapshots</td><td>Google Cloud Storage</td><td>30 days</td></tr>
+            <tr><td>Session Activity</td><td>Firestore (encrypted)</td><td>30 days</td></tr>
+          </tbody>
+        </table>
+        <p>All data transmitted between your device and the Platform is encrypted using TLS 1.3. Data at rest in Firestore is encrypted using AES-256. The Platform does not sell, transfer, or disclose user data to third parties except as required by law or as necessary to operate the Google Firebase infrastructure.</p>
+        <div class="t-highlight"><strong>UIDAI Compliance:</strong> The Platform does not store biometric data, Aadhaar numbers in raw form, or any data classified as sensitive personal data under the UIDAI Aadhaar Act. All biometric processing occurs exclusively through UIDAI-certified devices and official UIDAI infrastructure.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 06 -->
+    <div class="t-section reveal" id="s6">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">06</span>
+        <div class="t-sec-ico ico-b"><i class="fa-solid fa-file-invoice"></i></div>
+        <div class="t-sec-title">PAC Records &amp; Entries</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>Users submitting PAC entries through this Platform agree to the following responsibilities regarding the accuracy and integrity of those records:</p>
+        <ul>
+          <li>All PAC entries submitted must be accurate, complete, and truthful to the best of the operator's knowledge.</li>
+          <li>Submission of false, duplicate, or fraudulent PAC records is a violation of these Terms and may constitute a criminal offence under applicable Indian law.</li>
+          <li>Operators are responsible for verifying the identity and eligibility of individuals whose records they submit.</li>
+          <li>Once submitted, records are timestamped and linked to the submitting operator's account in the immutable audit trail.</li>
+          <li>Bulk CSV imports must follow the approved format and must not contain personally identifiable information (PII) beyond what is operationally required.</li>
+        </ul>
+        <div class="t-danger"><strong>Strict Warning:</strong> Deliberate entry of false, fabricated, or unauthorized PAC records may result in permanent account suspension, legal action, and reporting to UIDAI or law enforcement authorities.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 07 -->
+    <div class="t-section reveal" id="s7">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">07</span>
+        <div class="t-sec-ico ico-g"><i class="fa-solid fa-users-gear"></i></div>
+        <div class="t-sec-title">Role-Based Access &amp; Permissions</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>The Platform operates a granular Role-Based Access Control (RBAC) system enforced at the Firebase Security Rules level. Each user account is assigned a role that determines exactly what data can be read, written, edited, or exported.</p>
+        <table class="t-table">
+          <thead><tr><th>Role</th><th>Permissions</th><th>Scope</th></tr></thead>
+          <tbody>
+            <tr><td><span class="t-code">admin</span></td><td>Full read / write / delete / export</td><td>All centers, all data</td></tr>
+            <tr><td><span class="t-code">ucl_owner</span></td><td>Read all, write own centers</td><td>Assigned UCL network</td></tr>
+            <tr><td><span class="t-code">center_manager</span></td><td>Read + write + export</td><td>Assigned center only</td></tr>
+            <tr><td><span class="t-code">operator</span></td><td>Submit + view own entries</td><td>Assigned center only</td></tr>
+            <tr><td><span class="t-code">viewer</span></td><td>Read-only access</td><td>Assigned scope only</td></tr>
+          </tbody>
+        </table>
+        <p>Attempting to access, modify, or export data beyond your assigned role is a security violation. All such attempts are logged in the audit trail. Users must not attempt to circumvent role-based restrictions through any technical means, including direct API calls, token manipulation, or exploiting client-side vulnerabilities.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 08 -->
+    <div class="t-section reveal" id="s8">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">08</span>
+        <div class="t-sec-ico ico-r"><i class="fa-solid fa-ban"></i></div>
+        <div class="t-sec-title">Prohibited Activities</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>The following activities are strictly prohibited on the PAC Management System. Violation of any of these prohibitions may result in immediate termination of access and potential legal action:</p>
+        <ul>
+          <li>Attempting to gain unauthorized access to other users' accounts, data, or restricted sections of the Platform.</li>
+          <li>Reverse engineering, decompiling, disassembling, or attempting to extract the source code of the Platform.</li>
+          <li>Introducing malware, viruses, trojan horses, ransomware, or any malicious code into the Platform or its infrastructure.</li>
+          <li>Using automated bots, scripts, or crawlers to access, scrape, or extract data from the Platform without prior written consent.</li>
+          <li>Misrepresenting your identity, role, or authority when using the Platform.</li>
+          <li>Submitting false, fabricated, or fraudulent PAC data entries of any kind.</li>
+          <li>Sharing exported data, screenshots, or reports with unauthorized individuals or third parties.</li>
+          <li>Attempting to overload, DoS-attack, or otherwise disrupt Platform services or Firestore infrastructure.</li>
+          <li>Using the Platform for any purpose not explicitly covered under Permitted Use (Section 04).</li>
+          <li>Circumventing, removing, or tampering with any security, authentication, or encryption mechanism.</li>
+        </ul>
+        <div class="t-danger"><strong>Zero Tolerance:</strong> Any detection of prohibited activity triggers an automatic account suspension and full audit review. The administrator reserves the right to pursue legal remedies under the IT Act 2000 and Indian Penal Code.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 09 -->
+    <div class="t-section reveal" id="s9">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">09</span>
+        <div class="t-sec-ico ico-a"><i class="fa-solid fa-copyright"></i></div>
+        <div class="t-sec-title">Intellectual Property</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>All intellectual property rights in and to the PAC Management System — including but not limited to the source code, user interface design, database schema, documentation, branding, visual assets, and system architecture — are the exclusive property of Sk Samrat, the Platform administrator.</p>
+        <ul>
+          <li>Users are granted a limited, non-exclusive, non-transferable, revocable license to use the Platform solely for its intended operational purpose.</li>
+          <li>No part of the Platform may be copied, reproduced, modified, distributed, or used to create derivative works without prior written authorization from the administrator.</li>
+          <li>The PAC System name, logo, and associated branding are proprietary identifiers. Any unauthorized use constitutes trademark infringement.</li>
+          <li>Exported reports and data generated by the Platform are for authorized internal operational use only and may not be redistributed, published, or sold.</li>
+        </ul>
+        <p>Feedback, suggestions, or feature requests submitted by users may be incorporated into the Platform at the administrator's discretion, without any obligation or compensation to the submitting user.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 10 -->
+    <div class="t-section reveal" id="s10">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">10</span>
+        <div class="t-sec-ico ico-v"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="t-sec-title">Liability &amp; Disclaimers</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>The Platform is provided on an "as-is" and "as-available" basis. While every effort is made to maintain a 99.7% uptime SLA, the administrator makes no guarantees of uninterrupted or error-free service. Specifically:</p>
+        <ul>
+          <li>The Platform administrator is not liable for data loss resulting from user error, unauthorized access, or force majeure events including natural disasters or third-party infrastructure failures.</li>
+          <li>The administrator is not responsible for decisions made by operators or UCL owners based on data or analytics displayed in the Platform.</li>
+          <li>Scheduled maintenance windows may cause temporary unavailability. Advance notice will be provided where possible.</li>
+          <li>Third-party services integrated with the Platform (Google Firestore, Firebase, Vercel) are subject to their own terms, and the administrator is not liable for outages or data handling by those services.</li>
+          <li>The Platform does not guarantee the accuracy of real-time data displayed on live dashboards during network outages or Firestore sync delays.</li>
+        </ul>
+        <div class="t-warn"><strong>Limitation of Liability:</strong> To the maximum extent permitted by applicable law, the total liability of the Platform administrator to any user for any claim arising from use of this Platform shall not exceed the amount paid by that user for access to the Platform in the preceding three (3) months.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 11 -->
+    <div class="t-section reveal" id="s11">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">11</span>
+        <div class="t-sec-ico ico-r"><i class="fa-solid fa-power-off"></i></div>
+        <div class="t-sec-title">Termination</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>Either party may terminate access to the Platform under the following conditions:</p>
+        <ul>
+          <li><strong style="color:var(--txt)">Administrator-Initiated Termination:</strong> The administrator may suspend or permanently revoke your access at any time, with or without notice, for any breach of these Terms, for operational reasons, or if your role or employment status changes.</li>
+          <li><strong style="color:var(--txt)">User-Initiated Termination:</strong> You may request account deletion at any time by contacting the administrator. Upon deletion, your access credentials will be revoked; however, records submitted under your account will be retained as part of the audit trail.</li>
+          <li><strong style="color:var(--txt)">Automatic Suspension:</strong> Accounts showing no login activity for 90 consecutive days may be automatically deactivated. A reactivation request can be submitted to the administrator.</li>
+        </ul>
+        <p>Upon termination, the license granted to you under these Terms is immediately revoked. Any data you have submitted or created on the Platform remains the property of the administrator and the associated UCL/center entity.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 12 -->
+    <div class="t-section reveal" id="s12">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">12</span>
+        <div class="t-sec-ico ico-b"><i class="fa-solid fa-gavel"></i></div>
+        <div class="t-sec-title">Governing Law</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>These Terms &amp; Conditions are governed by and shall be construed in accordance with the laws of the Republic of India, without regard to its conflict of law principles. Specifically:</p>
+        <ul>
+          <li>Disputes arising from or related to these Terms shall be subject to the exclusive jurisdiction of the courts located in Birbhum District, West Bengal, India.</li>
+          <li>The Information Technology Act, 2000 and its amendments apply to data security and unauthorized access provisions under these Terms.</li>
+          <li>For matters involving Aadhaar-related data, the Aadhaar (Targeted Delivery of Financial and other Subsidies, Benefits and Services) Act, 2016 takes precedence.</li>
+          <li>The parties agree to attempt to resolve disputes informally before initiating formal legal proceedings.</li>
+        </ul>
+        <div class="t-highlight"><strong>Arbitration Preference:</strong> Minor disputes that cannot be resolved informally may be referred to binding arbitration under the Arbitration and Conciliation Act, 1996 (India) before formal court proceedings are initiated, at the mutual agreement of both parties.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 13 -->
+    <div class="t-section reveal" id="s13">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">13</span>
+        <div class="t-sec-ico ico-a"><i class="fa-solid fa-pen-to-square"></i></div>
+        <div class="t-sec-title">Changes to Terms</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>The administrator reserves the right to modify, update, or replace any part of these Terms &amp; Conditions at any time. Changes take effect immediately upon posting to the Platform or notification to registered users.</p>
+        <ul>
+          <li>Major changes (affecting user rights, data practices, or permitted use) will be communicated via a dashboard notification banner at least 7 days before taking effect.</li>
+          <li>Minor changes (typographical corrections, clarifications) may be implemented without prior notice.</li>
+          <li>Users are responsible for periodically reviewing these Terms. The "Last Updated" date at the top of this page reflects the most recent revision.</li>
+          <li>Continued use of the Platform after any change constitutes your acceptance of the revised Terms.</li>
+        </ul>
+        <p>Archived versions of these Terms are available upon request from the Platform administrator for a period of two years following each revision.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 14 -->
+    <div class="t-section reveal" id="s14">
+      <div class="t-sec-head" onclick="toggleSec(this)">
+        <span class="t-sec-num">14</span>
+        <div class="t-sec-ico ico-g"><i class="fa-solid fa-headset"></i></div>
+        <div class="t-sec-title">Contact &amp; Support</div>
+        <div class="t-sec-toggle"><i class="fa-solid fa-plus"></i></div>
+      </div>
+      <div class="t-sec-body">
+        <p>For any questions, concerns, or requests related to these Terms &amp; Conditions, or to report a violation, please contact the Platform administrator through the following channels:</p>
+        <table class="t-table">
+          <thead><tr><th>Contact Type</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>Platform Administrator</td><td>Sk Samrat — Lead Developer</td></tr>
+            <tr><td>Location</td><td>Singi, Bolpur, Birbhum, West Bengal — 731240, India</td></tr>
+            <tr><td>In-Platform Support</td><td>Use the Contact page or Admin Panel → Support</td></tr>
+            <tr><td>Bug / Security Report</td><td>Contact via Admin Panel with subject: <span class="t-code">SECURITY_REPORT</span></td></tr>
+            <tr><td>Account Deletion Request</td><td>Submit via Admin Panel → Settings → Delete Account</td></tr>
+            <tr><td>Legal Inquiries</td><td>Submit in writing via Admin Panel with subject: <span class="t-code">LEGAL_INQUIRY</span></td></tr>
+          </tbody>
+        </table>
+        <p>We aim to respond to all formal legal inquiries within 7 business days. Security vulnerability reports are treated with the highest priority and will receive a response within 48 hours.</p>
+      </div>
+    </div>
+
+    <!-- ACCEPT SECTION -->
+    <div class="accept-section reveal" id="accept-box">
+      <div class="accept-inner">
+        <div class="accept-ico"><i class="fa-solid fa-scale-balanced"></i></div>
+        <div class="accept-txt">
+          <h3>You Have Read the Terms</h3>
+          <p>By clicking "I Agree &amp; Continue", you confirm that you have read and understood these Terms &amp; Conditions in full and agree to be legally bound by them when using the PAC Management System platform. If you do not agree, you must not access or use the Platform.</p>
+        </div>
+      </div>
+      <div class="accept-actions">
+        <a href="/login.html" class="btn-accept"><i class="fa-solid fa-circle-check"></i> I Agree &amp; Continue to Login</a>
+        <a href="index.html" class="btn-decline"><i class="fa-solid fa-xmark"></i> I Do Not Agree — Return Home</a>
+      </div>
+      <div class="accept-note"><i class="fa-solid fa-lock"></i> Your agreement is recorded with a timestamp in the Platform audit log upon login.</div>
+    </div>
+
+  </main>
+</div>
+
+<div class="divider"></div>
+
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <div class="cta-grid"></div>
+  <div class="cta-inner reveal">
+    <div class="kicker" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;padding:6px 18px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;letter-spacing:3px;text-transform:uppercase;color:var(--neon);background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.16);">
+      <i class="fa-solid fa-rocket"></i> Ready to Access the Platform?
+    </div>
+    <h2>Agreed? Let's Get <span>You Logged In</span></h2>
+    <p>With your agreement in place, login to your PAC Management dashboard and start managing centers, tracking PAC entries, and generating reports in real time.</p>
+    <div class="cta-btns">
+      <a href="/login.html" class="cta-big"><i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard</a>
+      <a href="docs.html" class="cta-soft"><i class="fa-solid fa-book-open"></i> Read Documentation</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-body">
+    <div class="f-brand">
+      <a class="logo" href="index.html">
+        <div class="logo-box" style="width:34px;height:34px;font-size:14px;"><i class="fa-solid fa-database"></i></div>
+        <div class="logo-txt"><b>PAC System</b><span style="font-size:9px;">Management Dashboard</span></div>
+      </a>
+      <p>A centralized management platform for PAC records, Aadhaar center operations, and UCL owner networks — secure, fast, and built for professionals.</p>
+      <div class="f-socials">
+        <a class="f-soc" href="#"><i class="fa-brands fa-github"></i></a>
+        <a class="f-soc" href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a class="f-soc" href="#"><i class="fa-brands fa-telegram"></i></a>
+        <a class="f-soc" href="#"><i class="fa-brands fa-whatsapp"></i></a>
+        <a class="f-soc" href="#"><i class="fa-solid fa-envelope"></i></a>
+      </div>
+    </div>
+    <div class="f-col">
+      <h6>Platform</h6>
+      <a href="/login.html">Login</a>
+      <a href="features.html">Features</a>
+      <a href="index.html#features">Center Manager</a>
+      <a href="index.html#features">Agent Tracker</a>
+      <a href="index.html#features">Analytics</a>
+    </div>
+    <div class="f-col">
+      <h6>Legal</h6>
+      <a href="terms.html" style="color:var(--neon);">Terms &amp; Conditions</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Cookie Policy</a>
+      <a href="#">GDPR / Data Rights</a>
+      <a href="#">Security Policy</a>
+    </div>
+    <div class="f-col">
+      <h6>Support</h6>
+      <a href="docs.html">Documentation</a>
+      <a href="contact.html">Contact Admin</a>
+      <a href="#">Report a Bug</a>
+      <a href="#">Changelog</a>
+      <a href="features.html">All Features</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="f-meta">
+      <span class="f-badge"><i class="fa-solid fa-clock"></i><span id="live-time">--</span></span>
+      <span class="f-badge"><i class="fa-solid fa-globe"></i><span id="user-ip">Loading...</span></span>
+      <span class="f-badge"><i class="fa-solid fa-code-branch"></i> v2.0.0</span>
+    </div>
+    <p class="f-copy">&copy; 2025 PAC Management System · All rights reserved · Designed by Samrat</p>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script>
+/* CURSOR */
+const cd=document.getElementById('c-dot'),cr=document.getElementById('c-ring');
+let mx=-200,my=-200,rx=-200,ry=-200,rdy=false;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cd.style.left=mx+'px';cd.style.top=my+'px';
+  if(!rdy){rdy=true;cd.classList.add('active');cr.classList.add('active');}
+});
+document.querySelectorAll('a,button,.t-section,.toc-link,.int-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cr.classList.add('expand'));
+  el.addEventListener('mouseleave',()=>cr.classList.remove('expand'));
+});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop);})();
+
+/* MOBILE NAV */
+function toggleNav(){
+  const mob=document.getElementById('mob-nav'),hb=document.getElementById('hamburger');
+  const o=mob.classList.toggle('open');hb.classList.toggle('open',o);
+}
+
+/* ACCORDION SECTIONS */
+function toggleSec(btn){
+  const sec=btn.closest('.t-section');
+  const isOpen=sec.classList.contains('open');
+  document.querySelectorAll('.t-section.open').forEach(s=>s.classList.remove('open'));
+  if(!isOpen) sec.classList.add('open');
+  updateTOC();
+}
+
+/* TOC SCROLL */
+function scrollTo(link,id){
+  event.preventDefault();
+  const el=document.getElementById(id);
+  if(el){const sec=el;sec.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+
+/* TOC ACTIVE */
+function updateTOC(){
+  const links=document.querySelectorAll('.toc-link');
+  const secs=document.querySelectorAll('.t-section');
+  let active=null;
+  secs.forEach(s=>{
+    const r=s.getBoundingClientRect();
+    if(r.top<=200) active=s.id;
+  });
+  links.forEach(l=>{
+    const href=l.getAttribute('href').replace('#','');
+    l.classList.toggle('active',href===active);
+  });
+}
+window.addEventListener('scroll',updateTOC);
+
+/* READ PROGRESS */
+window.addEventListener('scroll',()=>{
+  const doc=document.documentElement;
+  const scrolled=doc.scrollTop;
+  const total=doc.scrollHeight-doc.clientHeight;
+  const pct=Math.round((scrolled/total)*100);
+  const bar=document.getElementById('read-prog');
+  const label=document.getElementById('read-label');
+  if(bar) bar.style.width=pct+'%';
+  if(label) label.textContent=pct+'% read'+(pct===100?' · Fully read ✓':' · Scroll to track progress');
+});
+
+/* HERO ENTRANCE */
+const hi=document.getElementById('hero-inner');
+if(hi){hi.style.cssText='opacity:0;transform:translateY(38px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{hi.style.opacity='1';hi.style.transform='translateY(0)';}));}
+
+/* CLOCK */
+function tick(){
+  const el=document.getElementById('live-time');if(!el)return;
+  const n=new Date(),d=String(n.getDate()).padStart(2,'0'),m=String(n.getMonth()+1).padStart(2,'0'),y=n.getFullYear();
+  let h=n.getHours();const mn=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
+  const ap=h>=12?'PM':'AM';h=h%12||12;
+  el.textContent=`${d}-${m}-${y} ${String(h).padStart(2,'0')}:${mn}:${s} ${ap}`;
+}
+setInterval(tick,1000);tick();
+
+/* IP */
+fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>{document.getElementById('user-ip').textContent=d.ip;}).catch(()=>{document.getElementById('user-ip').textContent='Unavailable';});
+
+/* STATUS */
+setInterval(()=>{
+  const sec=Math.floor((Date.now()-Date.now()%60000)/1000%60);
+  const st=document.getElementById('sync-t');if(st)st.textContent=`Sync: ${sec}s ago`;
+  const lat=Math.floor(Math.random()*100)+80;
+  const lt=document.getElementById('lat-t');if(lt)lt.textContent=`⚡ Latency: ${lat}ms`;
+},1000);
+
+/* PARTICLE CANVAS */
+(function(){
+  const c=document.getElementById('hero-canvas');if(!c)return;
+  const ctx=c.getContext('2d');let W,H;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
+  window.addEventListener('resize',resize);resize();
+  const pts=[];
+  for(let i=0;i<70;i++)pts.push({x:Math.random()*1600,y:Math.random()*600,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.1+.3});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,240,255,0.55)';ctx.fill();});
+    pts.forEach((a,i)=>{pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<100){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,240,255,${(1-d/100)*.09})`;ctx.lineWidth=1;ctx.stroke();}});});
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* REVEAL */
+const io=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');io.unobserve(en.target);}});},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
