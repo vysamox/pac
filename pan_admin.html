@@ -114,32 +114,136 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
 .app-card.open .card-body{display:block;}
 
 /* COPY ALL */
-.copy-all-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;background:rgba(0,240,255,0.04);border:1px solid rgba(0,240,255,0.1);margin-bottom:16px;gap:8px;flex-wrap:wrap;}
-.copy-all-info{font-family:'Fira Code',monospace;font-size:9.5px;color:var(--sub);letter-spacing:.5px;}
-.copy-all-btn{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#010810;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:var(--t);}
-.copy-all-btn:hover{transform:scale(1.04);box-shadow:0 0 18px rgba(0,240,255,0.3);}
-.copy-all-btn.copied{background:linear-gradient(135deg,var(--green),#00bfa5);}
+/* COPY ALL BAR */
+.copy-all-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(0,240,255,0.04), rgba(26,107,255,0.06));
+  border: 1px solid rgba(0,240,255,0.15);
+  margin-bottom: 16px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.copy-all-info {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  color: var(--sub);
+  letter-spacing: .5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+}
+.copy-all-info i { color: var(--neon); font-size: 11px; }
+
+.copy-bar-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* COPY ALL button */
+.btn-copy-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  border-radius: 9px;
+  border: none;
+  background: linear-gradient(135deg, var(--neon), var(--blue));
+  color: #010810;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--t);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,240,255,0.2);
+}
+.btn-copy-all::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+.btn-copy-all:hover::before { transform: translateX(100%); }
+.btn-copy-all:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0,240,255,0.35);
+}
+.btn-copy-all:active { transform: scale(0.97); }
+.btn-copy-all.copied {
+  background: linear-gradient(135deg, var(--green), #00bfa5);
+  box-shadow: 0 4px 16px rgba(6,255,165,0.25);
+}
+
+/* COPY CODE button */
+.btn-copy-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  border-radius: 9px;
+  border: 1px solid rgba(139,92,246,0.4);
+  background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(26,107,255,0.12));
+  color: var(--violet);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--t);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(139,92,246,0.1);
+}
+.btn-copy-code::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+.btn-copy-code:hover::before { transform: translateX(100%); }
+.btn-copy-code:hover {
+  background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(26,107,255,0.25));
+  border-color: rgba(139,92,246,0.7);
+  color: #c4b5fd;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(139,92,246,0.25);
+}
+.btn-copy-code:active { transform: scale(0.97); }
+.btn-copy-code.copied {
+  background: linear-gradient(135deg, rgba(6,255,165,0.15), rgba(0,191,165,0.12));
+  border-color: rgba(6,255,165,0.4);
+  color: var(--green);
+  box-shadow: 0 4px 16px rgba(6,255,165,0.15);
+}
+
+@media(max-width:780px){
+  .copy-all-bar { flex-direction: column; align-items: flex-start; }
+  .copy-bar-btns { width: 100%; }
+  .btn-copy-all, .btn-copy-code { flex: 1; justify-content: center; }
+}
 
 /* DATA TABLE */
 .data-sections{display:flex;flex-direction:column;gap:14px;}
 .ds-block{background:rgba(3,8,24,0.6);border:1px solid rgba(255,255,255,0.05);border-radius:12px;overflow:hidden;}
 .ds-head{padding:10px 14px;background:rgba(0,240,255,0.04);border-bottom:1px solid rgba(0,240,255,0.08);font-family:'Fira Code',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--neon);display:flex;align-items:center;gap:7px;}
 .ds-head i{font-size:9px;}
-.data-table{width:100%;border-collapse:collapse;}
-.data-table tr{border-bottom:1px solid rgba(255,255,255,0.03);}
-.data-table tr:last-child{border-bottom:none;}
-.data-table tr:hover{background:rgba(0,240,255,0.015);}
-.data-table td{padding:8px 14px;vertical-align:top;}
-.data-table td:first-child{font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);width:34%;white-space:nowrap;}
-.data-table td:last-child{font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--txt);font-weight:500;word-break:break-word;}
-.data-table td:last-child.mono{font-family:'Fira Code',monospace;font-size:11.5px;color:var(--neon);letter-spacing:.5px;}
-.data-table td:last-child.empty{color:var(--dim);font-style:italic;font-size:12px;font-weight:400;}
-.data-table td:last-child.s-pending{color:var(--amber);font-weight:700;}
-.data-table td:last-child.s-approved{color:var(--green);font-weight:700;}
-.data-table td:last-child.s-rejected{color:var(--rose);font-weight:700;}
 
 /* FIELD COPY ROW */
-.td-wrap{display:flex;align-items:center;gap:8px;justify-content:space-between;}
 .copy-btn{flex-shrink:0;width:24px;height:24px;border-radius:6px;border:1px solid rgba(0,240,255,0.15);background:rgba(0,240,255,0.04);color:var(--dim);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t);}
 .copy-btn:hover{border-color:rgba(0,240,255,0.4);color:var(--neon);}
 .copy-btn.copied{border-color:rgba(6,255,165,0.4);color:var(--green);}
@@ -189,6 +293,58 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
 .toast.ok{background:rgba(6,255,165,0.1);border:1px solid rgba(6,255,165,0.3);color:var(--green);}
 .toast.err{background:rgba(255,45,120,0.1);border:1px solid rgba(255,45,120,0.3);color:var(--rose);}
 
+/* 3-column grid for data items */
+.data-table {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px;
+}
+
+.data-item {
+  background: rgba(0,240,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.data-label {
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 5px;
+}
+
+.data-value {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--txt);
+  word-break: break-word;
+}
+
+.data-value.mono {
+  font-family: 'Fira Code', monospace;
+  font-size: 11.5px;
+  color: var(--neon);
+  letter-spacing: .5px;
+}
+
+.data-value.empty { color: var(--dim); font-style: italic; font-size: 12px; }
+.data-value.s-pending  { color: var(--amber); font-weight: 700; }
+.data-value.s-approved { color: var(--green);  font-weight: 700; }
+.data-value.s-rejected { color: var(--rose);   font-weight: 700; }
+
+/* Mobile: 2 columns */
+@media(max-width:780px){
+  .data-table { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media(max-width:780px){
   .hdr{padding:0 14px;height:54px;}
   .top-stats{grid-template-columns:1fr 1fr;padding:14px 14px 0;}
@@ -200,6 +356,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
   .doc-grid{grid-template-columns:repeat(3,1fr);}
   .stat-val{font-size:32px;}
 }
+
+
+
 </style>
 </head>
 <body>
@@ -325,26 +484,38 @@ function buildCard(d,num){
   </div>
   ${chips?`<div class="corr-chips">${chips}</div>`:''}
   <div class="card-body">
-    <div class="copy-all-bar">
-      <div class="copy-all-info"><i class="fa-solid fa-copy" style="color:var(--neon);margin-right:5px;"></i>Copy full application as formatted text</div>
-      <button class="copy-all-btn" onclick="copyAll(this,'${encodeURIComponent(allText)}')" ><i class="fa-solid fa-copy"></i> Copy All</button>
+ <div class="copy-all-bar">
+      <div class="copy-all-info">
+        <i class="fa-solid fa-file-lines"></i>
+        Copy full application as formatted text
+      </div>
+      <div class="copy-bar-btns">
+        <button class="btn-copy-all" onclick="copyAll(this,'${encodeURIComponent(allText)}')">
+          <i class="fa-solid fa-copy"></i> Copy All
+        </button>
+        <button class="btn-copy-code" onclick="copyAutoFillCode(this,'${d.id}')">
+          <i class="fa-solid fa-code"></i> Copy Code
+        </button>
+      </div>
     </div>
     <div class="data-sections">
+
       <!-- Application Info -->
       <div class="ds-block">
         <div class="ds-head"><i class="fa-solid fa-hashtag"></i> Application Info</div>
-        <table class="data-table">
+        <div class="data-table">
           ${row('Application No',d.pan_number||d.application_id,'mono')}
           ${row('Status',d.status,'s-'+(d.status||'pending'))}
           ${row('Submitted',date)}
           ${row('IP Address',d.ip_address)}
           ${row('Declaration',d.declaration_accepted?'✓ Accepted':'Not accepted')}
-        </table>
+        </div>
       </div>
+
       <!-- Personal -->
       <div class="ds-block">
         <div class="ds-head"><i class="fa-solid fa-user"></i> Personal Details</div>
-        <table class="data-table">
+        <div class="data-table">
           ${row('Title',d.title)}
           ${row('Gender',d.gender)}
           ${row('First Name',d.first_name)}
@@ -357,36 +528,44 @@ function buildCard(d,num){
           ${row('Aadhaar Number',d.aadhaar_number,'mono')}
           ${row('Date of Birth',d.dob)}
           ${row('Age',d.age?d.age+' years':'')}
-        </table>
+        </div>
       </div>
+
       <!-- Contact -->
       <div class="ds-block">
         <div class="ds-head"><i class="fa-solid fa-phone"></i> Contact</div>
-        <table class="data-table">
+        <div class="data-table">
           ${row('Mobile',d.mobile,'mono')}
           ${row('Email',d.email)}
-        </table>
+        </div>
       </div>
+
       <!-- Father -->
       <div class="ds-block">
         <div class="ds-head"><i class="fa-solid fa-person"></i> Father's Details</div>
-        <table class="data-table">
-          ${row('First Name',fa.first_name)}${row('Middle Name',fa.middle_name)}
-          ${row('Last Name',fa.last_name)}${row('Full Name',fa.full_name)}
-        </table>
+        <div class="data-table">
+          ${row('First Name',fa.first_name)}
+          ${row('Middle Name',fa.middle_name)}
+          ${row('Last Name',fa.last_name)}
+          ${row('Full Name',fa.full_name)}
+        </div>
       </div>
+
       <!-- Mother -->
       <div class="ds-block">
         <div class="ds-head"><i class="fa-solid fa-person-dress"></i> Mother's Details</div>
-        <table class="data-table">
-          ${row('First Name',mo.first_name)}${row('Middle Name',mo.middle_name)}
-          ${row('Last Name',mo.last_name)}${row('Full Name',mo.full_name)}
-        </table>
+        <div class="data-table">
+          ${row('First Name',mo.first_name)}
+          ${row('Middle Name',mo.middle_name)}
+          ${row('Last Name',mo.last_name)}
+          ${row('Full Name',mo.full_name)}
+        </div>
       </div>
+
       <!-- Address -->
       <div class="ds-block">
         <div class="ds-head"><i class="fa-solid fa-location-dot"></i> Address</div>
-        <table class="data-table">
+        <div class="data-table">
           ${row('Flat / Room / Block',addr.house)}
           ${row('Building / Village',addr.building)}
           ${row('Area / Locality',addr.area)}
@@ -396,13 +575,15 @@ function buildCard(d,num){
           ${row('City / District',addr.city)}
           ${row('State',addr.state)}
           ${row('Country',addr.country||'India')}
-        </table>
+        </div>
       </div>
+
       <!-- Documents -->
       <div class="ds-block">
         <div class="ds-head"><i class="fa-solid fa-folder-open"></i> Uploaded Documents</div>
         ${buildDocGrid(docs)}
       </div>
+
       <!-- Admin: Upload Generated PAN Card -->
       <div class="admin-upload-block">
         <div class="aub-title"><i class="fa-solid fa-crown"></i> Admin: Upload Generated PAN Card</div>
@@ -415,6 +596,7 @@ function buildCard(d,num){
           ${hasPanCard?`<a class="download-btn" href="${d.generated_pan_card}" download="Generated_PAN_${d.pan_number}" target="_blank"><i class="fa-solid fa-download"></i> Download PAN</a>`:''}
         </div>
       </div>
+
     </div>
     <!-- Status -->
     <div class="status-row">
@@ -433,14 +615,21 @@ function buildCard(d,num){
 
 // Single row
 function row(label, value, cls=''){
-  const empty=!value||value.toString().trim()==='';
-  const display=empty?'—':value.toString();
-  const tdCls=empty?'empty':cls;
-  const safeVal=display.replace(/'/g,"&#39;").replace(/"/g,'&quot;');
-  return `<tr>
-    <td>${label}</td>
-    <td class="${tdCls}"><div class="td-wrap"><span>${display}</span><button class="copy-btn" onclick="copyField('${safeVal}',this)"><i class="fa-regular fa-copy"></i></button></div></td>
-  </tr>`;
+  const empty = !value || value.toString().trim() === '';
+  const display = empty ? '—' : value.toString();
+  const tdCls = empty ? 'empty' : cls;
+  const safeVal = display.replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+
+  return `
+  <div class="data-item">
+    <div class="data-label">${label}</div>
+    <div class="data-value ${tdCls}">
+      <span>${display}</span>
+      <button class="copy-btn" onclick="copyField('${safeVal}',this)">
+        <i class="fa-regular fa-copy"></i>
+      </button>
+    </div>
+  </div>`;
 }
 
 function buildDocGrid(docs){
@@ -563,6 +752,169 @@ function showToast(msg,type='ok'){
   t.className=`toast ${type} show`; clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 }
+
+function buildAutoFillCode(d){
+  const fa=d.father||{}, mo=d.mother||{}, addr=d.address||{};
+  const esc=v=>(v||'').toString().replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+
+  // Format DOB to dd/mm/yyyy
+  let dob=esc(d.dob||'');
+  if(dob.includes('-')){
+    const parts=dob.split('-');
+    if(parts.length===3){
+      if(parts[0].length===4) dob=`${parts[2]}/${parts[1]}/${parts[0]}`;
+      else dob=`${parts[0]}/${parts[1]}/${parts[2]}`;
+    }
+  }
+
+  // Correction fields — YES/NO based on correction_type array
+  const ct=d.correction_type||[];
+  const hasCorr=key=>ct.some(c=>c.toLowerCase().includes(key.toLowerCase()))?'YES':'NO';
+
+  return `(function () {
+
+  // ── React text input filler ──
+  function setReactInput(el, value) {
+    if (!el) return console.log("❌ Element not found");
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    nativeInputValueSetter.call(el, value);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  // ── Find input/select by label text ──
+  function findInput(labelText) {
+    const labels = document.querySelectorAll("label");
+    for (let lbl of labels) {
+      if (lbl.innerText.trim().toLowerCase().includes(labelText.toLowerCase())) {
+        let inp = lbl.parentElement.querySelector("input, select, textarea");
+        if (inp) return inp;
+        let sib = lbl.nextElementSibling;
+        while (sib) {
+          inp = sib.tagName.match(/^(INPUT|SELECT|TEXTAREA)$/i) ? sib : sib.querySelector("input, select, textarea");
+          if (inp) return inp;
+          sib = sib.nextElementSibling;
+        }
+        inp = lbl.closest(".form-group, .input-group, div")?.querySelector("input, select, textarea");
+        if (inp) return inp;
+      }
+    }
+    console.log("❌ Not found:", labelText);
+    return null;
+  }
+
+  // ── Select2 / dropdown filler ──
+  function setSelect(labelText, value) {
+    const labels = document.querySelectorAll("label");
+    for (let lbl of labels) {
+      if (lbl.innerText.trim().toLowerCase().includes(labelText.toLowerCase())) {
+        const container = lbl.closest("div");
+        const select = container?.querySelector("select");
+        if (!select) continue;
+        let finalValue = value;
+        if (value === true  || value === "true")  finalValue = "YES";
+        if (value === false || value === "false") finalValue = "NO";
+        for (let opt of select.options) {
+          if (opt.text.trim().toLowerCase() === finalValue.toLowerCase()) {
+            select.value = opt.value;
+            break;
+          }
+        }
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        if (window.$ && $(select).data('select2')) {
+          $(select).val(select.value).trigger('change');
+        }
+        console.log("✅ Set:", labelText, "=", finalValue);
+        return;
+      }
+    }
+    console.log("❌ Select not found:", labelText);
+  }
+
+  // ── Find input by placeholder ──
+  function findByPlaceholder(ph) {
+    return document.querySelector(\`input[placeholder*="\${ph}" i]\`);
+  }
+
+  // ===== CORRECTION TOGGLES =====
+  setSelect("Name Change",       "${hasCorr('name change')}");
+  setSelect("Name Correction",   "${hasCorr('name correction')}");
+  setSelect("Father",            "${hasCorr('father')}");
+  setSelect("Gender",            "${hasCorr('gender')}");
+  setSelect("DOB",               "${hasCorr('dob')}");
+  setSelect("Address",           "${hasCorr('address')}");
+  setSelect("Photo",             "${hasCorr('photo')}");
+  setSelect("Sign",              "${hasCorr('sign')}");
+
+  // ===== BASIC =====
+  setReactInput(findInput("CSF PAN") || findByPlaceholder("PAN"),           "${esc(d.pan_number)}");
+  setReactInput(findInput("Last Name") || findByPlaceholder("Last"),         "${esc(d.last_name)}");
+  setReactInput(findInput("First Name") || findByPlaceholder("First"),       "${esc(d.first_name)}");
+  setReactInput(findInput("Middle Name") || findByPlaceholder("Middle"),     "${esc(d.middle_name)}");
+  setReactInput(findInput("Name on Card") || findByPlaceholder("Name on"),   "${esc(d.name_on_card)}");
+  setReactInput(findInput("Date of Birth") || findByPlaceholder("DOB"),      "${dob}");
+
+  // ===== DROPDOWNS =====
+  setSelect("Title",  "${esc(d.title)}");
+  setSelect("Gender", "${esc(d.gender)}");
+
+  // ===== AADHAAR =====
+  setReactInput(findInput("Aadhaar Number") || findByPlaceholder("Aadhaar Number"),       "${esc(d.aadhaar_number)}");
+  setReactInput(findInput("Name as per Aadhaar") || findInput("Aadhaar Name"),            "${esc(d.aadhaar_name)}");
+
+  // ===== CONTACT =====
+  setReactInput(findInput("Mobile Number") || findByPlaceholder("Mobile"), "${esc(d.mobile)}");
+  setReactInput(findInput("Email") || findByPlaceholder("Email"), "${esc((d.email || '').toLowerCase())}");
+
+  // ===== FATHER =====
+  setReactInput(findInput("Father's Last Name")   || findInput("Father Last"),   "${esc(fa.last_name)}");
+  setReactInput(findInput("Father's First Name")  || findInput("Father First"),  "${esc(fa.first_name)}");
+  setReactInput(findInput("Father's Middle Name") || findInput("Father Middle"), "${esc(fa.middle_name||'')}");
+
+  // ===== MOTHER =====
+  setReactInput(findInput("Mother's Last Name")   || findInput("Mother Last"),   "${esc(mo.last_name||'')}");
+  setReactInput(findInput("Mother's First Name")  || findInput("Mother First"),  "${esc(mo.first_name||'')}");
+  setReactInput(findInput("Mother's Middle Name") || findInput("Mother Middle"), "${esc(mo.middle_name||'')}");
+
+  // ===== ADDRESS =====
+  setReactInput(findInput("Flat") || findInput("House") || findInput("Room"),    "${esc(addr.house||'')}");
+  setReactInput(findInput("Building") || findInput("Village"),                   "${esc(addr.building||'')}");
+  setReactInput(findInput("Road") || findInput("Street"),                        "${esc(addr.area||'')}");
+  setReactInput(findInput("Area") || findInput("Locality"),                      "${esc(addr.city||'')}");
+  setReactInput(findInput("Landmark"),                                           "${esc(addr.landmark||'')}");
+  setReactInput(findInput("Post Office") || findInput("Post"),                   "${esc(addr.post_office||'')}");
+  setReactInput(findInput("PIN") || findByPlaceholder("PIN"),                    "${esc(addr.pin||'')}");
+  setReactInput(findInput("City") || findInput("District"),                      "${esc(addr.city||'')}");
+  setSelect("State", "${esc(addr.state||'')}");
+
+  console.log("✅ Auto Fill Done (React + Select2 Mode)");
+})();`;
+}
+
+
+function copyAutoFillCode(btn, docId){
+  const d = allDocs.find(x => x.id === docId);
+  if(!d){
+    showToast('Data not found!','err');
+    return;
+  }
+
+  const code = buildAutoFillCode(d);
+
+  
+
+  navigator.clipboard.writeText(code).then(()=>{
+    btn.classList.add('copied');
+    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied!';
+    showToast('Auto-fill script copied!','ok');
+
+    setTimeout(()=>{
+      btn.classList.remove('copied');
+      btn.innerHTML='<i class="fa-solid fa-code"></i> Copy Code';
+    },2000);
+  });
+}
+window.copyAutoFillCode = copyAutoFillCode;
 </script>
 </body>
 </html>

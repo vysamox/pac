@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page Not Found | PAC Management System</title>
+<meta name="description" content="404 Error — The page you're looking for does not exist in the PAC Management System.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#02040c">
+<link rel="icon" type="image/png" href="assets/fav.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:    #02040c;
+  --ink2:   #050b1a;
+  --neon:   #00f0ff;
+  --blue:   #1a6bff;
+  --violet: #8b5cf6;
+  --green:  #06ffa5;
+  --rose:   #ff2d78;
+  --amber:  #ffd60a;
+  --txt:    #e4f0ff;
+  --sub:    rgba(180,210,250,0.55);
+  --dim:    rgba(120,160,210,0.28);
+  --e:      cubic-bezier(0.16,1,0.3,1);
+  --t:      0.45s var(--e);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;height:100%;}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:var(--ink);
+  color:var(--txt);
+  overflow-x:hidden;
+  min-height:100vh;
+  cursor:none;
+  display:flex;
+  flex-direction:column;
+}
+::selection{background:rgba(0,240,255,0.25);color:#fff;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:rgba(2,4,12,0.95);}
+::-webkit-scrollbar-thumb{background:linear-gradient(to bottom,rgba(0,240,255,0.8),rgba(26,107,255,0.8));border-radius:4px;}
+html,*{scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.6) rgba(2,4,12,0.95);}
+
+/* CURSOR */
+#c-dot{position:fixed;width:6px;height:6px;background:var(--neon);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--neon),0 0 20px rgba(0,240,255,0.5);opacity:0;transition:opacity .3s;}
+#c-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,240,255,0.5);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%);opacity:0;transition:width .3s var(--e),height .3s var(--e),border-color .25s,opacity .3s;}
+#c-ring.expand{width:56px;height:56px;border-color:var(--neon);}
+#c-dot.active,#c-ring.active{opacity:1;}
+
+/* GRAIN */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.16;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");}
+
+/* SCANLINES */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9997;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);opacity:.2;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 52px;background:rgba(2,4,12,0.75);backdrop-filter:blur(40px) saturate(180%);border-bottom:1px solid rgba(255,255,255,0.06);}
+header::after{content:"";position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.3),transparent);}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-box{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--neon),var(--blue));}
+.logo-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.25) 50%,transparent 70%);animation:logo-shine 3s ease-in-out infinite;}
+@keyframes logo-shine{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.logo-box i{position:relative;z-index:1;}
+.logo-txt b{display:block;font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:18px;letter-spacing:3px;color:var(--txt);}
+.logo-txt span{display:block;font-family:'Fira Code',monospace;font-size:9px;font-weight:300;letter-spacing:4px;color:var(--neon);text-transform:uppercase;opacity:.8;}
+nav{display:flex;align-items:center;gap:2px;}
+nav a{font-family:'Rajdhani',sans-serif;font-size:14.5px;font-weight:600;color:var(--sub);text-decoration:none;padding:7px 15px;border-radius:99px;border:1px solid transparent;transition:var(--t);letter-spacing:1px;text-transform:uppercase;}
+nav a:hover{color:var(--neon);background:rgba(0,240,255,0.06);border-color:rgba(0,240,255,0.18);}
+.hdr-btn{display:flex;align-items:center;gap:7px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:8px 18px;border-radius:99px;cursor:none;transition:var(--t);text-decoration:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#01080f;box-shadow:0 0 20px rgba(0,240,255,0.25);}
+.hdr-btn:hover{transform:scale(1.04);box-shadow:0 0 30px rgba(0,240,255,0.45);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:1px solid rgba(0,240,255,0.2);border-radius:10px;background:none;}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--neon);border-radius:2px;transition:var(--t);}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+#mob-nav{position:fixed;top:66px;left:0;right:0;z-index:999;background:rgba(2,4,12,0.97);backdrop-filter:blur(40px);border-bottom:1px solid rgba(0,240,255,0.1);max-height:0;overflow:hidden;transition:max-height .4s var(--e);display:flex;flex-direction:column;}
+#mob-nav.open{max-height:400px;padding:16px 0 24px;}
+#mob-nav a{padding:14px 28px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--sub);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.04);transition:var(--t);}
+#mob-nav a:hover{color:var(--neon);padding-left:36px;}
+
+/* MAIN WRAPPER */
+main{flex:1;display:flex;align-items:center;justify-content:center;padding-top:66px;position:relative;overflow:hidden;}
+
+/* BACKGROUND */
+.bg-radial{position:absolute;inset:0;background:radial-gradient(ellipse 100% 80% at 50% 50%,#071830 0%,#04101e 40%,#02040c 100%);z-index:0;}
+canvas#bg-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}
+
+/* AURORA */
+.aurora{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2;}
+.ab{position:absolute;border-radius:50%;filter:blur(120px);}
+.ab1{width:800px;height:600px;background:radial-gradient(rgba(255,45,120,0.12),transparent 70%);top:-200px;left:-200px;animation:afloat 16s ease-in-out infinite alternate;}
+.ab2{width:700px;height:500px;background:radial-gradient(rgba(139,92,246,0.1),transparent 70%);top:-100px;right:-200px;animation:afloat 20s ease-in-out infinite alternate;animation-delay:-6s;}
+.ab3{width:600px;height:400px;background:radial-gradient(rgba(0,100,80,0.08),transparent 70%);bottom:-100px;left:50%;transform:translateX(-50%);animation:afloat 18s ease-in-out infinite alternate;animation-delay:-10s;}
+@keyframes afloat{0%{opacity:.7;transform:scale(1) translate(0,0);}50%{opacity:1;transform:scale(1.08) translate(20px,-20px);}100%{opacity:.8;transform:scale(.96) translate(-10px,10px);}}
+.ab3{animation:afloat3 18s ease-in-out infinite alternate;}
+@keyframes afloat3{0%{transform:translateX(-50%) scale(1);}100%{transform:translateX(-44%) scale(1.1);}}
+
+/* 404 HERO CONTENT */
+.err-wrap{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;padding:80px 24px 60px;max-width:900px;width:100%;}
+
+/* GLITCH 404 NUMBER */
+.err-num-wrap{position:relative;display:inline-block;margin-bottom:0px;}
+.err-num{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(160px,22vw,280px);line-height:.88;letter-spacing:8px;color:transparent;position:relative;-webkit-text-stroke:2px rgba(0,240,255,0.18);user-select:none;}
+.err-num::before,.err-num::after{content:'404';position:absolute;left:0;top:0;width:100%;height:100%;font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:inherit;letter-spacing:inherit;line-height:inherit;}
+/* Neon fill layer */
+.err-num-fill{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.err-num-svg{width:100%;height:100%;position:absolute;top:0;left:0;pointer-events:none;}
+.err-num-text{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(160px,22vw,280px);line-height:.88;letter-spacing:8px;fill:url(#numGrad);filter:drop-shadow(0 0 40px rgba(0,240,255,0.5)) drop-shadow(0 0 80px rgba(0,240,255,0.2));animation:num-pulse 3s ease-in-out infinite alternate;}
+@keyframes num-pulse{0%{filter:drop-shadow(0 0 30px rgba(0,240,255,0.4)) drop-shadow(0 0 60px rgba(0,240,255,0.15));}100%{filter:drop-shadow(0 0 55px rgba(0,240,255,0.7)) drop-shadow(0 0 100px rgba(0,240,255,0.3));}}
+
+/* GLITCH LAYERS */
+.g-clone{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.g-r{animation:glitch-r 4s infinite linear;}
+.g-b{animation:glitch-b 4s infinite linear;animation-delay:-.6s;}
+@keyframes glitch-r{
+  0%,86%,100%{clip-path:inset(0 0 100% 0);transform:translateX(0);opacity:0;}
+  87%{clip-path:inset(20% 0 55% 0);transform:translateX(-6px);opacity:.7;filter:drop-shadow(0 0 10px var(--rose));}
+  89%{clip-path:inset(60% 0 10% 0);transform:translateX(6px);opacity:.6;}
+  91%{clip-path:inset(35% 0 30% 0);transform:translateX(-4px);opacity:.5;}
+  93%{clip-path:inset(0 0 100% 0);transform:translateX(0);opacity:0;}
+}
+@keyframes glitch-b{
+  0%,88%,100%{clip-path:inset(0 0 100% 0);transform:translateX(0);opacity:0;}
+  89%{clip-path:inset(45% 0 20% 0);transform:translateX(8px);opacity:.6;filter:drop-shadow(0 0 10px var(--violet));}
+  91%{clip-path:inset(10% 0 65% 0);transform:translateX(-8px);opacity:.5;}
+  93%{clip-path:inset(0 0 100% 0);transform:translateX(0);opacity:0;}
+}
+
+/* ERROR BADGE */
+.err-badge{display:inline-flex;align-items:center;gap:10px;padding:8px 22px;border-radius:99px;font-family:'Fira Code',monospace;font-size:11.5px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--rose);background:rgba(255,45,120,0.08);border:1px solid rgba(255,45,120,0.25);margin-bottom:26px;animation:badge-flicker 5s ease-in-out infinite;}
+@keyframes badge-flicker{0%,96%,100%{opacity:1;}97%{opacity:.5;}98%{opacity:1;}99%{opacity:.3;}}
+.err-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--rose);box-shadow:0 0 8px var(--rose),0 0 16px rgba(255,45,120,0.6);animation:badge-dot-pulse 1.4s ease-in-out infinite;}
+@keyframes badge-dot-pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(.5);opacity:.4;}}
+
+/* TITLE & SUB */
+.err-title{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(28px,4.5vw,52px);letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;line-height:1.05;}
+.err-title .hi{background:linear-gradient(120deg,#fff 20%,var(--neon) 60%,var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(0,240,255,0.3));}
+.err-sub{font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,1.6vw,17px);color:var(--sub);line-height:1.8;max-width:520px;margin:0 auto 42px;}
+.err-sub .mono{font-family:'Fira Code',monospace;color:var(--neon);font-size:.9em;background:rgba(0,240,255,0.07);padding:2px 8px;border-radius:5px;border:1px solid rgba(0,240,255,0.12);}
+
+/* TERMINAL BLOCK */
+.terminal{width:100%;max-width:540px;margin:0 auto 44px;background:rgba(2,8,20,0.92);border:1px solid rgba(0,240,255,0.18);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 40px rgba(0,240,255,0.06);}
+.term-bar{display:flex;align-items:center;gap:8px;padding:11px 16px;background:rgba(0,240,255,0.05);border-bottom:1px solid rgba(0,240,255,0.1);}
+.term-dot{width:10px;height:10px;border-radius:50%;}
+.term-dot.td-r{background:#ff5f57;}
+.term-dot.td-y{background:#febc2e;}
+.term-dot.td-g{background:#28c840;}
+.term-title{font-family:'Fira Code',monospace;font-size:11px;color:var(--sub);letter-spacing:2px;margin-left:8px;flex:1;text-align:center;text-transform:uppercase;}
+.term-body{padding:22px 24px;font-family:'Fira Code',monospace;font-size:13px;line-height:2;text-align:left;}
+.tl{display:flex;gap:0;align-items:flex-start;}
+.tl-prompt{color:var(--green);margin-right:10px;flex-shrink:0;}
+.tl-cmd{color:var(--neon);}
+.tl-out{color:var(--sub);}
+.tl-err{color:var(--rose);}
+.tl-dim{color:var(--dim);}
+.tl-ok{color:var(--green);}
+.tl-warn{color:var(--amber);}
+.tl-cursor{display:inline-block;width:8px;height:1em;background:var(--neon);vertical-align:middle;animation:blink .7s step-end infinite;margin-left:3px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* CTA BUTTONS */
+.err-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:52px;}
+.btn-home{display:inline-flex;align-items:center;gap:9px;padding:14px 32px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;background:linear-gradient(135deg,var(--neon),var(--blue));color:#010810;box-shadow:0 0 36px rgba(0,240,255,0.35),0 10px 28px rgba(0,0,0,0.5);transition:var(--t);position:relative;overflow:hidden;border:none;}
+.btn-home::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.22) 55%,transparent 70%);transform:translateX(-100%);transition:.5s;}
+.btn-home:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 0 55px rgba(0,240,255,0.55),0 14px 36px rgba(0,0,0,0.55);}
+.btn-home:hover::before{transform:translateX(100%);}
+.btn-back{display:inline-flex;align-items:center;gap:9px;padding:13px 28px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;color:var(--txt);border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04);transition:var(--t);}
+.btn-back:hover{border-color:rgba(0,240,255,0.35);color:var(--neon);background:rgba(0,240,255,0.06);transform:translateY(-4px);}
+.btn-login{display:inline-flex;align-items:center;gap:9px;padding:13px 28px;border-radius:99px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;color:var(--violet);border:1px solid rgba(139,92,246,0.28);background:rgba(139,92,246,0.06);transition:var(--t);}
+.btn-login:hover{border-color:rgba(139,92,246,0.5);background:rgba(139,92,246,0.1);transform:translateY(-4px);}
+
+/* QUICK LINKS */
+.quick-links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:52px;}
+.ql-head{width:100%;font-family:'Fira Code',monospace;font-size:10.5px;font-weight:300;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.ql{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--sub);background:rgba(5,12,30,0.8);border:1px solid rgba(255,255,255,0.07);text-decoration:none;transition:var(--t);cursor:none;}
+.ql:hover{color:var(--neon);border-color:rgba(0,240,255,0.25);background:rgba(0,240,255,0.05);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.ql i{font-size:13px;}
+.ql.q1 i{color:var(--neon);}
+.ql.q2 i{color:var(--green);}
+.ql.q3 i{color:var(--violet);}
+.ql.q4 i{color:var(--amber);}
+.ql.q5 i{color:var(--blue);}
+
+/* STATUS ROW */
+.err-status-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.es-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;color:var(--sub);background:rgba(5,12,30,0.7);border:1px solid rgba(255,255,255,0.07);letter-spacing:.5px;}
+.es-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:pulse-s 2.2s ease-in-out infinite;}
+.es-dot.g{background:var(--green);box-shadow:0 0 7px var(--green);}
+.es-dot.a{background:var(--amber);box-shadow:0 0 7px var(--amber);}
+.es-dot.r{background:var(--rose);box-shadow:0 0 7px var(--rose);}
+@keyframes pulse-s{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+
+/* HUD DECORATIONS */
+.hud-corner{position:absolute;pointer-events:none;z-index:8;}
+.hud-tl{top:90px;left:24px;animation:hud-float 6s ease-in-out infinite alternate;}
+.hud-tr{top:90px;right:24px;animation:hud-float 8s ease-in-out infinite alternate;animation-delay:-3s;}
+.hud-bl{bottom:24px;left:24px;animation:hud-float 7s ease-in-out infinite alternate;animation-delay:-1.5s;}
+.hud-br{bottom:24px;right:24px;animation:hud-float 9s ease-in-out infinite alternate;animation-delay:-5s;}
+@keyframes hud-float{0%{transform:translateY(0);}100%{transform:translateY(-12px);}}
+.hud-box{background:rgba(2,10,25,0.85);border:1px solid rgba(0,240,255,0.18);border-radius:12px;padding:14px 18px;font-family:'Fira Code',monospace;font-size:10px;color:rgba(0,240,255,0.7);line-height:1.9;letter-spacing:.6px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+.hud-box-title{font-size:9px;letter-spacing:3px;color:var(--neon);opacity:.7;margin-bottom:7px;border-bottom:1px solid rgba(0,240,255,0.1);padding-bottom:5px;display:flex;align-items:center;gap:6px;text-transform:uppercase;}
+.hud-box-title::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--rose);box-shadow:0 0 6px var(--rose);animation:pulse-s 1.5s ease-in-out infinite;flex-shrink:0;}
+.hval{color:#fff;}
+.herr{color:var(--rose);}
+.hok{color:var(--green);}
+
+/* GLITCH SCANLINE */
+.glitch-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.4),transparent);pointer-events:none;z-index:15;animation:line-scan 8s linear infinite;opacity:0;}
+@keyframes line-scan{0%{top:-2px;opacity:0;}3%{opacity:.6;}97%{opacity:.4;}100%{top:100%;opacity:0;}}
+
+/* ORBIT RINGS */
+.orbit-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:3;}
+.orb{position:absolute;border-radius:50%;border:1px solid rgba(0,240,255,0.04);}
+.orb1{width:500px;height:500px;top:-250px;left:-250px;animation:orb-spin 40s linear infinite;}
+.orb2{width:750px;height:750px;top:-375px;left:-375px;animation:orb-spin 65s linear infinite reverse;}
+.orb3{width:1000px;height:1000px;top:-500px;left:-500px;animation:orb-spin 90s linear infinite;}
+.orb::before{content:"";position:absolute;border-radius:50%;top:-4px;left:50%;margin-left:-4px;width:8px;height:8px;background:var(--neon);box-shadow:0 0 12px var(--neon),0 0 24px rgba(0,240,255,0.5);}
+.orb2::before{background:var(--rose);box-shadow:0 0 10px var(--rose),0 0 20px rgba(255,45,120,0.4);width:6px;height:6px;top:-3px;margin-left:-3px;}
+.orb3::before{background:var(--violet);box-shadow:0 0 10px var(--violet);width:5px;height:5px;top:-2.5px;margin-left:-2.5px;}
+@keyframes orb-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* FOOTER */
+footer{background:rgba(1,3,10,0.98);border-top:1px solid rgba(255,255,255,0.05);position:relative;z-index:100;}
+footer::before{content:"";display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.2),transparent);}
+.footer-bottom{padding:18px 52px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;}
+.f-meta{display:flex;flex-wrap:wrap;gap:10px;}
+.f-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-family:'Fira Code',monospace;font-size:10.5px;color:var(--sub);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+.f-badge i{color:var(--neon);font-size:10px;}
+.f-copy{font-family:'Fira Code',monospace;font-size:10.5px;color:var(--dim);}
+
+/* AUTO-REDIRECT BAR */
+.redirect-bar{position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(2,8,20,0.96);border-top:1px solid rgba(0,240,255,0.12);backdrop-filter:blur(24px);padding:12px 52px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.rb-left{display:flex;align-items:center;gap:12px;}
+.rb-ico{width:34px;height:34px;border-radius:9px;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.2);display:flex;align-items:center;justify-content:center;color:var(--neon);font-size:13px;flex-shrink:0;}
+.rb-txt{font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--sub);}
+.rb-txt strong{color:var(--txt);}
+.rb-progress{flex:1;min-width:120px;max-width:200px;height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+.rb-fill{height:100%;background:linear-gradient(90deg,var(--neon),var(--blue));border-radius:2px;width:0%;transition:width .1s linear;}
+.rb-right{display:flex;align-items:center;gap:10px;}
+.rb-btn{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:7px 16px;border-radius:99px;border:none;cursor:none;transition:var(--t);text-decoration:none;}
+.rb-cancel{background:rgba(255,255,255,0.06);color:var(--sub);border:1px solid rgba(255,255,255,0.1);}
+.rb-cancel:hover{color:var(--rose);border-color:rgba(255,45,120,0.3);}
+.rb-go{background:linear-gradient(135deg,var(--neon),var(--blue));color:#010810;box-shadow:0 0 16px rgba(0,240,255,0.25);}
+.rb-go:hover{box-shadow:0 0 28px rgba(0,240,255,0.45);}
+
+/* RESPONSIVE */
+@media(max-width:1200px){
+  .hud-corner{display:none;}
+  .orb2,.orb3{display:none;}
+}
+@media(max-width:768px){
+  #c-dot,#c-ring{display:none;}
+  body{cursor:auto;}
+  header{padding:0 20px;height:60px;}
+  #mob-nav{top:60px;}
+  nav{display:none!important;}
+  .hdr-btn{display:none;}
+  .hamburger{display:flex;}
+  .err-wrap{padding:60px 20px 40px;}
+  .err-actions{flex-direction:column;align-items:center;}
+  .btn-home,.btn-back,.btn-login{width:100%;justify-content:center;}
+  .terminal{max-width:100%;}
+  .redirect-bar{padding:12px 20px;}
+  .rb-progress{max-width:80px;}
+  .footer-bottom{padding:18px 20px;flex-direction:column;align-items:flex-start;}
+}
+@media(max-width:480px){
+  .err-actions{gap:10px;}
+}
+</style>
+</head>
+<body>
+
+<div id="c-dot"></div>
+<div id="c-ring"></div>
+
+<!-- GLITCH SCAN LINE -->
+<div class="glitch-line"></div>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-box"><i class="fa-solid fa-database"></i></div>
+    <div class="logo-txt"><b>PAC System</b><span>Management Dashboard</span></div>
+  </a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="features.html">Features</a>
+    <a href="docs.html">Documentation</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a href="/login.html" class="hdr-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<div id="mob-nav">
+  <a href="index.html" onclick="toggleNav()">Home</a>
+  <a href="features.html" onclick="toggleNav()">Features</a>
+  <a href="docs.html" onclick="toggleNav()">Documentation</a>
+  <a href="contact.html" onclick="toggleNav()">Contact</a>
+  <a href="/login.html" onclick="toggleNav()">Login</a>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div class="bg-radial"></div>
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="aurora">
+    <div class="ab ab1"></div>
+    <div class="ab ab2"></div>
+    <div class="ab ab3"></div>
+  </div>
+
+  <!-- ORBIT RINGS -->
+  <div class="orbit-wrap">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <!-- HUD PANELS -->
+  <div class="hud-corner hud-tl">
+    <div class="hud-box">
+      <div class="hud-box-title">ERR_LOG</div>
+      HTTP <span class="herr">404</span><br>
+      PATH <span class="hval">/unknown</span><br>
+      TIME <span class="hval" id="hud-time">--:--:--</span><br>
+      USER <span class="hval">UNRESOLVED</span>
+    </div>
+  </div>
+
+  <div class="hud-corner hud-tr">
+    <div class="hud-box">
+      <div class="hud-box-title">SYS_STATUS</div>
+      SERVER <span class="hok">ONLINE</span><br>
+      DB &nbsp;&nbsp;&nbsp;&nbsp;<span class="hok">ACTIVE</span><br>
+      ROUTE &nbsp;<span class="herr">FAILED</span><br>
+      RETRY &nbsp;<span class="hval" id="hud-retry">0x</span>
+    </div>
+  </div>
+
+  <div class="hud-corner hud-bl">
+    <div class="hud-box">
+      <div class="hud-box-title">NETWORK</div>
+      PING &nbsp;&nbsp;<span class="hval" id="hud-ping">82ms</span><br>
+      SYNC &nbsp;&nbsp;<span class="hok">LIVE</span><br>
+      NODES &nbsp;<span class="hval">3/3</span><br>
+      SLA &nbsp;&nbsp;&nbsp;<span class="hok">99.7%</span>
+    </div>
+  </div>
+
+  <div class="hud-corner hud-br">
+    <div class="hud-box">
+      <div class="hud-box-title">SESSION</div>
+      ID &nbsp;&nbsp;&nbsp;&nbsp;<span class="hval" id="hud-sid">GEN...</span><br>
+      AUTH &nbsp;&nbsp;<span class="hok">VALID</span><br>
+      ROLE &nbsp;&nbsp;<span class="hval">VISITOR</span><br>
+      SAFE &nbsp;&nbsp;<span class="hok">YES</span>
+    </div>
+  </div>
+
+  <!-- MAIN ERROR CONTENT -->
+  <div class="err-wrap" id="err-wrap">
+
+    <!-- 404 GIANT NUMBER -->
+    <div class="err-num-wrap">
+      <svg width="100%" viewBox="0 0 600 260" style="display:block;overflow:visible;max-width:min(600px,90vw);">
+        <defs>
+          <linearGradient id="numGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity=".95"/>
+            <stop offset="35%" stop-color="#00f0ff" stop-opacity="1"/>
+            <stop offset="70%" stop-color="#1a6bff" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#8b5cf6" stop-opacity=".9"/>
+          </linearGradient>
+          <linearGradient id="glitchR" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff2d78" stop-opacity=".7"/>
+            <stop offset="100%" stop-color="#ff6eb4" stop-opacity=".5"/>
+          </linearGradient>
+          <linearGradient id="glitchB" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#8b5cf6" stop-opacity=".7"/>
+            <stop offset="100%" stop-color="#00f0ff" stop-opacity=".4"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Glow bg -->
+        <text x="50%" y="210" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="240" letter-spacing="12" fill="rgba(0,240,255,0.04)" filter="url(#glow)">404</text>
+        <!-- Glitch red clone -->
+        <text x="50%" y="210" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="240" letter-spacing="12" fill="url(#glitchR)" id="gCloneR" opacity="0">404</text>
+        <!-- Glitch blue clone -->
+        <text x="50%" y="210" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="240" letter-spacing="12" fill="url(#glitchB)" id="gCloneB" opacity="0">404</text>
+        <!-- Main -->
+        <text x="50%" y="210" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="240" letter-spacing="12" fill="url(#numGrad)" filter="url(#glow)" id="mainNum">404</text>
+      </svg>
+    </div>
+
+    <!-- ERROR BADGE -->
+    <div class="err-badge">
+      <span class="err-badge-dot"></span>
+      ERROR_CODE: 404 · ROUTE_NOT_FOUND
+    </div>
+
+    <!-- TITLE -->
+    <div class="err-title">
+      <span class="hi">Signal Lost —</span> Page Not Found
+    </div>
+
+    <!-- SUBTITLE -->
+    <p class="err-sub">
+      The route you requested — <span class="mono" id="path-display">/unknown</span> — does not exist in the PAC Management System. It may have been moved, deleted, or you may have followed a broken link.
+    </p>
+
+    <!-- TERMINAL -->
+    <div class="terminal">
+      <div class="term-bar">
+        <span class="term-dot td-r"></span>
+        <span class="term-dot td-y"></span>
+        <span class="term-dot td-g"></span>
+        <span class="term-title">pac-system · bash · router.log</span>
+      </div>
+      <div class="term-body" id="term-body">
+        <div class="tl"><span class="tl-prompt">pac@system:~$</span><span class="tl-cmd">&nbsp;resolve /unknown</span></div>
+        <div class="tl"><span class="tl-out">&nbsp;&nbsp;Querying route table...&nbsp;</span><span class="tl-ok">done</span></div>
+        <div class="tl"><span class="tl-out">&nbsp;&nbsp;Checking Firestore index...&nbsp;</span><span class="tl-ok">done</span></div>
+        <div class="tl"><span class="tl-err">&nbsp;&nbsp;[ERROR] Route not registered in manifest</span></div>
+        <div class="tl"><span class="tl-warn">&nbsp;&nbsp;[WARN]&nbsp; Attempted fallback — no match found</span></div>
+        <div class="tl"><span class="tl-err">&nbsp;&nbsp;[HTTP]&nbsp; 404 NOT_FOUND · Code: ROUTE_UNDEFINED</span></div>
+        <div class="tl"><span class="tl-dim">&nbsp;&nbsp;Session preserved · Auth token valid</span></div>
+        <div class="tl"><span class="tl-prompt">pac@system:~$</span><span class="tl-cmd">&nbsp;suggest --fix</span><span class="tl-cursor" id="term-cursor"></span></div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="err-actions">
+      <a href="index.html" class="btn-home"><i class="fa-solid fa-house"></i> Return Home</a>
+      <a href="javascript:history.back()" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Go Back</a>
+      <a href="/login.html" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="quick-links">
+      <div class="ql-head">Or navigate to</div>
+      <a href="features.html" class="ql q1"><i class="fa-solid fa-layer-group"></i> Features</a>
+      <a href="docs.html" class="ql q2"><i class="fa-solid fa-book-open"></i> Documentation</a>
+      <a href="contact.html" class="ql q3"><i class="fa-solid fa-envelope"></i> Contact</a>
+      <a href="terms.html" class="ql q4"><i class="fa-solid fa-scale-balanced"></i> Terms</a>
+      <a href="/login.html" class="ql q5"><i class="fa-solid fa-shield-halved"></i> Secure Login</a>
+    </div>
+
+    <!-- STATUS ROW -->
+    <div class="err-status-row">
+      <div class="es-chip"><span class="es-dot g"></span>Platform Online</div>
+      <div class="es-chip"><span class="es-dot g"></span>Database Active</div>
+      <div class="es-chip"><span class="es-dot r"></span>Route 404</div>
+      <div class="es-chip"><span class="es-dot a"></span>Auto-redirect active</div>
+      <div class="es-chip"><span class="es-dot g"></span><span id="clock-chip">--:--:--</span></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- AUTO-REDIRECT BAR -->
+<div class="redirect-bar" id="redirect-bar">
+  <div class="rb-left">
+    <div class="rb-ico"><i class="fa-solid fa-rotate-right"></i></div>
+    <div class="rb-txt">Auto-redirecting to <strong>Home</strong> in <strong><span id="redirect-count">15</span>s</strong></div>
+  </div>
+  <div class="rb-progress"><div class="rb-fill" id="rb-fill"></div></div>
+  <div class="rb-right">
+    <a href="javascript:void(0)" class="rb-btn rb-cancel" onclick="cancelRedirect()">Cancel</a>
+    <a href="index.html" class="rb-btn rb-go"><i class="fa-solid fa-house"></i> Go Now</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-bottom">
+    <div class="f-meta">
+      <span class="f-badge"><i class="fa-solid fa-clock"></i><span id="live-time">--</span></span>
+      <span class="f-badge"><i class="fa-solid fa-triangle-exclamation" style="color:var(--rose);"></i>404 Error Logged</span>
+      <span class="f-badge"><i class="fa-solid fa-code-branch"></i> v2.0.0</span>
+    </div>
+    <p class="f-copy">&copy; 2025 PAC Management System · All rights reserved · Designed by Samrat</p>
+  </div>
+</footer>
+
+<script>
+/* CURSOR */
+const cd=document.getElementById('c-dot'),cr=document.getElementById('c-ring');
+let mx=-200,my=-200,rx=-200,ry=-200,rdy=false;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cd.style.left=mx+'px';cd.style.top=my+'px';
+  if(!rdy){rdy=true;cd.classList.add('active');cr.classList.add('active');}
+});
+document.querySelectorAll('a,button,.ql,.rb-btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cr.classList.add('expand'));
+  el.addEventListener('mouseleave',()=>cr.classList.remove('expand'));
+});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop);})();
+
+/* MOBILE NAV */
+function toggleNav(){
+  const m=document.getElementById('mob-nav'),h=document.getElementById('hamburger');
+  const o=m.classList.toggle('open');h.classList.toggle('open',o);
+}
+
+/* SHOW CURRENT PATH */
+const pathEl=document.getElementById('path-display');
+if(pathEl) pathEl.textContent=window.location.pathname||'/404';
+
+/* CLOCK */
+function tick(){
+  const now=new Date();
+  const h=String(now.getHours()).padStart(2,'0');
+  const m=String(now.getMinutes()).padStart(2,'0');
+  const s=String(now.getSeconds()).padStart(2,'0');
+  const str=`${h}:${m}:${s}`;
+  const lt=document.getElementById('live-time');if(lt){
+    const d=String(now.getDate()).padStart(2,'0'),mo=String(now.getMonth()+1).padStart(2,'0'),y=now.getFullYear();
+    let hh=now.getHours();const mn=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');
+    const ap=hh>=12?'PM':'AM';hh=hh%12||12;
+    lt.textContent=`${d}-${mo}-${y} ${String(hh).padStart(2,'0')}:${mn}:${ss} ${ap}`;
+  }
+  const ht=document.getElementById('hud-time');if(ht)ht.textContent=str;
+  const cc=document.getElementById('clock-chip');if(cc)cc.textContent=str;
+}
+setInterval(tick,1000);tick();
+
+/* HUD DYNAMIC */
+let retryCount=0;
+setInterval(()=>{
+  const ping=68+Math.floor(Math.random()*80);
+  const pe=document.getElementById('hud-ping');if(pe)pe.textContent=ping+'ms';
+  retryCount++;
+  const re=document.getElementById('hud-retry');if(re)re.textContent='0x'+retryCount.toString(16).toUpperCase().padStart(2,'0');
+},2800);
+
+/* SESSION ID */
+const sid='PAC-'+Math.random().toString(36).substring(2,8).toUpperCase();
+const se=document.getElementById('hud-sid');if(se)se.textContent=sid;
+
+/* SVG GLITCH ANIMATION */
+(function(){
+  const r=document.getElementById('gCloneR');
+  const b=document.getElementById('gCloneB');
+  const main=document.getElementById('mainNum');
+  if(!r||!b||!main)return;
+  function glitch(){
+    const frames=[
+      [0,0,0],
+      [0,0,0],
+      [0,0,0],
+      [300,0.7,-6],
+      [100,0.0,0],
+      [200,0.5,8],
+      [150,0.0,0],
+      [200,0.6,-4],
+      [100,0.0,0],
+    ];
+    let total=0;
+    frames.forEach(([dur,op,tx])=>{
+      setTimeout(()=>{
+        r.setAttribute('opacity',String(op*.8));
+        r.setAttribute('transform',`translate(${tx},0)`);
+        b.setAttribute('opacity',String(op*.6));
+        b.setAttribute('transform',`translate(${-tx*1.3},0)`);
+        if(op>0&&main) main.setAttribute('transform',`translate(${tx*.4},0)`);
+        else if(main) main.setAttribute('transform','translate(0,0)');
+      },total);
+      total+=dur;
+    });
+    setTimeout(()=>{
+      r.setAttribute('opacity','0');b.setAttribute('opacity','0');
+      if(main) main.setAttribute('transform','translate(0,0)');
+      const next=3500+Math.random()*5000;
+      setTimeout(glitch,next);
+    },total);
+  }
+  setTimeout(glitch,2000+Math.random()*2000);
+})();
+
+/* HERO ENTRANCE */
+const ew=document.getElementById('err-wrap');
+if(ew){ew.style.cssText='opacity:0;transform:translateY(50px);transition:opacity 1.1s cubic-bezier(.16,1,.3,1),transform 1.1s cubic-bezier(.16,1,.3,1)';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ew.style.opacity='1';ew.style.transform='translateY(0)';}));}
+
+/* TERMINAL TYPEWRITER SUGGESTION */
+setTimeout(()=>{
+  const tb=document.getElementById('term-body');
+  const cursor=document.getElementById('term-cursor');
+  if(!tb||!cursor)return;
+  const suggestions=[
+    {cls:'tl-ok',txt:'  Suggestion 1: Navigate to / (Home)'},
+    {cls:'tl-ok',txt:'  Suggestion 2: Go to /login.html'},
+    {cls:'tl-ok',txt:'  Suggestion 3: Visit /features.html'},
+    {cls:'tl-dim',txt:'  Auto-redirect active (15s)...'},
+  ];
+  let i=0;
+  function addLine(){
+    if(i>=suggestions.length)return;
+    const s=suggestions[i++];
+    const div=document.createElement('div');
+    div.className='tl';
+    div.innerHTML=`<span class="${s.cls}">${s.txt}</span>`;
+    div.style.opacity='0';
+    div.style.transition='opacity .4s';
+    cursor.parentNode.insertBefore(div,cursor.closest('.tl'));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>div.style.opacity='1'));
+    setTimeout(addLine,700);
+  }
+  setTimeout(addLine,800);
+},1500);
+
+/* AUTO-REDIRECT */
+let redirectTimer=15,redirectActive=true,redirectInterval;
+const fillEl=document.getElementById('rb-fill');
+const countEl=document.getElementById('redirect-count');
+redirectInterval=setInterval(()=>{
+  if(!redirectActive)return;
+  const elapsed=15-redirectTimer;
+  const pct=(elapsed/15)*100;
+  if(fillEl)fillEl.style.width=pct+'%';
+  if(countEl)countEl.textContent=redirectTimer;
+  if(redirectTimer<=0){
+    clearInterval(redirectInterval);
+    window.location.href='index.html';
+  }
+  redirectTimer--;
+},1000);
+function cancelRedirect(){
+  redirectActive=false;
+  clearInterval(redirectInterval);
+  const bar=document.getElementById('redirect-bar');
+  if(bar){bar.style.transition='transform .4s var(--e),opacity .4s';bar.style.transform='translateY(100%)';bar.style.opacity='0';setTimeout(()=>bar.remove(),450);}
+}
+
+/* PARTICLE CANVAS */
+(function(){
+  const c=document.getElementById('bg-canvas');if(!c)return;
+  const ctx=c.getContext('2d');let W,H;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  window.addEventListener('resize',resize);resize();
+  const pts=[];
+  for(let i=0;i<100;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,r:Math.random()*1.3+.3,c:Math.random()>.85?'rgba(255,45,120,':'rgba(0,240,255,'});
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;
+      if(p.y<0||p.y>H)p.vy*=-1;
+      const flicker=.4+.3*Math.sin(t*2+p.x*.01);
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.c+flicker+')';ctx.fill();
+    });
+    pts.forEach((a,i)=>{
+      pts.slice(i+1).forEach(b=>{
+        const d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(d<100){
+          ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+          ctx.strokeStyle=`rgba(0,240,255,${(1-d/100)*.07})`;ctx.lineWidth=.8;ctx.stroke();
+        }
+      });
+    });
+    t+=.008;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
