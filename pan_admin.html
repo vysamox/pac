@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <style>html{visibility:hidden;}</style>   <!-- ← ADD THIS as first line -->
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PAN Applications Dashboard | PAC System Admin</title>
@@ -357,8 +359,6 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
   .stat-val{font-size:32px;}
 }
 
-
-
 </style>
 </head>
 <body>
@@ -402,11 +402,48 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const cfg={apiKey:"AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",authDomain:"mrsamrat08.firebaseapp.com",projectId:"mrsamrat08",storageBucket:"mrsamrat08.appspot.com",messagingSenderId:"525481767881",appId:"1:525481767881:web:6fd53162b242709890ae18"};
-const app=initializeApp(cfg); const db=getFirestore(app);
-window._db=db; window._doc=doc; window._updateDoc=updateDoc;
-window._collection=collection; window._getDocs=getDocs; window._query=query;
-window._fbReady=true; window.loadData();
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// 🔒 Block page instantly
+document.documentElement.style.visibility = 'hidden';
+document.documentElement.style.pointerEvents = 'none';
+
+const cfg = {
+  apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain: "mrsamrat08.firebaseapp.com",
+  projectId: "mrsamrat08",
+  storageBucket: "mrsamrat08.appspot.com",
+  messagingSenderId: "525481767881",
+  appId: "1:525481767881:web:6fd53162b242709890ae18"
+};
+
+const app  = initializeApp(cfg);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    // Not logged in → kick to login, no back button
+    window.location.replace('login.html');
+    return;
+  }
+
+  // ✅ Logged in — reveal page
+  document.documentElement.style.visibility = 'visible';
+  document.documentElement.style.pointerEvents = 'auto';
+
+  // Expose Firestore to the non-module script below
+  window._db        = db;
+  window._doc       = doc;
+  window._updateDoc = updateDoc;
+  window._collection = collection;
+  window._getDocs   = getDocs;
+  window._query     = query;
+  window._fbReady   = true;
+
+  // Load data now that auth is confirmed
+  window.loadData();
+});
 </script>
 
 <script>
@@ -417,7 +454,6 @@ async function loadData(){
   document.getElementById('refresh-btn').classList.add('spinning');
   grid.innerHTML='<div class="loading-state"><div class="loading-ring"></div>Loading...</div>';
   try{
-    if(!window._fbReady)await new Promise(r=>setTimeout(r,1200));
     const snap=await window._getDocs(window._query(window._collection(window._db,'panApplications')));
     allDocs=[];
     snap.forEach(d=>allDocs.push({id:d.id,...d.data()}));

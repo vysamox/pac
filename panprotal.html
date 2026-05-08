@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PAN Portal – User Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, addDoc, collection, query, where, getDocs, updateDoc, orderBy, serverTimestamp, onSnapshot }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+  // =====================================================================
+  // 🔥 PASTE YOUR FIREBASE CONFIG HERE
+  // =====================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCE2_x5xvW3wCsOx6jo9-ZhNOhgWm86cPY",
+  authDomain: "mrsamrat08.firebaseapp.com",
+  projectId: "mrsamrat08",
+  storageBucket: "mrsamrat08.firebasestorage.app",
+  messagingSenderId: "525481767881",
+  appId: "1:525481767881:web:6fd53162b242709890ae18",
+  measurementId: "G-989QEQ54X4"
+};
+  // =====================================================================
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  window.__fb = { auth, db, storage,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
+    onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider,
+    doc, setDoc, getDoc, addDoc, collection, query, where, getDocs, updateDoc,
+    orderBy, serverTimestamp, onSnapshot
+  };
+  window.dispatchEvent(new Event('firebaseReady'));
+</script>
+<style>
+:root{
+  --bg:#f0f2f5;
+  --sidebar:#1a1f2e;
+  --sidebar-hover:#252d3d;
+  --sidebar-active:#2d3748;
+  --text:#1a202c;
+  --text-muted:#6b7280;
+  --white:#ffffff;
+  --border:#e2e8f0;
+  --purple:#6c5ce7;
+  --purple-dark:#5a4bd1;
+  --green:#00b894;
+  --orange:#f39c12;
+  --red:#e74c3c;
+  --cyan:#00cec9;
+  --yellow:#f1c40f;
+  --card-radius:14px;
+  --shadow:0 2px 16px rgba(0,0,0,.07);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── AUTH PAGES ─────────────────────────────────────── */
+#auth-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;
+  background:linear-gradient(135deg,#1a1f2e 0%,#2d3748 50%,#1a1f2e 100%);
+  position:relative;overflow:hidden;
+}
+#auth-screen::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 50%,rgba(108,92,231,.25) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 50%,rgba(0,206,201,.15) 0%,transparent 60%);
+}
+.auth-card{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,.05);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;
+  padding:48px 44px;
+  width:100%;max-width:440px;
+  box-shadow:0 32px 80px rgba(0,0,0,.4);
+}
+.auth-logo{
+  display:flex;align-items:center;gap:10px;margin-bottom:32px;justify-content:center;
+}
+.auth-logo-icon{
+  width:44px;height:44px;background:var(--purple);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.auth-logo-text{font-family:'Syne',sans-serif;font-size:22px;color:#fff;font-weight:700;}
+.auth-title{font-family:'Syne',sans-serif;font-size:28px;color:#fff;margin-bottom:6px;text-align:center;}
+.auth-sub{color:rgba(255,255,255,.5);font-size:14px;text-align:center;margin-bottom:32px;}
+.auth-tabs{display:flex;background:rgba(255,255,255,.08);border-radius:10px;padding:4px;margin-bottom:28px;}
+.auth-tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;color:rgba(255,255,255,.5);transition:.2s;}
+.auth-tab.active{background:var(--purple);color:#fff;}
+.form-group{margin-bottom:18px;}
+.form-group label{display:block;color:rgba(255,255,255,.7);font-size:13px;font-weight:500;margin-bottom:8px;}
+.form-group input{
+  width:100%;padding:13px 16px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;color:#fff;font-size:14px;
+  transition:.2s;outline:none;font-family:inherit;
+}
+.form-group input:focus{border-color:var(--purple);background:rgba(108,92,231,.15);}
+.form-group input::placeholder{color:rgba(255,255,255,.3);}
+.btn-auth{
+  width:100%;padding:14px;background:var(--purple);
+  border:none;border-radius:10px;color:#fff;
+  font-size:15px;font-weight:600;cursor:pointer;
+  transition:.2s;font-family:inherit;margin-top:4px;
+}
+.btn-auth:hover{background:var(--purple-dark);transform:translateY(-1px);}
+.auth-error{
+  background:rgba(231,76,60,.2);border:1px solid rgba(231,76,60,.4);
+  color:#ff7675;border-radius:8px;padding:10px 14px;font-size:13px;
+  margin-bottom:16px;display:none;
+}
+.auth-error.show{display:block;}
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+#app{display:none;}
+.layout{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{
+  width:240px;min-height:100vh;background:var(--sidebar);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;
+}
+.sidebar-logo{
+  padding:22px 20px 18px;
+  display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.07);
+}
+.sidebar-logo-icon{
+  width:36px;height:36px;background:var(--purple);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+}
+.sidebar-logo-text{font-family:'Syne',sans-serif;color:#fff;font-size:16px;font-weight:700;line-height:1.2;}
+.sidebar-logo-sub{color:rgba(255,255,255,.4);font-size:11px;font-weight:400;}
+.sidebar-nav{flex:1;padding:14px 10px;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:11px 12px;
+  border-radius:10px;cursor:pointer;color:rgba(255,255,255,.55);
+  font-size:14px;font-weight:500;transition:.2s;margin-bottom:3px;
+  text-decoration:none;
+}
+.nav-item:hover{background:var(--sidebar-hover);color:#fff;}
+.nav-item.active{background:var(--purple);color:#fff;}
+.nav-item.logout{color:#ff7675;}
+.nav-item.logout:hover{background:rgba(231,76,60,.15);color:#ff7675;}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;}
+.sidebar-user{
+  padding:16px;border-top:1px solid rgba(255,255,255,.07);
+}
+.sidebar-user-name{color:#fff;font-size:14px;font-weight:600;}
+.sidebar-user-email{color:rgba(255,255,255,.4);font-size:11px;margin-top:2px;word-break:break-all;}
+.sidebar-balance{
+  margin-top:10px;background:rgba(255,255,255,.06);
+  border-radius:8px;padding:8px 12px;text-align:center;
+}
+.sidebar-balance-label{color:rgba(255,255,255,.4);font-size:11px;}
+.sidebar-balance-amount{color:#00b894;font-size:16px;font-weight:700;margin-top:2px;}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;padding:36px 36px;min-height:100vh;}
+.page-header{margin-bottom:28px;}
+.page-header h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;display:flex;align-items:center;gap:10px;}
+.page-header h1 svg{width:26px;height:26px;color:var(--purple);}
+
+/* CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{
+  border-radius:var(--card-radius);padding:22px 22px;
+  color:#fff;display:flex;align-items:flex-start;justify-content:space-between;
+  box-shadow:var(--shadow-lg);position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:-20px;right:-20px;
+  width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1);
+}
+.stat-card-1{background:linear-gradient(135deg,#6c5ce7,#a29bfe);}
+.stat-card-2{background:linear-gradient(135deg,#00b894,#00cec9);}
+.stat-card-3{background:linear-gradient(135deg,#f39c12,#e67e22);}
+.stat-card-4{background:linear-gradient(135deg,#e74c3c,#fd79a8);}
+.stat-card-label{font-size:13px;font-weight:500;opacity:.85;margin-bottom:8px;}
+.stat-card-value{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+.stat-card-icon{font-size:32px;opacity:.7;}
+
+/* WHITE CARD */
+.card{background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);padding:24px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.card-title{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.card-title svg{width:18px;height:18px;color:var(--purple);}
+
+/* QUICK ACTIONS */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.quick-btn{
+  padding:14px;border:none;border-radius:10px;font-size:14px;font-weight:600;
+  cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;
+}
+.quick-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15);}
+.qb-purple{background:var(--purple);color:#fff;}
+.qb-green{background:var(--green);color:#fff;}
+.qb-cyan{background:var(--cyan);color:#fff;}
+.qb-yellow{background:#f39c12;color:#fff;}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px 20px;}
+.empty-icon{font-size:44px;margin-bottom:12px;opacity:.3;}
+.empty-text{color:var(--text-muted);font-size:14px;margin-bottom:16px;}
+
+/* BUTTONS */
+.btn{
+  padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;
+  cursor:pointer;transition:.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;
+}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:var(--purple);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-outline{background:transparent;border:1px solid var(--purple);color:var(--purple);}
+.btn-sm{padding:7px 14px;font-size:13px;}
+.btn-yellow{background:#f39c12;color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+
+/* FORM STYLES */
+.form-row{display:grid;gap:16px;margin-bottom:16px;}
+.form-row-2{grid-template-columns:1fr 1fr;}
+.form-row-3{grid-template-columns:1fr 1fr 1fr;}
+.form-row-4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.form-section{background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px;}
+.form-section-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);}
+.field-group{display:flex;flex-direction:column;gap:6px;}
+.field-group label{font-size:13px;font-weight:500;color:var(--text-muted);}
+.field-group input,.field-group select,.field-group textarea{
+  padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:14px;font-family:inherit;outline:none;transition:.2s;background:#fff;
+}
+.field-group input:focus,.field-group select:focus{border-color:var(--purple);}
+.field-group input::placeholder{color:#b0bec5;}
+.field-group select{cursor:pointer;}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{background:#f7f8fc;font-size:12px;font-weight:600;color:var(--text-muted);
+   text-transform:uppercase;letter-spacing:.5px;padding:11px 14px;text-align:left;}
+td{padding:12px 14px;font-size:14px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafbff;}
+.badge{
+  display:inline-block;padding:4px 10px;border-radius:20px;
+  font-size:12px;font-weight:600;
+}
+.badge-pending{background:#fff3cd;color:#856404;}
+.badge-approved{background:#d1fae5;color:#065f46;}
+.badge-rejected{background:#fee2e2;color:#991b1b;}
+.badge-processing{background:#dbeafe;color:#1e40af;}
+.badge-credit{background:#d1fae5;color:#065f46;}
+.badge-debit{background:#fee2e2;color:#991b1b;}
+
+/* WALLET PAGE */
+.wallet-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
+.wallet-balance-card{
+  background:linear-gradient(135deg,#6c5ce7 0%,#a29bfe 100%);
+  border-radius:var(--card-radius);padding:32px;color:#fff;
+}
+.wallet-balance-label{font-size:14px;opacity:.8;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.wallet-balance-amount{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;}
+.wallet-balance-sub{font-size:13px;opacity:.6;margin-top:6px;}
+.qr-card{background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);padding:24px;text-align:center;}
+.qr-title{font-weight:600;font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:6px;justify-content:center;}
+.qr-placeholder{
+  width:140px;height:140px;border:2px solid var(--border);border-radius:8px;
+  margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
+  background:#f7f8fc;font-size:60px;
+}
+.upi-id{color:var(--purple);font-weight:600;font-size:14px;}
+
+/* FILE UPLOAD */
+.file-upload-group{
+  border:2px dashed var(--border);border-radius:8px;padding:16px;
+  text-align:center;cursor:pointer;transition:.2s;background:#fafbff;
+}
+.file-upload-group:hover{border-color:var(--purple);background:#f5f3ff;}
+.file-upload-group input[type=file]{display:none;}
+.file-upload-label{font-size:13px;color:var(--text-muted);cursor:pointer;}
+.file-name{font-size:12px;color:var(--purple);margin-top:6px;font-weight:500;}
+
+/* PROFILE PAGE */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.stat-badge{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border);font-size:14px;
+}
+.stat-badge:last-child{border-bottom:none;}
+.stat-badge-val{
+  background:var(--purple);color:#fff;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:600;
+}
+.stat-badge-val.green{background:var(--green);}
+.stat-badge-val.orange{background:var(--orange);}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:28px;right:28px;z-index:9999;
+  background:#1a1f2e;color:#fff;padding:14px 20px;border-radius:10px;
+  font-size:14px;font-weight:500;box-shadow:var(--shadow-lg);
+  transform:translateY(80px);opacity:0;transition:.3s;max-width:300px;
+  display:flex;align-items:center;gap:10px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:4px solid var(--green);}
+.toast.error{border-left:4px solid var(--red);}
+.toast.info{border-left:4px solid var(--purple);}
+
+/* LOADER */
+.loader-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;
+  display:flex;align-items:center;justify-content:center;display:none;
+}
+.loader{width:44px;height:44px;border:4px solid rgba(255,255,255,.2);
+        border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Divider */
+.section-divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+
+/* Submit bar */
+.submit-bar{
+  background:var(--purple);color:#fff;width:100%;padding:16px;border:none;
+  border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;
+  transition:.2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.submit-bar:hover{background:var(--purple-dark);}
+.submit-bar:disabled{opacity:.6;cursor:not-allowed;}
+
+/* CONFIG BANNER */
+.config-banner{
+  background:#fff3cd;border:1.5px solid #ffc107;border-radius:10px;
+  padding:14px 18px;margin-bottom:24px;font-size:14px;color:#856404;display:none;
+}
+.config-banner.show{display:flex;align-items:center;gap:10px;}
+
+@media(max-width:1100px){
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .quick-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:768px){
+  .sidebar{width:200px;}
+  .main{margin-left:200px;padding:20px;}
+  .two-col,.wallet-grid,.profile-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH SCREEN ══════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🪪</div>
+      <div>
+        <div class="auth-logo-text">PAN Portal</div>
+      </div>
+    </div>
+    <div class="auth-title" id="auth-title">Welcome Back</div>
+    <div class="auth-sub" id="auth-sub">Sign in to your account</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Login</div>
+      <div class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</div>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••"/>
+      </div>
+      <button class="btn-auth" onclick="doLogin()">Sign In →</button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="register-form" style="display:none;">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="reg-name" placeholder="SK SAMRAT"/>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="reg-email" placeholder="you@example.com"/>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="reg-phone" placeholder="9876543210"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Min. 6 characters"/>
+      </div>
+      <button class="btn-auth" onclick="doRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══════════════════════════════════════ -->
+<div id="app">
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">🪪</div>
+        <div>
+          <div class="sidebar-logo-text">PAN Portal</div>
+          <div class="sidebar-logo-sub">User Dashboard</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item" data-page="apply-pan" onclick="navigate('apply-pan')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Apply PAN
+        </div>
+        <div class="nav-item" data-page="pan-logs" onclick="navigate('pan-logs')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          PAN Logs
+        </div>
+        <div class="nav-item" data-page="pan-documents" onclick="navigate('pan-documents')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+          PAN Documents
+        </div>
+        <div class="nav-item" data-page="wallet" onclick="navigate('wallet')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          Wallet
+        </div>
+        <div class="nav-item" data-page="wallet-history" onclick="navigate('wallet-history')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Wallet History
+        </div>
+        <div class="nav-item" data-page="profile" onclick="navigate('profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </div>
+        <div class="nav-item logout" onclick="doLogout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </div>
+      </nav>
+      <div class="sidebar-user">
+        <div class="sidebar-user-name" id="sb-name">Loading...</div>
+        <div class="sidebar-user-email" id="sb-email"></div>
+        <div class="sidebar-balance">
+          <div class="sidebar-balance-label">Wallet Balance</div>
+          <div class="sidebar-balance-amount" id="sb-balance">₹0.00</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <div class="config-banner" id="config-banner">
+        ⚠️ <span>Firebase not configured. Please replace the placeholder config in the HTML &lt;script&gt; tag with your real Firebase credentials.</span>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page">
+        <div class="page-header">
+          <h1>Welcome, <span id="dash-name">User</span>! 👋</h1>
+          <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">Here's an overview of your account</p>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card stat-card-1">
+            <div><div class="stat-card-label">Wallet Balance</div><div class="stat-card-value" id="dash-balance">₹0.00</div></div>
+            <div class="stat-card-icon">💳</div>
+          </div>
+          <div class="stat-card stat-card-2">
+            <div><div class="stat-card-label">Total PAN Applied</div><div class="stat-card-value" id="dash-pan-count">0</div></div>
+            <div class="stat-card-icon">📋</div>
+          </div>
+          <div class="stat-card stat-card-3">
+            <div><div class="stat-card-label">Total Transactions</div><div class="stat-card-value" id="dash-txn-count">0</div></div>
+            <div class="stat-card-icon">↔️</div>
+          </div>
+          <div class="stat-card stat-card-4">
+            <div><div class="stat-card-label">Pending Recharge</div><div class="stat-card-value" id="dash-pending">0</div></div>
+            <div class="stat-card-icon">🕐</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header"><div class="card-title">⚡ Quick Actions</div></div>
+          <div class="quick-grid">
+            <button class="quick-btn qb-purple" onclick="navigate('apply-pan')">+ Apply PAN</button>
+            <button class="quick-btn qb-green" onclick="navigate('wallet')">💵 Add Money</button>
+            <button class="quick-btn qb-cyan" onclick="navigate('pan-logs')">🔁 PAN Logs</button>
+            <button class="quick-btn qb-yellow" onclick="navigate('wallet-history')">🏛 Wallet History</button>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 Recent PAN Applications</div>
+              <button class="btn btn-sm btn-outline" onclick="navigate('pan-logs')">View All</button>
+            </div>
+            <div id="dash-pan-list">
+              <div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No PAN applications yet</div><button class="btn btn-primary btn-sm" onclick="navigate('apply-pan')">Apply Now</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">↔️ Recent Transactions</div>
+              <button class="btn btn-sm btn-outline" onclick="navigate('wallet-history')">View All</button>
+            </div>
+            <div id="dash-txn-list">
+              <div class="empty"><div class="empty-icon">💸</div><div class="empty-text">No transactions yet</div><button class="btn btn-green btn-sm" onclick="navigate('wallet')">Add Money</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APPLY PAN -->
+      <div id="page-apply-pan" class="page" style="display:none;">
+        <div class="page-header"><h1>📋 Apply for PAN Card</h1></div>
+        <div style="background:#e8f4fd;border:1px solid #bee3f8;border-radius:10px;padding:12px 18px;margin-bottom:20px;font-size:14px;color:#2c5282;display:flex;gap:8px;align-items:center;">
+          ℹ️ Application Fee: <strong>₹136.00</strong> will be deducted from your wallet.
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">AO Details</div>
+          <div class="form-row form-row-4">
+            <div class="field-group"><label>Area Code</label><input type="text" id="ao-area" placeholder="e.g. MUM"/></div>
+            <div class="field-group"><label>AO Type</label><input type="text" id="ao-type" placeholder="e.g. W"/></div>
+            <div class="field-group"><label>Range Code</label><input type="text" id="ao-range" placeholder="e.g. 24"/></div>
+            <div class="field-group"><label>AO No</label><input type="text" id="ao-no" placeholder="e.g. 11"/></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Applicant Category</div>
+          <div class="form-row">
+            <div class="field-group">
+              <label>Category *</label>
+              <select id="pan-category">
+                <option value="Individual">Individual</option>
+                <option value="Company">Company</option>
+                <option value="HUF">HUF</option>
+                <option value="Firm">Firm</option>
+                <option value="AOP">AOP / BOI</option>
+                <option value="Trust">Trust</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Personal Details</div>
+          <div class="form-row form-row-3">
+            <div class="field-group"><label>First Name *</label><input type="text" id="p-first" placeholder="First Name"/></div>
+            <div class="field-group"><label>Middle Name</label><input type="text" id="p-middle" placeholder="Middle Name"/></div>
+            <div class="field-group"><label>Last Name *</label><input type="text" id="p-last" placeholder="Last Name"/></div>
+          </div>
+          <div class="form-row form-row-2">
+            <div class="field-group"><label>Name on PAN Card *</label><input type="text" id="p-pan-name" placeholder="As you want on PAN"/></div>
+            <div class="field-group"><label>Name as per Aadhaar *</label><input type="text" id="p-aadhar-name" placeholder="As on Aadhaar"/></div>
+          </div>
+          <div class="form-row form-row-3">
+            <div class="field-group"><label>Date of Birth *</label><input type="date" id="p-dob"/></div>
+            <div class="field-group"><label>Gender *</label>
+              <select id="p-gender"><option value="">Select Gender</option><option value="Male">Male</option><option value="Female">Female</option><option value="Transgender">Transgender</option></select>
+            </div>
+            <div class="field-group"><label>Aadhaar Number *</label><input type="text" id="p-aadhar" placeholder="12-digit Aadhaar" maxlength="12"/></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Father's / Legal Guardian Details</div>
+          <div class="form-row form-row-3">
+            <div class="field-group"><label>Father's First Name *</label><input type="text" id="f-first" placeholder="First Name"/></div>
+            <div class="field-group"><label>Father's Middle Name</label><input type="text" id="f-middle" placeholder="Middle Name"/></div>
+            <div class="field-group"><label>Father's Last Name *</label><input type="text" id="f-last" placeholder="Last Name"/></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Contact Details</div>
+          <div class="form-row form-row-2">
+            <div class="field-group"><label>Mobile Number *</label><input type="tel" id="c-mobile" placeholder="10-digit mobile"/></div>
+            <div class="field-group"><label>Email ID</label><input type="email" id="c-email" placeholder="email@example.com"/></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Address Details</div>
+          <div class="form-row form-row-2">
+            <div class="field-group"><label>Flat/House No., Street</label><input type="text" id="a-street" placeholder="House No., Street Name"/></div>
+            <div class="field-group"><label>Area/Locality</label><input type="text" id="a-area" placeholder="Area or Locality"/></div>
+          </div>
+          <div class="form-row form-row-3">
+            <div class="field-group"><label>City/District</label><input type="text" id="a-city" placeholder="City"/></div>
+            <div class="field-group"><label>State *</label>
+              <select id="a-state">
+                <option value="">Select State</option>
+                <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option>
+                <option>Bihar</option><option>Chhattisgarh</option><option>Goa</option>
+                <option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option>
+                <option>Jharkhand</option><option>Karnataka</option><option>Kerala</option>
+                <option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option>
+                <option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option>
+                <option>Odisha</option><option>Punjab</option><option>Rajasthan</option>
+                <option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option>
+                <option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option>
+                <option>West Bengal</option><option>Delhi</option><option>Jammu and Kashmir</option>
+                <option>Ladakh</option><option>Puducherry</option>
+              </select>
+            </div>
+            <div class="field-group"><label>Pincode *</label><input type="text" id="a-pin" placeholder="6-digit PIN" maxlength="6"/></div>
+          </div>
+          <div class="form-row">
+            <div class="field-group"><label>Communication Address (if different)</label><input type="text" id="a-comm" placeholder="Communication address (optional)"/></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Upload Documents</div>
+          <div class="form-row form-row-2">
+            <div class="field-group">
+              <label>Photo *</label>
+              <div class="file-upload-group" onclick="document.getElementById('doc-photo').click()">
+                <input type="file" id="doc-photo" accept=".jpg,.jpeg,.png" onchange="showFileName(this,'photo-name')"/>
+                <div class="file-upload-label">📸 Click to upload photo<br><span style="font-size:11px">JPG, PNG only</span></div>
+                <div class="file-name" id="photo-name"></div>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Signature *</label>
+              <div class="file-upload-group" onclick="document.getElementById('doc-sign').click()">
+                <input type="file" id="doc-sign" accept=".jpg,.jpeg,.png" onchange="showFileName(this,'sign-name')"/>
+                <div class="file-upload-label">✍️ Click to upload signature<br><span style="font-size:11px">JPG, PNG only</span></div>
+                <div class="file-name" id="sign-name"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="submit-bar" onclick="submitPAN()">
+          📤 Submit Application &amp; Pay ₹136.00
+        </button>
+      </div>
+
+      <!-- PAN LOGS -->
+      <div id="page-pan-logs" class="page" style="display:none;">
+        <div class="page-header"><h1>🔁 PAN Application Logs</h1></div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">☰ All Applications</div></div>
+          <div id="pan-logs-content">
+            <div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No PAN Applications Found<br>You haven't applied for any PAN card yet.</div><button class="btn btn-primary" onclick="navigate('apply-pan')">+ Apply Now</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAN DOCUMENTS -->
+      <div id="page-pan-documents" class="page" style="display:none;">
+        <div class="page-header"><h1>📁 PAN Documents</h1></div>
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header"><div class="card-title">⬆️ Upload Documents for PAN Application</div></div>
+          <div class="form-row">
+            <div class="field-group">
+              <label>Select PAN Application *</label>
+              <select id="doc-pan-select"><option value="">-- Select PAN Application --</option></select>
+              <span style="font-size:12px;color:var(--text-muted);">Select the PAN application you want to upload documents for</span>
+            </div>
+          </div>
+          <div class="form-row form-row-3" style="margin-top:12px;">
+            <div class="field-group">
+              <label>Aadhaar Card (Front)</label>
+              <div class="file-upload-group" onclick="document.getElementById('aadhar-front').click()">
+                <input type="file" id="aadhar-front" accept=".jpg,.jpeg,.png,.pdf" onchange="showFileName(this,'af-name')"/>
+                <div class="file-upload-label">📎 Choose File<br><span style="font-size:11px">JPG, PNG or PDF</span></div>
+                <div class="file-name" id="af-name"></div>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Aadhaar Card (Back)</label>
+              <div class="file-upload-group" onclick="document.getElementById('aadhar-back').click()">
+                <input type="file" id="aadhar-back" accept=".jpg,.jpeg,.png,.pdf" onchange="showFileName(this,'ab-name')"/>
+                <div class="file-upload-label">📎 Choose File<br><span style="font-size:11px">JPG, PNG or PDF</span></div>
+                <div class="file-name" id="ab-name"></div>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>PAN Form PDF</label>
+              <div class="file-upload-group" onclick="document.getElementById('pan-form-pdf').click()">
+                <input type="file" id="pan-form-pdf" accept=".pdf" onchange="showFileName(this,'pf-name')"/>
+                <div class="file-upload-label">📄 Choose PDF<br><span style="font-size:11px">PDF only</span></div>
+                <div class="file-name" id="pf-name"></div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="uploadDocuments()" style="margin-top:8px;">⬆️ Upload Documents</button>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">📂 My PAN Applications &amp; Documents</div></div>
+          <div id="pan-docs-list">
+            <div class="empty"><div class="empty-icon">📂</div><div class="empty-text">No PAN applications yet. Apply for PAN first!</div><button class="btn btn-primary" onclick="navigate('apply-pan')">+ Apply for PAN</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WALLET -->
+      <div id="page-wallet" class="page" style="display:none;">
+        <div class="page-header"><h1>💳 My Wallet</h1></div>
+        <div class="wallet-grid">
+          <div class="wallet-balance-card">
+            <div class="wallet-balance-label">💳 Current Balance</div>
+            <div class="wallet-balance-amount" id="wallet-amount">₹0.00</div>
+            <div class="wallet-balance-sub">Available for PAN Applications</div>
+          </div>
+          <div class="qr-card">
+            <div class="qr-title">📷 Scan to Pay</div>
+            <div class="qr-placeholder">📱</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">UPI ID:</div>
+            <div class="upi-id">scan and pay</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header"><div class="card-title">➕ Add Money to Wallet</div></div>
+          <div class="form-row form-row-3">
+            <div class="field-group">
+              <label>Amount (₹) *</label>
+              <input type="number" id="recharge-amount" placeholder="Enter amount" min="100" max="50000"/>
+              <span style="font-size:12px;color:var(--text-muted);">Min: ₹100 | Max: ₹50,000</span>
+            </div>
+            <div class="field-group">
+              <label>UTR/Reference Number *</label>
+              <input type="text" id="recharge-utr" placeholder="e.g., 323456789012" maxlength="12"/>
+              <span style="font-size:12px;color:var(--text-muted);">12-digit UTR from your bank</span>
+            </div>
+            <div class="field-group">
+              <label>Remark (Optional)</label>
+              <input type="text" id="recharge-remark" placeholder="Any note"/>
+            </div>
+          </div>
+          <button class="submit-bar" onclick="submitRecharge()" style="margin-top:8px;">📨 Submit Recharge Request</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">🔁 Recent Recharge Requests</div></div>
+          <div id="recharge-list">
+            <div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No recharge requests yet</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WALLET HISTORY -->
+      <div id="page-wallet-history" class="page" style="display:none;">
+        <div class="page-header">
+          <h1 style="justify-content:space-between;">
+            <span>🏛 Wallet History (Bank Statement)</span>
+            <button class="btn btn-primary btn-sm" onclick="printStatement()">🖨 Print Statement</button>
+          </h1>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">☰ Transaction Statement</div></div>
+          <div id="txn-history-content">
+            <div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No Transactions Found<br>Your wallet transaction history will appear here.</div><button class="btn btn-primary" onclick="navigate('wallet')">+ Add Money</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div id="page-profile" class="page" style="display:none;">
+        <div class="page-header"><h1>👤 My Profile</h1></div>
+        <div class="profile-grid">
+          <div class="card">
+            <div class="card-header"><div class="card-title">☰ Profile Information</div></div>
+            <div class="form-row">
+              <div class="field-group"><label>Full Name</label><input type="text" id="prof-name"/></div>
+            </div>
+            <div class="form-row">
+              <div class="field-group"><label>Email Address</label><input type="email" id="prof-email" disabled style="background:#f7f8fc;"/><span style="font-size:12px;color:var(--text-muted);">Email cannot be changed</span></div>
+            </div>
+            <div class="form-row">
+              <div class="field-group"><label>Phone Number</label><input type="tel" id="prof-phone"/></div>
+            </div>
+            <div class="form-row">
+              <div class="field-group"><label>Role</label><input type="text" id="prof-role" disabled style="background:#f7f8fc;"/></div>
+            </div>
+            <div class="form-row">
+              <div class="field-group"><label>Member Since</label><input type="text" id="prof-since" disabled style="background:#f7f8fc;"/></div>
+            </div>
+            <button class="submit-bar" onclick="updateProfile()">💾 Update Profile</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="card">
+              <div class="card-header"><div class="card-title">🔒 Change Password</div></div>
+              <div class="form-row">
+                <div class="field-group"><label>Current Password</label><input type="password" id="pwd-current" placeholder="Current password"/></div>
+              </div>
+              <div class="form-row">
+                <div class="field-group"><label>New Password</label><input type="password" id="pwd-new" placeholder="New password"/><span style="font-size:12px;color:var(--text-muted);">Minimum 6 characters</span></div>
+              </div>
+              <div class="form-row">
+                <div class="field-group"><label>Confirm New Password</label><input type="password" id="pwd-confirm" placeholder="Repeat new password"/></div>
+              </div>
+              <button class="btn btn-yellow" style="width:100%;padding:13px;" onclick="changePassword()">🔑 Change Password</button>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">📊 Account Statistics</div></div>
+              <div class="stat-badge"><span>Total PAN Applications:</span><span class="stat-badge-val" id="stat-pan">0</span></div>
+              <div class="stat-badge"><span>Total Transactions:</span><span class="stat-badge-val green" id="stat-txn">0</span></div>
+              <div class="stat-badge"><span>Current Wallet Balance:</span><span class="stat-badge-val orange" id="stat-bal">₹0.00</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LOADER -->
+<div class="loader-overlay" id="loader"><div class="loader"></div></div>
+
+<script>
+let currentUser = null;
+let userData = null;
+let FB = null;
+
+// Wait for Firebase
+window.addEventListener('firebaseReady', () => { FB = window.__fb; initAuth(); });
+// Fallback if Firebase fails to load
+setTimeout(()=>{ if(!FB){ showConfigBanner(); }},5000);
+
+function showConfigBanner(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('config-banner').classList.add('show');
+  navigate('dashboard');
+}
+
+function initAuth(){
+  FB.onAuthStateChanged(FB.auth, async (user)=>{
+    if(user){
+      currentUser = user;
+      await loadUserData();
+      document.getElementById('auth-screen').style.display='none';
+      document.getElementById('app').style.display='block';
+      navigate('dashboard');
+    } else {
+      document.getElementById('auth-screen').style.display='flex';
+      document.getElementById('app').style.display='none';
+    }
+  });
+}
+
+async function loadUserData(){
+  const snap = await FB.getDoc(FB.doc(FB.db,'users',currentUser.uid));
+  if(snap.exists()) userData = snap.data();
+  updateSidebar();
+}
+
+function updateSidebar(){
+  if(!userData) return;
+  document.getElementById('sb-name').textContent = userData.name || 'User';
+  document.getElementById('sb-email').textContent = userData.email || '';
+  const bal = userData.walletBalance || 0;
+  document.getElementById('sb-balance').textContent = '₹'+bal.toFixed(2);
+}
+
+// ── AUTH ─────────────────────────────────────────────
+function switchTab(tab){
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('login-form').style.display = tab==='login'?'block':'none';
+  document.getElementById('register-form').style.display = tab==='register'?'block':'none';
+  document.getElementById('auth-title').textContent = tab==='login'?'Welcome Back':'Create Account';
+  document.getElementById('auth-sub').textContent = tab==='login'?'Sign in to your account':'Join PAN Portal today';
+  hideAuthError();
+}
+
+function showAuthError(msg){ const el=document.getElementById('auth-error'); el.textContent=msg; el.classList.add('show'); }
+function hideAuthError(){ document.getElementById('auth-error').classList.remove('show'); }
+
+async function doLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  if(!email||!pass){ showAuthError('Please fill all fields'); return; }
+  showLoader();
+  try{
+    await FB.signInWithEmailAndPassword(FB.auth, email, pass);
+    hideLoader();
+  } catch(e){
+    hideLoader();
+    showAuthError(firebaseError(e.code));
+  }
+}
+
+async function doRegister(){
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pass = document.getElementById('reg-password').value;
+  if(!name||!email||!phone||!pass){ showAuthError('Please fill all fields'); return; }
+  if(pass.length<6){ showAuthError('Password must be at least 6 characters'); return; }
+  showLoader();
+  try{
+    const cred = await FB.createUserWithEmailAndPassword(FB.auth, email, pass);
+    await FB.setDoc(FB.doc(FB.db,'users',cred.user.uid),{
+      name, email, phone, role:'User',
+      walletBalance: 0,
+      createdAt: new Date().toISOString()
+    });
+    hideLoader();
+    toast('Account created successfully!','success');
+  } catch(e){
+    hideLoader();
+    showAuthError(firebaseError(e.code));
+  }
+}
+
+async function doLogout(){
+  await FB.signOut(FB.auth);
+  currentUser = null; userData = null;
+}
+
+function firebaseError(code){
+  const map = {
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password.',
+    'auth/email-already-in-use':'Email already registered.',
+    'auth/invalid-email':'Invalid email address.',
+    'auth/weak-password':'Password is too weak.',
+    'auth/too-many-requests':'Too many attempts. Try later.',
+    'auth/network-request-failed':'Network error. Check your connection.',
+  };
+  return map[code] || 'Something went wrong. Try again.';
+}
+
+// ── NAVIGATION ───────────────────────────────────────
+function navigate(page){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if(el) el.style.display='block';
+  const nav = document.querySelector('[data-page="'+page+'"]');
+  if(nav) nav.classList.add('active');
+  // Load page data
+  if(page==='dashboard') loadDashboard();
+  if(page==='pan-logs') loadPanLogs();
+  if(page==='pan-documents') loadPanDocuments();
+  if(page==='wallet') loadWallet();
+  if(page==='wallet-history') loadWalletHistory();
+  if(page==='profile') loadProfile();
+}
+
+// ── DASHBOARD ────────────────────────────────────────
+async function loadDashboard(){
+  if(!currentUser||!userData) return;
+  document.getElementById('dash-name').textContent = userData.name || 'User';
+  const bal = userData.walletBalance||0;
+  document.getElementById('dash-balance').textContent = '₹'+bal.toFixed(2);
+
+  // PAN apps
+  const panSnap = await FB.getDocs(FB.query(FB.collection(FB.db,'panApplications'),FB.where('uid','==',currentUser.uid)));
+  document.getElementById('dash-pan-count').textContent = panSnap.size;
+  document.getElementById('stat-pan') && (document.getElementById('stat-pan').textContent = panSnap.size);
+
+  // Transactions
+  const txnSnap = await FB.getDocs(FB.query(FB.collection(FB.db,'transactions'),FB.where('uid','==',currentUser.uid)));
+  document.getElementById('dash-txn-count').textContent = txnSnap.size;
+
+  // Pending recharge
+  const rechSnap = await FB.getDocs(FB.query(FB.collection(FB.db,'recharges'),FB.where('uid','==',currentUser.uid),FB.where('status','==','pending')));
+  document.getElementById('dash-pending').textContent = rechSnap.size;
+
+  // Recent PAN
+  const panList = document.getElementById('dash-pan-list');
+  if(panSnap.empty){
+    panList.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No PAN applications yet</div><button class="btn btn-primary btn-sm" onclick="navigate(\'apply-pan\')">Apply Now</button></div>';
+  } else {
+    let rows = '';
+    panSnap.docs.slice(0,3).forEach(d=>{
+      const data = d.data();
+      rows += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div><div style="font-weight:600;font-size:14px;">${data.panName||'N/A'}</div><div style="font-size:12px;color:var(--text-muted);">${data.createdAt?new Date(data.createdAt.seconds*1000).toLocaleDateString():'--'}</div></div>
+        <span class="badge badge-${(data.status||'pending').toLowerCase()}">${data.status||'Pending'}</span>
+      </div>`;
+    });
+    panList.innerHTML = rows;
+  }
+
+  // Recent Transactions
+  const txnList = document.getElementById('dash-txn-list');
+  if(txnSnap.empty){
+    txnList.innerHTML = '<div class="empty"><div class="empty-icon">💸</div><div class="empty-text">No transactions yet</div><button class="btn btn-green btn-sm" onclick="navigate(\'wallet\')">Add Money</button></div>';
+  } else {
+    let rows = '';
+    txnSnap.docs.slice(0,3).forEach(d=>{
+      const data = d.data();
+      rows += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div><div style="font-weight:600;font-size:14px;">${data.description||'Transaction'}</div><div style="font-size:12px;color:var(--text-muted);">${data.createdAt?new Date(data.createdAt.seconds*1000).toLocaleDateString():'--'}</div></div>
+        <span style="font-weight:700;color:${data.type==='credit'?'var(--green)':'var(--red)'};">${data.type==='credit'?'+':'-'}₹${(data.amount||0).toFixed(2)}</span>
+      </div>`;
+    });
+    txnList.innerHTML = rows;
+  }
+}
+
+// ── APPLY PAN ────────────────────────────────────────
+async function submitPAN(){
+  if(!currentUser||!userData){ toast('Please login first','error'); return; }
+  const required = ['p-first','p-last','p-pan-name','p-aadhar-name','p-dob','p-gender','p-aadhar','f-first','f-last','c-mobile','a-state','a-pin'];
+  for(const id of required){
+    if(!document.getElementById(id).value.trim()){ toast('Please fill all required fields (*)','error'); document.getElementById(id).focus(); return; }
+  }
+  const bal = userData.walletBalance||0;
+  if(bal < 136){ toast('Insufficient wallet balance. Please add money first.','error'); return; }
+
+  showLoader();
+  try{
+    const data = {
+      uid: currentUser.uid,
+      aoArea: v('ao-area'), aoType: v('ao-type'), aoRange: v('ao-range'), aoNo: v('ao-no'),
+      category: v('pan-category'),
+      firstName: v('p-first'), middleName: v('p-middle'), lastName: v('p-last'),
+      panName: v('p-pan-name'), aadharName: v('p-aadhar-name'),
+      dob: v('p-dob'), gender: v('p-gender'), aadharNumber: v('p-aadhar'),
+      fatherFirst: v('f-first'), fatherMiddle: v('f-middle'), fatherLast: v('f-last'),
+      mobile: v('c-mobile'), email: v('c-email'),
+      street: v('a-street'), area: v('a-area'), city: v('a-city'),
+      state: v('a-state'), pincode: v('a-pin'), commAddress: v('a-comm'),
+      status: 'Pending', createdAt: FB.serverTimestamp()
+    };
+    const ref = await FB.addDoc(FB.collection(FB.db,'panApplications'), data);
+
+    // Deduct fee
+    const newBal = bal - 136;
+    await FB.updateDoc(FB.doc(FB.db,'users',currentUser.uid),{ walletBalance: newBal });
+    await FB.addDoc(FB.collection(FB.db,'transactions'),{
+      uid: currentUser.uid, amount: 136, type: 'debit',
+      description: 'PAN Application Fee', refId: ref.id,
+      createdAt: FB.serverTimestamp()
+    });
+    userData.walletBalance = newBal;
+    updateSidebar();
+    hideLoader();
+    toast('PAN Application submitted successfully!','success');
+    navigate('pan-logs');
+  } catch(e){ hideLoader(); toast('Error: '+e.message,'error'); }
+}
+
+function v(id){ return document.getElementById(id)?.value?.trim()||''; }
+
+function showFileName(input, nameId){
+  const el = document.getElementById(nameId);
+  if(el && input.files[0]) el.textContent = '✓ '+input.files[0].name;
+}
+
+// ── PAN LOGS ─────────────────────────────────────────
+async function loadPanLogs(){
+  if(!currentUser) return;
+  const snap = await FB.getDocs(FB.query(FB.collection(FB.db,'panApplications'),FB.where('uid','==',currentUser.uid)));
+  const el = document.getElementById('pan-logs-content');
+  if(snap.empty){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No PAN Applications Found<br>You haven\'t applied for any PAN card yet.</div><button class="btn btn-primary" onclick="navigate(\'apply-pan\')">+ Apply Now</button></div>';
+    return;
+  }
+  let html = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Name on PAN</th><th>Category</th><th>Mobile</th><th>State</th><th>Date</th><th>Status</th></tr></thead><tbody>';
+  snap.docs.forEach((d,i)=>{
+    const data = d.data();
+    const date = data.createdAt ? new Date(data.createdAt.seconds*1000).toLocaleDateString('en-IN') : '--';
+    html += `<tr><td>${i+1}</td><td><strong>${data.panName||'N/A'}</strong></td><td>${data.category||'--'}</td><td>${data.mobile||'--'}</td><td>${data.state||'--'}</td><td>${date}</td><td><span class="badge badge-${(data.status||'pending').toLowerCase()}">${data.status||'Pending'}</span></td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+// ── PAN DOCUMENTS ─────────────────────────────────────
+async function loadPanDocuments(){
+  if(!currentUser) return;
+  const snap = await FB.getDocs(FB.query(FB.collection(FB.db,'panApplications'),FB.where('uid','==',currentUser.uid)));
+  const sel = document.getElementById('doc-pan-select');
+  sel.innerHTML = '<option value="">-- Select PAN Application --</option>';
+  snap.docs.forEach(d=>{
+    const data = d.data();
+    sel.innerHTML += `<option value="${d.id}">${data.panName||'Application'} - ${data.status||'Pending'}</option>`;
+  });
+  const el = document.getElementById('pan-docs-list');
+  if(snap.empty){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📂</div><div class="empty-text">No PAN applications yet. Apply for PAN first!</div><button class="btn btn-primary" onclick="navigate(\'apply-pan\')">+ Apply for PAN</button></div>';
+    return;
+  }
+  let html = '<div class="table-wrap"><table><thead><tr><th>Name on PAN</th><th>Status</th><th>Documents</th></tr></thead><tbody>';
+  snap.docs.forEach(d=>{
+    const data = d.data();
+    const docs = data.documents || {};
+    const uploaded = Object.keys(docs).length;
+    html += `<tr><td><strong>${data.panName||'N/A'}</strong></td><td><span class="badge badge-${(data.status||'pending').toLowerCase()}">${data.status||'Pending'}</span></td><td>${uploaded > 0 ? '✅ '+uploaded+' file(s) uploaded' : '❌ No documents uploaded'}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+async function uploadDocuments(){
+  const appId = document.getElementById('doc-pan-select').value;
+  if(!appId){ toast('Please select a PAN application','error'); return; }
+  toast('Documents noted for application. (Storage requires Firebase Storage to be enabled.)','info');
+}
+
+// ── WALLET ────────────────────────────────────────────
+async function loadWallet(){
+  if(!currentUser||!userData) return;
+  const bal = userData.walletBalance||0;
+  document.getElementById('wallet-amount').textContent = '₹'+bal.toFixed(2);
+
+  const snap = await FB.getDocs(FB.query(FB.collection(FB.db,'recharges'),FB.where('uid','==',currentUser.uid)));
+  const el = document.getElementById('recharge-list');
+  if(snap.empty){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No recharge requests yet</div></div>';
+    return;
+  }
+  let html = '<div class="table-wrap"><table><thead><tr><th>Amount</th><th>UTR/Ref No.</th><th>Remark</th><th>Date</th><th>Status</th></tr></thead><tbody>';
+  snap.docs.forEach(d=>{
+    const data = d.data();
+    const date = data.createdAt ? new Date(data.createdAt.seconds*1000).toLocaleDateString('en-IN') : '--';
+    html += `<tr><td><strong>₹${(data.amount||0).toFixed(2)}</strong></td><td>${data.utr||'--'}</td><td>${data.remark||'--'}</td><td>${date}</td><td><span class="badge badge-${(data.status||'pending').toLowerCase()}">${data.status||'Pending'}</span></td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+async function submitRecharge(){
+  const amount = parseFloat(document.getElementById('recharge-amount').value);
+  const utr = document.getElementById('recharge-utr').value.trim();
+  const remark = document.getElementById('recharge-remark').value.trim();
+  if(!amount||amount<100||amount>50000){ toast('Enter amount between ₹100 and ₹50,000','error'); return; }
+  if(!utr||utr.length!==12){ toast('Enter valid 12-digit UTR number','error'); return; }
+  showLoader();
+  try{
+    await FB.addDoc(FB.collection(FB.db,'recharges'),{
+      uid: currentUser.uid, amount, utr, remark,
+      status: 'pending', createdAt: FB.serverTimestamp()
+    });
+    document.getElementById('recharge-amount').value='';
+    document.getElementById('recharge-utr').value='';
+    document.getElementById('recharge-remark').value='';
+    hideLoader();
+    toast('Recharge request submitted! Admin will verify and credit.','success');
+    loadWallet();
+  } catch(e){ hideLoader(); toast('Error: '+e.message,'error'); }
+}
+
+// ── WALLET HISTORY ────────────────────────────────────
+async function loadWalletHistory(){
+  if(!currentUser) return;
+  const snap = await FB.getDocs(FB.query(FB.collection(FB.db,'transactions'),FB.where('uid','==',currentUser.uid)));
+  const el = document.getElementById('txn-history-content');
+  document.getElementById('stat-txn') && (document.getElementById('stat-txn').textContent = snap.size);
+  if(snap.empty){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No Transactions Found<br>Your wallet transaction history will appear here.</div><button class="btn btn-primary" onclick="navigate(\'wallet\')">+ Add Money</button></div>';
+    return;
+  }
+  let html = '<div class="table-wrap" id="print-area"><table><thead><tr><th>#</th><th>Description</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead><tbody>';
+  snap.docs.forEach((d,i)=>{
+    const data = d.data();
+    const date = data.createdAt ? new Date(data.createdAt.seconds*1000).toLocaleDateString('en-IN') : '--';
+    html += `<tr><td>${i+1}</td><td>${data.description||'Transaction'}</td><td><span class="badge badge-${data.type==='credit'?'credit':'debit'}">${data.type||'--'}</span></td><td style="font-weight:700;color:${data.type==='credit'?'var(--green)':'var(--red)'};">${data.type==='credit'?'+':'-'}₹${(data.amount||0).toFixed(2)}</td><td>${date}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+
+// ── PROFILE ───────────────────────────────────────────
+async function loadProfile(){
+  if(!userData) return;
+  document.getElementById('prof-name').value = userData.name||'';
+  document.getElementById('prof-email').value = userData.email||'';
+  document.getElementById('prof-phone').value = userData.phone||'';
+  document.getElementById('prof-role').value = userData.role||'User';
+  document.getElementById('prof-since').value = userData.createdAt ? new Date(userData.createdAt).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}) : '--';
+  const bal = userData.walletBalance||0;
+  document.getElementById('stat-bal').textContent = '₹'+bal.toFixed(2);
+
+  const panSnap = await FB.getDocs(FB.query(FB.collection(FB.db,'panApplications'),FB.where('uid','==',currentUser.uid)));
+  document.getElementById('stat-pan').textContent = panSnap.size;
+  const txnSnap = await FB.getDocs(FB.query(FB.collection(FB.db,'transactions'),FB.where('uid','==',currentUser.uid)));
+  document.getElementById('stat-txn').textContent = txnSnap.size;
+}
+
+async function updateProfile(){
+  const name = document.getElementById('prof-name').value.trim();
+  const phone = document.getElementById('prof-phone').value.trim();
+  if(!name){ toast('Name cannot be empty','error'); return; }
+  showLoader();
+  try{
+    await FB.updateDoc(FB.doc(FB.db,'users',currentUser.uid),{ name, phone });
+    userData.name = name; userData.phone = phone;
+    updateSidebar();
+    hideLoader();
+    toast('Profile updated!','success');
+  } catch(e){ hideLoader(); toast('Error: '+e.message,'error'); }
+}
+
+async function changePassword(){
+  const current = document.getElementById('pwd-current').value;
+  const newPwd = document.getElementById('pwd-new').value;
+  const confirm = document.getElementById('pwd-confirm').value;
+  if(!current||!newPwd||!confirm){ toast('Fill all password fields','error'); return; }
+  if(newPwd.length<6){ toast('New password must be at least 6 characters','error'); return; }
+  if(newPwd!==confirm){ toast('Passwords do not match','error'); return; }
+  showLoader();
+  try{
+    const cred = FB.EmailAuthProvider.credential(currentUser.email, current);
+    await FB.reauthenticateWithCredential(currentUser, cred);
+    await FB.updatePassword(currentUser, newPwd);
+    hideLoader();
+    document.getElementById('pwd-current').value='';
+    document.getElementById('pwd-new').value='';
+    document.getElementById('pwd-confirm').value='';
+    toast('Password changed successfully!','success');
+  } catch(e){ hideLoader(); toast(firebaseError(e.code)||e.message,'error'); }
+}
+
+// ── UTILITIES ─────────────────────────────────────────
+function showLoader(){ document.getElementById('loader').style.display='flex'; }
+function hideLoader(){ document.getElementById('loader').style.display='none'; }
+
+let toastTimer;
+function toast(msg, type='info'){
+  const el = document.getElementById('toast');
+  const icons = {success:'✅',error:'❌',info:'ℹ️'};
+  el.innerHTML = (icons[type]||'ℹ️')+' '+msg;
+  el.className = 'toast show '+type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.className='toast', 3500);
+}
+
+// Enter key for login
+document.addEventListener('keypress', e=>{
+  if(e.key==='Enter'){
+    if(document.getElementById('login-form').style.display!=='none') doLogin();
+    else if(document.getElementById('register-form').style.display!=='none') doRegister();
+  }
+});
+</script>
+</body>
+</html>

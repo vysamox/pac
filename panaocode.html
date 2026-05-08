@@ -1,0 +1,484 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.app {
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  padding: 2rem 1rem 3rem;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 2.5rem;
+}
+
+.logo-circle {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: #FF6B00;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-circle svg { width: 24px; height: 24px; }
+
+.header-text h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.header-text p {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.search-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.pin-input {
+  flex: 1;
+  height: 48px;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 0 16px;
+  letter-spacing: 0.1em;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.pin-input:focus {
+  border-color: #FF6B00;
+  box-shadow: 0 0 0 3px rgba(255,107,0,0.12);
+}
+
+.pin-input::placeholder {
+  color: var(--color-text-tertiary);
+  font-size: 16px;
+  letter-spacing: 0.05em;
+}
+
+.search-btn {
+  height: 48px;
+  padding: 0 22px;
+  border-radius: var(--border-radius-md);
+  background: #FF6B00;
+  color: #fff;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s, transform 0.1s;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.search-btn:hover { opacity: 0.88; }
+.search-btn:active { transform: scale(0.97); }
+.search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hint {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  margin-top: 10px;
+}
+
+.result-section { display: none; }
+
+.result-section.show { display: block; animation: fadeUp 0.3s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.result-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.result-pin-badge {
+  background: rgba(255,107,0,0.1);
+  color: #FF6B00;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.06em;
+}
+
+.ao-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ao-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 1rem 1.25rem;
+}
+
+.ao-card-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.ao-card-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.ao-card.highlight {
+  border-color: rgba(255,107,0,0.3);
+  background: rgba(255,107,0,0.04);
+}
+
+.ao-card.highlight .ao-card-value { color: #FF6B00; }
+
+.area-card {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 0.875rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.area-icon {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,107,0,0.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.area-icon svg { width: 16px; height: 16px; }
+
+.area-details p:first-child {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.area-details p:last-child {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.error-card {
+  background: var(--color-background-danger);
+  border: 0.5px solid var(--color-border-danger);
+  border-radius: var(--border-radius-lg);
+  padding: 1rem 1.25rem;
+  color: var(--color-text-danger);
+  font-size: 14px;
+  display: none;
+}
+
+.error-card.show { display: block; animation: fadeUp 0.3s ease; }
+
+.loading-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  text-align: center;
+  display: none;
+}
+
+.loading-card.show { display: block; }
+
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #FF6B00;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.dot:nth-child(2) { animation-delay: 0.15s; }
+.dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.loading-text {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.disclaimer {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-top: 1.5rem;
+  line-height: 1.6;
+  padding-top: 1rem;
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+</style>
+
+<div class="app">
+  <div class="header">
+    <div class="logo-circle">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white"/>
+        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1>PAN AO Code Finder</h1>
+      <p>Income Tax Assessing Officer details by PIN code</p>
+    </div>
+  </div>
+
+  <div class="search-card">
+    <label class="search-label" for="pinInput">Enter your PIN code</label>
+    <div class="input-row">
+      <input class="pin-input" id="pinInput" type="text" maxlength="6" placeholder="e.g. 400001" inputmode="numeric" />
+      <button class="search-btn" id="searchBtn" onclick="fetchAODetails()">
+        <span id="btnText">Search</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+    </div>
+    <p class="hint">6-digit Indian postal PIN code</p>
+  </div>
+
+  <div class="loading-card" id="loadingCard">
+    <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <p class="loading-text" id="loadingText">Fetching AO details for your PIN code...</p>
+  </div>
+
+  <div class="error-card" id="errorCard"></div>
+
+  <div class="result-section" id="resultSection">
+    <div class="result-header">
+      <span class="result-title">AO Details</span>
+      <span class="result-pin-badge" id="resultPin"></span>
+    </div>
+    <div class="ao-grid">
+      <div class="ao-card highlight">
+        <div class="ao-card-label">AO Code</div>
+        <div class="ao-card-value" id="aoCode">—</div>
+      </div>
+      <div class="ao-card">
+        <div class="ao-card-label">AO Type</div>
+        <div class="ao-card-value" id="aoType">—</div>
+      </div>
+      <div class="ao-card">
+        <div class="ao-card-label">Range Code</div>
+        <div class="ao-card-value" id="rangeCode">—</div>
+      </div>
+      <div class="ao-card">
+        <div class="ao-card-label">AO No.</div>
+        <div class="ao-card-value" id="aoNo">—</div>
+      </div>
+    </div>
+    <div class="area-card">
+      <div class="area-icon">
+        <svg viewBox="0 0 16 16" fill="none">
+          <path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6c0-2.5-2-4.5-4.5-4.5z" stroke="#FF6B00" stroke-width="1.2"/>
+          <circle cx="8" cy="6" r="1.5" fill="#FF6B00"/>
+        </svg>
+      </div>
+      <div class="area-details">
+        <p id="areaName">—</p>
+        <p id="cityName">Income Tax Department of India</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="disclaimer">Data is sourced from public Income Tax India records. For official verification, visit <strong>incometax.gov.in</strong>. AO details are used for new PAN applications.</p>
+</div>
+
+<script>
+const MESSAGES = [
+  "Searching Income Tax India records...",
+  "Looking up Assessing Officer details...",
+  "Almost there, verifying data..."
+];
+
+let msgIdx = 0, msgTimer;
+
+function showLoading(show) {
+  document.getElementById('loadingCard').className = 'loading-card' + (show ? ' show' : '');
+  document.getElementById('resultSection').className = 'result-section';
+  document.getElementById('errorCard').className = 'error-card';
+  const btn = document.getElementById('searchBtn');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btnText');
+  btn.disabled = show;
+  spinner.style.display = show ? 'block' : 'none';
+  btnText.style.display = show ? 'none' : 'inline';
+
+  if (show) {
+    msgIdx = 0;
+    document.getElementById('loadingText').textContent = MESSAGES[0];
+    msgTimer = setInterval(() => {
+      msgIdx = (msgIdx + 1) % MESSAGES.length;
+      document.getElementById('loadingText').textContent = MESSAGES[msgIdx];
+    }, 2200);
+  } else {
+    clearInterval(msgTimer);
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorCard');
+  el.textContent = msg;
+  el.className = 'error-card show';
+}
+
+function showResults(data, pin) {
+  document.getElementById('resultPin').textContent = pin;
+  document.getElementById('aoCode').textContent = data.aoCode || '—';
+  document.getElementById('aoType').textContent = data.aoType || '—';
+  document.getElementById('rangeCode').textContent = data.rangeCode || '—';
+  document.getElementById('aoNo').textContent = data.aoNo || '—';
+  document.getElementById('areaName').textContent = data.area || data.city || '—';
+  document.getElementById('cityName').textContent = data.city ? 'City: ' + data.city : 'Income Tax Department of India';
+  document.getElementById('resultSection').className = 'result-section show';
+}
+
+async function fetchAODetails() {
+  const pin = document.getElementById('pinInput').value.trim();
+  if (!/^\d{6}$/.test(pin)) {
+    showError('Please enter a valid 6-digit PIN code.');
+    return;
+  }
+  document.getElementById('errorCard').className = 'error-card';
+  showLoading(true);
+
+  const systemPrompt = `You are an expert on Indian Income Tax AO (Assessing Officer) codes. When given a PIN code, find its PAN card AO details from the Income Tax India portal or any available source.
+Return ONLY a raw JSON object (no markdown, no backticks, no preamble) with exactly these fields:
+{
+  "aoCode": "...",
+  "aoType": "...",
+  "rangeCode": "...",
+  "aoNo": "...",
+  "area": "...",
+  "city": "..."
+}
+- aoCode: The full AO code (e.g. "MUM-W-124-1")
+- aoType: AO Type letter (W, C, P, etc.) with full form (e.g. "W (Ward)")
+- rangeCode: Numeric range code (e.g. "124")
+- aoNo: AO number (e.g. "1")
+- area: Area/locality name for this PIN code
+- city: City name
+Search the Income Tax India AO finder or use your knowledge of Indian tax jurisdiction data. If not found, return {"error": "AO details not found for this PIN code."}`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: `Find PAN card AO code details for Indian PIN code: ${pin}` }],
+        tools: [{ type: "web_search_20250305", name: "web_search" }]
+      })
+    });
+
+    const data = await res.json();
+    showLoading(false);
+
+    const textBlock = data.content && data.content.find(b => b.type === 'text');
+    if (!textBlock) { showError('No response from server. Please try again.'); return; }
+
+    let raw = textBlock.text.trim().replace(/```json|```/g, '').trim();
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) { showError('Could not parse AO details. Please try again.'); return; }
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (parsed.error) { showError(parsed.error); return; }
+    showResults(parsed, pin);
+  } catch(e) {
+    showLoading(false);
+    showError('Something went wrong. Please check your connection and try again.');
+  }
+}
+
+document.getElementById('pinInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fetchAODetails();
+});
+
+document.getElementById('pinInput').addEventListener('input', function() {
+  this.value = this.value.replace(/\D/g, '').slice(0, 6);
+});
+</script>
